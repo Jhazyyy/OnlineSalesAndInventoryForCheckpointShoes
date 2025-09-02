@@ -293,7 +293,7 @@
                     </div>
 
                     <!-- Mobile Quick Links -->
-                    <div class="md:hidden mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="md:hidden mt-4 pt-4 border-t border-gray-400 dark:border-gray-700">
                         <div class="flex justify-center space-x-6 text-xs text-gray-500 dark:text-gray-400">
                             <a href="#" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</a>
                             <a href="#"
