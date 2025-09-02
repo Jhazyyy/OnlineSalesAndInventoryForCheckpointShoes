@@ -298,8 +298,8 @@
                             <a href="#" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</a>
                             <a href="#"
                                 class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Support</a>
-                            <a href="#"
-                                class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Documentation</a>
+                            {{-- <a href="#"
+                                class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Documentation</a> --}}
                             <a href="#"
                                 class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy</a>
                         </div>
