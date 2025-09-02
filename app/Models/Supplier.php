@@ -59,6 +59,14 @@ class Supplier extends Model
     }
 
     /**
+     * Get the purchase orders for the supplier.
+     */
+    public function purchaseOrders(): HasMany
+    {
+        return $this->hasMany(PurchaseOrder::class, 'supplier_id', 'supplier_id');
+    }
+
+    /**
      * Get the supplier's full address.
      */
     public function getFullAddressAttribute(): string
