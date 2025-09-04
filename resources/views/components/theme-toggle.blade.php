@@ -33,7 +33,7 @@
 }" class="relative">
     <button 
         @click="toggle()" 
-        class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+        class="flex items-center justify-center w-7 h-7 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-1"
         :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
     >
         <!-- Sun Icon (Light Mode) -->

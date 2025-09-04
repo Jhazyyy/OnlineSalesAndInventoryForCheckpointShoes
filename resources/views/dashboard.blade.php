@@ -4,7 +4,7 @@
         <div :class="navOpen ? 'flex-1' : 'w-full'" class="h-full overflow-y-auto">
             <div class="bg-white dark:bg-gray-800 min-h-full flex flex-col">
                 <div class="flex-1 p-6 text-gray-900 dark:text-gray-100">
-                    <h2 class="text-2xl font-bold mb-4">Welcome, {{ Auth::user()->name}}!</h2>
+                    <h2 class="text-4xl font-bold mb-4">Welcome, {{ Auth::user()->name}}👋! </h2>
 
                     <!-- Dashboard Stats Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
@@ -23,7 +23,8 @@
                                     <p class="text-sm font-medium text-blue-600 dark:text-blue-400">Products
                                     </p>
                                     <p class="text-2xl font-semibold text-blue-900 dark:text-blue-100">
-                                        {{ $inventoryStats['total_products'] ?? 0 }}</p>
+                                        {{ $inventoryStats['total_products'] ?? 0 }}
+                                    </p>
                                     <p class="text-xs text-blue-500 dark:text-blue-300 mt-1">
                                         {{ $inventoryStats['low_stock_products'] ?? 0 }} low stock
                                     </p>
@@ -45,7 +46,8 @@
                                     <p class="text-sm font-medium text-green-600 dark:text-green-400">Sales
                                     </p>
                                     <p class="text-2xl font-semibold text-green-900 dark:text-green-100">
-                                        {{ $salesStats['total_sales'] ?? 0 }}</p>
+                                        {{ $salesStats['total_sales'] ?? 0 }}
+                                    </p>
                                     <p class="text-xs text-green-500 dark:text-green-300 mt-1">
                                         ₱{{ number_format($salesStats['total_sales_value'] ?? 0, 2) }}
                                     </p>
@@ -68,7 +70,8 @@
                                     <p class="text-sm font-medium text-purple-600 dark:text-purple-400">
                                         Customers</p>
                                     <p class="text-2xl font-semibold text-purple-900 dark:text-purple-100">
-                                        {{ $customerStats['total_customers'] ?? 0 }}</p>
+                                        {{ $customerStats['total_customers'] ?? 0 }}
+                                    </p>
                                     <p class="text-xs text-purple-500 dark:text-purple-300 mt-1">
                                         {{ $customerStats['active_customers'] ?? 0 }} active
                                     </p>
@@ -91,7 +94,8 @@
                                     <p class="text-sm font-medium text-red-600 dark:text-red-400">
                                         Returns</p>
                                     <p class="text-2xl font-semibold text-red-900 dark:text-red-100">
-                                        {{ $returnStats['total_returns'] ?? 0 }}</p>
+                                        {{ $returnStats['total_returns'] ?? 0 }}
+                                    </p>
                                     <p class="text-xs text-red-500 dark:text-red-300 mt-1">
                                         {{ $returnStats['pending_returns'] ?? 0 }} pending
                                     </p>
@@ -117,7 +121,8 @@
                                     <p class="text-sm font-medium text-yellow-600 dark:text-yellow-400">
                                         Purchases</p>
                                     <p class="text-2xl font-semibold text-yellow-900 dark:text-yellow-100">
-                                        {{ $purchaseStats['total_purchases'] ?? 0 }}</p>
+                                        {{ $purchaseStats['total_purchases'] ?? 0 }}
+                                    </p>
                                     <p class="text-xs text-yellow-500 dark:text-yellow-300 mt-1">
                                         ₱{{ number_format($purchaseStats['total_purchase_value'] ?? 0, 2) }}
                                     </p>
@@ -140,7 +145,8 @@
                                     <p class="text-sm font-medium text-indigo-600 dark:text-indigo-400">
                                         Suppliers</p>
                                     <p class="text-2xl font-semibold text-indigo-900 dark:text-indigo-100">
-                                        {{ $supplierStats['total_suppliers'] ?? 0 }}</p>
+                                        {{ $supplierStats['total_suppliers'] ?? 0 }}
+                                    </p>
                                     <p class="text-xs text-indigo-500 dark:text-indigo-300 mt-1">
                                         {{ $supplierStats['active_suppliers'] ?? 0 }} active
                                     </p>
@@ -299,7 +305,8 @@
                             <a href="#"
                                 class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Support</a>
                             {{-- <a href="#"
-                                class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Documentation</a> --}}
+                                class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Documentation</a>
+                            --}}
                             <a href="#"
                                 class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy</a>
                         </div>
