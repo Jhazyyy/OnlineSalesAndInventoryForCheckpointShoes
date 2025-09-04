@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseOrderController;
@@ -362,6 +363,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Analytics
         Route::get('/analytics', [ReturnsController::class, 'analytics'])->name('analytics');
+    });
+
+    // Package Management Routes
+    Route::prefix('sales/packages')->name('sales.packages.')->group(function () {
+        Route::get('/', [PackageController::class, 'index'])->name('index');
+        Route::get('/create', [PackageController::class, 'create'])->name('create');
+        Route::post('/', [PackageController::class, 'store'])->name('store');
+        Route::get('/{package}', [PackageController::class, 'show'])->name('show');
+        Route::get('/{package}/edit', [PackageController::class, 'edit'])->name('edit');
+        Route::put('/{package}', [PackageController::class, 'update'])->name('update');
+        Route::delete('/{package}', [PackageController::class, 'destroy'])->name('destroy');
+
+        // Import and Export routes
+        Route::get('/import/form', [PackageController::class, 'showImportForm'])->name('import');
+        Route::post('/import/process', [PackageController::class, 'import'])->name('import.process');
+        Route::get('/template/download', [PackageController::class, 'downloadTemplate'])->name('template');
+
+        // Status management and operations
+        Route::post('/{package}/toggle-status', [PackageController::class, 'toggleStatus'])->name('toggle-status');
+        Route::post('/bulk-update-stock', [PackageController::class, 'bulkUpdateStock'])->name('bulk-update-stock');
+
+        // Analytics and alerts
+        Route::get('/analytics', [PackageController::class, 'analytics'])->name('analytics');
+        Route::get('/alerts', [PackageController::class, 'getAlertsData'])->name('alerts');
     });
 });
 
