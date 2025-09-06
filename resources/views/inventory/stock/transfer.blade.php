@@ -11,9 +11,9 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-lg font-medium">Transfer Stock Between Products</h3>
-                        <a href="{{ route('inventory.stock.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                        <x-gray-button onclick="window.location='{{ route('inventory.stock.index') }}'">
                             Back to Stock Management
-                        </a>
+                        </x-gray-button>
                     </div>
 
                     @if ($errors->any())
@@ -188,13 +188,12 @@
 
                         <!-- Action Buttons -->
                         <div class="mt-8 flex items-center justify-end space-x-4">
-                            <a href="{{ route('inventory.stock.index') }}" 
-                               class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-md text-sm font-medium">
+                            <x-gray-button onclick="window.location='{{ route('inventory.stock.index') }}'">
                                 Cancel
-                            </a>
-                            <x-primary-button>
+                            </x-gray-button>
+                            <x-blue-button>
                                 {{ __('Process Transfer') }}
-                            </x-primary-button>
+                            </x-blue-button>
                         </div>
                     </form>
                 </div>

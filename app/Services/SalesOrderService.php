@@ -78,12 +78,12 @@ class SalesOrderService
                                          'name' => $customer->display_name,
                                      ];
                                  }),
-            'products' => Product::orderBy('name')
+            'products' => Product::orderBy('product_name')
                                ->get()
                                ->map(function ($product) {
                                    return [
                                        'id' => $product->product_id,
-                                       'name' => $product->name,
+                                       'name' => $product->product_name . ' - ' . $product->product_brand,
                                        'price' => $product->price,
                                        'stock' => $product->quantity,
                                    ];
@@ -344,7 +344,7 @@ class SalesOrderService
             if ($requestedQty > $availableQty) {
                 $stockIssues[] = [
                     'product_id' => $product->product_id,
-                    'product_name' => $product->name,
+                    'product_name' => $product->product_name,
                     'requested' => $requestedQty,
                     'available' => $availableQty,
                     'shortage' => $requestedQty - $availableQty,

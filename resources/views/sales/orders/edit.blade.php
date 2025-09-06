@@ -6,16 +6,16 @@
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Sales Order {{ $order->order_number }}</h2>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Sales Order{{ $order->order_number }}</h2>
                             <p class="text-gray-600 dark:text-gray-400">Update sales order details and items</p>
                         </div>
                         <div class="flex space-x-3 mt-4 sm:mt-0">
                             <a href="{{ route('sales.orders.show', $order->order_id) }}" 
-                               class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                                 </svg>
-                                Back to Order
+                                Back to Order Details
                             </a>
                         </div>
                     </div>
@@ -210,24 +210,24 @@
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between">
                                         <span>Subtotal:</span>
-                                        <span id="subtotalDisplay">$0.00</span>
+                                        <span id="subtotalDisplay">₱0.00</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span>Tax:</span>
-                                        <span id="taxDisplay">$0.00</span>
+                                        <span id="taxDisplay">₱0.00</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span>Shipping:</span>
-                                        <span id="shippingDisplay">$0.00</span>
+                                        <span id="shippingDisplay">₱0.00</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span>Discount:</span>
-                                        <span id="discountDisplay">$0.00</span>
+                                        <span id="discountDisplay">₱0.00</span>
                                     </div>
                                     <hr class="border-gray-300 dark:border-gray-600">
                                     <div class="flex justify-between font-bold">
                                         <span>Total:</span>
-                                        <span id="totalDisplay">$0.00</span>
+                                        <span id="totalDisplay">₱0.00</span>
                                     </div>
                                 </div>
                             </div>
@@ -277,12 +277,16 @@
                     <div class="p-6">
                         <div class="flex justify-end space-x-3">
                             <a href="{{ route('sales.orders.show', $order->order_id) }}" 
-                               class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Cancel
                             </a>
-                            <x-primary-button type="submit">
+                            <x-blue-button type="submit">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                </svg>
                                 Update Order
-                            </x-primary-button>
+                            </x-blue-button>
                         </div>
                     </div>
                 </div>
@@ -386,7 +390,7 @@
                 const discount = parseFloat(row.querySelector('.discount-input').value) || 0;
                 
                 const lineTotal = (quantity * unitPrice) - discount;
-                row.querySelector('.line-total').value = '$' + lineTotal.toFixed(2);
+                row.querySelector('.line-total').value = '₱' + lineTotal.toFixed(2);
                 
                 updateCalculations();
             }
@@ -408,11 +412,11 @@
                 
                 const total = subtotal + tax + shipping - orderDiscount;
 
-                document.getElementById('subtotalDisplay').textContent = '$' + subtotal.toFixed(2);
-                document.getElementById('taxDisplay').textContent = '$' + tax.toFixed(2);
-                document.getElementById('shippingDisplay').textContent = '$' + shipping.toFixed(2);
-                document.getElementById('discountDisplay').textContent = '$' + orderDiscount.toFixed(2);
-                document.getElementById('totalDisplay').textContent = '$' + total.toFixed(2);
+                document.getElementById('subtotalDisplay').textContent = '₱' + subtotal.toFixed(2);
+                document.getElementById('taxDisplay').textContent = '₱' + tax.toFixed(2);
+                document.getElementById('shippingDisplay').textContent = '₱' + shipping.toFixed(2);
+                document.getElementById('discountDisplay').textContent = '₱' + orderDiscount.toFixed(2);
+                document.getElementById('totalDisplay').textContent = '₱' + total.toFixed(2);
             }
 
             // Initialize calculations on page load

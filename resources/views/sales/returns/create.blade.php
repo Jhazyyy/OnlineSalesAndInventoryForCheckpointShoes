@@ -209,7 +209,7 @@
                 const price = parseFloat(priceInput.value) || 0;
                 const quantity = parseInt(quantityInput.value) || 0;
                 const total = price * quantity;
-                totalAmountSpan.textContent = '$' + total.toFixed(2);
+                totalAmountSpan.textContent = '₱' + total.toFixed(2);
             }
 
             // Event listeners

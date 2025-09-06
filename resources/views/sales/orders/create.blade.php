@@ -401,7 +401,7 @@
                 const discount = parseFloat(row.querySelector('.discount-input').value) || 0;
 
                 const lineTotal = (quantity * unitPrice) - discount;
-                row.querySelector('.line-total').value = '$' + lineTotal.toFixed(2);
+                row.querySelector('.line-total').value = '₱' + lineTotal.toFixed(2);
 
                 updateCalculations();
             }
@@ -423,11 +423,11 @@
 
                 const total = subtotal + tax + shipping - orderDiscount;
 
-                document.getElementById('subtotalDisplay').textContent = '$' + subtotal.toFixed(2);
-                document.getElementById('taxDisplay').textContent = '$' + tax.toFixed(2);
-                document.getElementById('shippingDisplay').textContent = '$' + shipping.toFixed(2);
-                document.getElementById('discountDisplay').textContent = '$' + orderDiscount.toFixed(2);
-                document.getElementById('totalDisplay').textContent = '$' + total.toFixed(2);
+                document.getElementById('subtotalDisplay').textContent = '₱' + subtotal.toFixed(2);
+                document.getElementById('taxDisplay').textContent = '₱' + tax.toFixed(2);
+                document.getElementById('shippingDisplay').textContent = '₱' + shipping.toFixed(2);
+                document.getElementById('discountDisplay').textContent = '₱' + orderDiscount.toFixed(2);
+                document.getElementById('totalDisplay').textContent = '₱' + total.toFixed(2);
             }
 
             // Initialize calculations

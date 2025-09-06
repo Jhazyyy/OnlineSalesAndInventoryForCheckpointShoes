@@ -134,7 +134,8 @@
 
                             <!-- Image Preview -->
                             <div id="imagePreview" class="mt-4 hidden">
-                                <img id="previewImg" src="#" alt="Preview" class="h-32 w-32 object-cover rounded-lg">
+                                <img id="previewImg" src="#" alt="Preview"
+                                    class="max-w-md h-auto  object-cover rounded-lg">
                             </div>
 
                             @error('image')
@@ -158,7 +159,7 @@
                         <!-- Form Actions -->
                         <div class="flex items-center justify-end space-x-3">
                             <a href="{{ route('inventory.products.index') }}"
-                                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+                                class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Cancel
                             </a>
                             <button type="submit"

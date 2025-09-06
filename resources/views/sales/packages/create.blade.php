@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="py-6">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
@@ -123,12 +123,11 @@
                             <label for="image" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Package Image</label>
                             <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(this)"
                                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-300">
-                            
                             <!-- Image Preview -->
                             <div id="image-preview" class="mt-4 hidden">
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Preview:</label>
                                 <div class="relative inline-block">
-                                    <img id="preview-img" src="" alt="Preview" class="h-32 w-32 object-cover rounded-lg border border-gray-300 shadow-sm">
+                                    <img id="preview-img" src="" alt="Preview" class="h-50 w-auto object-cover rounded-lg border border-gray-300 shadow-sm">
                                     <button type="button" onclick="removePreview()" 
                                             class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,17 +140,17 @@
 
                         <!-- Form Actions -->
                         <div class="flex items-center justify-end space-x-3 pt-6">
-                            <a href="{{ route('sales.packages.index') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            <a href="{{ route('sales.packages.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Cancel
                             </a>
-                            <button type="submit" 
+                            <x-blue-button type="submit" 
                                     class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7"></path>
                                 </svg>
                                 Create Package
-                            </button>
+                            </x-blue-button>
                         </div>
                     </form>
                 </div>

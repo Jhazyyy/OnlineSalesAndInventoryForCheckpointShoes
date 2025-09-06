@@ -20,7 +20,7 @@
                                 </a>
                             @endif
                             <a href="{{ route('sales.orders.index') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                                 </svg>
@@ -207,16 +207,16 @@
                                                     {{ number_format($item->quantity) }}
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                    ${{ number_format($item->unit_price, 2) }}
+                                                    ₱{{ number_format($item->unit_price, 2) }}
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                    ${{ number_format($item->discount_amount, 2) }}
+                                                    ₱{{ number_format($item->discount_amount, 2) }}
                                                     @if($item->discount_percentage > 0)
                                                         <span class="text-gray-500">({{ number_format($item->discount_percentage, 1) }}%)</span>
                                                     @endif
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                                                    ${{ number_format($item->line_total, 2) }}
+                                                    ₱{{ number_format($item->line_total, 2) }}
                                                 </td>
                                             </tr>
                                             @if($item->notes)
@@ -322,7 +322,7 @@
                             <div class="space-y-3">
                                 <div class="flex justify-between text-sm">
                                     <span class="text-gray-500 dark:text-gray-400">Subtotal:</span>
-                                    <span class="text-gray-900 dark:text-white">${{ number_format($order->subtotal, 2) }}</span>
+                                    <span class="text-gray-900 dark:text-white">₱{{ number_format($order->subtotal, 2) }}</span>
                                 </div>
                                 @if($order->tax_amount > 0)
                                     <div class="flex justify-between text-sm">
@@ -345,7 +345,7 @@
                                 <hr class="border-gray-200 dark:border-gray-600">
                                 <div class="flex justify-between text-base font-medium">
                                     <span class="text-gray-900 dark:text-white">Total:</span>
-                                    <span class="text-gray-900 dark:text-white">${{ number_format($order->total_amount, 2) }}</span>
+                                    <span class="text-gray-900 dark:text-white">₱{{ number_format($order->total_amount, 2) }}</span>
                                 </div>
                             </div>
                         </div>

@@ -78,12 +78,12 @@ class PurchaseOrderService
                                          'name' => $supplier->name,
                                      ];
                                  }),
-            'products' => Product::orderBy('name')
+            'products' => Product::orderBy('product_name')
                                ->get()
                                ->map(function ($product) {
                                    return [
                                        'id' => $product->product_id,
-                                       'name' => $product->name,
+                                       'product_name' => $product->product_name,
                                        'price' => $product->price,
                                        'stock' => $product->quantity,
                                    ];
