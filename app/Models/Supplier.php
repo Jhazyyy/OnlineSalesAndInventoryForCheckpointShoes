@@ -146,7 +146,7 @@ class Supplier extends Model
         return $query->where(function ($q) use ($search) {
             $q->where('supplier_name', 'LIKE', "%{$search}%")
                 ->orWhere('email', 'LIKE', "%{$search}%")
-                ->orWhere('supplier_contact', 'LIKE', "%{$search}%")
+                ->orWhere('phone', 'LIKE', "%{$search}%")
                 ->orWhere('tax_id', 'LIKE', "%{$search}%");
         });
     }

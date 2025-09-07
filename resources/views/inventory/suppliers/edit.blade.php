@@ -49,12 +49,12 @@
                                     <x-input-error class="mt-2" :messages="$errors->get('supplier_name')" />
                                 </div>
 
-                                <!-- Contact Number -->
+                                <!-- Phone Number -->
                                 <div>
-                                    <x-input-label for="supplier_contact" :value="__('Contact Number')" />
-                                    <x-text-input id="supplier_contact" name="supplier_contact" type="text" 
-                                                  class="mt-1 block w-full" :value="old('supplier_contact', $supplier->supplier_contact)" required />
-                                    <x-input-error class="mt-2" :messages="$errors->get('supplier_contact')" />
+                                    <x-input-label for="phone" :value="__('Phone Number')" />
+                                    <x-text-input id="phone" name="phone" type="text" 
+                                                  class="mt-1 block w-full" :value="old('phone', $supplier->phone)" />
+                                    <x-input-error class="mt-2" :messages="$errors->get('phone')" />
                                 </div>
 
                                 <!-- Email -->
@@ -67,17 +67,16 @@
 
                                 <!-- Supplier Type -->
                                 <div>
-                                    <x-input-label for="type" :value="__('Supplier Type')" />
-                                    <select id="type" name="type" 
+                                    <x-input-label for="supplier_type" :value="__('Supplier Type')" />
+                                    <select id="supplier_type" name="supplier_type" 
                                             class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
                                         <option value="">Select Type</option>
-                                        <option value="local" {{ old('type', $supplier->type) === 'local' ? 'selected' : '' }}>Local</option>
-                                        <option value="international" {{ old('type', $supplier->type) === 'international' ? 'selected' : '' }}>International</option>
-                                        <option value="distributor" {{ old('type', $supplier->type) === 'distributor' ? 'selected' : '' }}>Distributor</option>
-                                        <option value="manufacturer" {{ old('type', $supplier->type) === 'manufacturer' ? 'selected' : '' }}>Manufacturer</option>
-                                        <option value="service_provider" {{ old('type', $supplier->type) === 'service_provider' ? 'selected' : '' }}>Service Provider</option>
+                                        <option value="local" {{ old('supplier_type', $supplier->supplier_type) === 'local' ? 'selected' : '' }}>Local</option>
+                                        <option value="distributor" {{ old('supplier_type', $supplier->supplier_type) === 'distributor' ? 'selected' : '' }}>Distributor</option>
+                                        <option value="manufacturer" {{ old('supplier_type', $supplier->supplier_type) === 'manufacturer' ? 'selected' : '' }}>Manufacturer</option>
+                                        <option value="service_provider" {{ old('supplier_type', $supplier->supplier_type) === 'service_provider' ? 'selected' : '' }}>Service Provider</option>
                                     </select>
-                                    <x-input-error class="mt-2" :messages="$errors->get('type')" />
+                                    <x-input-error class="mt-2" :messages="$errors->get('supplier_type')" />
                                 </div>
                             </div>
                         </div>
@@ -177,12 +176,13 @@
                                class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Cancel
                             </a>
-                            <x-primary-button>
+                            <button class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                                 </svg>
                                 Update Supplier
-                            </x-primary-button>
+                            </button>
                         </div>
                     </form>
                 </div>

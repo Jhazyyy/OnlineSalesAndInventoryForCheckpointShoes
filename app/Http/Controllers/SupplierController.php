@@ -269,10 +269,10 @@ class SupplierController extends Controller
             // Headers
             fputcsv($file, [
                 'ID',
-                'First Name',
-                'Last Name',
+                'Supplier Name',
                 'Email',
                 'Phone',
+                'Supplier Type',
                 'Address',
                 'City',
                 'State',
@@ -292,10 +292,10 @@ class SupplierController extends Controller
             foreach ($suppliers as $supplier) {
                 fputcsv($file, [
                     $supplier->supplier_id,
-                    $supplier->first_name,
-                    $supplier->last_name,
+                    $supplier->supplier_name,
                     $supplier->email,
                     $supplier->phone,
+                    $supplier->supplier_type,
                     $supplier->address,
                     $supplier->city,
                     $supplier->state,

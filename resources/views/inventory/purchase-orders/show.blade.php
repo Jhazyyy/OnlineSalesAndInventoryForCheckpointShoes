@@ -25,7 +25,7 @@
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                     </svg>
-                                    Edit Order
+                                    Edit
                                 </a>
                             @endif
                         </div>
@@ -176,13 +176,13 @@
                                                     @endif
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                    ${{ number_format($item->unit_price, 2) }}
+                                                    ₱{{ number_format($item->unit_price, 2) }}
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                    ${{ number_format($item->discount_amount, 2) }}
+                                                    ₱{{ number_format($item->discount_amount, 2) }}
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                    ${{ number_format($item->line_total, 2) }}
+                                                    ₱{{ number_format($item->line_total, 2) }}
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -242,34 +242,34 @@
                             <div class="space-y-3">
                                 <div class="flex justify-between text-sm">
                                     <span class="text-gray-600 dark:text-gray-400">Subtotal:</span>
-                                    <span class="text-gray-900 dark:text-white">${{ number_format($order->subtotal, 2) }}</span>
+                                    <span class="text-gray-900 dark:text-white">₱{{ number_format($order->subtotal, 2) }}</span>
                                 </div>
 
                                 @if($order->tax_amount > 0)
                                 <div class="flex justify-between text-sm">
                                     <span class="text-gray-600 dark:text-gray-400">Tax:</span>
-                                    <span class="text-gray-900 dark:text-white">${{ number_format($order->tax_amount, 2) }}</span>
+                                    <span class="text-gray-900 dark:text-white">₱{{ number_format($order->tax_amount, 2) }}</span>
                                 </div>
                                 @endif
 
                                 @if($order->shipping_amount > 0)
                                 <div class="flex justify-between text-sm">
                                     <span class="text-gray-600 dark:text-gray-400">Shipping:</span>
-                                    <span class="text-gray-900 dark:text-white">${{ number_format($order->shipping_amount, 2) }}</span>
+                                    <span class="text-gray-900 dark:text-white">₱{{ number_format($order->shipping_amount, 2) }}</span>
                                 </div>
                                 @endif
 
                                 @if($order->discount_amount > 0)
                                 <div class="flex justify-between text-sm">
                                     <span class="text-gray-600 dark:text-gray-400">Discount:</span>
-                                    <span class="text-red-600">-${{ number_format($order->discount_amount, 2) }}</span>
+                                    <span class="text-red-600">₱{{ number_format($order->discount_amount, 2) }}</span>
                                 </div>
                                 @endif
 
                                 <div class="border-t pt-3">
                                     <div class="flex justify-between text-lg font-semibold">
                                         <span class="text-gray-900 dark:text-white">Total:</span>
-                                        <span class="text-gray-900 dark:text-white">${{ number_format($order->total_amount, 2) }}</span>
+                                        <span class="text-gray-900 dark:text-white">₱{{ number_format($order->total_amount, 2) }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -319,7 +319,7 @@
                             
                             <div class="space-y-3">
                                 <!-- Status Change -->
-                                @if(count($order->service()->getValidStatusTransitions($order->status)) > 0)
+                                @if(count((new \App\Services\PurchaseOrderService())->getValidStatusTransitions($order->status)) > 0)
                                     <form method="POST" action="{{ route('inventory.purchase-orders.change-status', $order->order_id) }}" class="inline">
                                         @csrf
                                         <div class="flex space-x-2">
