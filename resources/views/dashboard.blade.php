@@ -179,7 +179,103 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Shipments Card -->
+                        <a href="{{ route('sales.shipments.index') }}" class="block">
+                            <div class="bg-orange-50 dark:bg-orange-900 p-4 rounded-lg hover:shadow-md transition-shadow duration-200 border border-orange-200 dark:border-orange-700 hover:border-orange-300 dark:hover:border-orange-600">
+                                <div class="flex items-center">
+                                    <div class="p-2 bg-orange-500 rounded-lg">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-sm font-medium text-orange-600 dark:text-orange-400">
+                                            Shipments</p>
+                                        <p class="text-2xl font-semibold text-orange-900 dark:text-orange-100">
+                                            {{ $shipmentStats['total_shipments'] ?? 0 }}
+                                        </p>
+                                        <p class="text-xs text-orange-500 dark:text-orange-300 mt-1">
+                                            {{ $shipmentStats['active_shipments'] ?? 0 }} active
+                                            @if($shipmentStats['overdue_shipments'] > 0)
+                                                • <span class="text-red-600 dark:text-red-400 font-medium">{{ $shipmentStats['overdue_shipments'] }} overdue</span>
+                                            @endif
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
                     </div>
+
+                    <!-- Detailed Shipment Statistics -->
+                    @if($shipmentStats['total_shipments'] > 0)
+                    <div class="mt-6">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Shipment Analytics</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                            <!-- Pending Shipments -->
+                            <div class="bg-amber-50 dark:bg-amber-900 p-3 rounded-lg border border-amber-200 dark:border-amber-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-amber-900 dark:text-amber-100">
+                                        {{ $shipmentStats['pending_shipments'] }}
+                                    </p>
+                                    <p class="text-xs text-amber-600 dark:text-amber-400">Pending</p>
+                                </div>
+                            </div>
+
+                            <!-- In Transit Shipments -->
+                            <div class="bg-blue-50 dark:bg-blue-900 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-blue-900 dark:text-blue-100">
+                                        {{ $shipmentStats['in_transit_shipments'] }}
+                                    </p>
+                                    <p class="text-xs text-blue-600 dark:text-blue-400">In Transit</p>
+                                </div>
+                            </div>
+
+                            <!-- Delivered Shipments -->
+                            <div class="bg-green-50 dark:bg-green-900 p-3 rounded-lg border border-green-200 dark:border-green-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-green-900 dark:text-green-100">
+                                        {{ $shipmentStats['delivered_shipments'] }}
+                                    </p>
+                                    <p class="text-xs text-green-600 dark:text-green-400">Delivered</p>
+                                </div>
+                            </div>
+
+                            <!-- Overdue Shipments -->
+                            <div class="bg-red-50 dark:bg-red-900 p-3 rounded-lg border border-red-200 dark:border-red-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-red-900 dark:text-red-100">
+                                        {{ $shipmentStats['overdue_shipments'] }}
+                                    </p>
+                                    <p class="text-xs text-red-600 dark:text-red-400">Overdue</p>
+                                </div>
+                            </div>
+
+                            <!-- This Week -->
+                            <div class="bg-purple-50 dark:bg-purple-900 p-3 rounded-lg border border-purple-200 dark:border-purple-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-purple-900 dark:text-purple-100">
+                                        {{ $shipmentStats['this_week_shipments'] }}
+                                    </p>
+                                    <p class="text-xs text-purple-600 dark:text-purple-400">This Week</p>
+                                </div>
+                            </div>
+
+                            <!-- Shipping Cost -->
+                            <div class="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                                <div class="text-center">
+                                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                        ₱{{ number_format($shipmentStats['total_shipping_cost'], 2) }}
+                                    </p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400">Total Cost</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
 
                     <!-- User Management Section -->
                     {{-- <div class="mt-8">

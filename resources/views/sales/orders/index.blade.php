@@ -189,7 +189,7 @@
                                                 <div class="text-xs text-gray-500">{{ $order->total_quantity }} qty</div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                ${{ number_format($order->total_amount, 2) }}
+                                                ₱{{ number_format($order->total_amount, 2) }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $order->status_badge_class }}">

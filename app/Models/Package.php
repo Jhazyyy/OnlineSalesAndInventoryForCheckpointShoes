@@ -66,6 +66,20 @@ class Package extends Model
     const STATUS_DISCONTINUED = 'discontinued';
 
     /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::creating(function ($package) {
+            if (empty($package->tracking_code)) {
+                $package->tracking_code = self::generateTrackingCode();
+            }
+        });
+    }
+
+    /**
      * Get the products included in this package.
      */
     public function products(): BelongsToMany

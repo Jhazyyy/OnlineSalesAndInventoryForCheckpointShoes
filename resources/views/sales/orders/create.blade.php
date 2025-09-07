@@ -10,13 +10,13 @@
                             <p class="text-gray-600 dark:text-gray-400">Create a new sales order for a customer</p>
                         </div>
                         <div class="flex space-x-3 mt-4 sm:mt-0">
-                            <x-blue-button onclick="window.location='{{ route('sales.orders.index') }}'">
-                                {{-- <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <x-gray-button onclick="window.location='{{ route('sales.orders.index') }}'">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                                </svg> --}}
+                                </svg>
                                 Back to Orders
-                            </x-blue-button>
+                            </x-gray-button>
                         </div>
                     </div>
                 </div>

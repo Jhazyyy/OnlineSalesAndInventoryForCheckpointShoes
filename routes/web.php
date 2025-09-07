@@ -192,13 +192,45 @@ Route::get('dashboard', function () {
         ];
     }
 
+    // Shipment Statistics
+    try {
+        $shipmentStats = [
+            'total_shipments' => \App\Models\Shipment::count(),
+            'pending_shipments' => \App\Models\Shipment::pending()->count(),
+            'shipped_shipments' => \App\Models\Shipment::shipped()->count(),
+            'in_transit_shipments' => \App\Models\Shipment::inTransit()->count(),
+            'delivered_shipments' => \App\Models\Shipment::delivered()->count(),
+            'overdue_shipments' => \App\Models\Shipment::overdue()->count(),
+            'today_shipments' => \App\Models\Shipment::today()->count(),
+            'this_week_shipments' => \App\Models\Shipment::thisWeek()->count(),
+            'this_month_shipments' => \App\Models\Shipment::thisMonth()->count(),
+            'total_shipping_cost' => \App\Models\Shipment::sum('total_shipping_cost') ?? 0,
+            'active_shipments' => \App\Models\Shipment::whereNotIn('status', ['delivered', 'cancelled', 'returned'])->count(),
+        ];
+    } catch (\Exception $e) {
+        $shipmentStats = [
+            'total_shipments' => 0,
+            'pending_shipments' => 0,
+            'shipped_shipments' => 0,
+            'in_transit_shipments' => 0,
+            'delivered_shipments' => 0,
+            'overdue_shipments' => 0,
+            'today_shipments' => 0,
+            'this_week_shipments' => 0,
+            'this_month_shipments' => 0,
+            'total_shipping_cost' => 0,
+            'active_shipments' => 0,
+        ];
+    }
+
     return view('dashboard', compact(
         'inventoryStats',
         'salesStats',
         'customerStats',
         'purchaseStats',
         'returnStats',
-        'supplierStats'
+        'supplierStats',
+        'shipmentStats'
     ));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -388,6 +420,40 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/analytics', [PackageController::class, 'analytics'])->name('analytics');
         Route::get('/alerts', [PackageController::class, 'getAlertsData'])->name('alerts');
     });
+
+    // Shipment Management Routes
+    Route::prefix('sales/shipments')->name('sales.shipments.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\ShipmentController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\ShipmentController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\ShipmentController::class, 'store'])->name('store');
+        Route::get('/{shipment}', [\App\Http\Controllers\ShipmentController::class, 'show'])->name('show');
+        Route::get('/{shipment}/edit', [\App\Http\Controllers\ShipmentController::class, 'edit'])->name('edit');
+        Route::put('/{shipment}', [\App\Http\Controllers\ShipmentController::class, 'update'])->name('update');
+        Route::delete('/{shipment}', [\App\Http\Controllers\ShipmentController::class, 'destroy'])->name('destroy');
+
+        // Status management routes
+        Route::post('/{shipment}/change-status', [\App\Http\Controllers\ShipmentController::class, 'changeStatus'])->name('change-status');
+        Route::post('/{shipment}/ship', [\App\Http\Controllers\ShipmentController::class, 'ship'])->name('ship');
+        Route::post('/{shipment}/add-tracking', [\App\Http\Controllers\ShipmentController::class, 'addTracking'])->name('add-tracking');
+        Route::post('/{shipment}/process-inventory', [\App\Http\Controllers\ShipmentController::class, 'processInventory'])->name('process-inventory');
+
+        // Special operations
+        Route::post('/create-from-order/{salesOrder}', [\App\Http\Controllers\ShipmentController::class, 'createFromOrder'])->name('create-from-order');
+        
+        
+        // Analytics and attention
+        Route::get('/analytics', [\App\Http\Controllers\ShipmentController::class, 'analytics'])->name('analytics');
+        Route::get('/attention', [\App\Http\Controllers\ShipmentController::class, 'attention'])->name('attention');
+        
+        // Import and Export routes
+        Route::get('/import/form', [\App\Http\Controllers\ShipmentController::class, 'showImportForm'])->name('import');
+        Route::post('/import/process', [\App\Http\Controllers\ShipmentController::class, 'import'])->name('import.process');
+        Route::get('/template/download', [\App\Http\Controllers\ShipmentController::class, 'downloadTemplate'])->name('template');
+        Route::get('/export', [\App\Http\Controllers\ShipmentController::class, 'export'])->name('export');
+    });
 });
+
+// Public Shipment Tracking Route (no authentication required)
+Route::get('/sales/shipments/tracking', [\App\Http\Controllers\ShipmentController::class, 'tracking'])->name('sales.shipments.tracking');
 
 require __DIR__ . '/auth.php';

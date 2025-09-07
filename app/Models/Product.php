@@ -158,6 +158,22 @@ class Product extends Model
     }
 
     /**
+     * Get the product name (accessor for compatibility).
+     */
+    public function getNameAttribute(): string
+    {
+        return $this->product_name;
+    }
+
+    /**
+     * Get the product SKU (accessor for compatibility - uses brand as SKU).
+     */
+    public function getSkuAttribute(): string
+    {
+        return $this->product_brand ?? 'SKU-' . $this->product_id;
+    }
+
+    /**
      * Calculate total revenue from sales.
      */
     public function getTotalRevenueAttribute(): float

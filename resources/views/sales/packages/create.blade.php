@@ -143,14 +143,14 @@
                             <a href="{{ route('sales.packages.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Cancel
                             </a>
-                            <x-blue-button type="submit" 
+                            <button type="submit" 
                                     class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M5 13l4 4L19 7"></path>
                                 </svg>
                                 Create Package
-                            </x-blue-button>
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -159,6 +159,44 @@
     </div>
 
     <script>
+        // Debug form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const submitButton = document.querySelector('button[type="submit"]');
+            
+            console.log('Form found:', form);
+            console.log('Submit button found:', submitButton);
+            
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    console.log('Form submission attempted');
+                    console.log('Form data:', new FormData(form));
+                    
+                    // Basic validation check
+                    const packageName = form.querySelector('#package_name').value;
+                    const price = form.querySelector('#price').value;
+                    const quantity = form.querySelector('#quantity').value;
+                    
+                    console.log('Package name:', packageName);
+                    console.log('Price:', price);
+                    console.log('Quantity:', quantity);
+                    
+                    if (!packageName || !price || !quantity) {
+                        console.error('Missing required fields');
+                        alert('Please fill in all required fields');
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+            }
+            
+            if (submitButton) {
+                submitButton.addEventListener('click', function(e) {
+                    console.log('Submit button clicked');
+                });
+            }
+        });
+
         function previewImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();

@@ -83,6 +83,14 @@ class SalesOrder extends Model
     }
 
     /**
+     * Get the shipments for the sales order.
+     */
+    public function shipments(): HasMany
+    {
+        return $this->hasMany(Shipment::class, 'sales_order_id', 'order_id');
+    }
+
+    /**
      * Generate unique order number.
      */
     public static function generateOrderNumber(): string
@@ -252,6 +260,64 @@ class SalesOrder extends Model
     }
 
     /**
+     * Scope a query to only include orders that have shipments.
+     */
+    public function scopeWithShipments(Builder $query): Builder
+    {
+        return $query->whereHas('shipments');
+    }
+
+    /**
+     * Scope a query to only include orders without shipments.
+     */
+    public function scopeWithoutShipments(Builder $query): Builder
+    {
+        return $query->whereDoesntHave('shipments');
+    }
+
+    /**
+     * Scope a query to only include orders with active shipments.
+     */
+    public function scopeWithActiveShipments(Builder $query): Builder
+    {
+        return $query->whereHas('shipments', function ($shipmentQuery) {
+            $shipmentQuery->whereNotIn('status', ['delivered', 'cancelled', 'returned']);
+        });
+    }
+
+    /**
+     * Scope a query to only include orders with pending shipments.
+     */
+    public function scopeWithPendingShipments(Builder $query): Builder
+    {
+        return $query->whereHas('shipments', function ($shipmentQuery) {
+            $shipmentQuery->where('status', 'pending');
+        });
+    }
+
+    /**
+     * Scope a query to only include fully shipped orders.
+     */
+    public function scopeFullyShipped(Builder $query): Builder
+    {
+        return $query->whereHas('shipments', function ($shipmentQuery) {
+            // This is a simplified version - in practice, you'd need more complex logic
+            // to check if all items are fully shipped across all shipments
+            $shipmentQuery->where('status', '!=', 'cancelled');
+        })->where('status', 'shipped');
+    }
+
+    /**
+     * Scope a query to only include partially shipped orders.
+     */
+    public function scopePartiallyShipped(Builder $query): Builder
+    {
+        return $query->whereHas('shipments')
+                    ->where('status', '!=', 'shipped')
+                    ->where('status', '!=', 'delivered');
+    }
+
+    /**
      * Get the total quantity of items in the order.
      */
     public function getTotalQuantityAttribute(): int
@@ -321,6 +387,124 @@ class SalesOrder extends Model
     public function canBeShipped(): bool
     {
         return in_array($this->status, ['confirmed', 'processing']);
+    }
+
+    /**
+     * Check if the order has any shipments.
+     */
+    public function hasShipments(): bool
+    {
+        return $this->shipments()->exists();
+    }
+
+    /**
+     * Check if the order has any active shipments (not delivered, cancelled, or returned).
+     */
+    public function hasActiveShipments(): bool
+    {
+        return $this->shipments()
+                   ->whereNotIn('status', ['delivered', 'cancelled', 'returned'])
+                   ->exists();
+    }
+
+    /**
+     * Check if the order has any pending shipments.
+     */
+    public function hasPendingShipments(): bool
+    {
+        return $this->shipments()->where('status', 'pending')->exists();
+    }
+
+    /**
+     * Check if all items in the order are fully shipped.
+     */
+    public function isFullyShipped(): bool
+    {
+        if (!$this->hasShipments()) {
+            return false;
+        }
+
+        // Get all order items with their quantities
+        $orderItems = $this->items;
+        
+        foreach ($orderItems as $orderItem) {
+            $shippedQuantity = $this->shipments()
+                                   ->with('items')
+                                   ->get()
+                                   ->flatMap->items
+                                   ->where('product_id', $orderItem->product_id)
+                                   ->sum('quantity_shipped');
+            
+            if ($shippedQuantity < $orderItem->quantity) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    /**
+     * Check if the order is partially shipped.
+     */
+    public function isPartiallyShipped(): bool
+    {
+        return $this->hasShipments() && !$this->isFullyShipped();
+    }
+
+    /**
+     * Get the latest shipment for this order.
+     */
+    public function getLatestShipmentAttribute()
+    {
+        return $this->shipments()->latest('created_at')->first();
+    }
+
+    /**
+     * Get all delivered shipments for this order.
+     */
+    public function getDeliveredShipmentsAttribute()
+    {
+        return $this->shipments()->where('status', 'delivered')->get();
+    }
+
+    /**
+     * Get the total shipping cost from all shipments.
+     */
+    public function getTotalShippingCostAttribute(): float
+    {
+        return $this->shipments()->sum('total_shipping_cost') ?? 0.00;
+    }
+
+    /**
+     * Get shipment status summary.
+     */
+    public function getShipmentStatusSummaryAttribute(): array
+    {
+        if (!$this->hasShipments()) {
+            return ['status' => 'not_shipped', 'count' => 0];
+        }
+
+        $shipments = $this->shipments;
+        $statusCounts = $shipments->groupBy('status')->map->count();
+        
+        // Determine overall shipment status
+        if ($shipments->where('status', 'delivered')->count() === $shipments->count()) {
+            $overallStatus = 'all_delivered';
+        } elseif ($shipments->where('status', 'delivered')->count() > 0) {
+            $overallStatus = 'partially_delivered';
+        } elseif ($shipments->whereIn('status', ['shipped', 'in_transit', 'out_for_delivery'])->count() > 0) {
+            $overallStatus = 'in_transit';
+        } elseif ($shipments->where('status', 'preparing')->count() > 0) {
+            $overallStatus = 'preparing';
+        } else {
+            $overallStatus = 'pending';
+        }
+        
+        return [
+            'status' => $overallStatus,
+            'count' => $shipments->count(),
+            'breakdown' => $statusCounts->toArray()
+        ];
     }
 
     /**
