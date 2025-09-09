@@ -111,8 +111,8 @@
                             title="Sales Return" size="small" />
 
                         <!-- Exchange -->
-                        <x-nav-item href=""
-                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>'
+                        <x-nav-item route="sales.exchanges.index" route-pattern="sales.exchanges.*"
+                            :icon="App\Helpers\NavigationHelper::getIcon('exchange', 'w-4 h-4 mr-3')"
                             title="Exchange" size="small" />
                     </x-nav-item>
 

@@ -11,6 +11,7 @@ use App\Http\Controllers\SalesOrderController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\ExchangeController;
 use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Contracts\Auth;
@@ -93,7 +94,7 @@ Route::get('dashboard', function () {
     try {
         $inventoryStats = [
             'total_products' => \App\Models\Product::count(),
-            'active_products' => \App\Models\Product::count(), // No status column, so use total count
+            'active_products' => \App\Models\Product::count(), 
             'low_stock_products' => \App\Models\Product::where('quantity', '<=', 10)->count(), // Low stock threshold of 10
             'out_of_stock_products' => \App\Models\Product::where('quantity', '<=', 0)->count(),
             'total_inventory_value' => \App\Models\Product::selectRaw('SUM(quantity * price) as total')->value('total') ?? 0,
@@ -396,6 +397,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Analytics
         Route::get('/analytics', [ReturnsController::class, 'analytics'])->name('analytics');
+    });
+
+    // Exchange Management Routes
+    Route::prefix('sales/exchanges')->name('sales.exchanges.')->group(function () {
+        Route::get('/', [ExchangeController::class, 'index'])->name('index');
+        Route::get('/create', [ExchangeController::class, 'create'])->name('create');
+        Route::post('/', [ExchangeController::class, 'store'])->name('store');
+        Route::get('/{exchange}', [ExchangeController::class, 'show'])->name('show');
+        Route::get('/{exchange}/edit', [ExchangeController::class, 'edit'])->name('edit');
+        Route::put('/{exchange}', [ExchangeController::class, 'update'])->name('update');
+        Route::delete('/{exchange}', [ExchangeController::class, 'destroy'])->name('destroy');
+
+        // Status management routes
+        Route::post('/{exchange}/approve', [ExchangeController::class, 'approve'])->name('approve');
+        Route::post('/{exchange}/start-processing', [ExchangeController::class, 'startProcessing'])->name('start-processing');
+        Route::post('/{exchange}/complete', [ExchangeController::class, 'complete'])->name('complete');
+        Route::post('/{exchange}/cancel', [ExchangeController::class, 'cancel'])->name('cancel');
+
+        // Analytics
+        Route::get('/analytics', [ExchangeController::class, 'analytics'])->name('analytics');
     });
 
     // Package Management Routes
