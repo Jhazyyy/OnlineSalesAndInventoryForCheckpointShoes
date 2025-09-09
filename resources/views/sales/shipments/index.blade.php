@@ -5,10 +5,16 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Shipments</h2>
-                            <p class="text-gray-600 dark:text-gray-400">Manage your shipments and track delivery status
-                            </p>
+                        <div class="flex items-center">
+                            <!-- Cart Icon -->
+                            {{-- <div class="mr-3">
+                                {!! App\Helpers\NavigationHelper::getIcon('purchases', 'w-8 h-8 text-blue-600') !!}
+                            </div> --}}
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Shipments</h2>
+                                <p class="text-gray-600 dark:text-gray-400">Manage your shipments and track delivery status
+                                </p>
+                            </div>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
                             {{-- <a href="{{ route('sales.shipments.tracking') }}"

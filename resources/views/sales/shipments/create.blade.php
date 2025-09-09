@@ -92,13 +92,13 @@
                                     <div>
                                         <label for="carrier" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Carrier</label>
                                         <input type="text" id="carrier" name="carrier" 
-                                               value="{{ old('carrier') }}" placeholder="e.g., FedEx, UPS, DHL"
+                                               value="{{ old('carrier') }}" placeholder="e.g., , J&T Express, Ninja Van"
                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     </div>
                                     <div>
                                         <label for="service_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Service Type</label>
                                         <input type="text" id="service_type" name="service_type" 
-                                               value="{{ old('service_type') }}" placeholder="e.g., Ground, Express, Overnight"
+                                               value="{{ old('service_type') }}" placeholder="e.g., LBC, J&T Express"
                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     </div>
                                     <div>

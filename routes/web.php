@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -450,6 +451,35 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/import/process', [\App\Http\Controllers\ShipmentController::class, 'import'])->name('import.process');
         Route::get('/template/download', [\App\Http\Controllers\ShipmentController::class, 'downloadTemplate'])->name('template');
         Route::get('/export', [\App\Http\Controllers\ShipmentController::class, 'export'])->name('export');
+    });
+
+    // Invoice Management Routes
+    Route::prefix('sales/invoices')->name('sales.invoices.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\InvoiceController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\InvoiceController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\InvoiceController::class, 'store'])->name('store');
+        Route::get('/{invoice}', [\App\Http\Controllers\InvoiceController::class, 'show'])->name('show');
+        Route::get('/{invoice}/edit', [\App\Http\Controllers\InvoiceController::class, 'edit'])->name('edit');
+        Route::put('/{invoice}', [\App\Http\Controllers\InvoiceController::class, 'update'])->name('update');
+        Route::delete('/{invoice}', [\App\Http\Controllers\InvoiceController::class, 'destroy'])->name('destroy');
+
+        // Status management routes
+        Route::post('/{invoice}/change-status', [\App\Http\Controllers\InvoiceController::class, 'changeStatus'])->name('change-status');
+        Route::post('/{invoice}/mark-as-sent', [\App\Http\Controllers\InvoiceController::class, 'markAsSent'])->name('mark-as-sent');
+        Route::post('/{invoice}/record-payment', [\App\Http\Controllers\InvoiceController::class, 'recordPayment'])->name('record-payment');
+
+        // Special operations
+        Route::post('/create-from-order/{salesOrder}', [\App\Http\Controllers\InvoiceController::class, 'createFromOrder'])->name('create-from-order');
+        Route::get('/{invoice}/duplicate', [\App\Http\Controllers\InvoiceController::class, 'duplicate'])->name('duplicate');
+        Route::get('/{invoice}/generate-pdf', [\App\Http\Controllers\InvoiceController::class, 'generatePdf'])->name('generate-pdf');
+        Route::post('/{invoice}/send-email', [\App\Http\Controllers\InvoiceController::class, 'sendEmail'])->name('send-email');
+        
+        // Views and reports
+        Route::get('/overdue', [\App\Http\Controllers\InvoiceController::class, 'overdue'])->name('overdue');
+        Route::post('/update-overdue-statuses', [\App\Http\Controllers\InvoiceController::class, 'updateOverdueStatuses'])->name('update-overdue-statuses');
+        
+        // Analytics
+        Route::get('/analytics', [\App\Http\Controllers\InvoiceController::class, 'analytics'])->name('analytics');
     });
 });
 
