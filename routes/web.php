@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ExchangeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\ProductController;
@@ -11,8 +12,6 @@ use App\Http\Controllers\SalesOrderController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserManagementController;
-use App\Http\Controllers\ExchangeController;
-use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Contracts\Auth;
 

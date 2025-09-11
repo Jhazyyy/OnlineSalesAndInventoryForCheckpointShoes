@@ -405,4 +405,115 @@ class ExchangeController extends Controller
             return back()->with('error', 'Failed to cancel exchange. Please try again.');
         }
     }
+
+    /**
+     * Display exchange analytics.
+     */
+    public function analytics(Request $request)
+    {
+        try {
+            // Basic statistics
+            $totalExchanges = Exchange::count();
+            $pendingExchanges = Exchange::pending()->count();
+            $approvedExchanges = Exchange::approved()->count();
+            $processingExchanges = Exchange::processing()->count();
+            $completedExchanges = Exchange::completed()->count();
+            $cancelledExchanges = Exchange::where('status', Exchange::STATUS_CANCELLED)->count();
+
+            // Time-based statistics
+            $todayExchanges = Exchange::today()->count();
+            $thisWeekExchanges = Exchange::thisWeek()->count();
+            $thisMonthExchanges = Exchange::thisMonth()->count();
+
+            // Financial statistics
+            $totalOriginalAmount = Exchange::sum('original_total_amount');
+            $totalNewAmount = Exchange::sum('new_total_amount');
+            $totalDifferenceAmount = Exchange::sum('difference_amount');
+
+            // Exchange type breakdown
+            $exchangeTypes = Exchange::selectRaw('exchange_type, COUNT(*) as count')
+                                   ->groupBy('exchange_type')
+                                   ->pluck('count', 'exchange_type')
+                                   ->toArray();
+
+            // Monthly trend data (last 12 months)
+            $monthlyData = Exchange::selectRaw('DATE_FORMAT(exchange_date, "%Y-%m") as month, COUNT(*) as count, SUM(original_total_amount) as original_total, SUM(new_total_amount) as new_total')
+                                 ->where('exchange_date', '>=', now()->subMonths(11)->startOfMonth())
+                                 ->groupBy('month')
+                                 ->orderBy('month')
+                                 ->get();
+
+            // Status distribution
+            $statusDistribution = Exchange::selectRaw('status, COUNT(*) as count')
+                                        ->groupBy('status')
+                                        ->pluck('count', 'status')
+                                        ->toArray();
+
+            // Top customers by exchange count
+            $topCustomers = Exchange::with('customer')
+                                  ->selectRaw('customer_id, COUNT(*) as exchange_count, SUM(ABS(difference_amount)) as total_difference')
+                                  ->groupBy('customer_id')
+                                  ->orderBy('exchange_count', 'desc')
+                                  ->limit(10)
+                                  ->get();
+
+            // Recent exchanges
+            $recentExchanges = Exchange::with(['customer', 'processedBy'])
+                                     ->latest('exchange_date')
+                                     ->limit(10)
+                                     ->get();
+
+            // Calculate completion rate
+            $completionRate = $totalExchanges > 0 ? ($completedExchanges / $totalExchanges * 100) : 0;
+
+            // Calculate average processing time for completed exchanges
+            $avgProcessingTime = Exchange::where('status', Exchange::STATUS_COMPLETED)
+                                       ->whereNotNull('processed_at')
+                                       ->selectRaw('AVG(DATEDIFF(actual_completion_date, exchange_date)) as avg_days')
+                                       ->first()->avg_days ?? 0;
+
+            $analytics = [
+                'overview' => [
+                    'total_exchanges' => $totalExchanges,
+                    'pending_exchanges' => $pendingExchanges,
+                    'approved_exchanges' => $approvedExchanges,
+                    'processing_exchanges' => $processingExchanges,
+                    'completed_exchanges' => $completedExchanges,
+                    'cancelled_exchanges' => $cancelledExchanges,
+                    'completion_rate' => round($completionRate, 1),
+                    'avg_processing_time' => round($avgProcessingTime, 1),
+                ],
+                'time_based' => [
+                    'today' => $todayExchanges,
+                    'this_week' => $thisWeekExchanges,
+                    'this_month' => $thisMonthExchanges,
+                ],
+                'financial' => [
+                    'total_original_amount' => $totalOriginalAmount,
+                    'total_new_amount' => $totalNewAmount,
+                    'total_difference' => $totalDifferenceAmount,
+                    'avg_original_amount' => $totalExchanges > 0 ? $totalOriginalAmount / $totalExchanges : 0,
+                    'avg_new_amount' => $totalExchanges > 0 ? $totalNewAmount / $totalExchanges : 0,
+                ],
+                'breakdown' => [
+                    'types' => $exchangeTypes,
+                    'status' => $statusDistribution,
+                ],
+                'trends' => [
+                    'monthly' => $monthlyData,
+                ],
+                'insights' => [
+                    'top_customers' => $topCustomers,
+                    'recent_exchanges' => $recentExchanges,
+                ],
+            ];
+
+            return view('sales.exchanges.analytics', compact('analytics'));
+
+        } catch (\Exception $e) {
+            Log::error('Error generating exchange analytics: ' . $e->getMessage());
+            
+            return back()->with('error', 'Failed to generate analytics. Please try again.');
+        }
+    }
 }
