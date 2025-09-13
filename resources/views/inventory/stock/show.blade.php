@@ -15,17 +15,24 @@
                             @if($stock->status === 'pending')
                                 <form action="{{ route('inventory.stock.confirm', $stock) }}" method="POST" class="inline">
                                     @csrf
-                                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                                    <button type="submit"
+                                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium">
                                         Confirm Movement
                                     </button>
                                 </form>
-                                <a href="{{ route('inventory.stock.edit', $stock) }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                                <a href="{{ route('inventory.stock.edit', $stock) }}"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
                                     Edit
                                 </a>
                             @endif
-                            <x-gray-button onclick="window.location.href='{{ route('inventory.stock.index') }}'">
+                            <a href="{{ route('inventory.stock.index') }}"
+                                class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                </svg>
                                 Back to List
-                            </x-gray-button>
+                            </a>
                         </div>
                     </div>
 
@@ -96,7 +103,8 @@
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="font-medium">Quantity Change:</span>
-                                    <span class="{{ $stock->quantity_change >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                                    <span
+                                        class="{{ $stock->quantity_change >= 0 ? 'text-green-600' : 'text-red-600' }}">
                                         {{ $stock->quantity_change >= 0 ? '+' : '' }}{{ number_format($stock->quantity_change) }}
                                     </span>
                                 </div>
@@ -126,24 +134,24 @@
                     <!-- Additional Details -->
                     <div class="mt-6 grid grid-cols-1 gap-6">
                         @if($stock->reason)
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                            <h4 class="text-md font-semibold mb-2">Reason</h4>
-                            <p class="text-gray-700 dark:text-gray-300">{{ $stock->reason }}</p>
-                        </div>
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h4 class="text-md font-semibold mb-2">Reason</h4>
+                                <p class="text-gray-700 dark:text-gray-300">{{ $stock->reason }}</p>
+                            </div>
                         @endif
 
                         @if($stock->notes)
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                            <h4 class="text-md font-semibold mb-2">Notes</h4>
-                            <p class="text-gray-700 dark:text-gray-300">{{ $stock->notes }}</p>
-                        </div>
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h4 class="text-md font-semibold mb-2">Notes</h4>
+                                <p class="text-gray-700 dark:text-gray-300">{{ $stock->notes }}</p>
+                            </div>
                         @endif
 
                         @if($stock->location)
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                            <h4 class="text-md font-semibold mb-2">Location</h4>
-                            <p class="text-gray-700 dark:text-gray-300">{{ $stock->location }}</p>
-                        </div>
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h4 class="text-md font-semibold mb-2">Location</h4>
+                                <p class="text-gray-700 dark:text-gray-300">{{ $stock->location }}</p>
+                            </div>
                         @endif
                     </div>
 

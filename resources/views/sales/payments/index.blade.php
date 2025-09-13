@@ -6,16 +6,16 @@
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Sales Orders</h2>
-                            <p class="text-gray-600 dark:text-gray-400">Manage your sales orders and track order fulfillment</p>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Payments Received</h2>
+                            <p class="text-gray-600 dark:text-gray-400">Manage and track customer payments</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
-                            <a href="{{ route('sales.orders.create') }}" 
+                            <a href="{{ route('sales.payments.create') }}" 
                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                 </svg>
-                                Create Order
+                                Record Payment
                             </a>
                         </div>
                     </div>
@@ -25,13 +25,13 @@
             <!-- Filters Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
-                    <form method="GET" action="{{ route('sales.orders.index') }}" class="space-y-4">
+                    <form method="GET" action="{{ route('sales.payments.index') }}" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
                             <!-- Search -->
                             <div>
                                 <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>
                                 <input type="text" id="search" name="search" value="{{ request('search') }}" 
-                                       placeholder="Order number, customer..." 
+                                       placeholder="Payment number, customer..." 
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
 
@@ -41,39 +41,39 @@
                                 <select id="status" name="status" 
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     <option value="">All Status</option>
-                                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                    <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
-                                    <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Processing</option>
-                                    <option value="shipped" {{ request('status') == 'shipped' ? 'selected' : '' }}>Shipped</option>
-                                    <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>Delivered</option>
-                                    <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                                    <option value="returned" {{ request('status') == 'returned' ? 'selected' : '' }}>Returned</option>
+                                    @foreach($statuses as $statusValue)
+                                        <option value="{{ $statusValue }}" {{ request('status') == $statusValue ? 'selected' : '' }}>
+                                            {{ ucfirst($statusValue) }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 
-                            <!-- Priority -->
+                            <!-- Payment Method -->
                             <div>
-                                <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Priority</label>
-                                <select id="priority" name="priority" 
+                                <label for="payment_method" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Method</label>
+                                <select id="payment_method" name="payment_method" 
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">All Priorities</option>
-                                    <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>Low</option>
-                                    <option value="normal" {{ request('priority') == 'normal' ? 'selected' : '' }}>Normal</option>
-                                    <option value="high" {{ request('priority') == 'high' ? 'selected' : '' }}>High</option>
-                                    <option value="urgent" {{ request('priority') == 'urgent' ? 'selected' : '' }}>Urgent</option>
+                                    <option value="">All Methods</option>
+                                    @foreach($paymentMethods as $method)
+                                        <option value="{{ $method }}" {{ request('payment_method') == $method ? 'selected' : '' }}>
+                                            {{ ucwords(str_replace('_', ' ', $method)) }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 
-                            <!-- Payment Status -->
+                            <!-- Customer -->
                             <div>
-                                <label for="payment_status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment</label>
-                                <select id="payment_status" name="payment_status" 
+                                <label for="customer_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Customer</label>
+                                <select id="customer_id" name="customer_id" 
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">All Payments</option>
-                                    <option value="pending" {{ request('payment_status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                    <option value="partial" {{ request('payment_status') == 'partial' ? 'selected' : '' }}>Partial</option>
-                                    <option value="paid" {{ request('payment_status') == 'paid' ? 'selected' : '' }}>Paid</option>
-                                    <option value="refunded" {{ request('payment_status') == 'refunded' ? 'selected' : '' }}>Refunded</option>
+                                    <option value="">All Customers</option>
+                                    @foreach($customers as $customer)
+                                        <option value="{{ $customer->customer_id }}" {{ request('customer_id') == $customer->customer_id ? 'selected' : '' }}>
+                                            {{ $customer->first_name }} {{ $customer->last_name }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -101,7 +101,7 @@
                                     </svg>
                                     Filter
                                 </button>
-                                <a href="{{ route('sales.orders.index') }}" 
+                                <a href="{{ route('sales.payments.index') }}" 
                                    class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     Clear
                                 </a>
@@ -124,115 +124,83 @@
                 </div>
             @endif
 
-            <!-- Orders Table -->
+            <!-- Payments Table -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    @if($orders->count() > 0)
+                    @if($payments->count() > 0)
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'order_number', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
-                                                Order #
-                                                @if(request('sort') === 'order_number')
-                                                    <span class="ml-1">{{ request('order') === 'asc' ? '↑' : '↓' }}</span>
-                                                @endif
-                                            </a>
-                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Payment #</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'order_date', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
-                                                Order Date
-                                                @if(request('sort') === 'order_date')
-                                                    <span class="ml-1">{{ request('order') === 'asc' ? '↑' : '↓' }}</span>
-                                                @endif
-                                            </a>
-                                        </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Items</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'total_amount', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
-                                                Total
-                                                @if(request('sort') === 'total_amount')
-                                                    <span class="ml-1">{{ request('order') === 'asc' ? '↑' : '↓' }}</span>
-                                                @endif
-                                            </a>
-                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Order</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Method</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Payment</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    @foreach($orders as $order)
+                                    @foreach($payments as $payment)
                                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                                    <a href="{{ route('sales.orders.show', $order->order_id) }}" class="text-blue-600 hover:text-blue-900">
-                                                        {{ $order->order_number }}
+                                                    <a href="{{ route('sales.payments.show', $payment->payment_id) }}" class="text-blue-600 hover:text-blue-900">
+                                                        {{ $payment->payment_number }}
                                                     </a>
                                                 </div>
-                                                @if($order->is_overdue)
-                                                    <div class="text-xs text-red-600">OVERDUE</div>
+                                                @if($payment->reference_number)
+                                                    <div class="text-sm text-gray-500 dark:text-gray-400">Ref: {{ $payment->reference_number }}</div>
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm text-gray-900 dark:text-white">{{ $order->customer->display_name }}</div>
-                                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ $order->customer->email }}</div>
+                                                <div class="text-sm text-gray-900 dark:text-white">{{ $payment->customer->first_name }} {{ $payment->customer->last_name }}</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ $payment->customer->email }}</div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                {{ $order->order_date->format('M d, Y') }}
+                                                @if($payment->salesOrder)
+                                                    <a href="{{ route('sales.orders.show', $payment->salesOrder->order_id) }}" class="text-blue-600 hover:text-blue-900">
+                                                        {{ $payment->salesOrder->order_number }}
+                                                    </a>
+                                                @else
+                                                    <span class="text-gray-400">-</span>
+                                                @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                {{ $order->total_products }} item(s)
-                                                <div class="text-xs text-gray-500">{{ $order->total_quantity }} qty</div>
+                                                {{ $payment->payment_date->format('M d, Y') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                ₱{{ number_format($order->total_amount, 2) }}
+                                                ₱{{ number_format($payment->amount, 2) }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                {{ $payment->payment_method_display }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $order->status_badge_class }}">
-                                                    {{ ucfirst($order->status) }}
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $order->priority_badge_class }}">
-                                                    {{ ucfirst($order->priority) }}
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $order->payment_status_badge_class }}">
-                                                    {{ ucfirst(str_replace('_', ' ', $order->payment_status)) }}
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $payment->status_badge_class }}">
+                                                    {{ ucfirst($payment->status) }}
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div class="flex space-x-2">
-                                                    <a href="{{ route('sales.orders.show', $order->order_id) }}" 
+                                                    <a href="{{ route('sales.payments.show', $payment->payment_id) }}" 
                                                        class="text-indigo-600 hover:text-indigo-900">View</a>
-                                                    @if($order->canBeEdited())
-                                                        <a href="{{ route('sales.orders.edit', $order->order_id) }}" 
-                                                           class="text-yellow-600 hover:text-blue-900">Edit</a>
+                                                    @if($payment->canBeEdited())
+                                                        <a href="{{ route('sales.payments.edit', $payment->payment_id) }}" 
+                                                           class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300"">Edit</a>
                                                     @endif
-                                                    @if($order->canBeConfirmed())
-                                                        <form method="POST" action="{{ route('sales.orders.change-status', $order->order_id) }}" class="inline">
+                                                    @if($payment->status === 'pending')
+                                                        <form method="POST" action="{{ route('sales.payments.mark-completed', $payment->payment_id) }}" class="inline">
                                                             @csrf
-                                                            <input type="hidden" name="status" value="confirmed">
-                                                            <button type="submit" class="text-green-600 hover:text-green-900">Confirm</button>
+                                                            <button type="submit" class="text-green-600 hover:text-green-900">Complete</button>
                                                         </form>
                                                     @endif
-                                                    @if($order->status === 'confirmed')
-                                                        <form method="POST" action="{{ route('sales.orders.fulfill', $order->order_id) }}" class="inline">
+                                                    @if($payment->canBeCancelled())
+                                                        <form method="POST" action="{{ route('sales.payments.mark-cancelled', $payment->payment_id) }}" class="inline">
                                                             @csrf
-                                                            <button type="submit" class="text-purple-600 hover:text-purple-900">Fulfill</button>
-                                                        </form>
-                                                    @endif
-                                                    @if($order->canBeCancelled())
-                                                        <form method="POST" action="{{ route('sales.orders.change-status', $order->order_id) }}" class="inline">
-                                                            @csrf
-                                                            <input type="hidden" name="status" value="cancelled">
-                                                            <button type="submit" class="text-red-600 hover:text-red-900" 
-                                                                    onclick="return confirm('Are you sure you want to cancel this order?')">Cancel</button>
+                                                            <button type="submit" class="text-red-600 hover:text-red-900"
+                                                                    onclick="return confirm('Are you sure you want to cancel this payment?')">Cancel</button>
                                                         </form>
                                                     @endif
                                                 </div>
@@ -245,22 +213,22 @@
 
                         <!-- Pagination -->
                         <div class="mt-6">
-                            {{ $orders->links() }}
+                            {{ $payments->links() }}
                         </div>
                     @else
                         <div class="text-center py-8">
                             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
                             </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No orders found</h3>
-                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating a new sales order.</p>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No payments found</h3>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by recording your first payment.</p>
                             <div class="mt-6">
-                                <a href="{{ route('sales.orders.create') }}" 
+                                <a href="{{ route('sales.payments.create') }}" 
                                    class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                     </svg>
-                                    Create First Order
+                                    Record First Payment
                                 </a>
                             </div>
                         </div>

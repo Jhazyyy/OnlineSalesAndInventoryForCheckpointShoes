@@ -393,17 +393,20 @@ class SalesOrderService
             $product->quantity -= $item->quantity;
             $product->save();
 
-            // Create stock movement record if the model exists
+            // Create stock movement record using the proper method
             if (class_exists('App\Models\StockMovement')) {
-                \App\Models\StockMovement::create([
-                    'product_id' => $product->product_id,
-                    'type' => 'out',
-                    'quantity' => $item->quantity,
-                    'reference_type' => 'sales_order',
-                    'reference_id' => $order->order_id,
-                    'notes' => "Order fulfillment for order {$order->order_number}",
-                    'date' => Carbon::now(),
-                ]);
+                \App\Models\StockMovement::recordMovement(
+                    productId: $product->product_id,
+                    quantityBefore: $product->quantity + $item->quantity, // Before we reduced it
+                    quantityChange: -$item->quantity, // Negative because it's outbound
+                    quantityAfter: $product->quantity,
+                    movementType: \App\Models\StockMovement::TYPE_SALE,
+                    userId: auth()->id(),
+                    referenceType: 'sales_order',
+                    referenceId: $order->order_id,
+                    notes: "Order fulfillment for order {$order->order_number}",
+                    movementDate: Carbon::now()
+                );
             }
         }
 

@@ -466,16 +466,19 @@ class ShipmentService
                 if ($product && $product->quantity >= $item->quantity_shipped) {
                     $product->decrement('quantity', $item->quantity_shipped);
                     
-                    // Record stock movement
-                    \App\Models\StockMovement::create([
-                        'product_id' => $product->product_id,
-                        'type' => 'outbound',
-                        'quantity' => $item->quantity_shipped,
-                        'reference_type' => 'shipment',
-                        'reference_id' => $shipment->shipment_id,
-                        'notes' => "Shipped in shipment {$shipment->shipment_number}",
-                        'performed_by' => auth()->user()?->name ?? 'System',
-                    ]);
+                    // Record stock movement using the proper method
+                    \App\Models\StockMovement::recordMovement(
+                        productId: $product->product_id,
+                        quantityBefore: $product->quantity + $item->quantity_shipped, // Before we decremented it
+                        quantityChange: -$item->quantity_shipped, // Negative because it's outbound
+                        quantityAfter: $product->quantity,
+                        movementType: \App\Models\StockMovement::TYPE_SALE,
+                        userId: auth()->id(),
+                        referenceType: 'shipment',
+                        referenceId: $shipment->shipment_id,
+                        notes: "Shipped in shipment {$shipment->shipment_number}",
+                        movementDate: Carbon::now()
+                    );
                 }
             }
         });

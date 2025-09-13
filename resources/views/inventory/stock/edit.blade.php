@@ -91,9 +91,16 @@
 
                             <!-- Movement Date -->
                             <div>
-                                <x-input-label for="movement_date" :value="__('Movement Date')" />
-                                <x-text-input id="movement_date" name="movement_date" type="datetime-local" class="mt-1 block w-full" 
-                                             :value="old('movement_date', $stock->movement_date->format('Y-m-d\TH:i'))" />
+                                <x-date-picker 
+                                    name="movement_date" 
+                                    label="Movement Date" 
+                                    :value="old('movement_date', $stock->movement_date->format('Y-m-d\TH:i'))"
+                                    placeholder="Select movement date"
+                                    :showAge="false"
+                                    :includeTime="true"
+                                    timeLabel="Time"
+                                    maxDate="{{ date('Y-m-d') }}"
+                                    minDate="2020-01-01" />
                                 <x-input-error class="mt-2" :messages="$errors->get('movement_date')" />
                             </div>
 

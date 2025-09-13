@@ -20,31 +20,31 @@ Route::get('/', function () {
 });
 
 // Debug route to check authentication and session
-Route::get('/debug', function () {
-    return [
-        'authenticated' => auth()->check(),
-        'user' => auth()->user(),
-        'session_id' => session()->getId(),
-        'intended_url' => session('url.intended'),
-        'session_driver' => config('session.driver'),
-        'session_domain' => config('session.domain'),
-        'csrf_token' => csrf_token(),
-        'session_lifetime' => config('session.lifetime'),
-        'app_key' => config('app.key') ? 'Set' : 'Not set',
-        'session_table_exists' => \Schema::hasTable('sessions'),
-        'session_data' => session()->all(),
-    ];
-});
+// Route::get('/debug', function () {
+//     return [
+//         'authenticated' => auth()->check(),
+//         'user' => auth()->user(),
+//         'session_id' => session()->getId(),
+//         'intended_url' => session('url.intended'),
+//         'session_driver' => config('session.driver'),
+//         'session_domain' => config('session.domain'),
+//         'csrf_token' => csrf_token(),
+//         'session_lifetime' => config('session.lifetime'),
+//         'app_key' => config('app.key') ? 'Set' : 'Not set',
+//         'session_table_exists' => \Schema::hasTable('sessions'),
+//         'session_data' => session()->all(),
+//     ];
+// });
 
 // Test login route
-Route::get('/test-login', function () {
-    $user = \App\Models\User::first();
-    if ($user) {
-        auth()->login($user);
-        return redirect()->route('dashboard')->with('success', 'Test login successful!');
-    }
-    return 'No users found';
-});
+// Route::get('/test-login', function () {
+//     $user = \App\Models\User::first();
+//     if ($user) {
+//         auth()->login($user);
+//         return redirect()->route('dashboard')->with('success', 'Test login successful!');
+//     }
+//     return 'No users found';
+// });
 
 // CSRF Test routes
 Route::get('/csrf-test', function () {
@@ -396,6 +396,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Analytics
         Route::get('/analytics', [ReturnsController::class, 'analytics'])->name('analytics');
+    });
+
+    // Payment Management Routes
+    Route::prefix('sales/payments')->name('sales.payments.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\PaymentController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\PaymentController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\PaymentController::class, 'store'])->name('store');
+        Route::get('/{payment}', [\App\Http\Controllers\PaymentController::class, 'show'])->name('show');
+        Route::get('/{payment}/edit', [\App\Http\Controllers\PaymentController::class, 'edit'])->name('edit');
+        Route::put('/{payment}', [\App\Http\Controllers\PaymentController::class, 'update'])->name('update');
+        Route::delete('/{payment}', [\App\Http\Controllers\PaymentController::class, 'destroy'])->name('destroy');
+
+        // Status management routes
+        Route::post('/{payment}/mark-completed', [\App\Http\Controllers\PaymentController::class, 'markCompleted'])->name('mark-completed');
+        Route::post('/{payment}/mark-cancelled', [\App\Http\Controllers\PaymentController::class, 'markCancelled'])->name('mark-cancelled');
     });
 
     // Exchange Management Routes

@@ -7,6 +7,109 @@ html {
     scroll-behavior: smooth;
 }
 
+/* Custom Date Picker Styles */
+.date-picker-dropdown {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.date-picker-calendar-day {
+    transition: all 0.2s ease;
+}
+
+.date-picker-calendar-day:hover:not(:disabled) {
+    transform: scale(1.05);
+}
+
+.date-picker-selected {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+}
+
+.date-picker-today {
+    box-shadow: inset 0 0 0 2px #6366f1;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .date-picker-dropdown {
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+    
+    .date-picker-selected {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        box-shadow: 0 4px 8px rgba(79, 70, 229, 0.4);
+    }
+    
+    .date-picker-today {
+        box-shadow: inset 0 0 0 2px #4f46e5;
+    }
+}
+
+/* Animation for calendar popup */
+@keyframes datePickerSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.date-picker-enter {
+    animation: datePickerSlideIn 0.2s ease-out;
+}
+
+/* Date picker dropdown positioning and appearance */
+.date-picker-dropdown {
+    min-height: 400px;
+    transform-origin: top left;
+    will-change: transform, opacity;
+}
+
+/* Prevent the calendar from affecting page layout */
+.date-picker-dropdown {
+    position: fixed !important;
+    pointer-events: auto;
+}
+
+.date-picker-container {
+    position: relative;
+    z-index: auto;
+}
+
+/* Overlay to prevent interaction with other elements when calendar is open */
+.date-picker-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9998;
+    pointer-events: none;
+}
+
+/* Smooth positioning animations */
+.date-picker-dropdown {
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.date-picker-positioned {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Responsive calendar width */
+@media (max-width: 480px) {
+    .date-picker-dropdown {
+        width: calc(100vw - 20px) !important;
+        min-width: calc(100vw - 20px) !important;
+        left: 10px !important;
+        right: 10px !important;
+    }
+}
+
 /* Ensure mobile dropdown appears correctly with fixed nav */
 /* .mobile-nav-dropdown {
     position: fixed;

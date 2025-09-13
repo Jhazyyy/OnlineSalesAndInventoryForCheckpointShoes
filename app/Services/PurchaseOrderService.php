@@ -255,17 +255,20 @@ class PurchaseOrderService
                 $product->quantity += $receivedQty;
                 $product->save();
 
-                // Create stock movement record if the model exists
+                // Create stock movement record using the proper method
                 if (class_exists('App\Models\StockMovement')) {
-                    \App\Models\StockMovement::create([
-                        'product_id' => $product->product_id,
-                        'type' => 'in',
-                        'quantity' => $receivedQty,
-                        'reference_type' => 'purchase_order',
-                        'reference_id' => $order->order_id,
-                        'notes' => "Received from purchase order {$order->order_number}",
-                        'date' => Carbon::now(),
-                    ]);
+                    \App\Models\StockMovement::recordMovement(
+                        productId: $product->product_id,
+                        quantityBefore: $product->quantity - $receivedQty, // Before we added it
+                        quantityChange: $receivedQty, // Positive because it's inbound
+                        quantityAfter: $product->quantity,
+                        movementType: \App\Models\StockMovement::TYPE_PURCHASE,
+                        userId: auth()->id(),
+                        referenceType: 'purchase_order',
+                        referenceId: $order->order_id,
+                        notes: "Received from purchase order {$order->order_number}",
+                        movementDate: Carbon::now()
+                    );
                 }
             }
         }

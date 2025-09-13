@@ -91,6 +91,14 @@ class SalesOrder extends Model
     }
 
     /**
+     * Get the payments for the sales order.
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class, 'order_id', 'order_id');
+    }
+
+    /**
      * Generate unique order number.
      */
     public static function generateOrderNumber(): string

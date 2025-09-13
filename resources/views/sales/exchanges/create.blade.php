@@ -6,10 +6,6 @@
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div class="flex items-center">
-                            <!-- Exchange Icon -->
-                            <div class="mr-3">
-                                {!! App\Helpers\NavigationHelper::getIcon('exchange', 'w-8 h-8 text-blue-600') !!}
-                            </div>
                             <div>
                                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Create New Exchange</h2>
                                 <p class="text-gray-600 dark:text-gray-400">Add a new product exchange to the system</p>

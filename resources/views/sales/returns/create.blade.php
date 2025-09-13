@@ -54,7 +54,7 @@
                                                 data-price="{{ $product->selling_price }}"
                                                 data-stock="{{ $product->stock_quantity }}"
                                                 {{ old('product_id') == $product->product_id ? 'selected' : '' }}>
-                                            {{ $product->product_name }} (SKU: {{ $product->sku }}) - Stock: {{ $product->stock_quantity }}
+                                            {{ $product->product_name }} (SKU: {{ $product->sku }})
                                         </option>
                                     @endforeach
                                 </select>

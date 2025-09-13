@@ -184,11 +184,11 @@
 
         <!-- Action Buttons -->
         <div class="flex items-center justify-end space-x-4">
-            <x-gray-button>
+            <button class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
             <a href="{{ route('inventory.stock.index') }}">
                 Cancel
             </a>
-            </x-gray-button>
+            </button>
 
             <x-red-button type="submit" 
                     class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md text-sm font-medium flex items-center">

@@ -1530,13 +1530,13 @@
 
                 <!-- Logo -->
                 <div class="space-x-1 flex items-center ">
-                    <x-application-logo class="block h-10 w-auto border-2 border-emerald-300" />
+                    <x-application-logo class="block h-10 w-auto border-2" />
                 </div>
 
                 <!-- Theme Toggle -->
-                <div class="flex items-center clear-center">
+                {{-- <div class="flex items-center clear-center">
                     <x-theme-toggle />
-                </div>
+                </div> --}}
                 <!-- Auth Links -->
                 <div class="flex items-center gap-3 space-y-4 lg:space-y-0 lg:gap-4">
                     @auth
