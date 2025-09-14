@@ -231,24 +231,24 @@
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between">
                                         <span>Subtotal:</span>
-                                        <span id="subtotal-display">${{ number_format($order->subtotal, 2) }}</span>
+                                        <span id="subtotal-display">₱{{ number_format($order->subtotal, 2) }}</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span>Tax:</span>
-                                        <span id="tax-display">${{ number_format($order->tax_amount, 2) }}</span>
+                                        <span id="tax-display">₱{{ number_format($order->tax_amount, 2) }}</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span>Shipping:</span>
-                                        <span id="shipping-display">${{ number_format($order->shipping_amount, 2) }}</span>
+                                        <span id="shipping-display">₱{{ number_format($order->shipping_amount, 2) }}</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span>Discount:</span>
-                                        <span id="discount-display">${{ number_format($order->discount_amount, 2) }}</span>
+                                        <span id="discount-display">₱{{ number_format($order->discount_amount, 2) }}</span>
                                     </div>
                                     <hr class="my-2">
                                     <div class="flex justify-between font-bold text-lg">
                                         <span>Total:</span>
-                                        <span id="total-display">${{ number_format($order->total_amount, 2) }}</span>
+                                        <span id="total-display">₱{{ number_format($order->total_amount, 2) }}</span>
                                     </div>
                                 </div>
                             </div>

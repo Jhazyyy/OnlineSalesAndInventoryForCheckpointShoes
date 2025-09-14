@@ -136,7 +136,7 @@
                                 </label>
                                 <div class="mt-1 p-3 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-300 dark:border-gray-600">
                                     <span class="text-lg font-semibold text-gray-900 dark:text-white" id="total-amount">
-                                        ${{ number_format($return->total_amount, 2) }}
+                                        ₱{{ number_format($return->total_amount, 2) }}
                                     </span>
                                 </div>
                             </div>

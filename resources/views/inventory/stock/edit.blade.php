@@ -133,7 +133,7 @@
                             <div class="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
                                 <h4 class="text-md font-semibold mb-2 text-green-800 dark:text-green-200">Total Value</h4>
                                 <div id="total-value" class="text-lg font-bold text-green-900 dark:text-green-100">
-                                    {{ $stock->total_value ? '$' . number_format($stock->total_value, 2) : '$0.00' }}
+                                    {{ $stock->total_value ? '₱' . number_format($stock->total_value, 2) : '₱0.00' }}
                                 </div>
                             </div>
                         </div>
@@ -164,7 +164,7 @@
             const totalValue = Math.abs(quantityChange) * unitCost;
             
             document.getElementById('quantity-after').textContent = quantityAfter.toLocaleString();
-            document.getElementById('total-value').textContent = '$' + totalValue.toFixed(2);
+            document.getElementById('total-value').textContent = '₱' + totalValue.toFixed(2);
             
             // Update color based on positive/negative change
             const quantityAfterEl = document.getElementById('quantity-after');

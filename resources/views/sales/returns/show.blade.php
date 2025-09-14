@@ -301,7 +301,7 @@
                                             @break
                                         @case('refunded')
                                             <p>• This return has been refunded</p>
-                                            <p>• Customer has been refunded ${{ number_format($return->total_amount, 2) }}</p>
+                                            <p>• Customer has been refunded ₱{{ number_format($return->total_amount, 2) }}</p>
                                             @break
                                     @endswitch
                                 </div>

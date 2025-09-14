@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- TikTok Brand Icon -->
+  <defs>
+    <linearGradient id="tiktok-pink" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF0050"/>
+      <stop offset="100%" style="stop-color:#FF4458"/>
+    </linearGradient>
+    <linearGradient id="tiktok-blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00F2EA"/>
+      <stop offset="100%" style="stop-color:#25D4D9"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- TikTok logo with offset shadows creating the 3D effect -->
+  
+  <!-- Pink/Red shadow (background) -->
+  <path d="M9.4 2h2.8v8.4c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4c.4 0 .8.1 1.2.2V4.8c-.4-.1-.8-.1-1.2-.1-2.8 0-5.2 2.3-5.2 5.2s2.3 5.2 5.2 5.2 5.2-2.3 5.2-5.2V6.2c1.1.8 2.4 1.2 3.8 1.3V5.3c-1-.1-1.9-.5-2.6-1.2C13.9 3.4 13.4 2.7 13.2 2H9.4z" 
+        fill="url(#tiktok-pink)" 
+        transform="translate(2.5, 0)"/>
+  
+  <!-- Cyan shadow (middle) -->
+  <path d="M9.4 2h2.8v8.4c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4c.4 0 .8.1 1.2.2V4.8c-.4-.1-.8-.1-1.2-.1-2.8 0-5.2 2.3-5.2 5.2s2.3 5.2 5.2 5.2 5.2-2.3 5.2-5.2V6.2c1.1.8 2.4 1.2 3.8 1.3V5.3c-1-.1-1.9-.5-2.6-1.2C13.9 3.4 13.4 2.7 13.2 2H9.4z" 
+        fill="url(#tiktok-blue)" 
+        transform="translate(-2.5, 0)"/>
+  
+  <!-- Main shape (black/white) -->
+  <path d="M9.4 2h2.8v8.4c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4c.4 0 .8.1 1.2.2V4.8c-.4-.1-.8-.1-1.2-.1-2.8 0-5.2 2.3-5.2 5.2s2.3 5.2 5.2 5.2 5.2-2.3 5.2-5.2V6.2c1.1.8 2.4 1.2 3.8 1.3V5.3c-1-.1-1.9-.5-2.6-1.2C13.9 3.4 13.4 2.7 13.2 2H9.4z" 
+        fill="currentColor"/>
+</svg>

@@ -177,16 +177,13 @@
 
                         <!-- Movement Date -->
                         <div>
-                            <x-date-picker 
-                                name="movement_date" 
-                                label="Movement Date" 
-                                :value="old('movement_date', now()->format('Y-m-d\TH:i'))"
-                                placeholder="Select movement date"
-                                :showAge="false"
-                                :includeTime="true"
-                                timeLabel="Time"
-                                maxDate="{{ date('Y-m-d') }}"
-                                minDate="2020-01-01" />
+                            <label for="movement_date"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Movement Date
+                            </label>
+                            <input type="datetime-local" name="movement_date" id="movement_date"
+                                value="{{ old('movement_date', now()->format('Y-m-d\TH:i')) }}"
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             @error('movement_date')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror

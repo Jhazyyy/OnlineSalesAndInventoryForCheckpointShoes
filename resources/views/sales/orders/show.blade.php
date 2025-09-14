@@ -327,19 +327,19 @@
                                 @if($order->tax_amount > 0)
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-500 dark:text-gray-400">Tax:</span>
-                                        <span class="text-gray-900 dark:text-white">${{ number_format($order->tax_amount, 2) }}</span>
+                                        <span class="text-gray-900 dark:text-white">₱{{ number_format($order->tax_amount, 2) }}</span>
                                     </div>
                                 @endif
                                 @if($order->shipping_amount > 0)
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-500 dark:text-gray-400">Shipping:</span>
-                                        <span class="text-gray-900 dark:text-white">${{ number_format($order->shipping_amount, 2) }}</span>
+                                        <span class="text-gray-900 dark:text-white">₱{{ number_format($order->shipping_amount, 2) }}</span>
                                     </div>
                                 @endif
                                 @if($order->discount_amount > 0)
                                     <div class="flex justify-between text-sm">
                                         <span class="text-gray-500 dark:text-gray-400">Discount:</span>
-                                        <span class="text-red-600">-${{ number_format($order->discount_amount, 2) }}</span>
+                                        <span class="text-red-600">-₱{{ number_format($order->discount_amount, 2) }}</span>
                                     </div>
                                 @endif
                                 <hr class="border-gray-200 dark:border-gray-600">

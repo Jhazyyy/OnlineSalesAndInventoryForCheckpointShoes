@@ -16,7 +16,13 @@
     $isActive = false;
     
     if ($routePattern) {
-        $isActive = request()->routeIs($routePattern);
+        // Handle multiple patterns separated by pipe (|)
+        if (strpos($routePattern, '|') !== false) {
+            $patterns = explode('|', $routePattern);
+            $isActive = request()->routeIs($patterns);
+        } else {
+            $isActive = request()->routeIs($routePattern);
+        }
     } elseif ($route) {
         $isActive = request()->routeIs($route);
     } elseif ($href) {
