@@ -346,60 +346,60 @@
 
                     products.forEach(product => {
                         productOptions += `<option value="${product.id}" data-price="${product.price}" data-stock="${product.stock}">
-                                    ${product.name} (Stock: ${product.stock})
-                                </option>`;
+                                        ${product.name} (Stock: ${product.stock})
+                                    </option>`;
                     });
 
                     return `
-                                <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-4">
-                                    <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
-                                        <div class="md:col-span-2">
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
-                                            <select name="items[${index}][product_id]"
-                                                class="product-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                required>
-                                                ${productOptions}
-                                            </select>
+                                    <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-4">
+                                        <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+                                            <div class="md:col-span-2">
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
+                                                <select name="items[${index}][product_id]"
+                                                    class="product-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                    required>
+                                                    ${productOptions}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
+                                                <input type="number" name="items[${index}][quantity_ordered]"
+                                                    class="quantity-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                    min="1" required>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit Price</label>
+                                                <input type="number" name="items[${index}][unit_price]" step="0.01"
+                                                    class="unit-price-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                    required>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Discount</label>
+                                                <input type="number" name="items[${index}][discount_amount]" step="0.01"
+                                                    class="discount-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                    value="0">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Line Total</label>
+                                                <input type="text"
+                                                    class="line-total mt-1 block w-full rounded-md border-gray-300 bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white"
+                                                    readonly>
+                                            </div>
+                                            <div>
+                                                <button type="button"
+                                                    class="remove-item w-full inline-flex justify-center items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                                    Remove
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
-                                            <input type="number" name="items[${index}][quantity_ordered]"
-                                                class="quantity-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                min="1" required>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit Price</label>
-                                            <input type="number" name="items[${index}][unit_price]" step="0.01"
-                                                class="unit-price-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                required>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Discount</label>
-                                            <input type="number" name="items[${index}][discount_amount]" step="0.01"
-                                                class="discount-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                value="0">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Line Total</label>
-                                            <input type="text"
-                                                class="line-total mt-1 block w-full rounded-md border-gray-300 bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white"
-                                                readonly>
-                                        </div>
-                                        <div>
-                                            <button type="button"
-                                                class="remove-item w-full inline-flex justify-center items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                                Remove
-                                            </button>
+                                        <div class="mt-4">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
+                                            <textarea name="items[${index}][notes]" rows="2"
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                placeholder="Optional notes for this item"></textarea>
                                         </div>
                                     </div>
-                                    <div class="mt-4">
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
-                                        <textarea name="items[${index}][notes]" rows="2"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                            placeholder="Optional notes for this item"></textarea>
-                                    </div>
-                                </div>
-                            `;
+                                `;
                 }
 
                 function attachItemEvents() {

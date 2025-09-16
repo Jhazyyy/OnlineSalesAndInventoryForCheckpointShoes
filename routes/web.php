@@ -353,8 +353,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{order}/change-status', [PurchaseOrderController::class, 'changeStatus'])->name('change-status');
         Route::post('/{order}/receive-items', [PurchaseOrderController::class, 'receiveItems'])->name('receive-items');
 
-        // Analytics
+        // Analytics and Reports
         Route::get('/analytics', [PurchaseOrderController::class, 'analytics'])->name('analytics');
+        Route::get('/receiving-report', [PurchaseOrderController::class, 'receivingReport'])->name('receiving-report');
     });
 
     // Sales Order Management Routes

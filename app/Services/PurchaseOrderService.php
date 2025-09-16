@@ -70,12 +70,12 @@ class PurchaseOrderService
     {
         return [
             'suppliers' => Supplier::where('status', 'active')
-                                 ->orderBy('name')
+                                 ->orderBy('supplier_name')
                                  ->get()
                                  ->map(function ($supplier) {
                                      return [
                                          'id' => $supplier->supplier_id,
-                                         'name' => $supplier->name,
+                                         'name' => $supplier->supplier_name,
                                      ];
                                  }),
             'products' => Product::orderBy('product_name')
@@ -230,11 +230,14 @@ class PurchaseOrderService
     /**
      * Receive items (update quantities and stock).
      */
-    public function receiveItems(PurchaseOrder $order, array $receivedItems): PurchaseOrder
+    public function receiveItems(PurchaseOrder $order, array $receivedItems, string $receivingNotes = null): PurchaseOrder
     {
         if (!$order->canReceiveItems()) {
             throw new \Exception('Cannot receive items for this order status.');
         }
+
+        $totalItemsReceived = 0;
+        $receivedItemsList = [];
 
         foreach ($receivedItems as $itemData) {
             $orderItem = $order->items()->where('product_id', $itemData['product_id'])->first();
@@ -255,8 +258,21 @@ class PurchaseOrderService
                 $product->quantity += $receivedQty;
                 $product->save();
 
-                // Create stock movement record using the proper method
+                $totalItemsReceived += $receivedQty;
+                $receivedItemsList[] = [
+                    'product_id' => $product->product_id,
+                    'product_name' => $product->name,
+                    'quantity' => $receivedQty,
+                    'unit_price' => $orderItem->unit_price
+                ];
+
+                // Create stock movement record with enhanced notes
                 if (class_exists('App\Models\StockMovement')) {
+                    $movementNotes = "Received from purchase order {$order->order_number}";
+                    if ($receivingNotes) {
+                        $movementNotes .= " - " . $receivingNotes;
+                    }
+                    
                     \App\Models\StockMovement::recordMovement(
                         productId: $product->product_id,
                         quantityBefore: $product->quantity - $receivedQty, // Before we added it
@@ -266,12 +282,31 @@ class PurchaseOrderService
                         userId: auth()->id(),
                         referenceType: 'purchase_order',
                         referenceId: $order->order_id,
-                        notes: "Received from purchase order {$order->order_number}",
+                        notes: $movementNotes,
                         movementDate: Carbon::now()
                     );
                 }
             }
         }
+
+        // If no items were actually received, don't update the order status
+        if ($totalItemsReceived === 0) {
+            throw new \Exception('No items were received. Please specify quantities to receive.');
+        }
+
+        // Update order notes with receiving information
+        $currentNotes = $order->internal_notes ?? '';
+        $receivingLog = "\n\n[" . Carbon::now()->format('Y-m-d H:i:s') . "] Received by " . (auth()->user()->name ?? 'Unknown User') . ":\n";
+        foreach ($receivedItemsList as $item) {
+            $receivingLog .= "- {$item['product_name']}: {$item['quantity']} units\n";
+        }
+        if ($receivingNotes) {
+            $receivingLog .= "Notes: {$receivingNotes}\n";
+        }
+        
+        $order->update([
+            'internal_notes' => $currentNotes . $receivingLog
+        ]);
 
         // Check if order is fully received
         $allReceived = $order->items()->get()->every(function ($item) {
@@ -411,6 +446,103 @@ class PurchaseOrderService
             'shipping_amount' => round($shippingAmount, 2),
             'discount_amount' => round($discountAmount, 2),
             'total_amount' => round($totalAmount, 2),
+        ];
+    }
+    
+    /**
+     * Get receiving report data.
+     */
+    public function getReceivingReport(array $filters = []): array
+    {
+        $query = PurchaseOrder::with(['supplier', 'items.product'])
+                             ->whereIn('status', ['partial_received', 'received']);
+        
+        // Apply date filters if provided
+        if (!empty($filters['start_date'])) {
+            $query->whereDate('received_date', '>=', $filters['start_date']);
+        }
+        if (!empty($filters['end_date'])) {
+            $query->whereDate('received_date', '<=', $filters['end_date']);
+        }
+        
+        // Apply supplier filter if provided
+        if (!empty($filters['supplier_id'])) {
+            $query->where('supplier_id', $filters['supplier_id']);
+        }
+        
+        $orders = $query->latest('received_date')->get();
+        
+        $summary = [
+            'total_orders_received' => $orders->count(),
+            'fully_received_orders' => $orders->where('status', 'received')->count(),
+            'partially_received_orders' => $orders->where('status', 'partial_received')->count(),
+            'total_value_received' => 0,
+            'total_items_received' => 0,
+            'unique_products_received' => collect(),
+        ];
+        
+        foreach ($orders as $order) {
+            foreach ($order->items as $item) {
+                if ($item->quantity_received > 0) {
+                    $receivedValue = $item->quantity_received * $item->unit_price;
+                    $summary['total_value_received'] += $receivedValue;
+                    $summary['total_items_received'] += $item->quantity_received;
+                    $summary['unique_products_received']->put($item->product_id, $item->product->name);
+                }
+            }
+        }
+        
+        $summary['unique_products_count'] = $summary['unique_products_received']->count();
+        unset($summary['unique_products_received']);
+        
+        return [
+            'orders' => $orders,
+            'summary' => $summary,
+            'filters' => $filters
+        ];
+    }
+    
+    /**
+     * Get receiving statistics for dashboard.
+     */
+    public function getReceivingStats(): array
+    {
+        $today = Carbon::today();
+        $thisWeek = [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()];
+        $thisMonth = [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()];
+        
+        return [
+            'today' => [
+                'orders_received' => PurchaseOrder::whereDate('received_date', $today)->count(),
+                'items_received' => PurchaseOrder::whereDate('received_date', $today)
+                    ->with('items')
+                    ->get()
+                    ->sum(function($order) { return $order->items->sum('quantity_received'); }),
+                'value_received' => PurchaseOrder::whereDate('received_date', $today)
+                    ->with('items')
+                    ->get()
+                    ->sum(function($order) { 
+                        return $order->items->sum(function($item) {
+                            return $item->quantity_received * $item->unit_price;
+                        });
+                    }),
+            ],
+            'this_week' => [
+                'orders_received' => PurchaseOrder::whereBetween('received_date', $thisWeek)->count(),
+                'items_received' => PurchaseOrder::whereBetween('received_date', $thisWeek)
+                    ->with('items')
+                    ->get()
+                    ->sum(function($order) { return $order->items->sum('quantity_received'); }),
+            ],
+            'this_month' => [
+                'orders_received' => PurchaseOrder::whereBetween('received_date', $thisMonth)->count(),
+                'items_received' => PurchaseOrder::whereBetween('received_date', $thisMonth)
+                    ->with('items')
+                    ->get()
+                    ->sum(function($order) { return $order->items->sum('quantity_received'); }),
+            ],
+            'pending_orders' => PurchaseOrder::whereIn('status', ['ordered', 'partial_received'])->count(),
+            'overdue_orders' => PurchaseOrder::overdue()->count(),
         ];
     }
 }

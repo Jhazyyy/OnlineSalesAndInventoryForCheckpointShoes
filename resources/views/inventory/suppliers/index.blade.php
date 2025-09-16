@@ -198,7 +198,7 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $supplier->supplier_contact }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $supplier->phone ?? 'N/A' }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $supplier->email ?? 'N/A' }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
@@ -209,7 +209,7 @@
                                                     @elseif($supplier->type === 'service_provider') bg-indigo-100 text-indigo-800
                                                     @else bg-gray-100 text-gray-800
                                                     @endif">
-                                                    {{ ucfirst(str_replace('_', ' ', $supplier->type)) }}
+                                                    {{ ucfirst(str_replace('_', ' ', $supplier->supplier_type)) }}
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">

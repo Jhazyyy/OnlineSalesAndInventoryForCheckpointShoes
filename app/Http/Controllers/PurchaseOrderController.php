@@ -195,6 +195,7 @@ class PurchaseOrderController extends Controller
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,product_id',
             'items.*.quantity_received' => 'required|integer|min:0',
+            'receiving_notes' => 'nullable|string|max:1000',
         ]);
 
         if ($validator->fails()) {
@@ -202,8 +203,26 @@ class PurchaseOrderController extends Controller
         }
 
         try {
-            $this->orderService->receiveItems($order, $request->get('items'));
-            return redirect()->back()->with('success', 'Items received successfully!');
+            // Filter out items with 0 quantity
+            $itemsToReceive = array_filter($request->get('items'), function($item) {
+                return intval($item['quantity_received']) > 0;
+            });
+            
+            if (empty($itemsToReceive)) {
+                return redirect()->back()->with('error', 'No items selected for receiving. Please specify quantities to receive.');
+            }
+            
+            $this->orderService->receiveItems(
+                $order, 
+                $itemsToReceive, 
+                $request->get('receiving_notes')
+            );
+            
+            $receivedCount = count($itemsToReceive);
+            $totalQuantity = array_sum(array_column($itemsToReceive, 'quantity_received'));
+            
+            return redirect()->back()->with('success', 
+                "Successfully received {$totalQuantity} items across {$receivedCount} products!");
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -216,5 +235,20 @@ class PurchaseOrderController extends Controller
     {
         $analytics = $this->orderService->getOrderAnalytics();
         return response()->json($analytics);
+    }
+    
+    /**
+     * Receiving Report
+     */
+    public function receivingReport(Request $request)
+    {
+        $filters = $request->only(['start_date', 'end_date', 'supplier_id']);
+        $reportData = $this->orderService->getReceivingReport($filters);
+        $filterOptions = $this->orderService->getFilterOptions();
+        
+        return view('inventory.purchase-orders.receiving-report', [
+            'reportData' => $reportData,
+            'suppliers' => $filterOptions['suppliers'],
+        ]);
     }
 }
