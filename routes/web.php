@@ -275,9 +275,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
 
         // Import routes
-        Route::get('/import/form', [ProductController::class, 'showImportForm'])->name('import');
-        Route::post('/import', [ProductController::class, 'import'])->name('import');
-        Route::get('/template/download', [ProductController::class, 'downloadTemplate'])->name('template');
+        // Route::get('/import/form', [ProductController::class, 'showImportForm'])->name('import');
+        // Route::post('/import', [ProductController::class, 'import'])->name('import');
+        // Route::get('/template/download', [ProductController::class, 'downloadTemplate'])->name('template');
 
         // API routes
         Route::post('/bulk-update-stock', [ProductController::class, 'bulkUpdateStock'])->name('bulk-update-stock');
@@ -516,6 +516,35 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         // Analytics
         Route::get('/analytics', [\App\Http\Controllers\InvoiceController::class, 'analytics'])->name('analytics');
+    });
+
+    // Settings Management Routes
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\SettingsController::class, 'index'])->name('index');
+        
+        // Category-specific settings pages
+        Route::get('/general', [\App\Http\Controllers\SettingsController::class, 'general'])->name('general');
+        Route::post('/general', [\App\Http\Controllers\SettingsController::class, 'updateGeneral'])->name('general.update');
+        
+        Route::get('/financial', [\App\Http\Controllers\SettingsController::class, 'financial'])->name('financial');
+        Route::post('/financial', [\App\Http\Controllers\SettingsController::class, 'updateFinancial'])->name('financial.update');
+        
+        Route::get('/inventory', [\App\Http\Controllers\SettingsController::class, 'inventory'])->name('inventory');
+        Route::post('/inventory', [\App\Http\Controllers\SettingsController::class, 'updateInventory'])->name('inventory.update');
+        
+        Route::get('/sales', [\App\Http\Controllers\SettingsController::class, 'sales'])->name('sales');
+        Route::post('/sales', [\App\Http\Controllers\SettingsController::class, 'updateSales'])->name('sales.update');
+        
+        Route::get('/notifications', [\App\Http\Controllers\SettingsController::class, 'notifications'])->name('notifications');
+        Route::post('/notifications', [\App\Http\Controllers\SettingsController::class, 'updateNotifications'])->name('notifications.update');
+        
+        // Utility routes
+        Route::post('/initialize-defaults', [\App\Http\Controllers\SettingsController::class, 'initializeDefaults'])->name('initialize-defaults');
+        Route::get('/export', [\App\Http\Controllers\SettingsController::class, 'export'])->name('export');
+        Route::post('/clear-cache', [\App\Http\Controllers\SettingsController::class, 'clearCache'])->name('clear-cache');
+        
+        // API routes
+        Route::get('/api/{category?}', [\App\Http\Controllers\SettingsController::class, 'getSettings'])->name('api');
     });
 });
 

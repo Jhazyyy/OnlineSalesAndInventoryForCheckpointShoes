@@ -46,8 +46,9 @@
                 </a> --}}
 
                 <!-- Settings Icon -->
-                <button
-                    class="flex items-center justify-center w-6 h-6 rounded-full text-black dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-1">
+                <a href="{{ route('settings.index') }}"
+                    class="flex items-center justify-center w-6 h-6 rounded-full text-black dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-1"
+                    title="System Settings">
                     <svg fill="none" stroke="currentColor"
                         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -56,7 +57,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                     </svg>
-                </button>
+                </a>
 
                 <!-- Notification Icon -->
                 <button @click="open = !open"
@@ -147,6 +148,10 @@
 
                 <x-responsive-nav-link :href="route('user-management.index')">
                     {{ __('User Management') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('settings.index')">
+                    {{ __('System Settings') }}
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->

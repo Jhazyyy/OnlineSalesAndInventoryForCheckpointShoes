@@ -175,7 +175,7 @@
 
     <div class="flex flex-row items-center lg:items-stretch w-full lg:max-w-7xl dark:text-white font-medium">
         <div class="mt-10">
-            <h1 class="font-bold font-mono text-5xl mb-4">Welcome to Checkpoint Shoes <br> Inventory Management</h1>
+            <h1 class="font-bold font-mono text-5xl mb-4">Welcome to Checkpoint Shoes <br> Inventory System</h1>
             <div class="flex lg:flex-row dark:text-white mt-2 text-3xl">
                 <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Repudiandae maxime illo porro natus
                     adipisci beatae quasi voluptas commodi, maiores mollitia error illum, ad optio laudantium possimus

@@ -1,6 +1,5 @@
 <x-app-layout>
     <div class="py-6">
-        {{-- <div class="max-w-7xl mx-auto sm:px-6 lg:px-8"> --}}
             <div class="w-full mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
@@ -137,7 +136,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     @if($customers->count() > 0)
-                        <div class="overflow-x-auto">
+                        <div class="overflow-x-auto overflow-y-auto">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>

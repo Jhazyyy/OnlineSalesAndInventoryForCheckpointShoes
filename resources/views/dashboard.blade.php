@@ -363,7 +363,7 @@
                             <!-- Social Links -->
                             {{-- Facebook --}}
                             <div class="flex items-center space-x-2">
-                                <a href="#"
+                                <a href="https://www.facebook.com/checkpointshoesph" target="_blank"
                                     class="text-blue-600 dark:hover:text-blue-400 transition-colors">
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
