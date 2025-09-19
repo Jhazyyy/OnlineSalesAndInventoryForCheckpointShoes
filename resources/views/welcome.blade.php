@@ -110,7 +110,7 @@
                         class="font-semibold rounded-lg px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
                         Orders
                     </a>
-                    <a href="{{ route('inventory.stock.index') }}"
+                    <a href="{{ route('inventory.product_stocks.index') }}"
                         class="font-semibold rounded-lg px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
                         Stock
                     </a>
@@ -150,7 +150,7 @@
                             class="font-semibold rounded-lg px-3 py-2 text-center text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
                             Orders
                         </a>
-                        <a href="{{ route('inventory.stock.index') }}"
+                        <a href="{{ route('inventory.product_stocks.index') }}"
                             class="font-semibold rounded-lg px-3 py-2 text-center text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 col-span-2">
                             Stock Management
                         </a>

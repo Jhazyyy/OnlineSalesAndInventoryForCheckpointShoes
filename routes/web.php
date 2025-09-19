@@ -307,17 +307,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Stock Management Routes
-    Route::prefix('inventory/stock')->name('inventory.stock.')->group(function () {
+    Route::prefix('inventory/product_stocks')->name('inventory.product_stocks.')->group(function () {
         Route::get('/', [StockController::class, 'index'])->name('index');
         Route::get('/create', [StockController::class, 'create'])->name('create');
         Route::post('/', [StockController::class, 'store'])->name('store');
-        Route::get('/{stock}', [StockController::class, 'show'])->name('show');
-        Route::get('/{stock}/edit', [StockController::class, 'edit'])->name('edit');
-        Route::put('/{stock}', [StockController::class, 'update'])->name('update');
-        Route::delete('/{stock}', [StockController::class, 'destroy'])->name('destroy');
+        Route::get('/{product_stocks}', [StockController::class, 'show'])->name('show');
+        Route::get('/{product_stocks}/edit', [StockController::class, 'edit'])->name('edit');
+        Route::put('/{product_stocks}', [StockController::class, 'update'])->name('update');
+        Route::delete('/{product_stocks}', [StockController::class, 'destroy'])->name('destroy');
 
         // Stock movement operations
-        Route::post('/{stock}/confirm', [StockController::class, 'confirm'])->name('confirm');
+        Route::post('/{product_stocks}/confirm', [StockController::class, 'confirm'])->name('confirm');
         
         // Transfer operations
         Route::get('/transfer/form', [StockController::class, 'showTransferForm'])->name('transfer.form');
@@ -516,6 +516,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         // Analytics
         Route::get('/analytics', [\App\Http\Controllers\InvoiceController::class, 'analytics'])->name('analytics');
+    });
+
+    // Inventory Threshold Management Routes
+    Route::prefix('inventory/thresholds')->name('inventory.thresholds.')->group(function () {
+        // Main threshold management (products with thresholds)
+        Route::get('/', [\App\Http\Controllers\InventoryThresholdController::class, 'index'])->name('index');
+        Route::get('/{product}', [\App\Http\Controllers\InventoryThresholdController::class, 'show'])->name('show');
+        Route::get('/{product}/edit', [\App\Http\Controllers\InventoryThresholdController::class, 'edit'])->name('edit');
+        Route::put('/{product}', [\App\Http\Controllers\InventoryThresholdController::class, 'update'])->name('update');
+        
+        // Bulk operations
+        Route::post('/bulk-update', [\App\Http\Controllers\InventoryThresholdController::class, 'bulkUpdate'])->name('bulk-update');
+        
+        // Alert management
+        Route::get('/alerts', [\App\Http\Controllers\InventoryThresholdController::class, 'alerts'])->name('alerts');
+        Route::get('/alerts/{alert}', [\App\Http\Controllers\InventoryThresholdController::class, 'showAlert'])->name('alerts.show');
+        Route::patch('/alerts/{alert}/resolve', [\App\Http\Controllers\InventoryThresholdController::class, 'resolveAlert'])->name('alerts.resolve');
+        Route::post('/alerts/bulk-resolve', [\App\Http\Controllers\InventoryThresholdController::class, 'bulkResolveAlerts'])->name('alerts.bulk-resolve');
+        
+        // Utility routes
+        Route::post('/run-check', [\App\Http\Controllers\InventoryThresholdController::class, 'runThresholdCheck'])->name('run-check');
+        Route::get('/analytics', [\App\Http\Controllers\InventoryThresholdController::class, 'analytics'])->name('analytics');
+        Route::get('/export', [\App\Http\Controllers\InventoryThresholdController::class, 'export'])->name('export');
     });
 
     // Settings Management Routes

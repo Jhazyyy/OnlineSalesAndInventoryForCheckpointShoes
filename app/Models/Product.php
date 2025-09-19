@@ -33,6 +33,47 @@ class Product extends Model
     ];
 
     /**
+     * Threshold-specific fillable fields (used by threshold management)
+     */
+    protected $thresholdFillable = [
+        'reorder_level',
+        'critical_level',
+        'ceiling_level',
+        'floor_level',
+        'auto_reorder_enabled',
+        'threshold_alerts_enabled',
+        'preferred_supplier_id',
+        'lead_time_days',
+        'economic_order_quantity',
+        'last_threshold_check'
+    ];
+
+    /**
+     * Temporarily add threshold fields to fillable for threshold operations
+     */
+    public function enableThresholdFields()
+    {
+        $this->fillable = array_merge($this->fillable, $this->thresholdFillable);
+        return $this;
+    }
+
+    /**
+     * Reset fillable to basic fields only
+     */
+    public function resetFillable()
+    {
+        $this->fillable = [
+            'product_name',
+            'product_brand',
+            'quantity',
+            'price',
+            'image',
+            'description',
+        ];
+        return $this;
+    }
+
+    /**
      * The attributes that should be cast.
      *
      * @var array<string, string>
@@ -40,6 +81,15 @@ class Product extends Model
     protected $casts = [
         'quantity' => 'integer',
         'price' => 'decimal:2',
+        'reorder_level' => 'integer',
+        'critical_level' => 'integer',
+        'ceiling_level' => 'integer',
+        'floor_level' => 'integer',
+        'auto_reorder_enabled' => 'boolean',
+        'threshold_alerts_enabled' => 'boolean',
+        'lead_time_days' => 'integer',
+        'economic_order_quantity' => 'integer',
+        'last_threshold_check' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -66,6 +116,30 @@ class Product extends Model
     public function returns(): HasMany
     {
         return $this->hasMany(Returns::class, 'product_id', 'product_id');
+    }
+
+    /**
+     * Get the inventory alerts for the product.
+     */
+    public function inventoryAlerts(): HasMany
+    {
+        return $this->hasMany(InventoryAlert::class, 'product_id', 'product_id');
+    }
+
+    /**
+     * Get the audit logs for the product.
+     */
+    public function auditLogs(): HasMany
+    {
+        return $this->hasMany(InventoryAuditLog::class, 'product_id', 'product_id');
+    }
+
+    /**
+     * Get the preferred supplier for the product.
+     */
+    public function preferredSupplier()
+    {
+        return $this->belongsTo(Supplier::class, 'preferred_supplier_id');
     }
 
     /**
@@ -98,9 +172,85 @@ class Product extends Model
     /**
      * Check if the product is low in stock.
      */
-    public function isLowStock(int $threshold = 10): bool
+    public function isLowStock(int $threshold = null): bool
     {
+        $threshold = $threshold ?? $this->reorder_level ?? lowStockThreshold();
         return $this->quantity <= $threshold;
+    }
+
+    /**
+     * Check if the product is at critical stock level.
+     */
+    public function isCriticalStock(): bool
+    {
+        $criticalLevel = $this->critical_level ?? criticalStockLevel();
+        return $this->quantity <= $criticalLevel;
+    }
+
+    /**
+     * Check if the product is overstocked.
+     */
+    public function isOverstocked(): bool
+    {
+        return $this->ceiling_level && $this->quantity > $this->ceiling_level;
+    }
+
+    /**
+     * Check if the product is below floor level.
+     */
+    public function isBelowFloor(): bool
+    {
+        return $this->floor_level && $this->quantity < $this->floor_level;
+    }
+
+    /**
+     * Check if product needs reordering.
+     */
+    public function needsReordering(): bool
+    {
+        return $this->reorder_level && $this->quantity <= $this->reorder_level;
+    }
+
+    /**
+     * Get stock status with threshold context.
+     */
+    public function getStockStatus(): array
+    {
+        $status = [];
+        
+        if ($this->quantity <= 0) {
+            $status[] = ['type' => 'out_of_stock', 'severity' => 'urgent'];
+        } elseif ($this->isCriticalStock()) {
+            $status[] = ['type' => 'critical_stock', 'severity' => 'critical'];
+        } elseif ($this->isLowStock()) {
+            $status[] = ['type' => 'low_stock', 'severity' => 'warning'];
+        }
+        
+        if ($this->isOverstocked()) {
+            $status[] = ['type' => 'overstock', 'severity' => 'info'];
+        }
+        
+        if ($this->needsReordering()) {
+            $status[] = ['type' => 'reorder_needed', 'severity' => 'warning'];
+        }
+        
+        return $status;
+    }
+
+    /**
+     * Calculate suggested order quantity based on EOQ or default logic.
+     */
+    public function getSuggestedOrderQuantity(): int
+    {
+        if ($this->economic_order_quantity) {
+            return $this->economic_order_quantity;
+        }
+        
+        // Simple calculation: bring to reorder level + safety stock
+        $reorderLevel = $this->reorder_level ?? lowStockThreshold();
+        $safetyStock = max(10, $reorderLevel * 0.5); // 50% of reorder level as safety stock
+        
+        return max(0, ($reorderLevel + $safetyStock) - $this->quantity);
     }
 
     /**
@@ -182,9 +332,9 @@ class Product extends Model
     }
 
     /**
-     * Get products that need reordering (low stock).
+     * Get products that need reordering (low stock) - Static method.
      */
-    public static function needsReordering(int $threshold = 10)
+    public static function getProductsNeedingReorder(int $threshold = 10)
     {
         return self::lowStock($threshold)->get();
     }

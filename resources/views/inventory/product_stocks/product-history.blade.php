@@ -43,7 +43,7 @@
                             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
                                 Filter History
                             </button>
-                            <a href="{{ route('inventory.stock.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                            <a href="{{ route('inventory.product_stocks.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium">
                                 Back to Stock Management
                             </a>
                         </form>
@@ -221,7 +221,7 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 @if(isset($movement['id']))
-                                                    <a href="{{ route('inventory.stock.show', $movement['id']) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                    <a href="{{ route('inventory.product_stocks.show', $movement['id']) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
                                                         View
                                                     </a>
                                                 @else
@@ -268,7 +268,7 @@
                                 No stock movements have been recorded for this product in the selected time period.
                             </p>
                             <div class="mt-6">
-                                <a href="{{ route('inventory.stock.create') }}" 
+                                <a href="{{ route('inventory.product_stocks.create') }}" 
                                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>

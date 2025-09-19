@@ -11,7 +11,7 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-lg font-medium">Edit Movement #{{ $stock->movement_id }}</h3>
-                        <x-gray-button onclick="window.location.href='{{ route('inventory.stock.index') }}'">
+                        <x-gray-button onclick="window.location.href='{{ route('inventory.product_stocks.index') }}'">
                             Back to List
                         </x-gray-button>
                     </div>
@@ -26,7 +26,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('inventory.stock.update', $stock) }}">
+                    <form method="POST" action="{{ route('inventory.product_stocks.update', $stock) }}">
                         @csrf
                         @method('PUT')
 
@@ -94,7 +94,7 @@
                                 <x-date-picker 
                                     name="movement_date" 
                                     label="Movement Date" 
-                                    :value="old('movement_date', $stock->movement_date->format('Y-m-d\TH:i'))"
+                                    :value="old('movement_date', $stock->movement_date ? $stock->movement_date->format('Y-m-d\TH:i') : '')"
                                     placeholder="Select movement date"
                                     :showAge="false"
                                     :includeTime="true"
@@ -140,7 +140,7 @@
 
                         <!-- Action Buttons -->
                         <div class="mt-8 flex items-center justify-end space-x-4">
-                            <x-gray-button onclick="window.location.href='{{ route('inventory.stock.show', $stock) }}'">
+                            <x-gray-button onclick="window.location.href='{{ route('inventory.product_stocks.show', $stock) }}'">
                                 Cancel
                             </x-gray-button>
                             <x-primary-button>

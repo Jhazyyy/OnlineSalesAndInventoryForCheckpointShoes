@@ -223,7 +223,7 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <div class="flex justify-between items-center mb-4">
                         <h4 class="text-lg font-medium">Recent Stock Movements</h4>
-                        <a href="{{ route('inventory.stock.index') }}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                        <a href="{{ route('inventory.product_stocks.index') }}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
                             View All →
                         </a>
                     </div>

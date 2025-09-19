@@ -13,19 +13,19 @@
                         <h3 class="text-lg font-medium">Movement #{{ $stock->movement_id }}</h3>
                         <div class="flex space-x-2">
                             @if($stock->status === 'pending')
-                                <form action="{{ route('inventory.stock.confirm', $stock) }}" method="POST" class="inline">
+                                <form action="{{ route('inventory.product_stocks.confirm', $stock) }}" method="POST" class="inline">
                                     @csrf
                                     <button type="submit"
                                         class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium">
                                         Confirm Movement
                                     </button>
                                 </form>
-                                <a href="{{ route('inventory.stock.edit', $stock) }}"
+                                <a href="{{ route('inventory.product_stocks.edit', $stock) }}"
                                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
                                     Edit
                                 </a>
                             @endif
-                            <a href="{{ route('inventory.stock.index') }}"
+                            <a href="{{ route('inventory.product_stocks.index') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -43,7 +43,7 @@
                             <div class="space-y-2">
                                 <div class="flex justify-between">
                                     <span class="font-medium">Movement Date:</span>
-                                    <span>{{ $stock->movement_date->format('M d, Y H:i') }}</span>
+                                    <span>{{ $stock->movement_date ? $stock->movement_date->format('M d, Y H:i') : 'N/A' }}</span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="font-medium">Movement Type:</span>
@@ -158,8 +158,8 @@
                     <!-- Timestamps -->
                     <div class="mt-6 text-sm text-gray-500 dark:text-gray-400 border-t pt-4">
                         <div class="flex justify-between">
-                            <span>Created: {{ $stock->created_at->format('M d, Y H:i') }}</span>
-                            <span>Updated: {{ $stock->updated_at->format('M d, Y H:i') }}</span>
+                            <span>Created: {{ $stock->created_at ? $stock->created_at->format('M d, Y H:i') : 'N/A' }}</span>
+                            <span>Updated: {{ $stock->updated_at ? $stock->updated_at->format('M d, Y H:i') : 'N/A' }}</span>
                         </div>
                     </div>
                 </div>
