@@ -182,7 +182,7 @@
                         <div class="p-6">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Order Items</h3>
                             
-                            <div class="overflow-x-auto">
+                            <div class="overflow-x-hidden">
                                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                     <thead class="bg-gray-50 dark:bg-gray-700">
                                         <tr>

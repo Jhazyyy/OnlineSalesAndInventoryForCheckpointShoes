@@ -1,0 +1,339 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\PurchaseReceive;
+use App\Models\PurchaseReceiveItem;
+use App\Models\PurchaseOrder;
+use App\Models\Supplier;
+use App\Models\Product;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
+
+class PurchaseReceiveService
+{
+    /**
+     * Get paginated purchase receives with filters and search.
+     */
+    public function getPaginatedReceives(Request $request, int $perPage = 20): LengthAwarePaginator
+    {
+        $query = PurchaseReceive::with(['supplier', 'purchaseOrder', 'items.product']);
+
+        // Apply search
+        if ($search = $request->get('search')) {
+            $query->where(function (Builder $q) use ($search) {
+                $q->where('receive_number', 'like', "%{$search}%")
+                  ->orWhere('receiver_name', 'like', "%{$search}%")
+                  ->orWhereHas('supplier', function (Builder $sq) use ($search) {
+                      $sq->where('supplier_name', 'like', "%{$search}%")
+                        ->orWhere('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('purchaseOrder', function (Builder $poq) use ($search) {
+                      $poq->where('order_number', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Apply filters
+        if ($status = $request->get('status')) {
+            $query->where('status', $status);
+        }
+
+        if ($supplierId = $request->get('supplier_id')) {
+            $query->where('supplier_id', $supplierId);
+        }
+
+        if ($purchaseOrderId = $request->get('purchase_order_id')) {
+            $query->where('purchase_order_id', $purchaseOrderId);
+        }
+
+        // Date range filters
+        if ($startDate = $request->get('start_date')) {
+            $query->where('receive_date', '>=', $startDate);
+        }
+
+        if ($endDate = $request->get('end_date')) {
+            $query->where('receive_date', '<=', $endDate);
+        }
+
+        // Apply sorting
+        $sortField = $request->get('sort', 'receive_date');
+        $sortOrder = $request->get('order', 'desc');
+        
+        if (in_array($sortField, ['receive_number', 'receive_date', 'total_amount_received', 'status', 'created_at'])) {
+            $query->orderBy($sortField, $sortOrder);
+        }
+
+        return $query->paginate($perPage)->withQueryString();
+    }
+
+    /**
+     * Get filter options for purchase receive listing.
+     */
+    public function getFilterOptions(): array
+    {
+        return [
+            'suppliers' => Supplier::where('status', 'active')
+                                 ->orderBy('supplier_name')
+                                 ->get()
+                                 ->map(function ($supplier) {
+                                     return [
+                                         'id' => $supplier->supplier_id,
+                                         'name' => $supplier->supplier_name ?? $supplier->name,
+                                     ];
+                                 }),
+            'purchase_orders' => PurchaseOrder::with('supplier')
+                                            ->whereIn('status', ['ordered', 'partial_received'])
+                                            ->orderBy('order_number')
+                                            ->get()
+                                            ->map(function ($order) {
+                                                return [
+                                                    'id' => $order->order_id,
+                                                    'order_number' => $order->order_number,
+                                                    'supplier_name' => $order->supplier->supplier_name ?? $order->supplier->name,
+                                                    'supplier_id' => $order->supplier_id,
+                                                ];
+                                            }),
+        ];
+    }
+
+    /**
+     * Create a new purchase receive.
+     */
+    public function createReceive(array $data): PurchaseReceive
+    {
+        // Set defaults
+        $data['receive_date'] = $data['receive_date'] ?? Carbon::today();
+        $data['status'] = $data['status'] ?? 'in_transit';
+
+        // Get purchase order to auto-fill supplier
+        if (isset($data['purchase_order_id'])) {
+            $purchaseOrder = PurchaseOrder::find($data['purchase_order_id']);
+            if ($purchaseOrder) {
+                $data['supplier_id'] = $purchaseOrder->supplier_id;
+            }
+        }
+
+        // Create the receive
+        $receive = PurchaseReceive::create($data);
+
+        // Add items if provided
+        if (isset($data['items']) && is_array($data['items'])) {
+            $this->addItemsToReceive($receive, $data['items']);
+        }
+
+        return $receive->fresh(['supplier', 'purchaseOrder', 'items.product']);
+    }
+
+    /**
+     * Update a purchase receive.
+     */
+    public function updateReceive(PurchaseReceive $receive, array $data): PurchaseReceive
+    {
+        // Update receive details
+        $receive->update($data);
+
+        // Update items if provided
+        if (isset($data['items']) && is_array($data['items'])) {
+            $this->updateReceiveItems($receive, $data['items']);
+        }
+
+        return $receive->fresh(['supplier', 'purchaseOrder', 'items.product']);
+    }
+
+    /**
+     * Add items to a receive.
+     */
+    public function addItemsToReceive(PurchaseReceive $receive, array $items): void
+    {
+        $totalQuantityExpected = 0;
+        $totalQuantityReceived = 0;
+        $totalAmountExpected = 0;
+        $totalAmountReceived = 0;
+
+        foreach ($items as $itemData) {
+            $product = Product::find($itemData['product_id']);
+            
+            if (!$product) {
+                continue;
+            }
+
+            $quantityExpected = $itemData['quantity_expected'] ?? 0;
+            $quantityReceived = $itemData['quantity_received'] ?? 0;
+            $quantityDamaged = $itemData['quantity_damaged'] ?? 0;
+            $unitPrice = $itemData['unit_price'] ?? 0;
+
+            $item = PurchaseReceiveItem::create([
+                'receive_id' => $receive->receive_id,
+                'product_id' => $product->product_id,
+                'purchase_order_item_id' => $itemData['purchase_order_item_id'] ?? null,
+                'quantity_expected' => $quantityExpected,
+                'quantity_received' => $quantityReceived,
+                'quantity_damaged' => $quantityDamaged,
+                'unit_price' => $unitPrice,
+                'total_amount' => $quantityReceived * $unitPrice,
+                'condition' => $itemData['condition'] ?? 'good',
+                'item_notes' => $itemData['item_notes'] ?? null,
+            ]);
+
+            // Update inventory for received items
+            if ($quantityReceived > 0) {
+                $this->updateProductInventory($product, $quantityReceived, $receive->supplier_id, $unitPrice);
+            }
+
+            // Accumulate totals
+            $totalQuantityExpected += $quantityExpected;
+            $totalQuantityReceived += $quantityReceived;
+            $totalAmountExpected += ($quantityExpected * $unitPrice);
+            $totalAmountReceived += ($quantityReceived * $unitPrice);
+        }
+
+        // Update receive totals
+        $receive->update([
+            'total_quantity_expected' => $totalQuantityExpected,
+            'total_quantity_received' => $totalQuantityReceived,
+            'total_amount_expected' => $totalAmountExpected,
+            'total_amount_received' => $totalAmountReceived,
+        ]);
+
+        // Update status based on completion
+        $this->updateReceiveStatus($receive);
+    }
+
+    /**
+     * Update receive items.
+     */
+    public function updateReceiveItems(PurchaseReceive $receive, array $items): void
+    {
+        // Delete existing items (this also reverses inventory changes)
+        $this->deleteReceiveItems($receive);
+
+        // Add new items
+        $this->addItemsToReceive($receive, $items);
+    }
+
+    /**
+     * Delete receive items and reverse inventory changes.
+     */
+    protected function deleteReceiveItems(PurchaseReceive $receive): void
+    {
+        // First reverse inventory changes for existing items
+        foreach ($receive->items as $item) {
+            if ($item->quantity_received > 0) {
+                $this->updateProductInventory($item->product, -$item->quantity_received);
+            }
+        }
+
+        // Then delete the items
+        $receive->items()->delete();
+    }
+
+    /**
+     * Update product inventory.
+     */
+    protected function updateProductInventory(Product $product, int $quantityChange, int $supplierId = null, float $unitPrice = null): void
+    {
+        $product->increment('quantity', $quantityChange);
+        
+        // Update supplier tracking information only when receiving items (positive quantity)
+        if ($quantityChange > 0 && $supplierId && $unitPrice) {
+            $product->enableSupplierTrackingFields();
+            $product->update([
+                'last_supplier_id' => $supplierId,
+                'last_received_at' => now(),
+                'last_purchase_price' => $unitPrice,
+            ]);
+        }
+    }
+
+    /**
+     * Update receive status based on completion percentage.
+     */
+    protected function updateReceiveStatus(PurchaseReceive $receive): void
+    {
+        $completionPercentage = $receive->completion_percentage;
+        
+        if ($completionPercentage >= 100) {
+            $receive->update(['status' => 'received']);
+        } elseif ($completionPercentage > 0) {
+            $receive->update(['status' => 'partially_received']);
+        }
+    }
+
+    /**
+     * Delete a purchase receive.
+     */
+    public function deleteReceive(PurchaseReceive $receive): bool
+    {
+        // Check if receive can be deleted
+        if (!$receive->canBeCancelled()) {
+            throw new \Exception('Cannot delete receive that is already fully processed.');
+        }
+
+        // Reverse inventory changes
+        $this->deleteReceiveItems($receive);
+
+        return $receive->delete();
+    }
+
+    /**
+     * Change receive status.
+     */
+    public function changeReceiveStatus(PurchaseReceive $receive, string $status): PurchaseReceive
+    {
+        $validTransitions = $this->getValidStatusTransitions($receive->status);
+        
+        if (!in_array($status, $validTransitions)) {
+            throw new \Exception("Cannot change status from {$receive->status} to {$status}");
+        }
+
+        $receive->update(['status' => $status]);
+
+        return $receive->fresh();
+    }
+
+    /**
+     * Get valid status transitions.
+     */
+    protected function getValidStatusTransitions(string $currentStatus): array
+    {
+        return match ($currentStatus) {
+            'in_transit' => ['received', 'partially_received', 'damaged', 'cancelled'],
+            'partially_received' => ['received', 'damaged', 'cancelled'],
+            'received' => ['damaged'], // Only allow marking as damaged after received
+            'damaged' => ['cancelled'],
+            'cancelled' => [], // No transitions from cancelled
+            default => [],
+        };
+    }
+
+    /**
+     * Get analytics data for receives.
+     */
+    public function getAnalytics(array $filters = []): array
+    {
+        $query = PurchaseReceive::query();
+
+        // Apply date filters
+        if (isset($filters['start_date'])) {
+            $query->where('receive_date', '>=', $filters['start_date']);
+        }
+        
+        if (isset($filters['end_date'])) {
+            $query->where('receive_date', '<=', $filters['end_date']);
+        }
+
+        return [
+            'total_receives' => $query->count(),
+            'received_count' => $query->clone()->received()->count(),
+            'in_transit_count' => $query->clone()->inTransit()->count(),
+            'partially_received_count' => $query->clone()->partiallyReceived()->count(),
+            'damaged_count' => $query->clone()->damaged()->count(),
+            'cancelled_count' => $query->clone()->cancelled()->count(),
+            'total_value_received' => $query->sum('total_amount_received'),
+            'total_quantity_received' => $query->sum('total_quantity_received'),
+        ];
+    }
+}

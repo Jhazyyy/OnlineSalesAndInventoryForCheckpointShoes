@@ -49,11 +49,29 @@ class Product extends Model
     ];
 
     /**
+     * Supplier tracking fields (used by purchase receive management)
+     */
+    protected $supplierTrackingFillable = [
+        'last_supplier_id',
+        'last_received_at',
+        'last_purchase_price'
+    ];
+
+    /**
      * Temporarily add threshold fields to fillable for threshold operations
      */
     public function enableThresholdFields()
     {
         $this->fillable = array_merge($this->fillable, $this->thresholdFillable);
+        return $this;
+    }
+
+    /**
+     * Temporarily add supplier tracking fields to fillable
+     */
+    public function enableSupplierTrackingFields()
+    {
+        $this->fillable = array_merge($this->fillable, $this->supplierTrackingFillable);
         return $this;
     }
 
@@ -90,6 +108,8 @@ class Product extends Model
         'lead_time_days' => 'integer',
         'economic_order_quantity' => 'integer',
         'last_threshold_check' => 'datetime',
+        'last_received_at' => 'datetime',
+        'last_purchase_price' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -140,6 +160,14 @@ class Product extends Model
     public function preferredSupplier()
     {
         return $this->belongsTo(Supplier::class, 'preferred_supplier_id');
+    }
+
+    /**
+     * Get the last supplier that provided this product.
+     */
+    public function lastSupplier()
+    {
+        return $this->belongsTo(Supplier::class, 'last_supplier_id');
     }
 
     /**

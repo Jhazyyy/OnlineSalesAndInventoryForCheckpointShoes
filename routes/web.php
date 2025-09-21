@@ -7,6 +7,7 @@ use App\Http\Controllers\PackageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\PurchaseReceiveController;
 use App\Http\Controllers\ReturnsController;
 use App\Http\Controllers\SalesOrderController;
 use App\Http\Controllers\StockController;
@@ -275,9 +276,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
 
         // Import routes
-        // Route::get('/import/form', [ProductController::class, 'showImportForm'])->name('import');
-        // Route::post('/import', [ProductController::class, 'import'])->name('import');
-        // Route::get('/template/download', [ProductController::class, 'downloadTemplate'])->name('template');
+        Route::get('/import/form', [ProductController::class, 'showImportForm'])->name('import');
+        Route::post('/import', [ProductController::class, 'import'])->name('import');
+        Route::get('/template/download', [ProductController::class, 'downloadTemplate'])->name('template');
 
         // API routes
         Route::post('/bulk-update-stock', [ProductController::class, 'bulkUpdateStock'])->name('bulk-update-stock');
@@ -356,6 +357,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Analytics and Reports
         Route::get('/analytics', [PurchaseOrderController::class, 'analytics'])->name('analytics');
         Route::get('/receiving-report', [PurchaseOrderController::class, 'receivingReport'])->name('receiving-report');
+    });
+
+    // Purchase Receive Management Routes
+    Route::prefix('inventory/purchase-receives')->name('inventory.purchase-receives.')->group(function () {
+        Route::get('/', [PurchaseReceiveController::class, 'index'])->name('index');
+        Route::get('/create', [PurchaseReceiveController::class, 'create'])->name('create');
+        Route::post('/', [PurchaseReceiveController::class, 'store'])->name('store');
+        Route::get('/{receive}', [PurchaseReceiveController::class, 'show'])->name('show');
+        Route::get('/{receive}/edit', [PurchaseReceiveController::class, 'edit'])->name('edit');
+        Route::put('/{receive}', [PurchaseReceiveController::class, 'update'])->name('update');
+        Route::delete('/{receive}', [PurchaseReceiveController::class, 'destroy'])->name('destroy');
+
+        // Status management routes
+        Route::post('/{receive}/change-status', [PurchaseReceiveController::class, 'changeStatus'])->name('change-status');
+        
+        // AJAX routes
+        Route::get('/purchase-order/{purchaseOrder}/items', [PurchaseReceiveController::class, 'getPurchaseOrderItems'])->name('purchase-order-items');
+        
+        // Analytics
+        Route::get('/analytics', [PurchaseReceiveController::class, 'analytics'])->name('analytics');
     });
 
     // Sales Order Management Routes

@@ -122,7 +122,7 @@
                     </x-nav-item>
 
                     <!-- Purchases Section-->
-                    <x-nav-item route-pattern="inventory.suppliers.*|inventory.purchase-orders.*" :icon="App\Helpers\NavigationHelper::getIcon('purchases')"
+                    <x-nav-item route-pattern="inventory.suppliers.*|inventory.purchase-orders.*|inventory.purchase-receives.*" :icon="App\Helpers\NavigationHelper::getIcon('purchases')"
                         title="Purchases" :is-dropdown="true">
 
                         <!-- Vendor/Supplier -->
@@ -136,7 +136,7 @@
                             title="Purchase Order" size="small" />
 
                         <!-- Purchase Receives -->
-                        <x-nav-item href="#"
+                        <x-nav-item route="inventory.purchase-receives.index" route-pattern="inventory.purchase-receives.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>'
                             title="Purchase Receives" size="small" />
 

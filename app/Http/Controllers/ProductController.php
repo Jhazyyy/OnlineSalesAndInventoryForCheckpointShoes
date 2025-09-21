@@ -55,7 +55,7 @@ class ProductController extends Controller
         $sortOrder = $request->get('order', 'asc');
         $query->orderBy($sortBy, $sortOrder);
 
-        $products = $query->paginate(15)->withQueryString();
+        $products = $query->with('lastSupplier')->paginate(15)->withQueryString();
 
         // Get unique brands for filter dropdown
         $brands = Product::distinct()->pluck('product_brand')->filter()->sort();
@@ -113,7 +113,7 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         // Load relationships for detailed view
-        $product->load(['sales', 'purchases', 'returns']);
+        $product->load(['sales', 'purchases', 'returns', 'lastSupplier', 'preferredSupplier']);
         
         // Calculate additional metrics
         $stockMovement = $product->stock_movement;

@@ -158,6 +158,7 @@
                                                 @endif
                                             </a>
                                         </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Last Supplier</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                                     </tr>
@@ -187,6 +188,16 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $product->product_brand }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ number_format($product->quantity) }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">₱{{ number_format($product->price, 2) }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                @if($product->lastSupplier)
+                                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $product->lastSupplier->supplier_name ?? $product->lastSupplier->name }}</div>
+                                                    @if($product->last_received_at)
+                                                        <div class="text-xs text-gray-500">{{ $product->last_received_at->format('M d, Y') }}</div>
+                                                    @endif
+                                                @else
+                                                    <span class="text-sm text-gray-500 dark:text-gray-400">-</span>
+                                                @endif
+                                            </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 @if($product->quantity <= 0)
                                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Out of Stock</span>

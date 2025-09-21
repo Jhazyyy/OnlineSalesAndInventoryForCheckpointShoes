@@ -195,6 +195,45 @@
 
                 <!-- Statistics Sidebar -->
                 <div class="space-y-6">
+                    <!-- Supplier Information -->
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="p-6">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Supplier Information</h3>
+                            
+                            <div class="space-y-4">
+                                @if($product->lastSupplier)
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Last Supplier</label>
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $product->lastSupplier->supplier_name ?? $product->lastSupplier->name }}</p>
+                                        @if($product->last_received_at)
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Last received: {{ $product->last_received_at->format('M d, Y') }}</p>
+                                        @endif
+                                    </div>
+                                @endif
+                                
+                                @if($product->preferredSupplier)
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Preferred Supplier</label>
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $product->preferredSupplier->supplier_name ?? $product->preferredSupplier->name }}</p>
+                                    </div>
+                                @endif
+                                
+                                @if($product->last_purchase_price)
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Last Purchase Price</label>
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white">₱{{ number_format($product->last_purchase_price, 2) }}</p>
+                                        @if($product->price > $product->last_purchase_price)
+                                            <p class="text-xs text-green-600">Margin: ₱{{ number_format($product->price - $product->last_purchase_price, 2) }}</p>
+                                        @endif
+                                    </div>
+                                @endif
+                                
+                                @if(!$product->lastSupplier && !$product->preferredSupplier)
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">No supplier information available</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
                     <!-- Key Metrics -->
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
