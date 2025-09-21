@@ -27,7 +27,7 @@ class PurchaseReceiveController extends Controller
         $receives = $this->receiveService->getPaginatedReceives($request);
         $filterOptions = $this->receiveService->getFilterOptions();
 
-        return view('inventory.purchase-receives.index', [
+        return view('purchases.purchase-receives.index', [
             'receives' => $receives,
             'suppliers' => $filterOptions['suppliers'],
             'purchase_orders' => $filterOptions['purchase_orders'],
@@ -40,7 +40,7 @@ class PurchaseReceiveController extends Controller
     public function create()
     {
         $filterOptions = $this->receiveService->getFilterOptions();
-        return view('inventory.purchase-receives.create', [
+        return view('purchases.purchase-receives.create', [
             'suppliers' => $filterOptions['suppliers'],
             'purchase_orders' => $filterOptions['purchase_orders'],
         ]);
@@ -80,7 +80,7 @@ class PurchaseReceiveController extends Controller
         $data = $validator->validated();
         $receive = $this->receiveService->createReceive($data);
 
-        return redirect()->route('inventory.purchase-receives.show', $receive->receive_id)
+        return redirect()->route('purchases.purchase-receives.show', $receive->receive_id)
             ->with('success', 'Purchase receive created successfully!');
     }
 
@@ -90,7 +90,7 @@ class PurchaseReceiveController extends Controller
     public function show(PurchaseReceive $receive)
     {
         $receive->load(['supplier', 'purchaseOrder', 'items.product']);
-        return view('inventory.purchase-receives.show', compact('receive'));
+        return view('purchases.purchase-receives.show', compact('receive'));
     }
 
     /**
@@ -100,7 +100,7 @@ class PurchaseReceiveController extends Controller
     {
         $receive->load(['supplier', 'purchaseOrder', 'items.product']);
         $filterOptions = $this->receiveService->getFilterOptions();
-        return view('inventory.purchase-receives.edit', [
+        return view('purchases.purchase-receives.edit', [
             'receive' => $receive,
             'suppliers' => $filterOptions['suppliers'],
             'purchase_orders' => $filterOptions['purchase_orders'],
@@ -141,7 +141,7 @@ class PurchaseReceiveController extends Controller
         $data = $validator->validated();
         $this->receiveService->updateReceive($receive, $data);
 
-        return redirect()->route('inventory.purchase-receives.show', $receive->receive_id)
+        return redirect()->route('purchases.purchase-receives.show', $receive->receive_id)
             ->with('success', 'Purchase receive updated successfully!');
     }
 
@@ -152,10 +152,10 @@ class PurchaseReceiveController extends Controller
     {
         try {
             $this->receiveService->deleteReceive($receive);
-            return redirect()->route('inventory.purchase-receives.index')
+            return redirect()->route('purchases.purchase-receives.index')
                 ->with('success', 'Purchase receive deleted successfully!');
         } catch (\Exception $e) {
-            return redirect()->route('inventory.purchase-receives.index')
+            return redirect()->route('purchases.purchase-receives.index')
                 ->with('error', $e->getMessage());
         }
     }
@@ -215,7 +215,7 @@ class PurchaseReceiveController extends Controller
         $analytics = $this->receiveService->getAnalytics($filters);
         $filterOptions = $this->receiveService->getFilterOptions();
 
-        return view('inventory.purchase-receives.analytics', [
+        return view('purchases.purchase-receives.analytics', [
             'analytics' => $analytics,
             'filters' => $filters,
             'suppliers' => $filterOptions['suppliers'],

@@ -10,7 +10,7 @@
                             <p class="text-gray-600 dark:text-gray-400">View purchase order details and manage status</p>
                         </div>
                         <div class="flex space-x-3 mt-4 sm:mt-0">
-                            <a href="{{ route('inventory.purchase-orders.index') }}"
+                            <a href="{{ route('purchases.purchase-orders.index') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -20,7 +20,7 @@
                             </a>
                             
                             @if($order->canBeEdited())
-                                <a href="{{ route('inventory.purchase-orders.edit', $order->order_id) }}"
+                                <a href="{{ route('purchases.purchase-orders.edit', $order->order_id) }}"
                                     class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -365,7 +365,7 @@
                             <div class="space-y-3">
                                 <!-- Status Change -->
                                 @if(count((new \App\Services\PurchaseOrderService())->getValidStatusTransitions($order->status)) > 0)
-                                    <form method="POST" action="{{ route('inventory.purchase-orders.change-status', $order->order_id) }}" class="inline">
+                                    <form method="POST" action="{{ route('purchases.purchase-orders.change-status', $order->order_id) }}" class="inline">
                                         @csrf
                                         <div class="flex space-x-2">
                                             <select name="status" 
@@ -411,7 +411,7 @@
                                             </div>
                                         </div>
                                         
-                                        <form method="POST" action="{{ route('inventory.purchase-orders.receive-items', $order->order_id) }}" id="receiveItemsForm">
+                                        <form method="POST" action="{{ route('purchases.purchase-orders.receive-items', $order->order_id) }}" id="receiveItemsForm">
                                             @csrf
                                             
                                             <!-- Bulk Actions -->
@@ -567,7 +567,7 @@
                                 <!-- Delete Order -->
                                 @if($order->canBeCancelled())
                                     <div class="pt-3 border-t">
-                                        <form method="POST" action="{{ route('inventory.purchase-orders.destroy', $order->order_id) }}" 
+                                        <form method="POST" action="{{ route('purchases.purchase-orders.destroy', $order->order_id) }}" 
                                               onsubmit="return confirm('Are you sure you want to delete this purchase order?')">
                                             @csrf
                                             @method('DELETE')

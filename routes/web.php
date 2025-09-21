@@ -236,6 +236,7 @@ Route::get('dashboard', function () {
     ));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// CurrentUser UpdateInfo Routes 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -286,7 +287,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Supplier Management Routes
-    Route::prefix('inventory/suppliers')->name('inventory.suppliers.')->group(function () {
+    Route::prefix('purchases/suppliers')->name('purchases.suppliers.')->group(function () {
         Route::get('/', [SupplierController::class, 'index'])->name('index');
         Route::get('/create', [SupplierController::class, 'create'])->name('create');
         Route::post('/', [SupplierController::class, 'store'])->name('store');
@@ -341,7 +342,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Purchase Order Management Routes
-    Route::prefix('inventory/purchase-orders')->name('inventory.purchase-orders.')->group(function () {
+    Route::prefix('purchases/purchase-orders')->name('purchases.purchase-orders.')->group(function () {
         Route::get('/', [PurchaseOrderController::class, 'index'])->name('index');
         Route::get('/create', [PurchaseOrderController::class, 'create'])->name('create');
         Route::post('/', [PurchaseOrderController::class, 'store'])->name('store');
@@ -360,7 +361,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Purchase Receive Management Routes
-    Route::prefix('inventory/purchase-receives')->name('inventory.purchase-receives.')->group(function () {
+    Route::prefix('purchases/purchase-receives')->name('purchases.purchase-receives.')->group(function () {
         Route::get('/', [PurchaseReceiveController::class, 'index'])->name('index');
         Route::get('/create', [PurchaseReceiveController::class, 'create'])->name('create');
         Route::post('/', [PurchaseReceiveController::class, 'store'])->name('store');

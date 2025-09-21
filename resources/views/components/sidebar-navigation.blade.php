@@ -126,17 +126,17 @@
                         title="Purchases" :is-dropdown="true">
 
                         <!-- Vendor/Supplier -->
-                        <x-nav-item route="inventory.suppliers.index" route-pattern="inventory.suppliers.*"
+                        <x-nav-item route="purchases.suppliers.index" route-pattern="purchases.suppliers.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>'
                             title="Vendor/Supplier" size="small" />
 
                         <!-- Purchase Order -->
-                        <x-nav-item route="inventory.purchase-orders.index" route-pattern="inventory.purchase-orders.*"
+                        <x-nav-item route="purchases.purchase-orders.index" route-pattern="purchases.purchase-orders.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>'
                             title="Purchase Order" size="small" />
 
                         <!-- Purchase Receives -->
-                        <x-nav-item route="inventory.purchase-receives.index" route-pattern="inventory.purchase-receives.*"
+                        <x-nav-item route="purchases.purchase-receives.index" route-pattern="purchases.purchase-receives.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>'
                             title="Purchase Receives" size="small" />
 

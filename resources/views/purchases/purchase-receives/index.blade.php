@@ -6,23 +6,23 @@
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Purchase Orders</h2>
-                            <p class="text-gray-600 dark:text-gray-400">Manage your purchase orders and track deliveries</p>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Purchase Receives</h2>
+                            <p class="text-gray-600 dark:text-gray-400">Manage and track all purchase receives from suppliers</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
-                            <a href="{{ route('inventory.purchase-orders.receiving-report') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            <a href="{{ route('purchases.purchase-receives.analytics') }}" 
+                               class="inline-flex items-center px-4 py-2 bg-purple-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700 focus:bg-purple-700 active:bg-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V9a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                                 </svg>
-                                Receiving Report
+                                Analytics
                             </a>
-                            <a href="{{ route('inventory.purchase-orders.create') }}" 
+                            <a href="{{ route('purchases.purchase-receives.create') }}" 
                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                 </svg>
-                                Create Purchase Order
+                                Create Purchase Receive
                             </a>
                         </div>
                     </div>
@@ -32,13 +32,13 @@
             <!-- Filters Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
-                    <form method="GET" action="{{ route('inventory.purchase-orders.index') }}" class="space-y-4">
+                    <form method="GET" action="{{ route('purchases.purchase-receives.index') }}" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
                             <!-- Search -->
                             <div>
                                 <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>
                                 <input type="text" id="search" name="search" value="{{ request('search') }}" 
-                                       placeholder="Order number, supplier..." 
+                                       placeholder="Receive number, order number..." 
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
 
@@ -48,38 +48,39 @@
                                 <select id="status" name="status" 
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     <option value="">All Status</option>
-                                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                    <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
-                                    <option value="ordered" {{ request('status') == 'ordered' ? 'selected' : '' }}>Ordered</option>
-                                    <option value="partial_received" {{ request('status') == 'partial_received' ? 'selected' : '' }}>Partially Received</option>
+                                    <option value="in_transit" {{ request('status') == 'in_transit' ? 'selected' : '' }}>In Transit</option>
                                     <option value="received" {{ request('status') == 'received' ? 'selected' : '' }}>Received</option>
+                                    <option value="partially_received" {{ request('status') == 'partially_received' ? 'selected' : '' }}>Partially Received</option>
+                                    <option value="damaged" {{ request('status') == 'damaged' ? 'selected' : '' }}>Damaged</option>
                                     <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                                 </select>
                             </div>
 
-                            <!-- Priority -->
+                            <!-- Supplier -->
                             <div>
-                                <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Priority</label>
-                                <select id="priority" name="priority" 
+                                <label for="supplier_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Supplier</label>
+                                <select id="supplier_id" name="supplier_id" 
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">All Priorities</option>
-                                    <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>Low</option>
-                                    <option value="normal" {{ request('priority') == 'normal' ? 'selected' : '' }}>Normal</option>
-                                    <option value="high" {{ request('priority') == 'high' ? 'selected' : '' }}>High</option>
-                                    <option value="urgent" {{ request('priority') == 'urgent' ? 'selected' : '' }}>Urgent</option>
+                                    <option value="">All Suppliers</option>
+                                    @foreach($suppliers as $supplier)
+                                        <option value="{{ $supplier['id'] }}" {{ request('supplier_id') == $supplier['id'] ? 'selected' : '' }}>
+                                            {{ $supplier['name'] }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 
-                            <!-- Payment Status -->
+                            <!-- Purchase Order -->
                             <div>
-                                <label for="payment_status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment</label>
-                                <select id="payment_status" name="payment_status" 
+                                <label for="purchase_order_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Purchase Order</label>
+                                <select id="purchase_order_id" name="purchase_order_id" 
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">All Payments</option>
-                                    <option value="pending" {{ request('payment_status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                    <option value="partial" {{ request('payment_status') == 'partial' ? 'selected' : '' }}>Partial</option>
-                                    <option value="paid" {{ request('payment_status') == 'paid' ? 'selected' : '' }}>Paid</option>
-                                    <option value="refunded" {{ request('payment_status') == 'refunded' ? 'selected' : '' }}>Refunded</option>
+                                    <option value="">All Orders</option>
+                                    @foreach($purchase_orders as $order)
+                                        <option value="{{ $order['id'] }}" {{ request('purchase_order_id') == $order['id'] ? 'selected' : '' }}>
+                                            {{ $order['order_number'] }} - {{ $order['supplier_name'] }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -107,7 +108,7 @@
                                     </svg>
                                     Filter
                                 </button>
-                                <a href="{{ route('inventory.purchase-orders.index') }}" 
+                                <a href="{{ route('purchases.purchase-receives.index') }}" 
                                    class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     Clear
                                 </a>
@@ -130,89 +131,86 @@
                 </div>
             @endif
 
-            <!-- Orders Table -->
+            <!-- Receives Table -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    @if($orders->count() > 0)
+                    @if($receives->count() > 0)
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'order_number', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
-                                                Order #
-                                                @if(request('sort') === 'order_number')
+                                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'receive_date', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
+                                                Date
+                                                @if(request('sort') === 'receive_date')
                                                     <span class="ml-1">{{ request('order') === 'asc' ? '↑' : '↓' }}</span>
                                                 @endif
                                             </a>
                                         </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supplier & Contact</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'order_date', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
-                                                Order Date
-                                                @if(request('sort') === 'order_date')
+                                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'receive_number', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
+                                                Purchase Receiver#
+                                                @if(request('sort') === 'receive_number')
                                                     <span class="ml-1">{{ request('order') === 'asc' ? '↑' : '↓' }}</span>
                                                 @endif
                                             </a>
                                         </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Expected Date</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Items</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'total_amount', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
-                                                Total
-                                                @if(request('sort') === 'total_amount')
-                                                    <span class="ml-1">{{ request('order') === 'asc' ? '↑' : '↓' }}</span>
-                                                @endif
-                                            </a>
-                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Purchase Order#</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Vendor Name</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Quantity</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Progress</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    @foreach($orders as $order)
+                                    @foreach($receives as $receive)
                                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                {{ $receive->receive_date->format('M d, Y') }}
+                                            </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                                    <a href="{{ route('inventory.purchase-orders.show', $order->order_id) }}" class="text-blue-600 hover:text-blue-900">
-                                                        {{ $order->order_number }}
+                                                    <a href="{{ route('purchases.purchase-receives.show', $receive->receive_id) }}" class="text-blue-600 hover:text-blue-900">
+                                                        {{ $receive->receive_number }}
                                                     </a>
                                                 </div>
-                                                @if($order->is_overdue)
-                                                    <div class="text-xs text-red-600">OVERDUE</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900 dark:text-white">
+                                                    @if($receive->purchaseOrder)
+                                                        <a href="{{ route('purchases.purchase-orders.show', $receive->purchase_order_id) }}" class="text-blue-600 hover:text-blue-900">
+                                                            {{ $receive->purchaseOrder->order_number }}
+                                                        </a>
+                                                    @else
+                                                        N/A
+                                                    @endif
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900 dark:text-white">{{ $receive->supplier->supplier_name ?? $receive->supplier->name ?? 'N/A' }}</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ $receive->supplier->phone ?? '' }}</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $receive->status_badge_class }}">
+                                                    {{ ucwords(str_replace('_', ' ', $receive->status)) }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                {{ number_format($receive->total_quantity_received) }}
+                                                @if($receive->total_quantity_expected > 0)
+                                                    <div class="text-xs text-gray-500">of {{ number_format($receive->total_quantity_expected) }}</div>
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm text-gray-900 dark:text-white">{{ $order->supplier->supplier_name ?? $order->supplier->name ?? 'N/A' }}</div>
-                                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ $order->supplier->phone ?? 'No phone' }}</div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                {{ $order->order_date->format('M d, Y') }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                {{ $order->expected_date ? $order->expected_date->format('M d, Y') : 'N/A' }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                {{ $order->total_products }} item(s)
-                                                <div class="text-xs text-gray-500">{{ $order->total_quantity }} qty</div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                ₱{{ number_format($order->total_amount, 2) }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $order->status_badge_class }}">
-                                                    {{ ucwords(str_replace('_', ' ', $order->status)) }}
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $order->priority_badge_class }}">
-                                                    {{ ucfirst($order->priority) }}
-                                                </span>
+                                                <div class="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                                                    <div class="bg-green-600 h-2 rounded-full" style="width: {{ $receive->completion_percentage }}%"></div>
+                                                </div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $receive->completion_percentage }}%</div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div class="flex space-x-2">
-                                                    <a href="{{ route('inventory.purchase-orders.show', $order->order_id) }}" 
+                                                    <a href="{{ route('purchases.purchase-receives.show', $receive->receive_id) }}" 
                                                        class="text-indigo-600 hover:text-indigo-900" title="View">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -220,8 +218,8 @@
                                                         </svg>
                                                     </a>
                                                     
-                                                    @if($order->canBeEdited())
-                                                        <a href="{{ route('inventory.purchase-orders.edit', $order->order_id) }}" 
+                                                    @if($receive->canBeEdited())
+                                                        <a href="{{ route('purchases.purchase-receives.edit', $receive->receive_id) }}" 
                                                            class="text-blue-600 hover:text-blue-900" title="Edit">
                                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -229,10 +227,10 @@
                                                         </a>
                                                     @endif
                                                     
-                                                    @if($order->canBeCancelled())
-                                                        <form action="{{ route('inventory.purchase-orders.destroy', $order->order_id) }}" 
+                                                    @if($receive->canBeCancelled())
+                                                        <form action="{{ route('purchases.purchase-receives.destroy', $receive->receive_id) }}" 
                                                               method="POST" class="inline"
-                                                              onsubmit="return confirm('Are you sure you want to delete this purchase order?')">
+                                                              onsubmit="return confirm('Are you sure you want to delete this purchase receive? This will reverse any inventory changes.')">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit" class="text-red-600 hover:text-red-900" title="Delete">
@@ -252,22 +250,22 @@
 
                         <!-- Pagination -->
                         <div class="mt-6">
-                            {{ $orders->links() }}
+                            {{ $receives->links() }}
                         </div>
                     @else
                         <div class="text-center py-12">
                             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                             </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No purchase orders</h3>
-                            <p class="mt-1 text-sm text-gray-500">Get started by creating a new purchase order.</p>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No purchase receives</h3>
+                            <p class="mt-1 text-sm text-gray-500">Get started by creating a new purchase receive.</p>
                             <div class="mt-6">
-                                <a href="{{ route('inventory.purchase-orders.create') }}" 
+                                <a href="{{ route('purchases.purchase-receives.create') }}" 
                                    class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                     </svg>
-                                    New Purchase Order
+                                    New Purchase Receive
                                 </a>
                             </div>
                         </div>

@@ -17,14 +17,14 @@
                                 </svg>
                                 Export Suppliers
                             </a> --}}
-                            <a href="{{ route('inventory.suppliers.import') }}" 
+                            <a href="{{ route('purchases.suppliers.import') }}" 
                                class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                 </svg>
                                 Import Suppliers
                             </a>
-                            <a href="{{ route('inventory.suppliers.create') }}" 
+                            <a href="{{ route('purchases.suppliers.create') }}" 
                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -39,7 +39,7 @@
             <!-- Filters Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
-                    <form method="GET" action="{{ route('inventory.suppliers.index') }}" class="space-y-4">
+                    <form method="GET" action="{{ route('purchases.suppliers.index') }}" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                             <!-- Search -->
                             <div>
@@ -116,7 +116,7 @@
                                     </svg>
                                     Filter
                                 </button>
-                                <a href="{{ route('inventory.suppliers.index') }}" 
+                                <a href="{{ route('purchases.suppliers.index') }}" 
                                    class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     Clear
                                 </a>
@@ -233,7 +233,7 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div class="flex items-center space-x-2">
-                                                    <a href="{{ route('inventory.suppliers.show', $supplier) }}" 
+                                                    <a href="{{ route('purchases.suppliers.show', $supplier) }}" 
                                                        class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
                                                        title="View Supplier">
                                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -241,14 +241,14 @@
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                                         </svg>
                                                     </a>
-                                                    <a href="{{ route('inventory.suppliers.edit', $supplier) }}" 
+                                                    <a href="{{ route('purchases.suppliers.edit', $supplier) }}" 
                                                        class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300"
                                                        title="Edit Supplier">
                                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                                         </svg>
                                                     </a>
-                                                    <form method="POST" action="{{ route('inventory.suppliers.toggle-status', $supplier) }}" 
+                                                    <form method="POST" action="{{ route('purchases.suppliers.toggle-status', $supplier) }}" 
                                                           class="inline" onsubmit="return confirm('Are you sure you want to {{ $supplier->status === 'active' ? 'deactivate' : 'activate' }} this supplier?')">
                                                         @csrf
                                                         <button type="submit" 
@@ -265,7 +265,7 @@
                                                             @endif
                                                         </button>
                                                     </form>
-                                                    <form method="POST" action="{{ route('inventory.suppliers.destroy', $supplier) }}" 
+                                                    <form method="POST" action="{{ route('purchases.suppliers.destroy', $supplier) }}" 
                                                           class="inline" onsubmit="return confirm('Are you sure you want to delete this supplier? This action cannot be undone.')">
                                                         @csrf
                                                         @method('DELETE')
@@ -297,7 +297,7 @@
                             <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No suppliers found</h3>
                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating a new supplier.</p>
                             <div class="mt-6">
-                                <a href="{{ route('inventory.suppliers.create') }}" 
+                                <a href="{{ route('purchases.suppliers.create') }}" 
                                    class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>

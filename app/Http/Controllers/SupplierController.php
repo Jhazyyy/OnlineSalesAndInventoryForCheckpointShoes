@@ -25,7 +25,7 @@ class SupplierController extends Controller
         $suppliers = $this->supplierService->getPaginatedSuppliers($request);
         $filterOptions = $this->supplierService->getFilterOptions();
 
-        return view('inventory.suppliers.index', [
+        return view('purchases.suppliers.index', [
             'suppliers' => $suppliers,
             'types' => $filterOptions['types'],
             'cities' => $filterOptions['cities'],
@@ -38,7 +38,7 @@ class SupplierController extends Controller
      */
     public function create()
     {
-        return view('inventory.suppliers.create');
+        return view('purchases.suppliers.create');
     }
 
     /**
@@ -71,7 +71,7 @@ class SupplierController extends Controller
         $data = $validator->validated();
         $this->supplierService->createSupplier($data);
 
-        return redirect()->route('inventory.suppliers.index')
+        return redirect()->route('purchases.suppliers.index')
             ->with('success', 'Supplier created successfully!');
     }
 
@@ -102,7 +102,7 @@ class SupplierController extends Controller
                 ];
             });
 
-        return view('inventory.suppliers.show', compact('supplier', 'recentPurchases', 'performance', 'monthlyPurchases'));
+        return view('purchases.suppliers.show', compact('supplier', 'recentPurchases', 'performance', 'monthlyPurchases'));
     }
 
     /**
@@ -110,7 +110,7 @@ class SupplierController extends Controller
      */
     public function edit(Supplier $supplier)
     {
-        return view('inventory.suppliers.edit', compact('supplier'));
+        return view('purchases.suppliers.edit', compact('supplier'));
     }
 
     /**
@@ -143,7 +143,7 @@ class SupplierController extends Controller
         $data = $validator->validated();
         $this->supplierService->updateSupplier($supplier, $data);
 
-        return redirect()->route('inventory.suppliers.index')
+        return redirect()->route('purchases.suppliers.index')
             ->with('success', 'Supplier updated successfully!');
     }
 
@@ -154,10 +154,10 @@ class SupplierController extends Controller
     {
         try {
             $this->supplierService->deleteSupplier($supplier);
-            return redirect()->route('inventory.suppliers.index')
+            return redirect()->route('purchases.suppliers.index')
                 ->with('success', 'Supplier deleted successfully!');
         } catch (\Exception $e) {
-            return redirect()->route('inventory.suppliers.index')
+            return redirect()->route('purchases.suppliers.index')
                 ->with('error', $e->getMessage());
         }
     }
@@ -167,7 +167,7 @@ class SupplierController extends Controller
      */
     public function showImportForm()
     {
-        return view('inventory.suppliers.import');
+        return view('purchases.suppliers.import');
     }
 
     /**
@@ -191,7 +191,7 @@ class SupplierController extends Controller
 
             $importedCount = $import->getRowCount();
 
-            return redirect()->route('inventory.suppliers.index')
+            return redirect()->route('purchases.suppliers.index')
                 ->with('success', "Successfully imported {$importedCount} suppliers!");
 
         } catch (\Exception $e) {

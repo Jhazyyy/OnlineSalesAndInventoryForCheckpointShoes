@@ -26,7 +26,7 @@ class PurchaseOrderController extends Controller
         $orders = $this->orderService->getPaginatedOrders($request);
         $filterOptions = $this->orderService->getFilterOptions();
 
-        return view('inventory.purchase-orders.index', [
+        return view('purchases.purchase-orders.index', [
             'orders' => $orders,
             'suppliers' => $filterOptions['suppliers'],
             'products' => $filterOptions['products'],
@@ -39,7 +39,7 @@ class PurchaseOrderController extends Controller
     public function create()
     {
         $filterOptions = $this->orderService->getFilterOptions();
-        return view('inventory.purchase-orders.create', [
+        return view('purchases.purchase-orders.create', [
             'suppliers' => $filterOptions['suppliers'],
             'products' => $filterOptions['products'],
         ]);
@@ -82,7 +82,7 @@ class PurchaseOrderController extends Controller
         $data = $validator->validated();
         $order = $this->orderService->createOrder($data);
 
-        return redirect()->route('inventory.purchase-orders.show', $order->order_id)
+        return redirect()->route('purchases.purchase-orders.show', $order->order_id)
             ->with('success', 'Purchase order created successfully!');
     }
 
@@ -92,7 +92,7 @@ class PurchaseOrderController extends Controller
     public function show(PurchaseOrder $order)
     {
         $order->load(['supplier', 'items.product']);
-        return view('inventory.purchase-orders.show', compact('order'));
+        return view('purchases.purchase-orders.show', compact('order'));
     }
 
     /**
@@ -102,7 +102,7 @@ class PurchaseOrderController extends Controller
     {
         $order->load(['supplier', 'items.product']);
         $filterOptions = $this->orderService->getFilterOptions();
-        return view('inventory.purchase-orders.edit', [
+        return view('purchases.purchase-orders.edit', [
             'order' => $order,
             'suppliers' => $filterOptions['suppliers'],
             'products' => $filterOptions['products'],
@@ -146,7 +146,7 @@ class PurchaseOrderController extends Controller
         $data = $validator->validated();
         $this->orderService->updateOrder($order, $data);
 
-        return redirect()->route('inventory.purchase-orders.show', $order->order_id)
+        return redirect()->route('purchases.purchase-orders.show', $order->order_id)
             ->with('success', 'Purchase order updated successfully!');
     }
 
@@ -157,10 +157,10 @@ class PurchaseOrderController extends Controller
     {
         try {
             $this->orderService->deleteOrder($order);
-            return redirect()->route('inventory.purchase-orders.index')
+            return redirect()->route('purchases.purchase-orders.index')
                 ->with('success', 'Purchase order deleted successfully!');
         } catch (\Exception $e) {
-            return redirect()->route('inventory.purchase-orders.index')
+            return redirect()->route('purchases.purchase-orders.index')
                 ->with('error', $e->getMessage());
         }
     }
@@ -246,7 +246,7 @@ class PurchaseOrderController extends Controller
         $reportData = $this->orderService->getReceivingReport($filters);
         $filterOptions = $this->orderService->getFilterOptions();
         
-        return view('inventory.purchase-orders.receiving-report', [
+        return view('purchases.purchase-orders.receiving-report', [
             'reportData' => $reportData,
             'suppliers' => $filterOptions['suppliers'],
         ]);

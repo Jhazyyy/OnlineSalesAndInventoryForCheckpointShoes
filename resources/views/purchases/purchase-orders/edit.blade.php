@@ -24,7 +24,7 @@
             </div>
 
             <!-- Form Section -->
-            <form method="POST" action="{{ route('inventory.purchase-orders.update', $order->order_id) }}" id="orderForm">
+            <form method="POST" action="{{ route('purchases.purchase-orders.update', $order->order_id) }}" id="orderForm">
                 @csrf
                 @method('PUT')
 
@@ -305,7 +305,7 @@
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center justify-end space-x-3">
-                            <a href="{{ route('inventory.purchase-orders.show', $order->order_id) }}"
+                            <a href="{{ route('purchases.purchase-orders.show', $order->order_id) }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Cancel
                             </a>
