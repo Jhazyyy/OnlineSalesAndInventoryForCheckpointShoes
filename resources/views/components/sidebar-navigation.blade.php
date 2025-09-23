@@ -65,7 +65,7 @@
                             title="Composite Products" size="small" /> --}}
 
                         <!-- Stock Management -->
-                        <x-nav-item route="inventory.product_stocks.index" route-pattern="inventory.product_stocks.*"
+                        <x-nav-item route="inventory.product_stock_adjustment.index" route-pattern="inventory.product_stock_adjustment.*"
                             :icon="App\Helpers\NavigationHelper::getIcon('stock-adjustment', 'w-4 h-4 mr-3')"
                             title="Stock Adjustment" size="small" />
 

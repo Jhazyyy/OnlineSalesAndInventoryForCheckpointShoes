@@ -26,7 +26,7 @@ class StockController extends Controller
         $movements = $this->stockService->getPaginatedMovements($request);
         $filterOptions = $this->stockService->getFilterOptions();
 
-        return view('inventory.product_stocks.index', [
+        return view('inventory.product_stock_adjustment.index', [
             'movements' => $movements,
             'movement_types' => $filterOptions['movement_types'],
             'products' => $filterOptions['products'],
@@ -40,7 +40,7 @@ class StockController extends Controller
     public function create()
     {
         $products = Product::orderBy('product_name')->get(['product_id', 'product_name', 'product_brand', 'quantity']);
-        return view('inventory.product_stocks.create', compact('products'));
+        return view('inventory.product_stock_adjustment.create', compact('products'));
     }
 
     /**
@@ -66,7 +66,7 @@ class StockController extends Controller
         $result = $this->stockService->createStockAdjustment($validator->validated());
 
         if ($result['success']) {
-            return redirect()->route('inventory.product_stocks.index')
+            return redirect()->route('inventory.product_stock_adjustment.index')
                 ->with('success', $result['message']);
         } else {
             return redirect()->back()
@@ -81,7 +81,7 @@ class StockController extends Controller
     public function show(StockMovement $stock)
     {
         $stock->load(['product', 'user']);
-        return view('inventory.product_stocks.show', compact('stock'));
+        return view('inventory.product_stock_adjustment.show', compact('stock'));
     }
 
     /**
@@ -90,12 +90,12 @@ class StockController extends Controller
     public function edit(StockMovement $stock)
     {
         if ($stock->status !== StockMovement::STATUS_PENDING) {
-            return redirect()->route('inventory.product_stocks.index')
+            return redirect()->route('inventory.product_stock_adjustment.index')
                 ->with('error', 'Only pending movements can be edited.');
         }
 
         $products = Product::orderBy('product_name')->get(['product_id', 'product_name', 'product_brand', 'quantity']);
-        return view('inventory.product_stocks.edit', compact('stock', 'products'));
+        return view('inventory.product_stock_adjustment.edit', compact('stock', 'products'));
     }
 
     /**
@@ -104,7 +104,7 @@ class StockController extends Controller
     public function update(Request $request, StockMovement $stock)
     {
         if ($stock->status !== StockMovement::STATUS_PENDING) {
-            return redirect()->route('inventory.product_stocks.index')
+            return redirect()->route('inventory.product_stock_adjustment.index')
                 ->with('error', 'Only pending movements can be updated.');
         }
 
@@ -135,7 +135,7 @@ class StockController extends Controller
             'movement_date' => isset($data['movement_date']) ? Carbon::parse($data['movement_date']) : $stock->movement_date,
         ]);
 
-        return redirect()->route('inventory.product_stocks.index')
+        return redirect()->route('inventory.product_stock_adjustment.index')
             ->with('success', 'Stock movement updated successfully!');
     }
 
@@ -147,10 +147,10 @@ class StockController extends Controller
         $result = $this->stockService->deleteMovement($stock);
 
         if ($result['success']) {
-            return redirect()->route('inventory.product_stocks.index')
+            return redirect()->route('inventory.product_stock_adjustment.index')
                 ->with('success', $result['message']);
         } else {
-            return redirect()->route('inventory.product_stocks.index')
+            return redirect()->route('inventory.product_stock_adjustment.index')
                 ->with('error', $result['message']);
         }
     }
@@ -161,7 +161,7 @@ class StockController extends Controller
     public function showTransferForm()
     {
         $products = Product::orderBy('product_name')->get(['product_id', 'product_name', 'product_brand', 'quantity']);
-        return view('inventory.product_stocks.transfer', compact('products'));
+        return view('inventory.product_stock_adjustment.transfer', compact('products'));
     }
 
     /**
@@ -190,7 +190,7 @@ class StockController extends Controller
         $result = $this->stockService->createStockTransfer($validator->validated());
 
         if ($result['success']) {
-            return redirect()->route('inventory.product_stocks.index')
+            return redirect()->route('inventory.product_stock_adjustment.index')
                 ->with('success', $result['message']);
         } else {
             return redirect()->back()
@@ -207,7 +207,7 @@ class StockController extends Controller
         $products = Product::where('quantity', '>', 0)
                           ->orderBy('product_name')
                           ->get(['product_id', 'product_name', 'product_brand', 'quantity']);
-        return view('inventory.product_stocks.waste', compact('products'));
+        return view('inventory.product_stock_adjustment.waste', compact('products'));
     }
 
     /**
@@ -233,7 +233,7 @@ class StockController extends Controller
         $result = $this->stockService->recordWaste($validator->validated());
 
         if ($result['success']) {
-            return redirect()->route('inventory.product_stocks.index')
+            return redirect()->route('inventory.product_stock_adjustment.index')
                 ->with('success', $result['message']);
         } else {
             return redirect()->back()
@@ -263,7 +263,7 @@ class StockController extends Controller
 
         $analytics = $this->stockService->getStockAnalytics($startDate, $endDate);
 
-        return view('inventory.product_stocks.analytics', compact('analytics'));
+        return view('inventory.product_stock_adjustment.analytics', compact('analytics'));
     }
 
     /**
@@ -280,7 +280,7 @@ class StockController extends Controller
             $endDate
         );
 
-        return view('inventory.product_stocks.product-history', compact('history'));
+        return view('inventory.product_stock_adjustment.product-history', compact('history'));
     }
 
     /**
@@ -288,7 +288,7 @@ class StockController extends Controller
      */
     public function showImportForm()
     {
-        return view('inventory.product_stocks.import');
+        return view('inventory.product_stock_adjustment.import');
     }
 
     /**
@@ -313,7 +313,7 @@ class StockController extends Controller
 
             $importedCount = $import->getRowCount();
             
-            return redirect()->route('inventory.product_stocks.index')
+            return redirect()->route('inventory.product_stock_adjustment.index')
                 ->with('success', "Successfully processed {$importedCount} stock adjustments!");
 
         } catch (\Exception $e) {

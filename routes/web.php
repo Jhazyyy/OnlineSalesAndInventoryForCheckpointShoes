@@ -335,14 +335,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Stock Management Routes
-    Route::prefix('inventory/product_stocks')->name('inventory.product_stocks.')->group(function () {
+    Route::prefix('inventory/product_stock_adjustment')->name('inventory.product_stock_adjustment.')->group(function () {
         Route::get('/', [StockController::class, 'index'])->name('index');
         Route::get('/create', [StockController::class, 'create'])->name('create');
         Route::post('/', [StockController::class, 'store'])->name('store');
-        Route::get('/{product_stocks}', [StockController::class, 'show'])->name('show');
-        Route::get('/{product_stocks}/edit', [StockController::class, 'edit'])->name('edit');
-        Route::put('/{product_stocks}', [StockController::class, 'update'])->name('update');
-        Route::delete('/{product_stocks}', [StockController::class, 'destroy'])->name('destroy');
+        Route::get('/{product_stock_adjustment}', [StockController::class, 'show'])->name('show');
+        Route::get('/{product_stock_adjustment}/edit', [StockController::class, 'edit'])->name('edit');
+        Route::put('/{product_stock_adjustment}', [StockController::class, 'update'])->name('update');
+        Route::delete('/{product_stock_adjustment}', [StockController::class, 'destroy'])->name('destroy');
 
         // Stock movement operations
         Route::post('/{product_stocks}/confirm', [StockController::class, 'confirm'])->name('confirm');

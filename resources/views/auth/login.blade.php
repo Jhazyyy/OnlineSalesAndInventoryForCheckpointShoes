@@ -50,9 +50,9 @@
                         </a>
                     </div>
                 @endif
-            <div class="">
+                <x-primary-button>
                 {{ __('Log in') }}
-            </div>
+                </x-primary-button>
         </div>
     </form>
 </x-guest-layout>

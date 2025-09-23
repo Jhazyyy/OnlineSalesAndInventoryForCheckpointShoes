@@ -11,7 +11,7 @@
                                 </p>
                             </div>
                             <div class="flex flex-wrap gap-3 mt-4 sm:mt-0">
-                                <a href="{{ route('inventory.product_stocks.create') }}"
+                                <a href="{{ route('inventory.product_stock_adjustment.create') }}"
                                     class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -19,7 +19,7 @@
                                     </svg>
                                     Stock Adjustment
                                 </a>
-                                <a href="{{ route('inventory.product_stocks.transfer.form') }}"
+                                <a href="{{ route('inventory.product_stock_adjustment.transfer.form') }}"
                                     class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -27,7 +27,7 @@
                                     </svg>
                                     Transfer Stock
                                 </a>
-                                <a href="{{ route('inventory.product_stocks.waste.form') }}"
+                                <a href="{{ route('inventory.product_stock_adjustment.waste.form') }}"
                                     class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -43,7 +43,7 @@
 
                 <!-- Quick Actions Row -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <a href="{{ route('inventory.product_stocks.import') }}"
+                    <a href="{{ route('inventory.product_stock_adjustment.import') }}"
                         class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border dark:border-gray-700">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900">
@@ -61,7 +61,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('inventory.product_stocks.export') }}"
+                    <a href="{{ route('inventory.product_stock_adjustment.export') }}"
                         class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border dark:border-gray-700">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-indigo-100 dark:bg-indigo-900">
@@ -79,7 +79,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('inventory.product_stocks.analytics') }}"
+                    <a href="{{ route('inventory.product_stock_adjustment.analytics') }}"
                         class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border dark:border-gray-700">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-yellow-100 dark:bg-yellow-900">
@@ -117,7 +117,7 @@
                 <!-- Filters Section -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                     <div class="p-6">
-                        <form method="GET" action="{{ route('inventory.product_stocks.index') }}" class="space-y-4">
+                        <form method="GET" action="{{ route('inventory.product_stock_adjustment.index') }}" class="space-y-4">
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
                                 <!-- Search -->
                                 <div>
@@ -196,7 +196,7 @@
                                     </svg>
                                     Filter
                                 </button>
-                                <a href="{{ route('inventory.product_stocks.index') }}"
+                                <a href="{{ route('inventory.product_stock_adjustment.index') }}"
                                     class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     Clear
                                 </a>
@@ -322,17 +322,17 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex items-center space-x-2">
-                                                <a href="{{ route('inventory.product_stocks.show', $movement) }}"
+                                                <a href="{{ route('inventory.product_stock_adjustment.show', $movement) }}"
                                                     class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600">
                                                     View
                                                 </a>
                                                 @if($movement->status === 'pending')
-                                                    <a href="{{ route('inventory.product_stocks.edit', $movement) }}"
+                                                    <a href="{{ route('inventory.product_stock_adjustment.edit', $movement) }}"
                                                         class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-600">
                                                         Edit
                                                     </a>
                                                     <form method="POST"
-                                                        action="{{ route('inventory.product_stocks.confirm', $movement) }}"
+                                                        action="{{ route('inventory.product_stock_adjustment.confirm', $movement) }}"
                                                         class="inline">
                                                         @csrf
                                                         <button type="submit"
@@ -342,7 +342,7 @@
                                                         </button>
                                                     </form>
                                                     <form method="POST"
-                                                        action="{{ route('inventory.product_stocks.destroy', $movement) }}"
+                                                        action="{{ route('inventory.product_stock_adjustment.destroy', $movement) }}"
                                                         class="inline">
                                                         @csrf
                                                         @method('DELETE')

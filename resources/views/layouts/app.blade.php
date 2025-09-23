@@ -53,7 +53,7 @@
                 <header class="bg-gray-100 dark:bg-gray-800 shadow">
                     <div class="w-full mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
                         <div>{{ $header }}</div>
-                        {{-- <x-theme-toggle /> --}}
+                        <x-theme-toggle />
                     </div>
                 </header>
             @endisset
