@@ -25,7 +25,7 @@
             <!-- Filters Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
-                    <form method="GET" action="{{ route('inventory.purchase-receives.analytics') }}" class="space-y-4">
+                    <form method="GET" action="{{ route('purchases.purchase-receives.analytics') }}" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <!-- Start Date -->
                             <div>

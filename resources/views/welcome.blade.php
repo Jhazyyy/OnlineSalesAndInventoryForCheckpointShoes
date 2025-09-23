@@ -1,219 +1,339 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en" data-theme="light">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('appleicon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
     <link rel="manifest" href="{{ asset('site.webmanifest') }}">
-    <title>Checkpoint</title>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+    <title>Checkpoint: Sales and Inventory Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&family=Open+Sans:wght@300;400;600&display=swap');
 
-    <!-- Styles / Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+        .font-crimson {
+            font-family: 'Crimson Text', serif;
+        }
 
+        .font-open {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .harvard-red {
+            background-color: #A41034;
+        }
+        .login-blue{
+            background-color: #A41034;
+        }
+
+        .harvard-red-text {
+            color: #A41034;
+        }
+
+        .gradient-overlay {
+            background: linear-gradient(135deg, rgba(20, 16, 120, 0.9) 0%, rgba(21, 21, 10, 0.2) 100%);
+        }
+    </style>
 </head>
 
-<body class="dark:bg-gray-900 text-gray-900 flex p-6 lg:p-4 items-center min-h-screen flex-col">
-    <header class="w-full lg:max-w-7xl text-sm" x-data="{ mobileMenuOpen: false }">
-        @if (Route::has('login'))
-            <nav class="flex items-center justify-between mb-6">
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <x-application-logo class="block h-10 w-auto border-2" />
-                </div>
-
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center gap-4">
-                    <!-- Theme Toggle -->
-                    <x-theme-toggle />
-                    
-                    <!-- Auth Links -->
-                    @auth
-                        <a href="{{ url('/dashboard') }}"
-                            class="inline-flex px-5 py-2 dark:text-white border border-gray-500 hover:border-black text-black dark:border-gray-500 dark:hover:border-blue-400 rounded-md text-sm font-medium transition-colors duration-200">
-                            Back to Dashboard
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}"
-                            class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                            Log in
-                        </a>
-
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}"
-                                class="inline-flex items-center px-4 py-2 bg-gray-600 dark:bg-gray-700 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-gray-600 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                Register
-                            </a>
-                        @endif
-                    @endauth
-                </div>
-
-                <!-- Mobile menu button -->
-                <div class="md:hidden flex items-center gap-2">
-                    <x-theme-toggle />
-                    <button @click="mobileMenuOpen = !mobileMenuOpen" type="button" 
-                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-300 hover:text-gray-500 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-700 transition duration-150 ease-in-out">
-                        <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                            <path :class="{'hidden': mobileMenuOpen, 'inline-flex': !mobileMenuOpen }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                            <path :class="{'hidden': !mobileMenuOpen, 'inline-flex': mobileMenuOpen }" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-            </nav>
-            
-            <!-- Mobile menu -->
-            <div :class="{'block': mobileMenuOpen, 'hidden': !mobileMenuOpen}" class="md:hidden mb-4">
-                <div class="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-                    @auth
-                        <a href="{{ url('/dashboard') }}"
-                            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
-                            Back to Dashboard
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}"
-                            class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
-                            Log in
-                        </a>
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}"
-                                class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700">
-                                Register
-                            </a>
-                        @endif
-                    @endauth
-                </div>
+<body class="bg-slate-50 min-h-screen font-open">
+    <!-- Navigation -->
+    <div class="navbar bg-white shadow-lg border-b-2 border-red-100">
+        <div class="navbar-start">
+            <div class="dropdown">
+                <label tabindex="0" class="btn btn-ghost lg:hidden">
+                    <i class="fas fa-bars text-xl text-red-800"></i>
+                </label>
+                <ul tabindex="0"
+                    class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-xl bg-white rounded-lg w-52 border">
+                    <li><a href="#" class="text-gray-700 hover:text-blue-800">Home</a></li>
+                    <li><a href="#" class="text-gray-700 hover:text-blue-800">About</a></li>
+                    <li><a href="#features" class="text-gray-700 hover:text-blue-800">Features</a></li>
+                    <li><a href="#" class="text-gray-700 hover:text-blue-800">Get Started</a></li>
+                </ul>
             </div>
-        @endif
-        
-        <!-- Main Navigation -->
-        <nav class="mb-6">
-            <!-- Desktop Navigation -->
-            <div class="hidden md:flex flex-wrap justify-center gap-2 sm:gap-4">
-                @auth
-                    <a href="{{ route('dashboard') }}"
-                        class="font-semibold rounded-lg px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
-                        Dashboard
-                    </a>
-                    <a href="{{ route('inventory.products.index') }}"
-                        class="font-semibold rounded-lg px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
-                        Products
-                    </a>
-                    <a href="{{ route('sales.customers.index') }}"
-                        class="font-semibold rounded-lg px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
-                        Customers
-                    </a>
-                    <a href="{{ route('sales.orders.index') }}"
-                        class="font-semibold rounded-lg px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
-                        Orders
-                    </a>
-                    <a href="{{ route('inventory.product_stocks.index') }}"
-                        class="font-semibold rounded-lg px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
-                        Stock
-                    </a>
-                @else
-                    <a href="{{ route('login') }}"
-                        class="font-semibold rounded-lg px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
-                        Get Started
-                    </a>
-                    <a href="#features"
-                        class="font-semibold rounded-lg px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
-                        Features
-                    </a>
-                    <a href="#about"
-                        class="font-semibold rounded-lg px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
-                        About
-                    </a>
-                @endauth
-            </div>
-            
-            <!-- Mobile Navigation -->
-            <div class="md:hidden">
-                <div class="grid grid-cols-2 gap-2">
-                    @auth
-                        <a href="{{ route('dashboard') }}"
-                            class="font-semibold rounded-lg px-3 py-2 text-center text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
-                            Dashboard
-                        </a>
-                        <a href="{{ route('inventory.products.index') }}"
-                            class="font-semibold rounded-lg px-3 py-2 text-center text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
-                            Products
-                        </a>
-                        <a href="{{ route('sales.customers.index') }}"
-                            class="font-semibold rounded-lg px-3 py-2 text-center text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
-                            Customers
-                        </a>
-                        <a href="{{ route('sales.orders.index') }}"
-                            class="font-semibold rounded-lg px-3 py-2 text-center text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
-                            Orders
-                        </a>
-                        <a href="{{ route('inventory.product_stocks.index') }}"
-                            class="font-semibold rounded-lg px-3 py-2 text-center text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 col-span-2">
-                            Stock Management
-                        </a>
-                    @else
+            <a class="btn btn-ghost normal-case text-xl font-crimson text-gray-800 font-bold">
+                Checkpoint Shoes</a>
+                {{-- <i class="fas fa-university mr-2"></i> --}}
+        </div>
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1">
+                <li><a class="font-medium text-gray-700 hover:text-blue-800">Home</a></li>
+                <li><a class="font-medium text-gray-700 hover:text-blue-800">About</a></li>
+                <li><a class="font-medium text-gray-700 hover:text-blue-800">Features</a></li>
+                <li><a class="font-medium text-gray-700 hover:text-blue-800">Get Started</a></li>
+            </ul>
+        </div>
+        <div class="navbar-end">
+            <a href="{{ route('login') }}" class="btn login-blue text-white hover:bg-red-900 border-none">Login</a>
+        </div>
+    </div>
+
+    <!-- Hero Section with Harvard-style banner -->
+    <div class="relative min-h-[70vh] bg-cover bg-center"
+        style="background-image: url('https://scontent.fmnl9-4.fna.fbcdn.net/v/t39.30808-6/548295753_1379218370874128_4776008243320392307_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=fvMzOimZpNYQ7kNvwF1cd89&_nc_oc=AdkBED0OwUwLv2GVE6cCquohCM-H6XixYQcEg0uwXTYIltfbUHjraKs4uGc3B-fhjC8&_nc_zt=23&_nc_ht=scontent.fmnl9-4.fna&_nc_gid=w1EPeJvozhR4OZQ1ubjU0A&oh=00_AfbkuNeBC77ktVospP-iP5nYNJfAwQbCnCj4ozQ7UIAyhQ&oe=68D5E7DF');">
+        <div class="absolute inset-0 gradient-overlay"></div>
+        <div class="relative hero min-h-[70vh]">
+            <div class="hero-content text-center text-white p-4 md:p-8">
+                <div class="max-w-4xl">
+                    <h1 class="text-4xl md:text-4xl font-bold font-crimson mb-4">
+                        Welcome to Checkpoint Shoes – Over 50 Years of Quality and Craftsmanship
+                    </h1>
+                    <h2 class="text-xl md:text-3xl mb-6 font-crimson opacity-90">
+                        Proudly operating since the 1970s
+                    </h2>
+                    <p class="text-lg md:text-xl mb-8 max-w-4xl mx-auto leading-relaxed">
+                        {{-- Checkpoint Shoes by Felicel Shoe Manufacturing is a trusted name in the Philippine shoe
+                        industry—manufacturing, retailing, and wholesaling a wide range of authentic footwear and
+                        garments. Founded by first-generation shoemakers and now led by Mr. Neil Nepomuceno, our brand
+                        continues its legacy of craftsmanship and customer care. --}}
+                        With over 50 years in the Philippine shoe industry, Checkpoint Shoes by Felicel Shoe
+                        Manufacturing continues to deliver authentic footwear and garments — from dress and school shoes
+                        to safety and nursing footwear. Trusted by generations and led by Mr. Nepomuceno, our
+                        business proudly serves both in-store and online customers through Shopee, Lazada, TikTok, and
+                        Facebook.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
                         <a href="{{ route('login') }}"
-                            class="font-semibold rounded-lg px-3 py-2 text-center text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
+                            class="btn btn-lg bg-white text-blue-800 hover:bg-gray-100 border-none font-semibold">
                             Get Started
                         </a>
                         <a href="#features"
-                            class="font-semibold rounded-lg px-3 py-2 text-center text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200">
-                            Features
+                            class="btn btn-lg btn-outline text-white border-white hover:bg-white hover:text-blue-800">
+                            Explore Features
                         </a>
-                        <a href="#about"
-                            class="font-semibold rounded-lg px-3 py-2 text-center text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 col-span-2">
-                            About
-                        </a>
-                    @endauth
+                    </div>
                 </div>
-            </div>
-        </nav>
-    </header>
-
-    <div class="flex flex-row items-center lg:items-stretch w-full lg:max-w-7xl dark:text-white font-medium">
-        <div class="mt-10">
-            <h1 class="font-bold font-mono text-5xl mb-4">Welcome to Checkpoint Shoes <br> Inventory System</h1>
-            <div class="flex lg:flex-row dark:text-white mt-2 text-3xl">
-                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Repudiandae maxime illo porro natus
-                    adipisci beatae quasi voluptas commodi, maiores mollitia error illum, ad optio laudantium possimus
-                    sunt cupiditate tempora vel.</p>
-            </div>
-
-            {{-- Image Automatic Swipe --}}
-            <div
-                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 pt-6 lg:max-w-3xl lg:gap-4 overflow-hidden rounded-lg bg-red-300 dark:bg-red-900 bg-opacity-50 dark:bg-opacity-50 mt-4">
-                <div class="flex lg:flex-row m-2 border-2 border-blue-400 dark:dark:border-pink-800">
-                    <img src="just some image.png" alt="">
-                </div>
-                <div class="flex lg:flex-row m-2 border-2 border-blue-400 dark:border-pink-800">
-                    <img src="just some image.png" alt="">
-                </div>
-                <div class="flex lg:flex-row m-2 border-2 border-blue-400 dark:border-pink-800">
-                    <img src="just some image.png" alt="">
-                </div>
-                <div class="flex lg:flex-row m-2 border-2 border-blue-400 dark:border-pink-800">
-                    <img src="just some image.png" alt="">
-                </div>
-                <div class="flex lg:flex-row m-2 border-2 border-blue-400 dark:border-pink-800">
-                    <img src="just some image.png" alt="">
-                </div>
-                <div class="flex lg:flex-row m-2 border-2 border-blue-400 dark:border-pink-800">
-                    <img src="just some image.png" alt="">
-                </div>
-            </div>
-
-            <div class="mt-4">
-                {{-- Learn more button --}}
-                <a href="#"
-                    class="inline-flex items-center px-6 py-6 bg-black border dark:bg-blue-600 border-transparent rounded-md font-semibold text-base text-white  tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-offset-2 transition ease-in-out duration-150">
-                    Learn more...
-                </a>
             </div>
         </div>
     </div>
+
+    <!-- Traditions Section -->
+    <div class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold font-crimson text-blue-500 md:harvard-red-text mb-4">A Legacy of Footwear
+                    Excellence Since the 1970s</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto italic font-extralight">
+                    “Honoring the Past. Powering the Present. Stepping Into the Future.”
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="w-20 h-20 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-scroll text-3xl text-yellow-300"></i>
+                    </div>
+                    <h3 class="text-xl font-bold font-crimson mb-2">Heritage of Craftsmanship</h3>
+                    <p class="text-gray-600"><span>Over 50 years of shoemaking rooted in Filipino tradition.
+                            From our beginnings in the 1970s under Barry Shoes to today’s Checkpoint Shoes brand, we
+                            carry forward the legacy of first-generation shoemakers — combining skill, passion, and
+                            family
+                            tradition.</span> </p>
+                </div>
+                <div class="text-center">
+                    <div class="w-20 h-20 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-globe text-3xl text-blue-300"></i>
+                    </div>
+                    <h3 class="text-xl font-bold font-crimson mb-2">Everyday Impact</h3>
+                    <p class="text-gray-600">Serving communities, one pair at a time.
+                        <span>With hundreds of designs and daily orders fulfilled both online and in-store, our products
+                            support students, professionals, families, and frontline workers across the
+                            Philippines.</span>
+                    </p>
+                </div>
+                <div class="text-center">
+                    <div class="w-20 h-20 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-lightbulb text-3xl text-yellow-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold font-crimson mb-2">Driven by Innovation</h3>
+                    <p class="text-gray-600">Merging tradition with modern retail technology.
+                        We continue to evolve by integrating smart inventory systems, eCommerce platforms, and digital
+                        payment methods — ensuring efficiency, accuracy, and better service.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div id="features" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 font-crimson harvard-red-text">
+                Features
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="card bg-white shadow-xl border border-gray-200 hover:shadow-2xl transition-shadow">
+                    <figure class="px-10 pt-10">
+                        <div class="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center">
+                            <i class="fas fa-boxes-stacked text-4xl harvard-red-text"></i>
+                        </div>
+                    </figure>
+                    <div class="card-body items-center text-center">
+                        <h3 class="card-title text-xl font-crimson">Manage Inventory In Real-Time</h3>
+                        <p class="text-gray-500">
+                            Keep track of stock levels and ensure you never run out of your best sellers.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card bg-white shadow-xl border border-gray-200 hover:shadow-2xl transition-shadow">
+                    <figure class="px-10 pt-10">
+                        <div class="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center">
+                            <i class="fas fa-group-arrows-rotate text-4xl harvard-red-text"></i>
+                        </div>
+                    </figure>
+                    <div class="card-body items-center text-center">
+                        <h3 class="card-title text-xl font-crimson">Seamless eCommerce Integrations</h3>
+                        <p class="text-gray-500">
+                            Easily sync your inventory across top online sales platforms, including Shoppee, Lazada, and
+                            TikTok, making it simple to manage both your online and in-store stock.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card bg-white shadow-xl border border-gray-200 hover:shadow-2xl transition-shadow">
+                    <figure class="px-10 pt-10">
+                        <div class="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center">
+                            <i class="fa-brands fa-salesforce text-4xl harvard-red-text"></i>
+                        </div>
+                    </figure>
+                    <div class="card-body items-center text-center">
+                        <h3 class="card-title text-xl font-crimson">Track and Manage Sales With Ease</h3>
+                        <p class="text-gray-500">
+                            From daily transactions to detailed sales reports, our system helps you keep your business
+                            on track.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonials -->
+    {{-- <div class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 font-crimson harvard-red-text">
+                Voices from Harvard
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="card bg-gray-50 shadow-lg border">
+                    <div class="card-body">
+                        <div class="flex items-center mb-4">
+                            <div class="avatar">
+                                <div class="w-12 rounded-full">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80"
+                                        alt="Professor" />
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="font-bold font-crimson">Professor James Mitchell</h3>
+                                <p class="text-sm text-gray-600">Kennedy School of Government</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 italic">
+                            "This portal exemplifies Harvard's dedication to innovation in education. It seamlessly
+                            integrates
+                            our academic traditions with cutting-edge technology."
+                        </p>
+                        <div class="mt-3 text-amber-500">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-gray-50 shadow-lg border">
+                    <div class="card-body">
+                        <div class="flex items-center mb-4">
+                            <div class="avatar">
+                                <div class="w-12 rounded-full">
+                                    <img src="https://images.unsplash.com/photo-1494790108755-2616c5e83a78?auto=format&fit=crop&q=80"
+                                        alt="Student" />
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="font-bold font-crimson">Emily Rodriguez</h3>
+                                <p class="text-sm text-gray-600">Graduate Student, Harvard Business School</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 italic">
+                            "The platform's intuitive design and comprehensive features have transformed how I engage
+                            with my coursework and connect with the Harvard community."
+                        </p>
+                        <div class="mt-3 text-amber-500">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> --}}
+
+    <!-- Call to Action -->
+    <div class="py-16 harvard-red text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 font-crimson">
+                Let’s get started – Your next sale is just a click away!
+            </h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+                Start browsing, selling, and managing your inventory like a pro. We’re here to make running your shoe
+                and garment store easier, smarter, and more efficient.
+            </p>
+            <a href="{{ route('login') }}"
+                class="btn btn-lg bg-white text-red-800 hover:bg-gray-100 border-none font-semibold">
+                Access it now!
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer p-10 bg-gray-900 text-gray-300 justify-evenly">
+        <div>
+            <span class="footer-title text-white font-crimson">Quick Links</span>
+            <a class="link link-hover">Home</a>
+            <a class="link link-hover">Dashboard</a>
+            <a class="link link-hover">Inventory Management</a>
+            <a class="link link-hover">Reports</a>
+        </div>
+        <div>
+            <span class="footer-title text-white font-crimson">Checkpoint Details</span>
+            <a class="link link-hover">Features</a>
+            <a class="link link-hover">Technical Support</a>
+            <a class="link link-hover">User Guidelines</a>
+            <a class="link link-hover">Privacy & Security</a>
+        </div>
+        <div>
+            <span class="footer-title text-white font-crimson">CONTACT OR VISIT US</span>
+            <a class="link link-hover">#325 M.A. Street, Brgy. San Roque, Marikina City</a><iframe src="https://www.google.com/maps/embed?pb=!3m2!1sen!2sph!4v1758470274215!5m2!1sen!2sph!6m8!1m7!1sjUX36HvkV44xE2fAgfYowg!2m2!1d14.62575226224081!2d121.0981233589207!3f262.52615576382146!4f7.153406606787058!5f0.4003161831622405" width="300" height="250" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <a class="link link-hover">info@checkpoint.business</a>
+            <a class="link link-hover">+(02) 7006 4700</a>
+            <div class="grid grid-flow-col gap-4 mt-2">
+                <a><i class="fab fa-facebook-f text-lg hover:text-blue-400"></i></a>
+                <a><i class="fab fa-tiktok text-lg hover:text-blue-400"></i></a>
+                {{-- <a><i class="fab fa-linkedin text-lg hover:text-red-400"></i></a> --}}
+                {{-- <a><i class="fab fa-youtube text-lg hover:text-red-400"></i></a> --}}
+            </div>
+        </div>
+    </footer>
+    <footer class="footer footer-center p-4 bg-black text-gray-400">
+        <div>
+            <p class="font-crimson">© 2025 Checkpoint. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 
 </html>

@@ -141,8 +141,8 @@
                             title="Purchase Receives" size="small" />
 
                         <!-- Purchase Return -->
-                        <x-nav-item href="#"
-                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 10l-8 8v5h-2v-5l-8-8V2h18v8z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16l-6-6h12l-6 6z"></path></svg>'
+                        <x-nav-item route="purchases.purchase-returns.index" route-pattern="purchases.purchase-returns.*"
+                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg>'
                             title="Purchase Return" size="small" />
 
                         <!-- Payments Made -->

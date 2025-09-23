@@ -67,6 +67,14 @@ class Supplier extends Model
     }
 
     /**
+     * Get the purchase returns for the supplier.
+     */
+    public function purchaseReturns(): HasMany
+    {
+        return $this->hasMany(PurchaseReturn::class, 'supplier_id', 'supplier_id');
+    }
+
+    /**
      * Get the supplier's full address.
      */
     public function getFullAddressAttribute(): string
@@ -123,6 +131,46 @@ class Supplier extends Model
     }
 
     /**
+     * Get total value of purchase returns to this supplier.
+     */
+    public function getTotalReturnValueAttribute(): float
+    {
+        return $this->purchaseReturns()->sum('total_amount') ?? 0;
+    }
+
+    /**
+     * Get total number of purchase returns to this supplier.
+     */
+    public function getTotalReturnsAttribute(): int
+    {
+        return $this->purchaseReturns()->count();
+    }
+
+    /**
+     * Get the return rate (percentage of total purchases that were returned).
+     */
+    public function getReturnRateAttribute(): float
+    {
+        $totalPurchased = $this->total_purchased;
+        
+        if ($totalPurchased <= 0) {
+            return 0.0;
+        }
+        
+        return ($this->total_return_value / $totalPurchased) * 100;
+    }
+
+    /**
+     * Get the supplier's last return date.
+     */
+    public function getLastReturnDateAttribute(): ?Carbon
+    {
+        $lastReturn = $this->purchaseReturns()->latest('return_date')->first();
+
+        return $lastReturn ? $lastReturn->return_date : null;
+    }
+
+    /**
      * Scope a query to only include active suppliers.
      */
     public function scopeActive(Builder $query): Builder
@@ -164,7 +212,7 @@ class Supplier extends Model
      */
     public static function topSuppliers(int $limit = 10)
     {
-        return self::with(['purchases'])
+        return self::with(['purchases', 'purchaseReturns'])
             ->get()
             ->sortByDesc('total_purchased')
             ->take($limit);
@@ -202,5 +250,35 @@ class Supplier extends Model
         return self::whereHas('purchases', function ($query) use ($days) {
             $query->where('purchase_date', '>=', Carbon::now()->subDays($days));
         })->get();
+    }
+
+    /**
+     * Scope a query to only include suppliers with returns.
+     */
+    public function scopeWithReturns(Builder $query): Builder
+    {
+        return $query->whereHas('purchaseReturns');
+    }
+
+    /**
+     * Get suppliers with recent returns (within specified days).
+     */
+    public static function withRecentReturns(int $days = 30)
+    {
+        return self::whereHas('purchaseReturns', function ($query) use ($days) {
+            $query->where('return_date', '>=', Carbon::now()->subDays($days));
+        })->get();
+    }
+
+    /**
+     * Get suppliers with high return rates above the specified threshold.
+     */
+    public static function withHighReturnRates(float $threshold = 10.0)
+    {
+        return self::with(['purchases', 'purchaseReturns'])
+            ->get()
+            ->filter(function ($supplier) use ($threshold) {
+                return $supplier->return_rate >= $threshold;
+            });
     }
 }

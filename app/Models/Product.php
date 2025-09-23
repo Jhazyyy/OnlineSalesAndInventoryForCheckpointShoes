@@ -139,6 +139,14 @@ class Product extends Model
     }
 
     /**
+     * Get the purchase returns for the product.
+     */
+    public function purchaseReturns(): HasMany
+    {
+        return $this->hasMany(PurchaseReturn::class, 'product_id', 'product_id');
+    }
+
+    /**
      * Get the inventory alerts for the product.
      */
     public function inventoryAlerts(): HasMany
@@ -303,6 +311,14 @@ class Product extends Model
     public function getTotalReturnedAttribute(): int
     {
         return $this->returns()->sum('quantity') ?? 0;
+    }
+
+    /**
+     * Get the total quantity returned to suppliers.
+     */
+    public function getTotalPurchaseReturnedAttribute(): int
+    {
+        return $this->purchaseReturns()->sum('quantity') ?? 0;
     }
 
     /**

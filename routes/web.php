@@ -158,7 +158,7 @@ Route::get('dashboard', function () {
         ];
     }
 
-    // Return Statistics
+    // Sales Return Statistics
     try {
         $returnStats = [
             'total_returns' => \App\Models\Returns::count(),
@@ -178,6 +178,31 @@ Route::get('dashboard', function () {
             'today_returns' => 0,
             'this_week_returns' => 0,
             'this_month_returns' => 0,
+        ];
+    }
+
+    // Purchase Return Statistics
+    try {
+        $purchaseReturnStats = [
+            'total_purchase_returns' => \App\Models\PurchaseReturn::count(),
+            'pending_purchase_returns' => \App\Models\PurchaseReturn::pending()->count(),
+            'approved_purchase_returns' => \App\Models\PurchaseReturn::approved()->count(),
+            'processed_purchase_returns' => \App\Models\PurchaseReturn::where('return_status', 'processed')->count(),
+            'total_purchase_return_value' => \App\Models\PurchaseReturn::approved()->get()->sum('total_amount') ?? 0,
+            'today_purchase_returns' => \App\Models\PurchaseReturn::today()->count(),
+            'this_week_purchase_returns' => \App\Models\PurchaseReturn::thisWeek()->count(),
+            'this_month_purchase_returns' => \App\Models\PurchaseReturn::thisMonth()->count(),
+        ];
+    } catch (\Exception $e) {
+        $purchaseReturnStats = [
+            'total_purchase_returns' => 0,
+            'pending_purchase_returns' => 0,
+            'approved_purchase_returns' => 0,
+            'processed_purchase_returns' => 0,
+            'total_purchase_return_value' => 0,
+            'today_purchase_returns' => 0,
+            'this_week_purchase_returns' => 0,
+            'this_month_purchase_returns' => 0,
         ];
     }
 
@@ -231,6 +256,7 @@ Route::get('dashboard', function () {
         'customerStats',
         'purchaseStats',
         'returnStats',
+        'purchaseReturnStats',
         'supplierStats',
         'shipmentStats'
     ));
@@ -378,6 +404,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         // Analytics
         Route::get('/analytics', [PurchaseReceiveController::class, 'analytics'])->name('analytics');
+    });
+
+    // Purchase Returns Management Routes
+    Route::prefix('purchases/purchase-returns')->name('purchases.purchase-returns.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\PurchaseReturnsController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\PurchaseReturnsController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\PurchaseReturnsController::class, 'store'])->name('store');
+        Route::get('/{purchaseReturn}', [\App\Http\Controllers\PurchaseReturnsController::class, 'show'])->name('show');
+        Route::get('/{purchaseReturn}/edit', [\App\Http\Controllers\PurchaseReturnsController::class, 'edit'])->name('edit');
+        Route::put('/{purchaseReturn}', [\App\Http\Controllers\PurchaseReturnsController::class, 'update'])->name('update');
+        Route::delete('/{purchaseReturn}', [\App\Http\Controllers\PurchaseReturnsController::class, 'destroy'])->name('destroy');
+
+        // Status management routes
+        Route::post('/{purchaseReturn}/approve', [\App\Http\Controllers\PurchaseReturnsController::class, 'approve'])->name('approve');
+        Route::post('/{purchaseReturn}/reject', [\App\Http\Controllers\PurchaseReturnsController::class, 'reject'])->name('reject');
+        Route::post('/{purchaseReturn}/mark-as-processed', [\App\Http\Controllers\PurchaseReturnsController::class, 'markAsProcessed'])->name('mark-as-processed');
+        Route::post('/{purchaseReturn}/mark-as-refunded', [\App\Http\Controllers\PurchaseReturnsController::class, 'markAsRefunded'])->name('mark-as-refunded');
+
+        // Bulk operations
+        Route::post('/bulk-approve', [\App\Http\Controllers\PurchaseReturnsController::class, 'bulkApprove'])->name('bulk-approve');
+        Route::post('/bulk-reject', [\App\Http\Controllers\PurchaseReturnsController::class, 'bulkReject'])->name('bulk-reject');
+
+        // Analytics
+        Route::get('/analytics', [\App\Http\Controllers\PurchaseReturnsController::class, 'analytics'])->name('analytics');
     });
 
     // Sales Order Management Routes

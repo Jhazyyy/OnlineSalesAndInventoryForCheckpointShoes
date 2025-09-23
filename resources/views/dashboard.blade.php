@@ -105,7 +105,7 @@
                     </div>
 
                     <!-- Secondary Stats Row -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-6">
                         <!-- Purchases Card -->
                         <div class="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-lg">
                             <div class="flex items-center">
@@ -207,6 +207,34 @@
                                 </div>
                             </div>
                         </a>
+
+                        <!-- Purchase Returns Card -->
+                        <a href="{{ route('purchases.purchase-returns.index') }}" class="block">
+                            <div class="bg-pink-50 dark:bg-pink-900 p-4 rounded-lg hover:shadow-md transition-shadow duration-200 border border-pink-200 dark:border-pink-700 hover:border-pink-300 dark:hover:border-pink-600">
+                                <div class="flex items-center">
+                                    <div class="p-2 bg-pink-500 rounded-lg">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-sm font-medium text-pink-600 dark:text-pink-400">
+                                            Purchase Returns</p>
+                                        <p class="text-2xl font-semibold text-pink-900 dark:text-pink-100">
+                                            {{ $purchaseReturnStats['total_purchase_returns'] ?? 0 }}
+                                        </p>
+                                        <p class="text-xs text-pink-500 dark:text-pink-300 mt-1">
+                                            {{ $purchaseReturnStats['pending_purchase_returns'] ?? 0 }} pending
+                                            @if($purchaseReturnStats['approved_purchase_returns'] > 0)
+                                                • {{ $purchaseReturnStats['approved_purchase_returns'] }} approved
+                                            @endif
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
                     </div>
 
                     <!-- Detailed Shipment Statistics -->
@@ -271,6 +299,74 @@
                                         ₱{{ number_format($shipmentStats['total_shipping_cost'], 2) }}
                                     </p>
                                     <p class="text-xs text-gray-600 dark:text-gray-400">Total Cost</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- Detailed Purchase Return Statistics -->
+                    @if($purchaseReturnStats['total_purchase_returns'] > 0)
+                    <div class="mt-6">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Purchase Return Analytics</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                            <!-- Pending Purchase Returns -->
+                            <div class="bg-amber-50 dark:bg-amber-900 p-3 rounded-lg border border-amber-200 dark:border-amber-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-amber-900 dark:text-amber-100">
+                                        {{ $purchaseReturnStats['pending_purchase_returns'] }}
+                                    </p>
+                                    <p class="text-xs text-amber-600 dark:text-amber-400">Pending</p>
+                                </div>
+                            </div>
+
+                            <!-- Approved Purchase Returns -->
+                            <div class="bg-blue-50 dark:bg-blue-900 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-blue-900 dark:text-blue-100">
+                                        {{ $purchaseReturnStats['approved_purchase_returns'] }}
+                                    </p>
+                                    <p class="text-xs text-blue-600 dark:text-blue-400">Approved</p>
+                                </div>
+                            </div>
+
+                            <!-- Processed Purchase Returns -->
+                            <div class="bg-green-50 dark:bg-green-900 p-3 rounded-lg border border-green-200 dark:border-green-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-green-900 dark:text-green-100">
+                                        {{ $purchaseReturnStats['processed_purchase_returns'] }}
+                                    </p>
+                                    <p class="text-xs text-green-600 dark:text-green-400">Processed</p>
+                                </div>
+                            </div>
+
+                            <!-- Today Purchase Returns -->
+                            <div class="bg-purple-50 dark:bg-purple-900 p-3 rounded-lg border border-purple-200 dark:border-purple-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-purple-900 dark:text-purple-100">
+                                        {{ $purchaseReturnStats['today_purchase_returns'] }}
+                                    </p>
+                                    <p class="text-xs text-purple-600 dark:text-purple-400">Today</p>
+                                </div>
+                            </div>
+
+                            <!-- This Week Purchase Returns -->
+                            <div class="bg-indigo-50 dark:bg-indigo-900 p-3 rounded-lg border border-indigo-200 dark:border-indigo-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-indigo-900 dark:text-indigo-100">
+                                        {{ $purchaseReturnStats['this_week_purchase_returns'] }}
+                                    </p>
+                                    <p class="text-xs text-indigo-600 dark:text-indigo-400">This Week</p>
+                                </div>
+                            </div>
+
+                            <!-- Total Value -->
+                            <div class="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                                <div class="text-center">
+                                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                        ₱{{ number_format($purchaseReturnStats['total_purchase_return_value'], 2) }}
+                                    </p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400">Total Value</p>
                                 </div>
                             </div>
                         </div>
