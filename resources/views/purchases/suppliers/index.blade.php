@@ -10,7 +10,7 @@
                             <p class="text-gray-600 dark:text-gray-400">Manage your supplier database</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
-                            {{-- <a href="{{ route('inventory.suppliers.export', request()->query()) }}" 
+                            {{-- <a href="{{ route('purchases.suppliers.export', request()->query()) }}" 
                                class="inline-flex items-center px-4 py-2 bg-purple-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700 focus:bg-purple-700 active:bg-purple-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
@@ -143,8 +143,8 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     @if($suppliers->count() > 0)
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <div class="overflow-auto">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-blue-700">
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -180,7 +180,7 @@
                                 </thead>
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     @foreach($suppliers as $supplier)
-                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                        <tr class="hover:bg-blue-50 dark:hover:bg-gray-700">
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="flex items-center">
                                                     <div class="h-12 w-12 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">

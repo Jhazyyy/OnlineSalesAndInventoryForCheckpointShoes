@@ -430,6 +430,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/analytics', [\App\Http\Controllers\PurchaseReturnsController::class, 'analytics'])->name('analytics');
     });
 
+    // Purchase Payments Management Routes
+    Route::prefix('purchases/payments')->name('purchases.payments.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\PurchasePaymentController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\PurchasePaymentController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\PurchasePaymentController::class, 'store'])->name('store');
+        Route::get('/{payment}', [\App\Http\Controllers\PurchasePaymentController::class, 'show'])->name('show');
+        Route::get('/{payment}/edit', [\App\Http\Controllers\PurchasePaymentController::class, 'edit'])->name('edit');
+        Route::put('/{payment}', [\App\Http\Controllers\PurchasePaymentController::class, 'update'])->name('update');
+        Route::delete('/{payment}', [\App\Http\Controllers\PurchasePaymentController::class, 'destroy'])->name('destroy');
+
+        // Status management routes
+        Route::post('/{payment}/mark-completed', [\App\Http\Controllers\PurchasePaymentController::class, 'markCompleted'])->name('mark-completed');
+        Route::post('/{payment}/mark-cancelled', [\App\Http\Controllers\PurchasePaymentController::class, 'markCancelled'])->name('mark-cancelled');
+        
+        // AJAX routes
+        Route::get('/order/{orderId}/details', [\App\Http\Controllers\PurchasePaymentController::class, 'getOrderDetails'])->name('order-details');
+        Route::get('/supplier/{supplierId}/bills', [\App\Http\Controllers\PurchasePaymentController::class, 'getSupplierBills'])->name('supplier-bills');
+    });
+
     // Sales Order Management Routes
     Route::prefix('sales/orders')->name('sales.orders.')->group(function () {
         Route::get('/', [SalesOrderController::class, 'index'])->name('index');
