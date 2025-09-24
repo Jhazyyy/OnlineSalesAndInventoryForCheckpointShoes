@@ -276,4 +276,5 @@ RESTful API endpoints available for:
  #   c h e c k p o i n t s h o e s  
  #   c h e c k p o i n t s h o e s  
  #   c h e c k p o i n t s h o e s  
+ #   c h e c k p o i n t s h o e s  
  
