@@ -79,7 +79,7 @@
 
     <!-- Hero Section with Harvard-style banner -->
     <div class="relative min-h-[70vh] bg-cover bg-center"
-        style="background-image: url('https://scontent.fmnl9-4.fna.fbcdn.net/v/t39.30808-6/548295753_1379218370874128_4776008243320392307_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=fvMzOimZpNYQ7kNvwF1cd89&_nc_oc=AdkBED0OwUwLv2GVE6cCquohCM-H6XixYQcEg0uwXTYIltfbUHjraKs4uGc3B-fhjC8&_nc_zt=23&_nc_ht=scontent.fmnl9-4.fna&_nc_gid=w1EPeJvozhR4OZQ1ubjU0A&oh=00_AfbkuNeBC77ktVospP-iP5nYNJfAwQbCnCj4ozQ7UIAyhQ&oe=68D5E7DF');">
+        style="background-image: url('{{ asset('storage/background.jpg') }}');">
         <div class="absolute inset-0 gradient-overlay"></div>
         <div class="relative hero min-h-[70vh]">
             <div class="hero-content text-center text-white p-4 md:p-8">

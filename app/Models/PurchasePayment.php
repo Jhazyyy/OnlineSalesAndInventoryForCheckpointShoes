@@ -98,7 +98,7 @@ class PurchasePayment extends Model
      */
     public function purchaseOrder(): BelongsTo
     {
-        return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id', 'purchase_order_id');
+        return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id', 'order_id');
     }
 
     /**

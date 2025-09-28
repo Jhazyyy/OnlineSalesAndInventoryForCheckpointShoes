@@ -97,7 +97,7 @@ class PurchasePaymentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'supplier_id' => 'required|exists:suppliers,supplier_id',
-            'purchase_order_id' => 'nullable|exists:purchase_orders,purchase_order_id',
+            'purchase_order_id' => 'nullable|exists:purchase_orders,order_id',
             'bill_number' => 'nullable|string|max:255',
             'amount' => 'required|numeric|min:0.01',
             'bank_charges' => 'nullable|numeric|min:0',
@@ -175,7 +175,7 @@ class PurchasePaymentController extends Controller
         $suppliers = Supplier::where('status', 'active')->orderBy('company_name')->get();
         $purchaseOrders = PurchaseOrder::with('supplier')
                                 ->whereIn('status', ['pending', 'partially_received', 'approved'])
-                                ->orWhere('purchase_order_id', $payment->purchase_order_id)
+                                ->orWhere('order_id', $payment->purchase_order_id)
                                 ->orderBy('created_at', 'desc')
                                 ->get();
 
@@ -199,7 +199,7 @@ class PurchasePaymentController extends Controller
 
         $validator = Validator::make($request->all(), [
             'supplier_id' => 'required|exists:suppliers,supplier_id',
-            'purchase_order_id' => 'nullable|exists:purchase_orders,purchase_order_id',
+            'purchase_order_id' => 'nullable|exists:purchase_orders,order_id',
             'bill_number' => 'nullable|string|max:255',
             'amount' => 'required|numeric|min:0.01',
             'bank_charges' => 'nullable|numeric|min:0',
@@ -343,7 +343,7 @@ class PurchasePaymentController extends Controller
     protected function updateOrderPaymentStatus(PurchaseOrder $order)
     {
         $totalAmount = $order->total_amount;
-        $totalPaid = PurchasePayment::where('purchase_order_id', $order->purchase_order_id)
+        $totalPaid = PurchasePayment::where('purchase_order_id', $order->order_id)
                                    ->whereIn('status', ['completed'])
                                    ->sum('amount');
 
@@ -391,10 +391,10 @@ class PurchasePaymentController extends Controller
         $bills = PurchaseOrder::where('supplier_id', $supplierId)
                             ->whereIn('payment_status', ['pending', 'partial'])
                             ->orderBy('created_at', 'desc')
-                            ->get(['purchase_order_id', 'order_number', 'total_amount', 'payment_status', 'order_date']);
+                            ->get(['order_id', 'order_number', 'total_amount', 'payment_status', 'order_date']);
         
         $bills = $bills->map(function($bill) {
-            $paidAmount = PurchasePayment::where('purchase_order_id', $bill->purchase_order_id)
+            $paidAmount = PurchasePayment::where('purchase_order_id', $bill->order_id)
                                         ->whereIn('status', ['completed'])
                                         ->sum('amount');
             

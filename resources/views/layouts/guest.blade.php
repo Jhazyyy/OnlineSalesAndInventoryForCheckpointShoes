@@ -27,8 +27,9 @@
 
 <body class="font-sans text-gray-900 antialiased">
     
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-300">
-        <div class="w-1/3 mt-6 px-6 py-10 bg-gray-300 dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+    <div class="flex flex-col min-h-screen bg-cover bg-center sm:justify-center items-center pt-6 sm:pt-0 sm:min-h-screen"
+        style="background-image: url('{{ asset('storage/background.jpg') }}');">
+        <div class="w-1/3 mt-6 px-6 py-10 bg-gray-300 dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg sm:max-w-screen-md">
             <div class="flex justify-center">
                 <a href="/">
                     <x-application-logo class="w-30 h-20 object-cover" />

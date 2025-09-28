@@ -42,12 +42,12 @@
                                 @error('supplier_id')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
-                                <a href="#" class="text-sm text-blue-600 hover:text-blue-500 mt-1 inline-block">
+                                {{-- <a href="#" class="text-sm text-blue-600 hover:text-blue-500 mt-1 inline-block">
                                     <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                     View Vendor Details
-                                </a>
+                                </a> --}}
                             </div>
 
                             <!-- Payment # -->
@@ -198,9 +198,9 @@
                         <div class="mt-8 border-t pt-6">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Bills</h3>
                             
-                            <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-4">
+                            {{-- <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-4">
                                 <p class="text-sm text-yellow-800">(As on ) 1 USD = 0 USD <a href="#" class="text-blue-600 hover:underline ml-2">Clear Applied Amount</a></p>
-                            </div>
+                            </div> --}}
 
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">

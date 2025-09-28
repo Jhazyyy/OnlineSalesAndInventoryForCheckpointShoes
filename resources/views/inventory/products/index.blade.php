@@ -10,13 +10,6 @@
                             <p class="text-gray-600 dark:text-gray-400">Manage your product catalog</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
-                            <a href="{{ route('inventory.products.import') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                                </svg>
-                                Import Products
-                            </a>
                             <a href="{{ route('inventory.products.create') }}" 
                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,6 +159,7 @@
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     @foreach($products as $product)
                                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                            {{-- Product Image--}}
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 @if($product->image)
                                                     <img src="{{ asset('storage/' . $product->image) }}" 
@@ -179,15 +173,20 @@
                                                     </div>
                                                 @endif
                                             </td>
+                                            {{-- Product Name and Description --}}
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $product->product_name }}</div>
                                                 @if($product->description)
                                                     <div class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">{{ $product->description }}</div>
                                                 @endif
                                             </td>
+                                            {{-- Product Brand --}}
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $product->product_brand }}</td>
+                                            {{-- Product Quantity --}}
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ number_format($product->quantity) }}</td>
+                                            {{-- Product Price --}}
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">₱{{ number_format($product->price, 2) }}</td>
+                                            {{-- Last Supplier --}}
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 @if($product->lastSupplier)
                                                     <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $product->lastSupplier->supplier_name ?? $product->lastSupplier->name }}</div>
