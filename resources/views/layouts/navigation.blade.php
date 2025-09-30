@@ -82,7 +82,7 @@
                             {{-- <span class="text-gray-800 dark:text-gray-200 text-sm font-medium">
                                 {{ Auth::user()->name }}
                             </span> --}}
-                            <button
+                            {{-- <button
                                 class="inline-flex items-center border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-white bg-white dark:bg-gray-900 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
                                 <div class="ms-0">
                                     <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
@@ -92,7 +92,7 @@
                                             clip-rule="evenodd" />
                                     </svg>
                                 </div>
-                            </button>
+                            </button> --}}
                     </x-slot>
 
                     <x-slot name="content">

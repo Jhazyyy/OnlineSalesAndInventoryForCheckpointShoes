@@ -303,9 +303,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
 
         // Import routes
-        Route::get('/import/form', [ProductController::class, 'showImportForm'])->name('import');
-        Route::post('/import', [ProductController::class, 'import'])->name('import');
-        Route::get('/template/download', [ProductController::class, 'downloadTemplate'])->name('template');
+        // Route::get('/import/form', [ProductController::class, 'showImportForm'])->name('import');
+        // Route::post('/import', [ProductController::class, 'import'])->name('import');
+        // Route::get('/template/download', [ProductController::class, 'downloadTemplate'])->name('template');
 
         // API routes
         Route::post('/bulk-update-stock', [ProductController::class, 'bulkUpdateStock'])->name('bulk-update-stock');
