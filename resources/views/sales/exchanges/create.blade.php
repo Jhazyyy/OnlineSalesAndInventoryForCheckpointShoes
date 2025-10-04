@@ -57,7 +57,7 @@
                                     @foreach($customers as $customer)
                                         <option value="{{ $customer->customer_id }}" 
                                                 {{ old('customer_id', $salesOrder->customer_id ?? '') == $customer->customer_id ? 'selected' : '' }}>
-                                            {{ $customer->customer_name }} - {{ $customer->email ?? $customer->phone }}
+                                            {{ $customer->full_name }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -312,7 +312,7 @@
                                         onchange="updateOriginalItemPrice(this, ${originalItemIndex})">
                                     <option value="">Select product...</option>
                                     ${products.map(product => 
-                                        `<option value="${product.product_id}" data-price="${product.selling_price}">${product.product_name} (${product.sku})</option>`
+                                        `<option value="${product.product_id}" data-price="${product.selling_price}">${product.product_name} (${product.quantity})</option>`
                                     ).join('')}
                                 </select>
                             </div>
@@ -376,7 +376,7 @@
                                         onchange="updateNewItemPrice(this, ${newItemIndex})">
                                     <option value="">Select product...</option>
                                     ${products.map(product => 
-                                        `<option value="${product.product_id}" data-price="${product.selling_price}">${product.product_name} (${product.sku})</option>`
+                                        `<option value="${product.product_id}" data-price="${product.selling_price}">${product.product_name} (${product.quantity})</option>`
                                     ).join('')}
                                 </select>
                             </div>

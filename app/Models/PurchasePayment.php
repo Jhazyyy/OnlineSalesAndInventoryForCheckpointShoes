@@ -192,19 +192,19 @@ class PurchasePayment extends Model
     /**
      * Get the payment mode display name.
      */
-    public function getPaymentModeDisplayAttribute(): string
-    {
-        return match($this->payment_mode) {
-            'cash' => 'Cash',
-            'bank_transfer' => 'Bank Transfer',
-            'icici_bank' => 'ICICI Bank',
-            'standard_chartered' => 'Standard Chartered Bank',
-            'yes_bank' => 'YES Bank',
-            'kotak_bank' => 'Kotak Mahindra Bank',
-            'other' => 'Other',
-            default => ucwords(str_replace('_', ' ', $this->payment_mode)),
-        };
-    }
+    // public function getPaymentModeDisplayAttribute(): string
+    // {
+    //     return match($this->payment_mode) {
+    //         'cash' => 'Cash',
+    //         'bank_transfer' => 'Bank Transfer',
+    //         'icici_bank' => 'ICICI Bank',
+    //         'standard_chartered' => 'Standard Chartered Bank',
+    //         'yes_bank' => 'YES Bank',
+    //         'kotak_bank' => 'Kotak Mahindra Bank',
+    //         'other' => 'Other',
+    //         default => ucwords(str_replace('_', ' ', $this->payment_mode)),
+    //     };
+    // }
 
     /**
      * Check if the payment can be edited.

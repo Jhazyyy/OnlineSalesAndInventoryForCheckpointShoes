@@ -37,7 +37,7 @@ class ProductService
     public function processSale(int $productId, int $quantity, $date = null): array
     {
         $product = Product::find($productId);
-        
+
         if (!$product) {
             return [
                 'success' => false,
@@ -168,9 +168,9 @@ class ProductService
             'total_revenue' => $totalRevenue,
             'average_sale_amount' => $totalSales > 0 ? $totalRevenue / $totalSales : 0,
             'top_selling_products' => $topSellingProducts,
-            'sales_by_date' => $sales->groupBy(function($sale) {
+            'sales_by_date' => $sales->groupBy(function ($sale) {
                 return $sale->date->format('Y-m-d');
-            })->map(function($dailySales) {
+            })->map(function ($dailySales) {
                 return [
                     'count' => $dailySales->count(),
                     'revenue' => $dailySales->sum('total_amount')
@@ -190,7 +190,7 @@ class ProductService
         $highReturnProducts = Returns::mostReturnedProducts(5);
 
         return [
-            'low_stock' => $lowStockProducts->map(function($product) {
+            'low_stock' => $lowStockProducts->map(function ($product) {
                 return [
                     'id' => $product->product_id,
                     'name' => $product->full_name,
@@ -198,7 +198,7 @@ class ProductService
                     'status' => 'low_stock'
                 ];
             }),
-            'out_of_stock' => $outOfStockProducts->map(function($product) {
+            'out_of_stock' => $outOfStockProducts->map(function ($product) {
                 return [
                     'id' => $product->product_id,
                     'name' => $product->full_name,
@@ -206,7 +206,7 @@ class ProductService
                     'status' => 'out_of_stock'
                 ];
             }),
-            'oversold' => $oversoldProducts->map(function($product) {
+            'oversold' => $oversoldProducts->map(function ($product) {
                 return [
                     'id' => $product->product_id,
                     'name' => $product->full_name,
@@ -214,7 +214,7 @@ class ProductService
                     'status' => 'oversold'
                 ];
             }),
-            'high_returns' => $highReturnProducts->map(function($item) {
+            'high_returns' => $highReturnProducts->map(function ($item) {
                 return [
                     'id' => $item->product_id,
                     'name' => $item->product->full_name,
@@ -239,7 +239,7 @@ class ProductService
             'success' => $successCount === $totalCount,
             'updated_count' => $successCount,
             'total_count' => $totalCount,
-            'failed_products' => array_keys(array_filter($results, function($result) {
+            'failed_products' => array_keys(array_filter($results, function ($result) {
                 return !$result;
             })),
             'details' => $results
@@ -259,6 +259,10 @@ class ProductService
 
         if (!empty($filters['brand'])) {
             $query->where('product_brand', 'LIKE', "%{$filters['brand']}%");
+        }
+
+        if (!empty($filters['category'])) {
+            $query->where('product_category', 'LIKE', "%{$filters['category']}%");
         }
 
         if (isset($filters['min_price'])) {

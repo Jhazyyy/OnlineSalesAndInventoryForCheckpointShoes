@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
@@ -47,7 +47,7 @@
                                     @if($product->image)
                                         <img src="{{ asset('storage/' . $product->image) }}"
                                             alt="{{ $product->product_name }}"
-                                            class="w-full h-64 object-cover rounded-lg border">
+                                            class="w-full h-auto object-cover rounded-lg border">
                                     @else
                                         <div
                                             class="w-full h-64 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center border">
@@ -79,6 +79,14 @@
                                         <label
                                             class="block text-sm font-medium text-gray-500 dark:text-gray-400">Brand</label>
                                         <p class="text-lg text-gray-900 dark:text-white">{{ $product->product_brand }}
+                                        </p>
+                                    </div>
+
+                                    
+                                    <div>
+                                        <label
+                                            class="block text-sm font-medium text-gray-500 dark:text-gray-400">Category</label>
+                                        <p class="text-lg text-gray-900 dark:text-white">{{ $product->product_category }}
                                         </p>
                                     </div>
 

@@ -16,7 +16,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                                 </svg>
-                                Back to Stock Movements
+                                Back to Adjustments
                             </a>
                         </div>
                     </div>
@@ -55,8 +55,7 @@
                                 @foreach($products as $product)
                                     <option value="{{ $product->product_id }}" data-current-stock="{{ $product->quantity }}"
                                         {{ old('product_id') == $product->product_id ? 'selected' : '' }}>
-                                        {{ $product->product_name }} - {{ $product->product_brand }} (Current:
-                                        {{ $product->quantity }})
+                                        Product Name: {{ $product->product_name }} - Current Quantity: {{ $product->quantity }}
                                     </option>
                                 @endforeach
                             </select>

@@ -60,7 +60,10 @@ class ProductController extends Controller
         // Get unique brands for filter dropdown
         $brands = Product::distinct()->pluck('product_brand')->filter()->sort();
 
-        return view('inventory.products.index', compact('products', 'brands'));
+        // Get unique categories for filter dropdown
+        $categories = Product::distinct()->pluck('product_category')->filter()->sort();
+
+        return view('inventory.products.index', compact('products', 'brands', 'categories'));
     }
 
     /**
@@ -79,6 +82,7 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'product_name' => 'required|string|max:255',
             'product_brand' => 'required|string|max:255',
+            'product_category' => 'required|string|max:255',
             'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -114,7 +118,7 @@ class ProductController extends Controller
     {
         // Load relationships for detailed view
         $product->load(['sales', 'purchases', 'returns', 'lastSupplier', 'preferredSupplier']);
-        
+
         // Calculate additional metrics
         $stockMovement = $product->stock_movement;
         $recentSales = $product->sales()->latest()->take(5)->get();
@@ -139,6 +143,7 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'product_name' => 'required|string|max:255',
             'product_brand' => 'required|string|max:255',
+            'product_category' => 'required|string|max:255',
             'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -216,7 +221,7 @@ class ProductController extends Controller
             $import->import($request->file('excel_file'));
 
             $importedCount = $import->getRowCount();
-            
+
             return redirect()->route('inventory.products.index')
                 ->with('success', "Successfully imported {$importedCount} products!");
 
@@ -238,18 +243,18 @@ class ProductController extends Controller
 
         // Create sample data for template
         $sampleData = [
-            ['Product Name', 'Brand', 'Quantity', 'Price', 'Description'],
-            ['Sample Product 1', 'Sample Brand', 100, 29.99, 'Sample description'],
-            ['Sample Product 2', 'Another Brand', 50, 49.99, 'Another description'],
+            ['Product Name', 'Brand', 'Category', 'Quantity', 'Price', 'Description'],
+            ['Sample Product 1', 'Sample Brand', 'Sample Category', 100, 29.99, 'Sample description'],
+            ['Sample Product 2', 'Another Brand', 'Sample Category', 50, 49.99, 'Another description'],
         ];
 
-        $callback = function() use ($sampleData) {
+        $callback = function () use ($sampleData) {
             $file = fopen('php://output', 'w');
-            
+
             foreach ($sampleData as $row) {
                 fputcsv($file, $row);
             }
-            
+
             fclose($file);
         };
 

@@ -83,6 +83,7 @@ class Product extends Model
         $this->fillable = [
             'product_name',
             'product_brand',
+            'product_category',
             'quantity',
             'price',
             'image',
@@ -187,13 +188,14 @@ class Product extends Model
     }
 
     /**
-     * Scope a query to search products by name or brand.
+     * Scope a query to search products by name, brand, or category.
      */
     public function scopeSearch(Builder $query, string $search): Builder
     {
         return $query->where(function ($q) use ($search) {
             $q->where('product_name', 'LIKE', "%{$search}%")
-              ->orWhere('product_brand', 'LIKE', "%{$search}%");
+              ->orWhere('product_brand', 'LIKE', "%{$search}%")
+              ->orWhere('product_category', 'LIKE', "%{$search}%");
         });
     }
 
@@ -487,6 +489,14 @@ class Product extends Model
     public static function getByBrand(string $brand)
     {
         return self::where('product_brand', 'LIKE', "%{$brand}%")->get();
+    }
+
+        /**
+     * Get products by category.
+     */
+    public static function getByCategory(string $category)
+    {
+        return self::where('product_category', 'LIKE', "%{$category}%")->get();
     }
 
     /**

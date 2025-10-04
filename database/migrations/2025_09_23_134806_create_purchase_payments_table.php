@@ -21,13 +21,10 @@ return new class extends Migration
             $table->decimal('unused_amount', 12, 2)->default(0);
             $table->decimal('bank_charges', 10, 2)->default(0);
             $table->date('payment_date');
-            $table->enum('payment_method', ['cash', 'card', 'bank_transfer', 'check', 'online', 'gcash', 'other'])->default('cash');
-            $table->enum('payment_mode', ['cash', 'bank_transfer', 'icici_bank', 'standard_chartered', 'yes_bank', 'kotak_bank', 'other'])->default('cash');
-            $table->string('bank_account')->nullable();
+            $table->enum('payment_method', ['cash', 'card', 'bank_transfer', 'check', 'online', 'other'])->default('cash');
             $table->string('reference_number')->nullable();
             $table->enum('status', ['pending', 'completed', 'cancelled', 'refunded'])->default('pending');
             $table->text('notes')->nullable();
-            $table->string('paid_by')->nullable();
             $table->timestamps();
             
             // Foreign key constraints
@@ -38,7 +35,6 @@ return new class extends Migration
             $table->index(['supplier_id', 'payment_date']);
             $table->index(['status', 'payment_date']);
             $table->index('payment_method');
-            $table->index('payment_mode');
             $table->index('bill_number');
         });
     }

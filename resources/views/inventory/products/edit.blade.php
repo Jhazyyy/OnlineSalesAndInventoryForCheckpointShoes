@@ -10,7 +10,7 @@
                             <p class="text-gray-600 dark:text-gray-400">Update product information</p>
                         </div>
                         <div>
-                            <a href="{{ route('sales.customers.index') }}"
+                            <a href="{{ route('inventory.products.index') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -44,18 +44,35 @@
                             @enderror
                         </div>
 
-                        <!-- Product Brand -->
-                        <div>
-                            <label for="product_brand"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Brand <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" id="product_brand" name="product_brand"
-                                value="{{ old('product_brand', $product->product_brand) }}" required
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('product_brand') border-red-500 @enderror">
-                            @error('product_brand')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
+                        <!-- Brand and Category Row -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Product Brand -->
+                            <div>
+                                <label for="product_brand"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Brand <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="product_brand" name="product_brand"
+                                    value="{{ old('product_brand', $product->product_brand) }}" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('product_brand') border-red-500 @enderror">
+                                @error('product_brand')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Product Category -->
+                            <div>
+                                <label for="product_category"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Category <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="product_category" name="product_category"
+                                    value="{{ old('product_category', $product->product_category) }}" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('product_category') border-red-500 @enderror">
+                                @error('product_category')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
 
                         <!-- Quantity and Price Row -->
@@ -93,17 +110,30 @@
                             </div>
                         </div>
 
-                        <!-- Current Image Display -->
-                        @if($product->image)
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Current
-                                    Image</label>
-                                <div class="mt-1">
-                                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->product_name }}"
-                                        class="h-32 w-32 object-cover rounded-lg border">
+                        <div class="grid grid-cols-1 md:grid-rows-1 gap-6">
+                            <!-- Current Image Display -->
+                            @if($product->image)
+                                <div>
+                                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Current
+                                        Image</label>
+                                    <div class="mt-1">
+                                        <img src="{{ asset('storage/' . $product->image) }}"
+                                            alt="{{ $product->product_name }}"
+                                            class="w-48 h-auto object-cover rounded-lg border">
+                                    </div>
                                 </div>
+                            @endif
+
+                            <!-- Image Preview -->
+                            <div id="imagePreview" class="mt-4 hidden flex-col items-center">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Image Preview</label>
+                                <img id="previewImg" src="#" alt="Preview"
+                                    class="w-48 h-auto object-cover rounded-lg border">
                             </div>
-                        @endif
+                            @error('image')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
 
                         <!-- Product Image Upload -->
                         <div>
@@ -131,16 +161,6 @@
                                     <p class="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
                                 </div>
                             </div>
-
-                            <!-- Image Preview -->
-                            <div id="imagePreview" class="mt-4 hidden">
-                                <img id="previewImg" src="#" alt="Preview"
-                                    class="max-w-md h-auto  object-cover rounded-lg">
-                            </div>
-
-                            @error('image')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
                         </div>
 
                         <!-- Description -->

@@ -7,8 +7,8 @@
         x-transition:enter-end="opacity-100 transform translate-x-0"
         x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="opacity-100 transform translate-x-0"
-        x-transition:leave-end="opacity-0 transform -translate-x-full" @mouseenter="sidebarOpen = true"
-        @mouseleave="sidebarOpen = false"
+        x-transition:leave-end="opacity-0 transform -translate-x-full" 
+        {{-- @mouseenter="sidebarOpen = true" @mouseleave="sidebarOpen = false" --}}
         class="fixed top-14 left-0 h-screen w-64 bg-white dark:bg-gray-800 shadow-lg z-30 overflow-y-auto">
 
         <!-- Logo Section -->
@@ -30,14 +30,14 @@
             </div>
 
             <!-- Close Button -->
-            {{-- <button @click="sidebarOpen = true"
+            <button @click="sidebarOpen = false"
                 class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
                 <svg class="w-6 h-6 text-gray-900 dark:text-white" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
                 </svg>
-            </button> --}}
+            </button>
         </div>
 
         <!-- Navigation Menu -->

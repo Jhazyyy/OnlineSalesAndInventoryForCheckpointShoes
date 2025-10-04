@@ -61,7 +61,7 @@
                                     <option value="service_provider" {{ request('type') == 'service_provider' ? 'selected' : '' }}>Service Provider</option>
                                     @foreach($types as $type)
                                         <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>
-                                            {{ ucfirst($type) }}
+                                            {{ucfirst($type)}}
                                         </option>
                                     @endforeach
                                 </select>

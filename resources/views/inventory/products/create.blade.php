@@ -58,6 +58,20 @@
                             @enderror
                         </div>
 
+                        <!-- Product Category -->
+                        <div>
+                            <label for="product_category"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Category <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="product_category" name="product_category"
+                                value="{{ old('product_category') }}" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('product_category') border-red-500 @enderror">
+                            @error('product_category')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <!-- Quantity and Price Row -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Quantity -->

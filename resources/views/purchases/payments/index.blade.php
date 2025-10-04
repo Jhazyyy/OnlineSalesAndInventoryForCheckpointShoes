@@ -26,7 +26,7 @@
             <!-- Filters Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
-                    <form method="GET" action="{{ route('sales.payments.index') }}" class="space-y-4">
+                    <form method="GET" action="{{ route('purchases.payments.index') }}" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
                             <!-- Search -->
                             <div>
@@ -70,15 +70,13 @@
 
                             <!-- Supplier -->
                             <div>
-                                <label for="supplier_id"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Supplier</label>
+                                <label for="supplier_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Supplier</label>
                                 <select id="supplier_id" name="supplier_id"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     <option value="">All Supplier</option>
                                     @foreach($suppliers as $supplier)
-                                        <option value="{{ $supplier->supplier_id }}" {{ request('supplier_id') == $supplier->supplier_id ? 'selected' : '' }}>
-                                             {{ $supplier->supplier_name }}
-                                        </option>
+                                        <option value="{{ $supplier->supplier_id}}" {{ request('supplier_id') == $supplier->supplier_id ? 'selected' : '' }}>
+                                             {{$supplier->supplier_name}}
                                     @endforeach
                                 </select>
                             </div>
@@ -110,7 +108,7 @@
                                     </svg>
                                     Filter
                                 </button>
-                                <a href="{{ route('sales.payments.index') }}"
+                                <a href="{{ route('purchases.payments.index') }}"
                                     class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     Clear
                                 </a>
@@ -172,7 +170,7 @@
                                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                                    <a href="{{ route('sales.payments.show', $payment->payment_id) }}"
+                                                    <a href="{{ route('purchases.payments.show', $payment->payment_id) }}"
                                                         class="text-blue-600 hover:text-blue-900">
                                                         {{ $payment->payment_number }}
                                                     </a>
@@ -190,10 +188,10 @@
                                                     {{ $payment->customer->email }}</div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                @if($payment->salesOrder)
-                                                    <a href="{{ route('sales.orders.show', $payment->salesOrder->order_id) }}"
+                                                @if($payment->purchaseOrder)
+                                                    <a href="{{ route('purchases.purchases-order.show', $payment->salesOrder->order_id) }}"
                                                         class="text-blue-600 hover:text-blue-900">
-                                                        {{ $payment->salesOrder->order_number }}
+                                                        {{ $payment->purchaseOrder->order_number }}
                                                     </a>
                                                 @else
                                                     <span class="text-gray-400">-</span>
@@ -216,7 +214,7 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div class="flex space-x-2">
-                                                    <a href="{{ route('sales.payments.show', $payment->payment_id) }}"
+                                                    <a href="{{ route('purchases.payments.show', $payment->payment_id) }}"
                                                         class="text-indigo-600 hover:text-indigo-900">View</a>
                                                     @if($payment->canBeEdited())
                                                         <a href="{{ route('sales.payments.edit', $payment->payment_id) }}"
@@ -261,7 +259,7 @@
                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by recording your first
                                 payment.</p>
                             <div class="mt-6">
-                                <a href="{{ route('sales.payments.create') }}"
+                                <a href="{{ route('purchases.payments.create') }}"
                                     class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     Record First Payment
                                 </a>

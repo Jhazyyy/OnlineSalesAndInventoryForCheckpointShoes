@@ -26,7 +26,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <form method="GET" action="{{ route('inventory.products.index') }}" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
                             <!-- Search -->
                             <div>
                                 <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>
@@ -49,6 +49,20 @@
                                 </select>
                             </div>
 
+                            <!-- Category Filter -->
+                            <div>
+                                <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
+                                <select id="category" name="category" 
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">All Categories</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category }}" {{ request('category') == $category ? 'selected' : '' }}>
+                                            {{ $category }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+           
                             <!-- Stock Status -->
                             <div>
                                 <label for="stock_status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Stock Status</label>
@@ -136,6 +150,14 @@
                                             </a>
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'product_category', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
+                                                Category
+                                                @if(request('sort') === 'product_category')
+                                                    <span class="ml-1">{{ request('order') === 'asc' ? '↑' : '↓' }}</span>
+                                                @endif
+                                            </a>
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a href="{{ request()->fullUrlWithQuery(['sort' => 'quantity', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
                                                 Quantity
                                                 @if(request('sort') === 'quantity')
@@ -164,7 +186,7 @@
                                                 @if($product->image)
                                                     <img src="{{ asset('storage/' . $product->image) }}" 
                                                          alt="{{ $product->product_name }}" 
-                                                         class="h-16 w-16 object-cover rounded-lg">
+                                                         class="h-24 w-24 object-cover rounded-lg">
                                                 @else
                                                     <div class="h-16 w-16 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center">
                                                         <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,6 +204,8 @@
                                             </td>
                                             {{-- Product Brand --}}
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $product->product_brand }}</td>
+                                            {{-- Product Category --}}
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $product->product_category }}</td>
                                             {{-- Product Quantity --}}
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ number_format($product->quantity) }}</td>
                                             {{-- Product Price --}}
