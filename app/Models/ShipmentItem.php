@@ -204,10 +204,12 @@ class ShipmentItem extends Model
         return $this->quality_checked;
     }
 
+    
+
     /**
      * Mark item as quality checked.
      */
-    public function markAsQualityChecked(string $checkedBy = null): void
+    public function markAsQualityChecked(string $checkedBy): void
     {
         $this->update([
             'quality_checked' => true,

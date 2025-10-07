@@ -50,7 +50,7 @@ class PurchasePaymentController extends Controller
         $payments = $query->paginate(15)->withQueryString();
 
         // Get filter options
-        $purchasePayment = PurchasePayment::active()->orderBy('supplier_name')->get(['supplier_id', 'first_name', 'last_name']);
+        $suppliers = Supplier::active()->orderBy('supplier_name')->get(['supplier_id', 'supplier_name']);
         $paymentMethods = ['cash', 'card', 'bank_transfer', 'check', 'online', 'other'];
         $statuses = ['pending', 'completed', 'cancelled', 'refunded'];
 

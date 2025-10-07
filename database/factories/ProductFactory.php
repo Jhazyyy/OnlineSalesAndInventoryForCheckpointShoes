@@ -23,7 +23,7 @@ class ProductFactory extends Factory
         $discount = $this->faker->optional(0.3)->randomFloat(2, 1, $price * 0.3); // max 30% discount
 
         return [
-            'product_name'   => $this->faker->words(3, true), // "Wireless Bluetooth Speaker"
+            'product_name'   => ucwords($this->faker->words(3, true)), // "Wireless Bluetooth Speaker"
             'product_brand'  => $this->faker->company(),
             'quantity'       => $this->faker->numberBetween(0, 500),
             'price'          => $price,

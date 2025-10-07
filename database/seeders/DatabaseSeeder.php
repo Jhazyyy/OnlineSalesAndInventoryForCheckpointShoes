@@ -22,14 +22,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
         
-        // Product::factory()->create([
-        //     'product_name' => 'Sakong',
-        //     'product_brand' => 'Shoe',
-        //     'quantity' => 12,
-        //     'price' => 1500.60,
-        // ]);
 
-        // Product::factory()->count(6)->create();
         
         // Seed suppliers
         $this->call(SupplierSeeder::class);
@@ -38,6 +31,6 @@ class DatabaseSeeder extends Seeder
         $this->call(CustomerSeeder::class);
 
         // Seed products
-        $this->call(ProductSeeder::class);
+        // $this->call(ProductSeeder::class);
     }
 }

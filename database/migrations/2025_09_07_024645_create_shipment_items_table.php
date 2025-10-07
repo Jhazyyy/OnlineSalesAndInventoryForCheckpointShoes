@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreign('shipment_id')->references('shipment_id')->on('shipments')->onDelete('cascade');
             
             $table->unsignedBigInteger('sales_order_item_id')->nullable();
-            $table->foreign('sales_order_item_id')->references('id')->on('sales_order_items')->onDelete('set null');
+            $table->foreign('sales_order_item_id')->references('item_id')->on('sales_order_items')->onDelete('set null');
             
             $table->unsignedBigInteger('product_id');
             $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
@@ -50,6 +50,7 @@ return new class extends Migration
             $table->datetime('checked_at')->nullable();
             
             $table->timestamps();
+
             
             // Indexes
             $table->index(['shipment_id']);

@@ -32,9 +32,10 @@ class ProductsImport
                     Product::create([
                         'product_name' => $row[0] ?? '',
                         'product_brand' => $row[1] ?? '',
-                        'quantity' => (int)($row[2] ?? 0),
-                        'price' => (float)($row[3] ?? 0),
-                        'description' => $row[4] ?? null,
+                        'product_category' => $row[2] ?? '',
+                        'quantity' => (int)($row[3] ?? 0),
+                        'price' => (float)($row[4] ?? 0),
+                        'description' => $row[5] ?? null,
                     ]);
                     $this->rowCount++;
                 } catch (\Exception $e) {

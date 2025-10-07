@@ -56,12 +56,12 @@ class PurchasePayment extends Model
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function ($payment) {
             if (empty($payment->payment_number)) {
                 $payment->payment_number = static::generatePaymentNumber();
             }
-            
+
             // Set unused amount to the full amount initially
             if (is_null($payment->unused_amount)) {
                 $payment->unused_amount = $payment->amount;
@@ -75,13 +75,13 @@ class PurchasePayment extends Model
     public static function generatePaymentNumber(): string
     {
         $lastPayment = static::orderBy('payment_id', 'desc')->first();
-        
+
         if ($lastPayment && preg_match('/^(\d+)$/', $lastPayment->payment_number, $matches)) {
             $sequence = intval($matches[1]) + 1;
         } else {
             $sequence = mt_rand(10000, 99999); // Start with a random 5-digit number
         }
-        
+
         return (string) $sequence;
     }
 
@@ -132,15 +132,10 @@ class PurchasePayment extends Model
     {
         return $query->where('payment_method', $method);
     }
-
-    /**
-     * Scope a query to filter payments by payment mode.
-     */
-    public function scopeByMode(Builder $query, string $mode): Builder
+    public function scopeActive($query)
     {
-        return $query->where('payment_mode', $mode);
+        return $query->where('status', 'active');
     }
-
     /**
      * Scope a query to search payments.
      */
@@ -148,13 +143,13 @@ class PurchasePayment extends Model
     {
         return $query->where(function ($q) use ($search) {
             $q->where('payment_number', 'LIKE', "%{$search}%")
-              ->orWhere('reference_number', 'LIKE', "%{$search}%")
-              ->orWhere('bill_number', 'LIKE', "%{$search}%")
-              ->orWhereHas('supplier', function ($supplierQuery) use ($search) {
-                  $supplierQuery->where('company_name', 'LIKE', "%{$search}%")
-                              ->orWhere('contact_person', 'LIKE', "%{$search}%")
-                              ->orWhere('email', 'LIKE', "%{$search}%");
-              });
+                ->orWhere('reference_number', 'LIKE', "%{$search}%")
+                ->orWhere('bill_number', 'LIKE', "%{$search}%")
+                ->orWhereHas('supplier', function ($supplierQuery) use ($search) {
+                    $supplierQuery->where('supplier_name', 'LIKE', "%{$search}%")
+                        ->orWhere('contact_person', 'LIKE', "%{$search}%")
+                        ->orWhere('email', 'LIKE', "%{$search}%");
+                });
         });
     }
 
@@ -163,7 +158,7 @@ class PurchasePayment extends Model
      */
     public function getStatusBadgeClassAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'completed' => 'bg-green-100 text-green-800',
             'pending' => 'bg-yellow-100 text-yellow-800',
             'cancelled' => 'bg-red-100 text-red-800',
@@ -177,9 +172,9 @@ class PurchasePayment extends Model
      */
     public function getPaymentMethodDisplayAttribute(): string
     {
-        return match($this->payment_method) {
+        return match ($this->payment_method) {
             'cash' => 'Cash',
-            'card' => 'Credit/Debit Card', 
+            'card' => 'Credit/Debit Card',
             'bank_transfer' => 'Bank Transfer',
             'check' => 'Check',
             'online' => 'Online Payment',
@@ -188,23 +183,6 @@ class PurchasePayment extends Model
             default => ucfirst($this->payment_method),
         };
     }
-
-    /**
-     * Get the payment mode display name.
-     */
-    // public function getPaymentModeDisplayAttribute(): string
-    // {
-    //     return match($this->payment_mode) {
-    //         'cash' => 'Cash',
-    //         'bank_transfer' => 'Bank Transfer',
-    //         'icici_bank' => 'ICICI Bank',
-    //         'standard_chartered' => 'Standard Chartered Bank',
-    //         'yes_bank' => 'YES Bank',
-    //         'kotak_bank' => 'Kotak Mahindra Bank',
-    //         'other' => 'Other',
-    //         default => ucwords(str_replace('_', ' ', $this->payment_mode)),
-    //     };
-    // }
 
     /**
      * Check if the payment can be edited.
@@ -257,7 +235,7 @@ class PurchasePayment extends Model
         $amountToApply = min($this->unused_amount, $billAmount);
         $this->unused_amount -= $amountToApply;
         $this->save();
-        
+
         return $amountToApply;
     }
 }

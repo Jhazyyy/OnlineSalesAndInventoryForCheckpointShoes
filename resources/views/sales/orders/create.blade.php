@@ -143,7 +143,7 @@
                                                 <option value="{{ $product['id'] }}" data-price="{{ $product['price'] }}"
                                                     data-stock="{{ $product['stock'] }}">
                                                     {{ $product['name'] }} Stock: {{ $product['stock'] }}
-                                                    {{-- {{ $product->product_name }} (SKU: {{ $product->sku }}) - Stock:
+                                                    {{-- {{ $product->name }} (SKU: {{ $product->sku }}) - Stock:
                                                     {{ $product->stock_quantity }} --}}
                                                 </option>
                                             @endforeach
