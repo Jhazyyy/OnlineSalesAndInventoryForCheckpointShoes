@@ -51,7 +51,7 @@
                         title="Dashboard" />
 
                     <!-- Inventory Section -->
-                    <x-nav-item route-pattern="inventory.products.*|inventory.product_stocks.*|inventory.thresholds.*" :icon="App\Helpers\NavigationHelper::getIcon('inventory')"
+                    <x-nav-item route-pattern="inventory.products.*|inventory.product_stocks.*|inventory.thresholds.*|inventory.product-movement.*" :icon="App\Helpers\NavigationHelper::getIcon('inventory')"
                         title="Inventory" :is-dropdown="true">
 
                         <!-- Products -->
@@ -68,6 +68,11 @@
                         <x-nav-item route="inventory.product_stock_adjustment.index" route-pattern="inventory.product_stock_adjustment.*"
                             :icon="App\Helpers\NavigationHelper::getIcon('stock-adjustment', 'w-4 h-4 mr-3')"
                             title="Stock Adjustment" size="small" />
+
+                        <!-- Product Movement (Fast/Slow/Non-Moving) -->
+                        <x-nav-item route="inventory.product-movement.index" route-pattern="inventory.product-movement.*"
+                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>'
+                            title="Product Movement" size="small" />
 
                         <!-- Inventory Thresholds -->
                         <x-nav-item route="inventory.thresholds.index" route-pattern="inventory.thresholds.*"

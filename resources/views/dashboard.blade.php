@@ -4,7 +4,7 @@
         <div :class="navOpen ? 'flex-1' : 'w-full'" class="h-full overflow-y-auto">
             <div class="bg-white dark:bg-gray-800 min-h-full flex flex-col">
                 <div class="flex-1 p-6 text-gray-900 dark:text-gray-100">
-                    <h2 class="text-4xl font-bold mb-4">Welcome, {{ Auth::user()->name}}👋! </h2>
+                    <h2 class="text-4xl font-bold mb-4">Welcome, {{ Auth::user()->name}}! </h2>
 
                     <!-- Dashboard Stats Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">

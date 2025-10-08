@@ -58,6 +58,41 @@ class Product extends Model
     ];
 
     /**
+     * Movement tracking fields (used by product movement service)
+     */
+    protected $movementTrackingFillable = [
+        'movement_category',
+        'total_sales_quantity',
+        'movement_velocity',
+        'days_since_last_sale',
+        'last_sale_date',
+        'movement_analysis_start_date',
+        'movement_analysis_end_date',
+        'last_movement_check',
+        'is_promotional',
+        'promotional_reason'
+    ];
+
+    /**
+     * Costing fields (used by product costing service)
+     */
+    protected $costingFillable = [
+        'raw_material_cost',
+        'labor_cost',
+        'overhead_cost',
+        'manufacturing_cost',
+        'shipping_cost_per_unit',
+        'tax_amount_per_unit',
+        'handling_cost',
+        'total_cost',
+        'profit_margin',
+        'profit_amount',
+        'cost_calculation_method',
+        'last_cost_update',
+        'cost_notes'
+    ];
+
+    /**
      * Temporarily add threshold fields to fillable for threshold operations
      */
     public function enableThresholdFields()
@@ -72,6 +107,24 @@ class Product extends Model
     public function enableSupplierTrackingFields()
     {
         $this->fillable = array_merge($this->fillable, $this->supplierTrackingFillable);
+        return $this;
+    }
+
+    /**
+     * Temporarily add movement tracking fields to fillable
+     */
+    public function enableMovementTrackingFields()
+    {
+        $this->fillable = array_merge($this->fillable, $this->movementTrackingFillable);
+        return $this;
+    }
+
+    /**
+     * Temporarily add costing fields to fillable
+     */
+    public function enableCostingFields()
+    {
+        $this->fillable = array_merge($this->fillable, $this->costingFillable);
         return $this;
     }
 

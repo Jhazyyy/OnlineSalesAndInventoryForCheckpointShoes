@@ -312,6 +312,46 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/alerts', [ProductController::class, 'getAlertsData'])->name('alerts');
     });
 
+    // Product Movement Management Routes (Fast/Slow/Non-Moving)
+    Route::prefix('inventory/product-movement')->name('inventory.product-movement.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\ProductMovementController::class, 'index'])->name('index');
+        Route::get('/fast-moving', [\App\Http\Controllers\ProductMovementController::class, 'fastMoving'])->name('fast-moving');
+        Route::get('/slow-moving', [\App\Http\Controllers\ProductMovementController::class, 'slowMoving'])->name('slow-moving');
+        Route::get('/non-moving', [\App\Http\Controllers\ProductMovementController::class, 'nonMoving'])->name('non-moving');
+        Route::get('/promotional', [\App\Http\Controllers\ProductMovementController::class, 'promotional'])->name('promotional');
+        
+        // Movement calculation
+        Route::post('/calculate-all', [\App\Http\Controllers\ProductMovementController::class, 'calculateMovements'])->name('calculate-all');
+        Route::post('/{product}/calculate', [\App\Http\Controllers\ProductMovementController::class, 'calculateSingleMovement'])->name('calculate-single');
+        
+        // Promotional management
+        Route::post('/mark-for-promotion', [\App\Http\Controllers\ProductMovementController::class, 'markForPromotion'])->name('mark-for-promotion');
+        Route::post('/unmark-from-promotion', [\App\Http\Controllers\ProductMovementController::class, 'unmarkFromPromotion'])->name('unmark-from-promotion');
+        
+        // Analytics and export
+        Route::get('/analytics', [\App\Http\Controllers\ProductMovementController::class, 'analytics'])->name('analytics');
+        Route::get('/export', [\App\Http\Controllers\ProductMovementController::class, 'export'])->name('export');
+    });
+
+    // Product Costing Management Routes
+    Route::prefix('inventory/product-costing')->name('inventory.product-costing.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\ProductCostingController::class, 'index'])->name('index');
+        Route::get('/{product}/edit', [\App\Http\Controllers\ProductCostingController::class, 'edit'])->name('edit');
+        Route::put('/{product}', [\App\Http\Controllers\ProductCostingController::class, 'update'])->name('update');
+        
+        // Bulk operations
+        Route::post('/bulk-update', [\App\Http\Controllers\ProductCostingController::class, 'bulkUpdate'])->name('bulk-update');
+        
+        // Special views
+        Route::get('/low-margin', [\App\Http\Controllers\ProductCostingController::class, 'lowMargin'])->name('low-margin');
+        Route::get('/negative-margin', [\App\Http\Controllers\ProductCostingController::class, 'negativeMargin'])->name('negative-margin');
+        
+        // AJAX endpoints
+        Route::get('/{product}/suggest-price', [\App\Http\Controllers\ProductCostingController::class, 'suggestPrice'])->name('suggest-price');
+        Route::get('/{product}/cost-breakdown', [\App\Http\Controllers\ProductCostingController::class, 'costBreakdown'])->name('cost-breakdown');
+        Route::get('/analytics', [\App\Http\Controllers\ProductCostingController::class, 'analytics'])->name('analytics');
+    });
+
     // Supplier Management Routes
     Route::prefix('purchases/suppliers')->name('purchases.suppliers.')->group(function () {
         Route::get('/', [SupplierController::class, 'index'])->name('index');
