@@ -115,6 +115,120 @@ This document summarizes the implementation of missing features for the Checkpoi
 
 ---
 
+### 3. Reports Management Module
+
+**Objective #14**: Comprehensive reporting module with export capabilities for administrators and employees.
+
+#### Features Implemented:
+- **ReportService**: Advanced reporting engine with 500+ lines
+  - `generateSalesReport()` - Sales analytics with revenue, profit, top products, customers
+  - `generatePurchaseReport()` - Purchase analytics with supplier performance
+  - `generateInventoryReport()` - Stock status, valuation, movement categories
+  - `generateFinancialReport()` - P&L statement with monthly breakdown
+  - `generateMovementReport()` - Stock movement tracking and analysis
+  - Date range filtering for all reports
+  - Status grouping and aggregation
+  - Top products/customers/suppliers analysis
+  - Monthly performance breakdowns
+
+- **ReportController**: Complete reporting interface
+  - Reports dashboard with 5 report cards
+  - Individual report views with filtering
+  - PDF export functionality (Barryvdh/Laravel-DomPDF)
+  - Excel export functionality (Maatwebsite/Laravel-Excel)
+  - JSON data API for custom integrations
+  - Date range selectors on all reports
+  - Real-time data generation
+
+- **ReportExport Class**: Excel formatting
+  - Custom headings per report type
+  - Sheet titles and styling
+  - Auto-sizing columns
+  - Bold headers
+  - Freeze panes for large datasets
+
+- **Report Views**: Comprehensive Blade templates
+  - `reports/index.blade.php` - Main dashboard with 6 report cards
+  - `reports/sales.blade.php` - Sales analytics with 4 summary cards, order status, top products/customers, daily sales
+  - `reports/purchases.blade.php` - Purchase analytics with supplier performance, top products, daily summaries
+  - `reports/inventory.blade.php` - Inventory status with 5 cards, movement categories, low/out of stock alerts
+  - `reports/financial.blade.php` - P&L statement with revenue/cost/profit, monthly breakdown, payment/invoice status
+  - `reports/movement.blade.php` - Stock movement tracking with in/out/adjustment summaries, activity tables
+  - Date filter forms on all reports
+  - Export buttons (PDF/Excel) on all reports
+  - Beautiful gradient cards with icons
+  - Dark mode support
+
+- **Routes**: Full route structure
+  - `GET /reports` - Reports dashboard
+  - `GET /reports/sales` - Sales report view
+  - `GET /reports/purchases` - Purchase report view
+  - `GET /reports/inventory` - Inventory report view
+  - `GET /reports/financial` - Financial report view
+  - `GET /reports/movement` - Movement report view
+  - `POST /reports/export/pdf` - PDF export (all report types)
+  - `POST /reports/export/excel` - Excel export (all report types)
+  - `GET /reports/data/{type}` - JSON data API
+
+- **Navigation**: Updated sidebar Reports section
+  - Reports Dashboard link
+  - Sales Report link
+  - Purchase Report link
+  - Inventory Report link
+  - Financial Report link
+  - Stock Movement link
+
+#### Report Types & Data:
+
+**Sales Report**:
+- Summary: Total orders, revenue, profit, avg profit margin
+- Orders by status grouping
+- Top 10 best-selling products
+- Top 10 customers by spending
+- Daily sales breakdown
+
+**Purchase Report**:
+- Summary: Total orders, amount, items, avg order value
+- Orders by status grouping
+- Top 10 suppliers by spending
+- Most purchased products
+- Daily purchase breakdown
+
+**Inventory Report**:
+- Summary: Total products, stock, value, low stock, out of stock
+- Products by movement category (fast/slow/non-moving)
+- Products by stock status
+- Low stock alerts with reorder levels
+- Out of stock critical alerts
+- Top 10 highest value products
+
+**Financial Report (P&L)**:
+- Summary: Total revenue, cost, net profit, profit margin
+- Additional metrics: Orders, payments, invoices, avg order value
+- Monthly performance breakdown with revenue/cost/profit
+- Revenue by payment status
+- Revenue by invoice status
+
+**Stock Movement Report**:
+- Summary: Total movements, stock in, stock out, adjustments
+- Recent movements table with product/type/quantity/reference
+- Most active products with in/out totals
+- Movements by type grouping
+- Movement by product category
+- Daily movement trend
+
+#### Business Value:
+- Comprehensive business intelligence dashboards
+- Exportable reports for presentations and records
+- Date-range filtering for custom analysis periods
+- Real-time data for accurate decision-making
+- Multi-format exports (PDF, Excel, JSON)
+- Integration with Product Movement and Costing modules
+- Visual analytics with gradient cards and statistics
+- Dark mode for comfortable viewing
+
+---
+
 ## 📋 IMPLEMENTATION DETAILS
 
 ### Database Migrations
@@ -139,6 +253,11 @@ This document summarizes the implementation of missing features for the Checkpoi
    - Price optimization
    - Margin analysis
 
+3. **ReportService** (`app/Services/ReportService.php`)
+   - 500+ lines of reporting logic
+   - 5 comprehensive report generators
+   - Date filtering and aggregation
+
 ### Controllers Created
 1. **ProductMovementController** (`app/Http/Controllers/ProductMovementController.php`)
    - 10 action methods
@@ -147,6 +266,10 @@ This document summarizes the implementation of missing features for the Checkpoi
 2. **ProductCostingController** (`app/Http/Controllers/ProductCostingController.php`)
    - 10 action methods
    - Costing editor, analytics, suggestions
+
+3. **ReportController** (`app/Http/Controllers/ReportController.php`)
+   - 9 action methods
+   - Report views, PDF/Excel exports, JSON API
 
 ### Console Commands
 1. **CalculateProductMovements** (`app/Console/Commands/CalculateProductMovements.php`)

@@ -57,7 +57,7 @@
                     <li><a href="#" class="text-gray-700 hover:text-blue-800">Home</a></li>
                     <li><a href="#" class="text-gray-700 hover:text-blue-800">About</a></li>
                     <li><a href="#features" class="text-gray-700 hover:text-blue-800">Features</a></li>
-                    <li><a href="#" class="text-gray-700 hover:text-blue-800">Get Started</a></li>
+                    <li><a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-800">Get Started</a></li>
                 </ul>
             </div>
             <a class="btn btn-ghost normal-case text-xl font-crimson text-gray-800 font-bold">
@@ -68,8 +68,8 @@
             <ul class="menu menu-horizontal px-1">
                 <li><a class="font-medium text-gray-700 hover:text-blue-800">Home</a></li>
                 <li><a class="font-medium text-gray-700 hover:text-blue-800">About</a></li>
-                <li><a class="font-medium text-gray-700 hover:text-blue-800">Features</a></li>
-                <li><a class="font-medium text-gray-700 hover:text-blue-800">Get Started</a></li>
+                <li><a href="#features" class="font-medium text-gray-700 hover:text-blue-800">Features</a></li>
+                <li><a href="{{ route('login') }}" class="font-medium text-gray-700 hover:text-blue-800">Get Started</a></li>
             </ul>
         </div>
         <div class="navbar-end">

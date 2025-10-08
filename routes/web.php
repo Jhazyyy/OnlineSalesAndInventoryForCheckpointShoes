@@ -672,6 +672,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/export', [\App\Http\Controllers\InventoryThresholdController::class, 'export'])->name('export');
     });
 
+    // Reports Management Routes
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\ReportController::class, 'index'])->name('index');
+        
+        // Report types
+        Route::get('/sales', [\App\Http\Controllers\ReportController::class, 'sales'])->name('sales');
+        Route::get('/purchases', [\App\Http\Controllers\ReportController::class, 'purchases'])->name('purchases');
+        Route::get('/inventory', [\App\Http\Controllers\ReportController::class, 'inventory'])->name('inventory');
+        Route::get('/financial', [\App\Http\Controllers\ReportController::class, 'financial'])->name('financial');
+        Route::get('/movement', [\App\Http\Controllers\ReportController::class, 'movement'])->name('movement');
+        
+        // Export routes
+        Route::get('/{reportType}/export-pdf', [\App\Http\Controllers\ReportController::class, 'exportPdf'])->name('export-pdf');
+        Route::get('/{reportType}/export-excel', [\App\Http\Controllers\ReportController::class, 'exportExcel'])->name('export-excel');
+        Route::get('/{reportType}/data', [\App\Http\Controllers\ReportController::class, 'getData'])->name('data');
+    });
+
     // Settings Management Routes
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/', [\App\Http\Controllers\SettingsController::class, 'index'])->name('index');
@@ -699,10 +716,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         // API routes
         Route::get('/api/{category?}', [\App\Http\Controllers\SettingsController::class, 'getSettings'])->name('api');
+        
+        // Terms and Conditions Management
+        Route::prefix('terms')->name('terms.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\TermsAndConditionsController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\TermsAndConditionsController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\TermsAndConditionsController::class, 'store'])->name('store');
+            Route::get('/{term}', [\App\Http\Controllers\TermsAndConditionsController::class, 'show'])->name('show');
+            Route::get('/{term}/edit', [\App\Http\Controllers\TermsAndConditionsController::class, 'edit'])->name('edit');
+            Route::put('/{term}', [\App\Http\Controllers\TermsAndConditionsController::class, 'update'])->name('update');
+            Route::delete('/{term}', [\App\Http\Controllers\TermsAndConditionsController::class, 'destroy'])->name('destroy');
+            Route::post('/{term}/toggle-active', [\App\Http\Controllers\TermsAndConditionsController::class, 'toggleActive'])->name('toggle-active');
+        });
     });
+    
+    // User Terms Acceptance Routes (for logged-in users)
+    Route::get('/accept-terms', [\App\Http\Controllers\TermsAndConditionsController::class, 'showAcceptanceForm'])->name('terms.accept.form');
+    Route::post('/accept-terms', [\App\Http\Controllers\TermsAndConditionsController::class, 'acceptTerms'])->name('terms.accept');
 });
 
 // Public Shipment Tracking Route (no authentication required)
 Route::get('/sales/shipments/tracking', [\App\Http\Controllers\ShipmentController::class, 'tracking'])->name('sales.shipments.tracking');
+
+// Public Terms and Conditions Route (no authentication required)
+Route::get('/terms/{slug}', [\App\Http\Controllers\TermsAndConditionsController::class, 'showPublic'])->name('terms.public');
 
 require __DIR__ . '/auth.php';
