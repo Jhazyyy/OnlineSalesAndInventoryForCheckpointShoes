@@ -71,12 +71,14 @@
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <!-- Profile Icon with Name -->
-                        <div
-                            class="flex items-center space-x-2 px-2 py-1 rounded-md transition-colors">
+                        <div class="flex items-center space-x-2 px-2 py-1 rounded-md transition-colors">
                             <!-- Profile Image -->
-                            <img src="{{ Auth::user()->profile_photo_url ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) }}"
+                            <img src="{{ Auth::user()->profile_photo
+    ? asset('storage/' . Auth::user()->profile_photo)
+    : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) }}"
                                 alt="{{ Auth::user()->name }}"
                                 class="w-8 h-8 rounded-full border-2 border-gray-300 dark:border-gray-600" />
+
 
                             <!-- User Name -->
                             {{-- <span class="text-gray-800 dark:text-gray-200 text-sm font-medium">

@@ -17,8 +17,12 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+        // Create test user with default "Test User" name (no first_name/last_name)
+        // This will display as "Test User" via the accessor
         User::factory()->create([
             'name' => 'Test User',
+            'first_name' => null,
+            'last_name' => null,
             'email' => 'test@example.com',
         ]);
         

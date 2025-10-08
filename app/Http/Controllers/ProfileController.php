@@ -46,6 +46,14 @@ class ProfileController extends Controller
         unset($data['profile_photo']); // Remove from array to avoid overwriting
         $user->fill($data);
 
+        // Auto-update 'name' field based on first_name and last_name
+        if (isset($data['first_name']) || isset($data['last_name'])) {
+            $firstName = $data['first_name'] ?? $user->first_name ?? '';
+            $lastName = $data['last_name'] ?? $user->last_name ?? '';
+            $fullName = trim($firstName . ' ' . $lastName);
+            $user->name = $fullName ?: 'Test User';
+        }
+
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
         }

@@ -1,22 +1,22 @@
 <x-app-layout>
     <div class="py-6">
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
-            
+
             <!-- Success Message -->
             @if (session('status') === 'profile-updated')
-                <div x-data="{ show: true }" 
-                     x-show="show" 
-                     x-init="setTimeout(() => show = false, 3000)"
-                     class="mb-4 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-200 px-4 py-3 rounded-lg shadow-lg">
+                <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)"
+                    class="mb-4 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-200 px-4 py-3 rounded-lg shadow-lg">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clip-rule="evenodd"></path>
                         </svg>
                         <span class="font-medium">Profile updated successfully!</span>
                     </div>
                 </div>
             @endif
-            
+
             <!-- Profile Card -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <!-- Gradient Header with Avatar -->
@@ -40,9 +40,8 @@
                                     enctype="multipart/form-data">
                                     @csrf
                                     @method('PATCH')
-                                    
-                                    <!-- Hidden fields to preserve existing data -->
-                                    <input type="hidden" name="name" value="{{ $user->name }}">
+
+                                    <!-- Hidden fields to preserve existing data (only include if ProfileUpdateRequest requires them) -->
                                     <input type="hidden" name="email" value="{{ $user->email }}">
                                     @if($user->first_name)
                                         <input type="hidden" name="first_name" value="{{ $user->first_name }}">
@@ -56,10 +55,11 @@
                                     @if($user->username)
                                         <input type="hidden" name="username" value="{{ $user->username }}">
                                     @endif
-                                    
+
                                     <input type="file" id="profile_photo_input" name="profile_photo" accept="image/*"
                                         class="hidden" onchange="previewAndSubmit(event)">
                                 </form>
+
 
                                 <!-- Display Image or Placeholder -->
                                 @if($user->profile_photo)
@@ -78,19 +78,22 @@
                                 @endif
 
                                 <!-- Overlay (appears on hover) -->
-                                <div
-                                    class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+                                <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
                                     id="hoverOverlay">
-                                    <span class="text-white text-sm">Change Photo</span>
+                                    <span class="text-white text-sm">Upload New Photo</span>
                                 </div>
-                                
+
                                 <!-- Loading Overlay -->
                                 <div id="loadingOverlay"
                                     class="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden">
                                     <div class="text-white text-center">
-                                        <svg class="animate-spin h-8 w-8 mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        <svg class="animate-spin h-8 w-8 mx-auto mb-2"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
                                         </svg>
                                         <span class="text-xs">Uploading...</span>
                                     </div>
@@ -164,7 +167,7 @@
                     <!-- User Name Display -->
                     <div class="mb-6">
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $user->name }}</h2>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Update Your Photo and Personal Details.
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Update your photo and personal information.
                         </p>
                     </div>
 

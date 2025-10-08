@@ -28,7 +28,6 @@ class PurchasePayment extends Model
         'unused_amount',
         'payment_date',
         'payment_method',
-        'payment_mode',
         'bank_account',
         'reference_number',
         'bank_charges',

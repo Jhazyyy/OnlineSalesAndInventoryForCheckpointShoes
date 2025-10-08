@@ -33,7 +33,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <form method="GET" action="{{ route('settings.terms.index') }}" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
                             <!-- Search -->
                             <div>
                                 <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>

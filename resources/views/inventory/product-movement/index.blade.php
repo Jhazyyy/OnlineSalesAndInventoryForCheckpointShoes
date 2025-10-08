@@ -7,20 +7,26 @@
                     <div class="flex justify-between items-center mb-6">
                         <div>
                             <h2 class="text-3xl font-bold">Product Movement Analysis</h2>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Track fast, slow, and non-moving products</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Track fast, slow, and non-moving
+                                products</p>
                         </div>
                         <div class="flex gap-2">
-                            <form method="POST" action="{{ route('inventory.product-movement.calculate-all') }}" class="inline">
+                            <form method="POST" action="{{ route('inventory.product-movement.calculate-all') }}"
+                                class="inline">
                                 @csrf
-                                <select name="days" class="border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600">
+                                <select name="days"
+                                    class="border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600">
                                     <option value="30">Last 30 Days</option>
                                     <option value="60">Last 60 Days</option>
                                     <option value="90" selected>Last 90 Days</option>
                                     <option value="180">Last 180 Days</option>
                                 </select>
-                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                                    <svg class="w-5 h-5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                <button type="submit"
+                                    class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                    <svg class="w-5 h-5 inline mr-1" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                     </svg>
                                     Calculate Movement
                                 </button>
@@ -55,12 +61,16 @@
                                     </p>
                                 </div>
                                 <div class="p-3 bg-green-500 rounded-lg">
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                                     </svg>
                                 </div>
                             </div>
-                            <a href="{{ route('inventory.product-movement.fast-moving') }}" class="text-green-600 dark:text-green-400 text-sm mt-2 inline-block hover:underline">View Products →</a>
+                            <a href="{{ route('inventory.product-movement.fast-moving') }}"
+                                class="text-green-600 dark:text-green-400 text-sm mt-2 inline-block hover:underline">View
+                                Products →</a>
                         </div>
 
                         <!-- Slow Moving -->
@@ -76,12 +86,16 @@
                                     </p>
                                 </div>
                                 <div class="p-3 bg-yellow-500 rounded-lg">
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
                                     </svg>
                                 </div>
                             </div>
-                            <a href="{{ route('inventory.product-movement.slow-moving') }}" class="text-yellow-600 dark:text-yellow-400 text-sm mt-2 inline-block hover:underline">View Products →</a>
+                            <a href="{{ route('inventory.product-movement.slow-moving') }}"
+                                class="text-yellow-600 dark:text-yellow-400 text-sm mt-2 inline-block hover:underline">View
+                                Products →</a>
                         </div>
 
                         <!-- Non-Moving -->
@@ -97,12 +111,16 @@
                                     </p>
                                 </div>
                                 <div class="p-3 bg-red-500 rounded-lg">
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </div>
                             </div>
-                            <a href="{{ route('inventory.product-movement.non-moving') }}" class="text-red-600 dark:text-red-400 text-sm mt-2 inline-block hover:underline">View Products →</a>
+                            <a href="{{ route('inventory.product-movement.non-moving') }}"
+                                class="text-red-600 dark:text-red-400 text-sm mt-2 inline-block hover:underline">View
+                                Products →</a>
                         </div>
 
                         <!-- Promotional -->
@@ -118,27 +136,37 @@
                                     </p>
                                 </div>
                                 <div class="p-3 bg-purple-500 rounded-lg">
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                     </svg>
                                 </div>
                             </div>
-                            <a href="{{ route('inventory.product-movement.promotional') }}" class="text-purple-600 dark:text-purple-400 text-sm mt-2 inline-block hover:underline">View Products →</a>
+                            <a href="{{ route('inventory.product-movement.promotional') }}"
+                                class="text-purple-600 dark:text-purple-400 text-sm mt-2 inline-block hover:underline">View
+                                Products →</a>
                         </div>
                     </div>
 
                     <!-- Info Box -->
-                    <div class="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 p-4 rounded-lg mb-6">
+                    <div
+                        class="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 p-4 rounded-lg mb-6">
                         <div class="flex items-start">
                             <svg class="w-5 h-5 text-blue-500 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                    clip-rule="evenodd" />
                             </svg>
                             <div class="text-sm text-blue-700 dark:text-blue-300">
                                 <p><strong>Movement Thresholds:</strong></p>
                                 <ul class="list-disc list-inside mt-1 space-y-1">
-                                    <li><strong>Fast Moving:</strong> {{ $stats['thresholds']['fast_moving_threshold'] }}</li>
-                                    <li><strong>Slow Moving:</strong> {{ $stats['thresholds']['slow_moving_threshold'] }}</li>
-                                    <li><strong>Non-Moving:</strong> No sales in {{ $stats['thresholds']['non_moving_days'] }}</li>
+                                    <li><strong>Fast Moving:</strong>
+                                        {{ $stats['thresholds']['fast_moving_threshold'] }}</li>
+                                    <li><strong>Slow Moving:</strong>
+                                        {{ $stats['thresholds']['slow_moving_threshold'] }}</li>
+                                    <li><strong>Non-Moving:</strong> No sales in
+                                        {{ $stats['thresholds']['non_moving_days'] }}</li>
                                 </ul>
                                 <p class="mt-2"><strong>Last Analysis:</strong> {{ $stats['last_analysis'] }}</p>
                             </div>
@@ -150,23 +178,26 @@
                         <form method="GET" class="flex gap-4 items-end">
                             <div class="flex-1">
                                 <label class="block text-sm font-medium mb-1">Search Products</label>
-                                <input type="text" name="search" value="{{ request('search') }}" 
+                                <input type="text" name="search" value="{{ request('search') }}"
                                     placeholder="Search by name, brand, or category..."
                                     class="w-full border rounded px-3 py-2 dark:bg-gray-600 dark:border-gray-500">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">Category</label>
-                                <select name="category" class="border rounded px-3 py-2 dark:bg-gray-600 dark:border-gray-500">
+                                <select name="category"
+                                    class="border rounded px-3 py-2 dark:bg-gray-600 dark:border-gray-500">
                                     <option value="all" {{ $category === 'all' ? 'selected' : '' }}>All Products</option>
                                     <option value="fast" {{ $category === 'fast' ? 'selected' : '' }}>Fast Moving</option>
                                     <option value="slow" {{ $category === 'slow' ? 'selected' : '' }}>Slow Moving</option>
-                                    <option value="non-moving" {{ $category === 'non-moving' ? 'selected' : '' }}>Non-Moving</option>
+                                    <option value="non-moving" {{ $category === 'non-moving' ? 'selected' : '' }}>
+                                        Non-Moving</option>
                                 </select>
                             </div>
                             <button type="submit" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">
                                 Filter
                             </button>
-                            <a href="{{ route('inventory.product-movement.index') }}" class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded">
+                            <a href="{{ route('inventory.product-movement.index') }}"
+                                class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded">
                                 Clear
                             </a>
                         </form>
@@ -177,21 +208,38 @@
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Product</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Category</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Stock</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Movement</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Velocity</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Last Sale</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                                        Product</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                                        Category</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                                        Stock</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                                        Movement</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                                        Velocity</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                                        Last Sale</th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                                        Status</th>
+                                    <th
+                                        class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
+                                        Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                                 @forelse($products as $product)
                                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                         <td class="px-6 py-4">
-                                            <div class="font-medium text-gray-900 dark:text-white">{{ $product->product_name }}</div>
+                                            <div class="font-medium text-gray-900 dark:text-white">
+                                                {{ $product->product_name }}</div>
                                             <div class="text-sm text-gray-500">{{ $product->product_brand }}</div>
                                         </td>
                                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
@@ -202,19 +250,23 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             @if($product->movement_category === 'fast')
-                                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                <span
+                                                    class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                                                     Fast Moving
                                                 </span>
                                             @elseif($product->movement_category === 'slow')
-                                                <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                                <span
+                                                    class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
                                                     Slow Moving
                                                 </span>
                                             @elseif($product->movement_category === 'non-moving')
-                                                <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                                <span
+                                                    class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
                                                     Non-Moving
                                                 </span>
                                             @else
-                                                <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                                                <span
+                                                    class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
                                                     Uncategorized
                                                 </span>
                                             @endif
@@ -232,20 +284,24 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             @if($product->is_promotional)
-                                                <span class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                                                <span
+                                                    class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
                                                     Promotional
                                                 </span>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 text-right text-sm">
                                             <div class="flex justify-end gap-2">
-                                                <a href="{{ route('inventory.products.show', $product->product_id) }}" 
-                                                   class="text-blue-600 hover:text-blue-900 dark:text-blue-400">
+                                                <a href="{{ route('inventory.products.show', $product->product_id) }}"
+                                                    class="text-blue-600 hover:text-blue-900 dark:text-blue-400">
                                                     View
                                                 </a>
-                                                <form method="POST" action="{{ route('inventory.product-movement.calculate-single', $product->product_id) }}" class="inline">
+                                                <form method="POST"
+                                                    action="{{ route('inventory.product-movement.calculate-single', $product->product_id) }}"
+                                                    class="inline">
                                                     @csrf
-                                                    <button type="submit" class="text-green-600 hover:text-green-900 dark:text-green-400">
+                                                    <button type="submit"
+                                                        class="text-green-600 hover:text-green-900 dark:text-green-400">
                                                         Recalculate
                                                     </button>
                                                 </form>

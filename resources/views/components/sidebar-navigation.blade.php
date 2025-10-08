@@ -206,7 +206,7 @@
                         title="Integration" />
 
                     <!-- User Management -->
-                    <a href="{{ route('user-management.index') }}"
+                    {{-- <a href="{{ route('user-management.index') }}"
                         class="flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->routeIs('user-management.*') ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }} transition-colors duration-150">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -216,22 +216,21 @@
                                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         </svg>
                         User Management
-                    </a>
+                    </a> --}}
 
                     <!-- Profile -->
-                    <a href="{{ route('profile.edit') }}"
+                    {{-- <a href="{{ route('profile.edit') }}"
                         class="flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->routeIs('profile.*') ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }} transition-colors duration-150">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
                         Profile
-                    </a>
+                    </a> --}}
                 </nav>
             </div>
         </div>
     </div>
-
 
     <!-- Overlay for mobile -->
     <div x-show="sidebarOpen" @click="sidebarOpen = false"

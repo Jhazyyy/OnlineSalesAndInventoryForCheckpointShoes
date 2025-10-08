@@ -42,12 +42,6 @@
                                 @error('supplier_id')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
-                                {{-- <a href="#" class="text-sm text-blue-600 hover:text-blue-500 mt-1 inline-block">
-                                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    View Vendor Details
-                                </a> --}}
                             </div>
 
                             <!-- Payment # -->
@@ -68,37 +62,6 @@
                                 </div>
                             </div>
 
-                            <!-- Payment Mode -->
-                            <div>
-                                <label for="payment_mode" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Payment Mode <span class="text-red-500">*</span>
-                                </label>
-                                <div class="mt-1 flex gap-2">
-                                    <input type="text" id="payment_mode_display" 
-                                           value="PH" 
-                                           class="w-20 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" 
-                                           readonly>
-                                    <input type="text" name="bank_charges" 
-                                           placeholder="Bank Charges (if any)" 
-                                           value="{{ old('bank_charges', '') }}"
-                                           class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <button type="button" class="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-50">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                                <div class="mt-2">
-                                    <label class="flex items-center">
-                                        <input type="checkbox" id="pay_full_amount" 
-                                               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">
-                                            Pay full amount (₱<span id="full_amount">0.00</span>)
-                                        </span>
-                                    </label>
-                                </div>
-                            </div>
-
                             <!-- Payment Date -->
                             <div>
                                 <label for="payment_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -113,10 +76,10 @@
                                 @enderror
                             </div>
 
-                            <!-- Payment Mode Dropdown -->
+                            <!-- Payment Method Dropdown -->
                             <div>
-                                <label for="payment_mode" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Payment Mode
+                                <label for="payment_method" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Payment Method
                                 </label>
                                 <select id="payment_mode" name="payment_mode" 
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('payment_mode') border-red-500 @enderror">
@@ -149,7 +112,7 @@
                             <!-- Reference # -->
                             <div>
                                 <label for="reference_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Reference#
+                                    Reference #
                                 </label>
                                 <input type="text" id="reference_number" name="reference_number" 
                                        value="{{ old('reference_number') }}"
@@ -197,10 +160,7 @@
                         <!-- Bills Section -->
                         <div class="mt-8 border-t pt-6">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Bills</h3>
-                            
-                            {{-- <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-4">
-                                <p class="text-sm text-yellow-800">(As on ) 1 USD = 0 USD <a href="#" class="text-blue-600 hover:underline ml-2">Clear Applied Amount</a></p>
-                            </div> --}}
+                        
 
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -228,31 +188,6 @@
                                         </tr>
                                     </tfoot>
                                 </table>
-                            </div>
-
-                            <!-- Summary Box -->
-                            <div class="mt-6 bg-orange-50 border border-orange-200 rounded-lg p-4">
-                                <div class="grid grid-cols-2 gap-4 text-sm">
-                                    <div class="text-right text-gray-600 dark:text-gray-400">Amount Paid:</div>
-                                    <div class="font-medium text-gray-900 dark:text-white">0.00</div>
-                                    
-                                    <div class="text-right text-gray-600 dark:text-gray-400">Amount used for Payments:</div>
-                                    <div class="font-medium text-gray-900 dark:text-white">0.00</div>
-                                    
-                                    <div class="text-right text-gray-600 dark:text-gray-400">Amount Refunded:</div>
-                                    <div class="font-medium text-gray-900 dark:text-white">0.00</div>
-                                    
-                                    <div class="text-right text-gray-600 dark:text-gray-400 flex items-center justify-end">
-                                        <svg class="w-4 h-4 mr-1 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                        </svg>
-                                        Amount in Excess:
-                                    </div>
-                                    <div class="font-medium text-gray-900 dark:text-white">₱ 0.00</div>
-                                    
-                                    <div class="text-right text-gray-600 dark:text-gray-400">Bank Charges:</div>
-                                    <div class="font-medium text-gray-900 dark:text-white">₱ 0.00</div>
-                                </div>
                             </div>
                         </div>
 

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\ProductMovementService;
 use App\Models\Product;
+use App\Services\ProductMovementService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\JsonResponse;
 
 class ProductMovementController extends Controller
 {
@@ -24,29 +24,29 @@ class ProductMovementController extends Controller
     public function index(Request $request): View
     {
         $stats = $this->movementService->getMovementStatistics();
-        
+
         // Get filtered products
         $category = $request->get('category', 'all');
         $search = $request->get('search');
-        
+
         $query = Product::query();
-        
+
         if ($category !== 'all') {
             $query->where('movement_category', $category);
         }
-        
+
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('product_name', 'like', "%{$search}%")
-                  ->orWhere('product_brand', 'like', "%{$search}%")
-                  ->orWhere('product_category', 'like', "%{$search}%");
+                    ->orWhere('product_brand', 'like', "%{$search}%")
+                    ->orWhere('product_category', 'like', "%{$search}%");
             });
         }
-        
+
         $products = $query->orderBy('movement_velocity', 'desc')
-                          ->paginate(15)
-                          ->appends($request->query());
-        
+            ->paginate(15)
+            ->appends($request->query());
+
         return view('inventory.product-movement.index', compact('stats', 'products', 'category'));
     }
 
@@ -56,17 +56,17 @@ class ProductMovementController extends Controller
     public function calculateMovements(Request $request): RedirectResponse
     {
         $days = $request->get('days', 90);
-        
+
         try {
             $stats = $this->movementService->calculateAllProductMovements($days);
-            
-            return redirect()->back()->with('success', 
-                "Movement analysis completed! {$stats['updated']} products analyzed: " .
-                "{$stats['fast_moving']} fast-moving, {$stats['slow_moving']} slow-moving, " .
+
+            return redirect()->back()->with('success',
+                "Movement analysis completed! {$stats['updated']} products analyzed: ".
+                "{$stats['fast_moving']} fast-moving, {$stats['slow_moving']} slow-moving, ".
                 "{$stats['non_moving']} non-moving."
             );
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error calculating movements: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error calculating movements: '.$e->getMessage());
         }
     }
 
@@ -77,12 +77,12 @@ class ProductMovementController extends Controller
     {
         try {
             $this->movementService->calculateProductMovement($product);
-            
-            return redirect()->back()->with('success', 
+
+            return redirect()->back()->with('success',
                 "Movement calculated for {$product->product_name}. Category: {$product->movement_category}"
             );
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error calculating movement: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error calculating movement: '.$e->getMessage());
         }
     }
 
@@ -93,7 +93,7 @@ class ProductMovementController extends Controller
     {
         $products = $this->movementService->getProductsByCategory('fast', 15);
         $stats = $this->movementService->getMovementStatistics();
-        
+
         return view('inventory.product-movement.fast-moving', compact('products', 'stats'));
     }
 
@@ -104,7 +104,7 @@ class ProductMovementController extends Controller
     {
         $products = $this->movementService->getProductsByCategory('slow', 15);
         $stats = $this->movementService->getMovementStatistics();
-        
+
         return view('inventory.product-movement.slow-moving', compact('products', 'stats'));
     }
 
@@ -115,7 +115,7 @@ class ProductMovementController extends Controller
     {
         $products = $this->movementService->getProductsByCategory('non-moving', 15);
         $stats = $this->movementService->getMovementStatistics();
-        
+
         return view('inventory.product-movement.non-moving', compact('products', 'stats'));
     }
 
@@ -126,7 +126,7 @@ class ProductMovementController extends Controller
     {
         $products = $this->movementService->getPromotionalProducts(15);
         $stats = $this->movementService->getMovementStatistics();
-        
+
         return view('inventory.product-movement.promotional', compact('products', 'stats'));
     }
 
@@ -147,11 +147,11 @@ class ProductMovementController extends Controller
                 $count = 0;
                 foreach ($request->product_ids as $productId) {
                     $product = Product::find($productId);
-                    if ($product && !$product->is_promotional) {
-                        $reason = "Manually selected for promotion";
+                    if ($product && ! $product->is_promotional) {
+                        $reason = 'Manually selected for promotion';
                         $product->update([
                             'is_promotional' => true,
-                            'promotional_reason' => $reason
+                            'promotional_reason' => $reason,
                         ]);
                         $count++;
                     }
@@ -160,10 +160,10 @@ class ProductMovementController extends Controller
                 // Use criteria to auto-select
                 $count = $this->movementService->markProductsForPromotion($request->criteria ?? []);
             }
-            
+
             return redirect()->back()->with('success', "{$count} product(s) marked for promotion.");
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error marking products: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error marking products: '.$e->getMessage());
         }
     }
 
@@ -179,10 +179,10 @@ class ProductMovementController extends Controller
 
         try {
             $count = $this->movementService->unmarkPromotionalProducts($request->product_ids);
-            
+
             return redirect()->back()->with('success', "{$count} product(s) removed from promotions.");
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error unmarking products: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error unmarking products: '.$e->getMessage());
         }
     }
 
@@ -194,7 +194,7 @@ class ProductMovementController extends Controller
         $stats = $this->movementService->getMovementStatistics();
         $topFastMoving = $this->movementService->getTopFastMovingProducts(10);
         $needsAttention = $this->movementService->getProductsNeedingAttention(10);
-        
+
         return response()->json([
             'statistics' => $stats,
             'top_fast_moving' => $topFastMoving,
@@ -211,4 +211,3 @@ class ProductMovementController extends Controller
         return redirect()->back()->with('info', 'Export feature will be available in the Reports module.');
     }
 }
-

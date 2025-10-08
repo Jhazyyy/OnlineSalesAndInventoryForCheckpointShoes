@@ -40,7 +40,11 @@ class UserManagementController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
+        // Auto-generate full name from first_name and last_name
+        $fullName = trim($request->first_name . ' ' . $request->last_name);
+
         User::create([
+            'name' => $fullName,
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,

@@ -75,7 +75,7 @@
                         </div>
 
                         <!-- Quantity and Price Row -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Quantity -->
                             <div>
                                 <label for="quantity"
@@ -109,14 +109,14 @@
                             </div>
 
                             <!-- Status -->
-                            <div>
+                            {{-- <div>
                                 <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
                                 <select name="status" id="status"
                                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                                     <option value="active">Active</option>
                                     <option value="inactive">Inactive</option>
                                 </select>
-                            </div>
+                            </div> --}}
                         </div>
 
                         {{-- Product Image and Description --}}
