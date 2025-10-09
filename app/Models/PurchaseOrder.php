@@ -92,6 +92,14 @@ class PurchaseOrder extends Model
     }
 
     /**
+     * Get the payments for the purchase order.
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(PurchasePayment::class, 'purchase_order_id', 'order_id');
+    }
+
+    /**
      * Generate unique order number.
      */
     public static function generateOrderNumber(): string

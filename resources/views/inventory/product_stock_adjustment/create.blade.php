@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
@@ -55,7 +55,7 @@
                                 @foreach($products as $product)
                                     <option value="{{ $product->product_id }}" data-current-stock="{{ $product->quantity }}"
                                         {{ old('product_id') == $product->product_id ? 'selected' : '' }}>
-                                        Product Name: {{ $product->product_name }} - Current Quantity: {{ $product->quantity }}
+                                        {{ $product->product_name }}:{{ $product->quantity }}
                                     </option>
                                 @endforeach
                             </select>

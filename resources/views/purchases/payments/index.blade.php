@@ -6,8 +6,8 @@
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">All Payments</h2>
-                            <p class="text-gray-600 dark:text-gray-400">Manage and track supplier payments</p>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Payments Made</h2>
+                            <p class="text-gray-600 dark:text-gray-400">Manage and track vendor payments</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
                             <a href="{{ route('purchases.payments.create') }}"
@@ -16,7 +16,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 4v16m8-8H4"></path>
                                 </svg>
-                                New Payment
+                                Record Payment
                             </a>
                         </div>
                     </div>
@@ -33,39 +33,8 @@
                                 <label for="search"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>
                                 <input type="text" id="search" name="search" value="{{ request('search') }}"
-                                    placeholder="Payment #, reference, supplier..."
+                                    placeholder="Payment number, vendor..."
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                            </div>
-
-                            <!-- Supplier -->
-                            <div>
-                                <label for="supplier_id"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Supplier</label>
-                                <select id="supplier_id" name="supplier_id"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">All Suppliers</option>
-                                    @foreach($suppliers as $supplier)
-                                        <option value="{{ $supplier->supplier_id }}" {{ request('supplier_id') == $supplier->supplier_id ? 'selected' : '' }}>
-                                            {{ $supplier->supplier_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <!-- Payment Mode -->
-                            <div>
-                                <label for="payment_mode"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment
-                                    Method</label>
-                                <select id="payment_method" name="payment_method"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">Payment Method</option>
-                                    @foreach($paymentMethods as $method)
-                                        <option value="{{ $method }}" {{ request('payment_method') == $method ? 'selected' : '' }}>
-                                            {{ ucwords(str_replace('_', ' ', $method)) }}
-                                        </option>
-                                    @endforeach
-                                </select>
                             </div>
 
                             <!-- Status -->
@@ -78,6 +47,37 @@
                                     @foreach($statuses as $statusValue)
                                         <option value="{{ $statusValue }}" {{ request('status') == $statusValue ? 'selected' : '' }}>
                                             {{ ucfirst($statusValue) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Payment Method -->
+                            <div>
+                                <label for="payment_method"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment
+                                    Method</label>
+                                <select id="payment_method" name="payment_method"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">All Methods</option>
+                                    @foreach($paymentMethods as $method)
+                                        <option value="{{ $method }}" {{ request('payment_method') == $method ? 'selected' : '' }}>
+                                            {{ ucwords(str_replace('_', ' ', $method)) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Supplier -->
+                            <div>
+                                <label for="supplier_id"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Vendor</label>
+                                <select id="supplier_id" name="supplier_id"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">All Vendors</option>
+                                    @foreach($suppliers as $supplier)
+                                        <option value="{{ $supplier->supplier_id }}" {{ request('supplier_id') == $supplier->supplier_id ? 'selected' : '' }}>
+                                            {{ $supplier->supplier_name }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -141,92 +141,62 @@
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
-                                        <th class="w-5 px-6 py-3">
-                                            <input type="checkbox"
-                                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                        </th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Date</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             Payment #</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Reference#</th>
+                                            Vendor</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Vendor Name</th>
+                                            Date</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Bill#</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Mode</th>
-                                        <th
-                                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             Amount</th>
                                         <th
-                                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Unused Amount</th>
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Method</th>
                                         <th
-                                            class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Status</th>
+                                        <th
+                                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     @foreach($payments as $payment)
                                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                            <td class="px-6 py-4">
-                                                <input type="checkbox"
-                                                    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                {{ $payment->payment_date->format('d M Y') }}
-                                            </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <a href="{{ route('purchases.payments.show', $payment->payment_id) }}"
                                                     class="text-blue-600 hover:text-blue-900 font-medium">
                                                     {{ $payment->payment_number }}
                                                 </a>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                <div class="flex items-center">
-                                                    <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                                                        </path>
-                                                    </svg>
-                                                    {{ $payment->reference_number ?? '-' }}
-                                                </div>
-                                            </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm text-gray-900 dark:text-white">
-                                                    {{ $payment->supplier->company_name }}</div>
+                                                    {{ $payment->supplier->supplier_name }}
+                                                </div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                {{ $payment->bill_number ?? '-' }}
+                                                {{ $payment->payment_date->format('M d, Y') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                {{ $payment->payment_mode_display }}
+                                                ₱{{ number_format($payment->amount, 2) }}
                                             </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right">
-                                                ${{ number_format($payment->amount, 2) }}
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                {{ $payment->payment_method_display }}
                                             </td>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-right">
-                                                ${{ number_format($payment->unused_amount, 2) }}
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $payment->status_badge_class }}">
+                                                    {{ ucfirst($payment->status) }}
+                                                </span>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-center">
-                                                <button class="text-gray-400 hover:text-gray-500">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z">
-                                                        </path>
-                                                    </svg>
-                                                </button>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                <a href="{{ route('purchases.payments.show', $payment->payment_id) }}"
+                                                    class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400">
+                                                    View
+                                                </a>
                                             </td>
                                         </tr>
                                     @endforeach

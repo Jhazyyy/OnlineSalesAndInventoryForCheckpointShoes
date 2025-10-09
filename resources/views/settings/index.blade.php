@@ -175,7 +175,7 @@
                                     </div>
                                 </div>
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Terms & Conditions</h3>
-                                <p class="text-gray-600 dark:text-gray-300 text-sm">Manage legal documents, policies, and user acceptance tracking</p>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">Manage legal documents, terms of service, policies, and user acceptance tracking</p>
                                 <div class="mt-4 flex items-center text-indigo-600 dark:text-indigo-400 text-sm font-medium">
                                     Manage <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>

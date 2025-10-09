@@ -8,6 +8,7 @@ use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class PurchasePaymentController extends Controller
 {
@@ -16,7 +17,7 @@ class PurchasePaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = PurchasePayment::with(['supplier_name', 'salesOrder'])
+        $query = PurchasePayment::with(['supplier', 'purchaseOrder'])
             ->orderBy('created_at', 'desc');
 
         // Apply search filter
@@ -81,36 +82,69 @@ class PurchasePaymentController extends Controller
      */
     public function store(Request $request)
     {
+        // Debug: Log the incoming request data
+        Log::info('Purchase Payment Creation Request', [
+            'request_data' => $request->all(),
+            'validation_errors' => []
+        ]);
+
         $validator = Validator::make($request->all(), [
             'supplier_id' => 'required|exists:suppliers,supplier_id',
             'purchase_order_id' => 'nullable|exists:purchase_orders,purchase_order_id',
             'amount' => 'required|numeric|min:0.01',
             'payment_date' => 'required|date',
             'payment_method' => 'required|in:cash,card,bank_transfer,check,online,other',
+            'payment_mode' => 'nullable|string|max:255',
+            'bank_account' => 'nullable|string|max:255',
             'reference_number' => 'nullable|string|max:255',
-            'status' => 'required|in:pending,completed,cancelled,refunded',
+            'bank_charges' => 'nullable|numeric|min:0',
+            'bill_number' => 'nullable|string|max:255',
             'notes' => 'nullable|string|max:2000',
             'received_by' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
+            Log::error('Purchase Payment Validation Failed', [
+                'validation_errors' => $validator->errors()->toArray(),
+                'request_data' => $request->all()
+            ]);
+            
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput();
         }
 
         $data = $validator->validated();
-        $data['received_by'] = $data['received_by'] ?? Auth::user()->name ?? 'System';
+        $data['status'] = 'pending'; // Default status
+        $data['recieved_by'] = $data['received_by'] ?? Auth::user()->name ?? 'System';
 
-        $payment = PurchasePayment::create($data);
+        try {
+            $payment = PurchasePayment::create($data);
 
-        // Update purchase order payment status if linked
-        if ($payment->purchase_order_id) {
-            $this->updateOrderPaymentStatus($payment->purchaseOrder);
+            Log::info('Purchase Payment Created Successfully', [
+                'payment_id' => $payment->payment_id,
+                'payment_number' => $payment->payment_number,
+                'amount' => $payment->amount
+            ]);
+
+            // Update purchase order payment status if linked
+            if ($payment->purchase_order_id) {
+                $this->updateOrderPaymentStatus($payment->purchaseOrder);
+            }
+
+            return redirect()->route('purchases.payments.show', $payment->payment_id)
+                ->with('success', 'Payment recorded successfully!');
+        } catch (\Exception $e) {
+            Log::error('Purchase Payment Creation Failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'data' => $data
+            ]);
+
+            return redirect()->back()
+                ->with('error', 'Failed to create payment: ' . $e->getMessage())
+                ->withInput();
         }
-
-        return redirect()->route('purchases.payments.show', $payment->payment_id)
-            ->with('success', 'Payment recorded successfully!');
 
     }
 
@@ -120,7 +154,14 @@ class PurchasePaymentController extends Controller
     public function show(PurchasePayment $purchasePayment)
     {
         $purchasePayment->load(['supplier', 'purchaseOrder']);
-        return view('purchases.payments.show', compact('purchasePayment'));
+        
+        // Get related bills (purchase orders) for this supplier
+        $relatedBills = PurchaseOrder::where('supplier_id', $purchasePayment->supplier_id)
+            ->whereIn('payment_status', ['pending', 'partial', 'paid'])
+            ->orderBy('order_date', 'desc')
+            ->get();
+        
+        return view('purchases.payments.show', compact('purchasePayment', 'relatedBills'));
     }
 
     /**
@@ -134,13 +175,16 @@ class PurchasePaymentController extends Controller
         }
 
         $suppliers = Supplier::active()->orderBy('supplier_name')->get();
-        $salesOrders = PurchaseOrder::with('customer')
+        $purchaseOrders = PurchaseOrder::with('supplier')
             ->whereIn('payment_status', ['pending', 'partial'])
-            ->orWhere('order_id', $purchasePayment->purchase_order_id)
+            ->orWhere('purchase_order_id', $purchasePayment->purchase_order_id)
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('purchases.payments.edit', compact('purchasePayment', 'suppliers', 'purchaseOrders'));
+        // Alias for view consistency
+        $payment = $purchasePayment;
+
+        return view('purchases.payments.edit', compact('payment', 'suppliers', 'purchaseOrders'));
     }
 
     /**
@@ -158,7 +202,11 @@ class PurchasePaymentController extends Controller
             'amount' => 'required|numeric|min:0.01',
             'payment_date' => 'required|date',
             'payment_method' => 'required|in:cash,card,bank_transfer,check,online,other',
+            'payment_mode' => 'nullable|string|max:255',
+            'bank_account' => 'nullable|string|max:255',
             'reference_number' => 'nullable|string|max:255',
+            'bank_charges' => 'nullable|numeric|min:0',
+            'bill_number' => 'nullable|string|max:255',
             'status' => 'required|in:pending,completed,cancelled,refunded',
             'notes' => 'nullable|string|max:2000',
             'received_by' => 'nullable|string|max:255',
@@ -170,18 +218,18 @@ class PurchasePaymentController extends Controller
                 ->withInput();
         }
 
-        $oldOrderId = $purchasePayment->order_id;
+        $oldOrderId = $purchasePayment->purchase_order_id;
         $purchasePayment->update($validator->validated());
 
         // Update purchase order payment status for old and new orders
-        if ($oldOrderId && $oldOrderId != $purchasePayment->order_id) {
+        if ($oldOrderId && $oldOrderId != $purchasePayment->purchase_order_id) {
             $oldOrder = PurchaseOrder::find($oldOrderId);
             if ($oldOrder) {
                 $this->updateOrderPaymentStatus($oldOrder);
             }
         }
 
-        if ($purchasePayment->order_id) {
+        if ($purchasePayment->purchase_order_id) {
             $this->updateOrderPaymentStatus($purchasePayment->purchaseOrder);
         }
 
@@ -199,12 +247,12 @@ class PurchasePaymentController extends Controller
                 ->with('error', 'This payment cannot be deleted.');
         }
 
-        $purchaseorderId = $purchasePayment->purchase_order_id;
+        $purchaseOrderId = $purchasePayment->purchase_order_id;
         $purchasePayment->delete();
 
         // Update purchase order payment status if linked
-        if ($purchaseorderId) {
-            $order = PurchaseOrder::find($purchaseorderId);
+        if ($purchaseOrderId) {
+            $order = PurchaseOrder::find($purchaseOrderId);
             if ($order) {
                 $this->updateOrderPaymentStatus($order);
             }
@@ -221,7 +269,7 @@ class PurchasePaymentController extends Controller
     {
         $purchasePayment->markAsCompleted();
         
-        if ($purchasePayment->order_id) {
+        if ($purchasePayment->purchase_order_id) {
             $this->updateOrderPaymentStatus($purchasePayment->purchaseOrder);
         }
 
@@ -245,6 +293,50 @@ class PurchasePaymentController extends Controller
         }
 
         return redirect()->back()->with('success', 'Payment cancelled!');
+    }
+
+    /**
+     * Get supplier bills via AJAX
+     */
+    public function getSupplierBills($supplierId)
+    {
+        $bills = PurchaseOrder::where('supplier_id', $supplierId)
+            ->whereIn('payment_status', ['pending', 'partial'])
+            ->with('supplier')
+            ->orderBy('order_date', 'desc')
+            ->get()
+            ->map(function ($order) {
+                return [
+                    'purchase_order_id' => $order->purchase_order_id,
+                    'order_number' => $order->order_number,
+                    'order_date' => $order->order_date->format('Y-m-d'),
+                    'total_amount' => number_format($order->total_amount, 2),
+                    'paid_amount' => number_format($order->paid_amount ?? 0, 2),
+                    'remaining_amount' => number_format($order->total_amount - ($order->paid_amount ?? 0), 2),
+                ];
+            });
+
+        return response()->json($bills);
+    }
+
+    /**
+     * Get order details via AJAX
+     */
+    public function getOrderDetails($orderId)
+    {
+        $order = PurchaseOrder::with('supplier')->findOrFail($orderId);
+
+        return response()->json([
+            'purchase_order_id' => $order->purchase_order_id,
+            'order_number' => $order->order_number,
+            'supplier_name' => $order->supplier->supplier_name ?? 'N/A',
+            'total_amount' => $order->total_amount,
+            'paid_amount' => $order->paid_amount ?? 0,
+            'remaining_amount' => $order->total_amount - ($order->paid_amount ?? 0),
+            'order_date' => $order->order_date instanceof \Carbon\Carbon 
+                ? $order->order_date->format('Y-m-d') 
+                : \Carbon\Carbon::parse($order->order_date)->format('Y-m-d'),
+        ]);
     }
 
     private function updateOrderPaymentStatus(PurchaseOrder $order)

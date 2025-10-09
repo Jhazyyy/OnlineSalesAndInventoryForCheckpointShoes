@@ -28,6 +28,7 @@ class PurchasePayment extends Model
         'unused_amount',
         'payment_date',
         'payment_method',
+        'payment_mode',
         'bank_account',
         'reference_number',
         'bank_charges',
@@ -177,7 +178,6 @@ class PurchasePayment extends Model
             'bank_transfer' => 'Bank Transfer',
             'check' => 'Check',
             'online' => 'Online Payment',
-            'gcash' => 'GCash',
             'other' => 'Other',
             default => ucfirst($this->payment_method),
         };
@@ -214,7 +214,7 @@ class PurchasePayment extends Model
     public function markAsCancelled(): bool
     {
         $this->status = 'cancelled';
-        $this->unused_amount = 0;
+        $this->attributes['unused_amount'] = '0.00';
         return $this->save();
     }
 
@@ -231,10 +231,29 @@ class PurchasePayment extends Model
      */
     public function applyToBill($billAmount): float
     {
-        $amountToApply = min($this->unused_amount, $billAmount);
-        $this->unused_amount -= $amountToApply;
+        $currentUnused = (float)$this->unused_amount;
+        $amountToApply = min($currentUnused, (float)$billAmount);
+        $newUnused = $currentUnused - $amountToApply;
+        
+        // Update with proper decimal handling
+        $this->attributes['unused_amount'] = number_format($newUnused, 2, '.', '');
         $this->save();
 
         return $amountToApply;
     }
+
+    /**
+     * Get the payment mode display name.
+     */
+    public function getPaymentModeDisplayAttribute(): string
+    {
+        return match ($this->payment_mode) {
+            'cash' => 'Cash',
+            'bank_transfer' => 'Bank Transfer',
+            'standard_chartered' => 'Standard Chartered Bank',
+            'other' => 'Other',
+            default => ucfirst(str_replace('_', ' ', $this->payment_mode)),
+        };
+    }
+
 }

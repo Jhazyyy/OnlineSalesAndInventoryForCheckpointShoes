@@ -40,7 +40,7 @@
                         <!-- Basic Information -->
                         <div>
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Basic Information</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                                 <!-- Supplier Name -->
                                 <div>
                                     <x-input-label for="supplier_name" :value="__('Supplier Name')" />
@@ -84,9 +84,9 @@
                         <!-- Address Information -->
                         <div>
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Address Information</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <!-- Address -->
-                                <div class="md:col-span-2">
+                                <div class="md:col-span-1">
                                     <x-input-label for="address" :value="__('Street Address')" />
                                     <x-text-input id="address" name="address" type="text" 
                                                   class="mt-1 block w-full" :value="old('address', $supplier->address)" />

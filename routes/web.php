@@ -479,14 +479,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [\App\Http\Controllers\PurchasePaymentController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\PurchasePaymentController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\PurchasePaymentController::class, 'store'])->name('store');
-        Route::get('/{payment}', [\App\Http\Controllers\PurchasePaymentController::class, 'show'])->name('show');
-        Route::get('/{payment}/edit', [\App\Http\Controllers\PurchasePaymentController::class, 'edit'])->name('edit');
-        Route::put('/{payment}', [\App\Http\Controllers\PurchasePaymentController::class, 'update'])->name('update');
-        Route::delete('/{payment}', [\App\Http\Controllers\PurchasePaymentController::class, 'destroy'])->name('destroy');
+        Route::get('/{purchasePayment}', [\App\Http\Controllers\PurchasePaymentController::class, 'show'])->name('show');
+        Route::get('/{purchasePayment}/edit', [\App\Http\Controllers\PurchasePaymentController::class, 'edit'])->name('edit');
+        Route::put('/{purchasePayment}', [\App\Http\Controllers\PurchasePaymentController::class, 'update'])->name('update');
+        Route::delete('/{purchasePayment}', [\App\Http\Controllers\PurchasePaymentController::class, 'destroy'])->name('destroy');
 
         // Status management routes
-        Route::post('/{payment}/mark-completed', [\App\Http\Controllers\PurchasePaymentController::class, 'markCompleted'])->name('mark-completed');
-        Route::post('/{payment}/mark-cancelled', [\App\Http\Controllers\PurchasePaymentController::class, 'markCancelled'])->name('mark-cancelled');
+        Route::post('/{purchasePayment}/mark-completed', [\App\Http\Controllers\PurchasePaymentController::class, 'markCompleted'])->name('mark-completed');
+        Route::post('/{purchasePayment}/mark-cancelled', [\App\Http\Controllers\PurchasePaymentController::class, 'markCancelled'])->name('mark-cancelled');
         
         // AJAX routes
         Route::get('/order/{orderId}/details', [\App\Http\Controllers\PurchasePaymentController::class, 'getOrderDetails'])->name('order-details');
