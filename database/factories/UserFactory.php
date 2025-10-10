@@ -25,14 +25,18 @@ class UserFactory extends Factory
     {
         $firstName = fake()->firstName();
         $lastName = fake()->lastName();
+        $username = fake()->unique()->userName();
         
         return [
             'name' => $firstName . ' ' . $lastName, // Will be overridden by accessor if first_name/last_name are set
             'first_name' => $firstName,
             'last_name' => $lastName,
             'email' => fake()->unique()->safeEmail(),
+            'phone' => fake()->phoneNumber(),
+            'username' => $username,
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'profile_photo' => null,
             'remember_token' => Str::random(10),
         ];
     }
@@ -47,3 +51,4 @@ class UserFactory extends Factory
         ]);
     }
 }
+

@@ -1,137 +1,251 @@
 <x-app-layout>
-    <div class="w-full h-screen">
-        <div :class="navOpen ? 'flex-1' : 'w-full'" class="h-full overflow-y-auto">
-            <div class="bg-white dark:bg-gray-800 min-h-full flex flex-col">
-                <div class="flex-1 p-6 text-gray-900 dark:text-gray-100">
-                    <!-- Header -->
-                    <div class="flex justify-between items-center mb-6">
+    <div class="py-6">
+        <div class="w-full mx-auto sm:px-6 lg:px-8">
+            <!-- Header Section -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h2 class="text-3xl font-bold">Promotional Products</h2>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Products marked for promotion and discounts</p>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Promotional Products</h2>
+                            <p class="text-gray-600 dark:text-gray-400">Products marked for promotion and discounts</p>
                         </div>
-                        <div class="flex gap-2">
-                            <a href="{{ route('inventory.product-movement.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">
-                                ← Back to Movement
-                            </a>
-                            <button onclick="showMarkPromotionModal()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">
+                        <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
+                            <button onclick="showMarkPromotionModal()"
+                                class="inline-flex items-center px-4 py-2 bg-purple-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700 focus:bg-purple-700 active:bg-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                </svg>
                                 Mark Products for Promotion
                             </button>
+                            {{-- inventory.product-movement.index --}}
+                            <a href="{{ route('') }}"
+                                class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                </svg>
+                                Back to Movement
+                            </a>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Success/Error Messages -->
-                    @if(session('success'))
-                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-                            {{ session('success') }}
-                        </div>
-                    @endif
+            <!-- Success/Error Messages -->
+            @if(session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                    {{ session('success') }}
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                    {{ session('error') }}
+                </div>
+            @endif
 
-                    <!-- Statistics -->
-                    <div class="bg-purple-50 dark:bg-purple-900 p-4 rounded-lg mb-6">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="text-2xl font-bold text-purple-900 dark:text-purple-100">{{ $stats['promotional_products'] }} Products on Promotion</p>
-                                <p class="text-sm text-purple-600 dark:text-purple-400 mt-1">Consider applying discounts or special offers to these products</p>
+            <!-- Statistics Card -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="p-6">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                </svg>
                             </div>
                         </div>
+                        <div class="ml-4 flex-1">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                                {{ number_format($stats['promotional_products']) }} Products on Promotion
+                            </h3>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                Consider applying discounts or special offers to these products
+                            </p>
+                        </div>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Products Table -->
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
-                                <tr>
-                                    <th class="px-6 py-3 text-left">
-                                        <input type="checkbox" id="selectAll" class="rounded" onclick="toggleSelectAll(this)">
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Product</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Stock</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Price</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Movement</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Reason</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                                @forelse($products as $product)
-                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                        <td class="px-6 py-4">
-                                            <input type="checkbox" name="product_ids[]" value="{{ $product->product_id }}" class="rounded product-checkbox">
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <div class="font-medium text-gray-900 dark:text-white">{{ $product->product_name }}</div>
-                                            <div class="text-sm text-gray-500">{{ $product->product_brand }}</div>
-                                        </td>
-                                        <td class="px-6 py-4 text-sm">
-                                            <span class="font-medium text-gray-900 dark:text-white">{{ $product->quantity }}</span>
-                                        </td>
-                                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
-                                            ₱{{ number_format($product->price, 2) }}
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            @if($product->movement_category === 'fast')
-                                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Fast</span>
-                                            @elseif($product->movement_category === 'slow')
-                                                <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">Slow</span>
-                                            @elseif($product->movement_category === 'non-moving')
-                                                <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Non-Moving</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+            <!-- Products Table -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
+                            <tr>
+                                <th class="px-6 py-3 text-left">
+                                    <input type="checkbox" id="selectAll" class="rounded"
+                                        onclick="toggleSelectAll(this)">
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Product
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Stock
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Price
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Movement
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Reason
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            @forelse($products as $product)
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <input type="checkbox" name="product_ids[]" value="{{ $product->product_id }}"
+                                            class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50 product-checkbox">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div>
+                                                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                    {{ $product->product_name }}
+                                                </div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">
+                                                    {{ $product->product_brand }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm font-medium text-gray-900 dark:text-white">
+                                            {{ number_format($product->quantity) }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                        ₱{{ number_format($product->price, 2) }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($product->movement_category === 'fast')
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
+                                                Fast Moving
+                                            </span>
+                                        @elseif($product->movement_category === 'slow')
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
+                                                Slow Moving
+                                            </span>
+                                        @elseif($product->movement_category === 'non-moving')
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100">
+                                                Non-Moving
+                                            </span>
+                                        @else
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                                                Unknown
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-600 dark:text-gray-400 max-w-xs truncate"
+                                            title="{{ $product->promotional_reason ?? 'N/A' }}">
                                             {{ $product->promotional_reason ?? 'N/A' }}
-                                        </td>
-                                        <td class="px-6 py-4 text-right">
-                                            <form method="POST" action="{{ route('inventory.product-movement.unmark-from-promotion') }}" class="inline">
-                                                @csrf
-                                                <input type="hidden" name="product_ids[]" value="{{ $product->product_id }}">
-                                                <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400" 
-                                                        onclick="return confirm('Remove this product from promotions?')">
-                                                    Remove
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
-                                            No promotional products found. Click "Mark Products for Promotion" to add products.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <form method="POST"
+                                            action="{{ route('inventory.product-movement.unmark-from-promotion') }}"
+                                            class="inline"
+                                            onsubmit="return confirm('Remove this product from promotions?')">
+                                            @csrf
+                                            <input type="hidden" name="product_ids[]" value="{{ $product->product_id }}">
+                                            <button type="submit"
+                                                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors duration-150">
+                                                Remove
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="px-6 py-12 text-center">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                        </svg>
+                                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                            No promotional products found.
+                                        </p>
+                                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                            Click "Mark Products for Promotion" to add products.
+                                        </p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
 
-                    <!-- Bulk Actions -->
-                    <div id="bulkActions" class="hidden mt-4 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                        <form method="POST" action="{{ route('inventory.product-movement.unmark-from-promotion') }}" id="bulkForm">
-                            @csrf
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm"><span id="selectedCount">0</span> products selected</span>
-                                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded" 
-                                        onclick="return confirm('Remove selected products from promotions?')">
+                <!-- Bulk Actions -->
+                <div id="bulkActions" class="hidden border-t border-gray-200 dark:border-gray-700">
+                    <form method="POST" action="{{ route('inventory.product-movement.unmark-from-promotion') }}"
+                        id="bulkForm" onsubmit="return confirm('Remove selected products from promotions?')">
+                        @csrf
+                        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-700 dark:text-gray-300">
+                                    <span id="selectedCount" class="font-semibold">0</span> product(s) selected
+                                </span>
+                                <button type="submit"
+                                    class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
                                     Remove from Promotions
                                 </button>
                             </div>
-                        </form>
-                    </div>
-
-                    <!-- Pagination -->
-                    @if($products->hasPages())
-                        <div class="mt-6">
-                            {{ $products->links() }}
                         </div>
-                    @endif
+                    </form>
                 </div>
             </div>
+
+            <!-- Pagination -->
+            @if($products->hasPages())
+                <div class="mt-6">
+                    {{ $products->links() }}
+                </div>
+            @endif
         </div>
     </div>
 
     <!-- Mark for Promotion Modal -->
-    <div id="markPromotionModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+    <div id="markPromotionModal"
+        class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-lg bg-white dark:bg-gray-800">
             <div class="mt-3">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Mark Products for Promotion</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">
+                        Mark Products for Promotion
+                    </h3>
+                    <button onclick="hideMarkPromotionModal()"
+                        class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
                 <form method="POST" action="{{ route('inventory.product-movement.mark-for-promotion') }}">
                     @csrf
                     <div class="space-y-4">
@@ -139,29 +253,42 @@
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Select criteria to auto-mark products:
                             </label>
-                            <label class="flex items-center mb-2">
-                                <input type="checkbox" name="criteria[movement_category][]" value="slow" class="rounded mr-2">
-                                <span class="text-sm">Slow Moving Products</span>
-                            </label>
-                            <label class="flex items-center mb-2">
-                                <input type="checkbox" name="criteria[movement_category][]" value="non-moving" class="rounded mr-2" checked>
-                                <span class="text-sm">Non-Moving Products</span>
-                            </label>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="criteria[movement_category][]" value="slow"
+                                        class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50">
+                                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Slow Moving
+                                        Products</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="criteria[movement_category][]" value="non-moving"
+                                        class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
+                                        checked>
+                                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Non-Moving
+                                        Products</span>
+                                </label>
+                            </div>
                         </div>
+
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Minimum Stock Level
                             </label>
-                            <input type="number" name="criteria[min_stock]" value="10" min="0" 
-                                   class="w-full border rounded px-3 py-2 dark:bg-gray-700 dark:border-gray-600">
-                            <p class="text-xs text-gray-500 mt-1">Only mark products with at least this many units in stock</p>
+                            <input type="number" name="criteria[min_stock]" value="10" min="0"
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                Only mark products with at least this many units in stock
+                            </p>
                         </div>
                     </div>
-                    <div class="flex gap-2 mt-6">
-                        <button type="submit" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">
+
+                    <div class="mt-6 flex gap-3">
+                        <button type="submit"
+                            class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-purple-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700 focus:bg-purple-700 active:bg-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition ease-in-out duration-150">
                             Mark Products
                         </button>
-                        <button type="button" onclick="hideMarkPromotionModal()" class="flex-1 bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded">
+                        <button type="button" onclick="hideMarkPromotionModal()"
+                            class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-gray-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-600 focus:bg-gray-600 active:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
                             Cancel
                         </button>
                     </div>
@@ -177,8 +304,10 @@
             updateBulkActions();
         }
 
-        document.querySelectorAll('.product-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', updateBulkActions);
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.product-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', updateBulkActions);
+            });
         });
 
         function updateBulkActions() {
@@ -186,12 +315,12 @@
             const bulkActions = document.getElementById('bulkActions');
             const bulkForm = document.getElementById('bulkForm');
             const selectedCount = document.getElementById('selectedCount');
-            
+
             selectedCount.textContent = checkedBoxes.length;
-            
+
             if (checkedBoxes.length > 0) {
                 bulkActions.classList.remove('hidden');
-                // Clear existing hidden inputs
+                // Clear existing hidden inputs (except CSRF token)
                 bulkForm.querySelectorAll('input[name="product_ids[]"]').forEach(input => input.remove());
                 // Add new hidden inputs
                 checkedBoxes.forEach(checkbox => {
@@ -213,5 +342,12 @@
         function hideMarkPromotionModal() {
             document.getElementById('markPromotionModal').classList.add('hidden');
         }
+
+        // Close modal when clicking outside
+        document.getElementById('markPromotionModal')?.addEventListener('click', function (e) {
+            if (e.target === this) {
+                hideMarkPromotionModal();
+            }
+        });
     </script>
 </x-app-layout>
