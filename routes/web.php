@@ -250,6 +250,141 @@ Route::get('dashboard', function () {
         ];
     }
 
+    // Sales Order Summary (Last 7 days)
+    try {
+        $last7Days = collect(range(6, 0))->map(function ($days) {
+            return now()->subDays($days)->format('M d');
+        });
+        
+        $salesOrderData = collect(range(6, 0))->map(function ($days) {
+            $date = now()->subDays($days)->toDateString();
+            return [
+                'date' => now()->subDays($days)->format('M d'),
+                'draft' => \App\Models\Sale::where('created_at', '>=', $date . ' 00:00:00')
+                    ->where('created_at', '<=', $date . ' 23:59:59')
+                    ->where('status', 'draft')->count(),
+                'confirmed' => \App\Models\Sale::where('created_at', '>=', $date . ' 00:00:00')
+                    ->where('created_at', '<=', $date . ' 23:59:59')
+                    ->where('status', 'confirmed')->count(),
+                'packed' => \App\Models\Sale::where('created_at', '>=', $date . ' 00:00:00')
+                    ->where('created_at', '<=', $date . ' 23:59:59')
+                    ->where('status', 'packed')->count(),
+                'shipped' => \App\Models\Sale::where('created_at', '>=', $date . ' 00:00:00')
+                    ->where('created_at', '<=', $date . ' 23:59:59')
+                    ->where('status', 'shipped')->count(),
+                'invoiced' => \App\Models\Sale::where('created_at', '>=', $date . ' 00:00:00')
+                    ->where('created_at', '<=', $date . ' 23:59:59')
+                    ->where('status', 'invoiced')->count(),
+            ];
+        });
+    } catch (\Exception $e) {
+        $last7Days = collect();
+        $salesOrderData = collect();
+    }
+
+    // Sales Activity
+    try {
+        $salesActivity = [
+            'total_invoices' => \App\Models\Invoice::count(),
+            'paid_invoices' => \App\Models\Invoice::where('payment_status', 'paid')->count(),
+            'draft_invoices' => \App\Models\Invoice::where('payment_status', 'draft')->count(),
+            'past_due' => \App\Models\Invoice::where('payment_status', 'overdue')->count(),
+        ];
+    } catch (\Exception $e) {
+        $salesActivity = [
+            'total_invoices' => 0,
+            'paid_invoices' => 0,
+            'draft_invoices' => 0,
+            'past_due' => 0,
+        ];
+    }
+
+    // Top Selling Items
+    try {
+        $topSellingItems = \App\Models\InvoiceItem::select('product_id')
+            ->selectRaw('SUM(quantity) as total_quantity')
+            ->selectRaw('SUM(quantity * unit_price) as total_revenue')
+            ->whereNotNull('product_id')
+            ->with('product')
+            ->groupBy('product_id')
+            ->orderByDesc('total_quantity')
+            ->limit(3)
+            ->get()
+            ->filter(function ($item) {
+                return $item->product !== null;
+            })
+            ->map(function ($item) {
+                return [
+                    'name' => $item->product->name ?? 'Unknown Product',
+                    'quantity' => (int) $item->total_quantity,
+                    'revenue' => (float) $item->total_revenue,
+                ];
+            })
+            ->values();
+    } catch (\Exception $e) {
+        \Log::error('Error fetching top selling items: ' . $e->getMessage());
+        $topSellingItems = collect();
+    }
+
+    // Product Details (Stock Status)
+    try {
+        $stockStatus = [
+            'in_stock' => \App\Models\Product::where('quantity', '>', 10)->count(),
+            'low_stock' => \App\Models\Product::whereBetween('quantity', [1, 10])->count(),
+            'out_of_stock' => \App\Models\Product::where('quantity', '<=', 0)->count(),
+        ];
+    } catch (\Exception $e) {
+        $stockStatus = [
+            'in_stock' => 0,
+            'low_stock' => 0,
+            'out_of_stock' => 0,
+        ];
+    }
+
+    // Purchase Order Status
+    try {
+        $purchaseOrderStatus = [
+            'draft' => \App\Models\Purchase::where('status', 'draft')->count(),
+            'confirmed' => \App\Models\Purchase::where('status', 'confirmed')->count(),
+            'packed' => \App\Models\Purchase::where('status', 'packed')->count(),
+            'shipped' => \App\Models\Purchase::where('status', 'shipped')->count(),
+        ];
+    } catch (\Exception $e) {
+        $purchaseOrderStatus = [
+            'draft' => 0,
+            'confirmed' => 0,
+            'packed' => 0,
+            'shipped' => 0,
+        ];
+    }
+
+    // Monthly Revenue (Last 6 months)
+    try {
+        $last6Months = collect(range(5, 0))->map(function ($months) {
+            return now()->subMonths($months)->format('M');
+        });
+        
+        $monthlyRevenue = collect(range(5, 0))->map(function ($months) {
+            $date = now()->subMonths($months);
+            return \App\Models\Sale::whereMonth('created_at', $date->month)
+                ->whereYear('created_at', $date->year)
+                ->sum('total_amount') ?? 0;
+        });
+    } catch (\Exception $e) {
+        $last6Months = collect();
+        $monthlyRevenue = collect();
+    }
+
+    // Ensure all variables are defined
+    $topSellingItems = $topSellingItems ?? collect();
+    $salesActivity = $salesActivity ?? ['total_invoices' => 0, 'paid_invoices' => 0, 'draft_invoices' => 0, 'past_due' => 0];
+    $stockStatus = $stockStatus ?? ['in_stock' => 0, 'low_stock' => 0, 'out_of_stock' => 0];
+    $purchaseOrderStatus = $purchaseOrderStatus ?? ['draft' => 0, 'confirmed' => 0, 'packed' => 0, 'shipped' => 0];
+    $last7Days = $last7Days ?? collect();
+    $salesOrderData = $salesOrderData ?? collect();
+    $last6Months = $last6Months ?? collect();
+    $monthlyRevenue = $monthlyRevenue ?? collect();
+
     return view('dashboard', compact(
         'inventoryStats',
         'salesStats',
@@ -258,7 +393,15 @@ Route::get('dashboard', function () {
         'returnStats',
         'purchaseReturnStats',
         'supplierStats',
-        'shipmentStats'
+        'shipmentStats',
+        'last7Days',
+        'salesOrderData',
+        'salesActivity',
+        'topSellingItems',
+        'stockStatus',
+        'purchaseOrderStatus',
+        'last6Months',
+        'monthlyRevenue'
     ));
 })->middleware(['auth', 'verified'])->name('dashboard');
 

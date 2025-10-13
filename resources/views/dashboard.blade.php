@@ -237,6 +237,133 @@
                         </a>
                     </div>
 
+                    <!-- Analytics Section -->
+                    <div class="mt-8">
+                        <h3 class="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Analytics Dashboard</h3>
+
+                        <!-- First Row: Sales Activity, Product Details, Top Selling Items -->
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                            <!-- Sales Activity -->
+                            <div class="bg-gray-200 dark:bg-gray-700 rounded-xl shadow-lg p-6">
+                                <h4 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Sales Activity</h4>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center">
+                                            <div class="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
+                                            <span class="text-sm text-gray-600 dark:text-gray-300">Total Invoices</span>
+                                        </div>
+                                        <span class="text-xl font-bold text-gray-900 dark:text-white">{{ $salesActivity['total_invoices'] ?? 0 }}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center">
+                                            <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+                                            <span class="text-sm text-gray-600 dark:text-gray-300">Paid Invoices</span>
+                                        </div>
+                                        <span class="text-xl font-bold text-gray-900 dark:text-white">{{ $salesActivity['paid_invoices'] ?? 0 }}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center">
+                                            <div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+                                            <span class="text-sm text-gray-600 dark:text-gray-300">Draft Invoices</span>
+                                        </div>
+                                        <span class="text-xl font-bold text-gray-900 dark:text-white">{{ $salesActivity['draft_invoices'] ?? 0 }}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center">
+                                            <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+                                            <span class="text-sm text-gray-600 dark:text-gray-300">Past Due Account</span>
+                                        </div>
+                                        <span class="text-xl font-bold text-gray-900 dark:text-white">{{ $salesActivity['past_due'] ?? 0 }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Product Details (Doughnut Chart) -->
+                            <div class="bg-gray-200 dark:bg-gray-700 rounded-xl shadow-lg p-6">
+                                <h4 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Product Details</h4>
+                                <div class="flex items-center justify-center" style="height: 200px;">
+                                    <canvas id="productDetailsChart"></canvas>
+                                </div>
+                                <div class="mt-4 space-y-2">
+                                    <div class="flex justify-between items-center text-sm">
+                                        <div class="flex items-center">
+                                            <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+                                            <span class="text-gray-600 dark:text-gray-300">In Stock</span>
+                                        </div>
+                                        <span class="font-semibold text-gray-900 dark:text-white">{{ $stockStatus['in_stock'] ?? 0 }}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center text-sm">
+                                        <div class="flex items-center">
+                                            <div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+                                            <span class="text-gray-600 dark:text-gray-300">Low Stock</span>
+                                        </div>
+                                        <span class="font-semibold text-gray-900 dark:text-white">{{ $stockStatus['low_stock'] ?? 0 }}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center text-sm">
+                                        <div class="flex items-center">
+                                            <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+                                            <span class="text-gray-600 dark:text-gray-300">Out of Stock</span>
+                                        </div>
+                                        <span class="font-semibold text-gray-900 dark:text-white">{{ $stockStatus['out_of_stock'] ?? 0 }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Top Selling Items -->
+                            <div class="bg-gray-200 dark:bg-gray-700 rounded-xl shadow-lg p-6">
+                                <h4 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Top Selling Items</h4>
+                                <div class="space-y-4">
+                                    @forelse($topSellingItems ?? [] as $item)
+                                    <div class="flex items-center space-x-3">
+                                        <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center">
+                                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $item['name'] ?? 'Unknown' }}</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Qty: {{ number_format($item['quantity'] ?? 0) }}</p>
+                                        </div>
+                                        <div class="flex-shrink-0 text-right">
+                                            <p class="text-sm font-bold text-gray-900 dark:text-white">₱{{ number_format($item['revenue'] ?? 0, 2) }}</p>
+                                        </div>
+                                    </div>
+                                    @empty
+                                    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                                        <p class="text-sm">No sales data available</p>
+                                    </div>
+                                    @endforelse
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Second Row: Purchase Order and Sales Order Summary -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                            <!-- Purchase Order (Bar Chart) -->
+                            <div class="bg-gray-200 dark:bg-gray-700 rounded-xl shadow-lg p-6">
+                                <h4 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Purchase Order</h4>
+                                <div style="height: 250px;">
+                                    <canvas id="purchaseOrderChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Sales Order Summary (Line Chart) -->
+                            <div class="bg-gray-200 dark:bg-gray-700 rounded-xl shadow-lg p-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Sales Order Summary (in PHP)</h4>
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">Monthly Records</span>
+                                </div>
+                                <div class="mb-4">
+                                    <div class="text-3xl font-bold text-gray-900 dark:text-white">₱{{ number_format(($monthlyRevenue ?? collect())->sum(), 2) }}</div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">Total Revenue (6 months)</div>
+                                </div>
+                                <div style="height: 200px;">
+                                    <canvas id="salesOrderChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Detailed Shipment Statistics -->
                     @if($shipmentStats['total_shipments'] > 0)
                     <div class="mt-6">
@@ -498,4 +625,140 @@
             </div>
         </div>
     </div>
+
+    <!-- Chart.js Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Product Details Doughnut Chart
+            const productCtx = document.getElementById('productDetailsChart');
+            if (productCtx) {
+                new Chart(productCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['In Stock', 'Low Stock', 'Out of Stock'],
+                        datasets: [{
+                            data: [
+                                {{ $stockStatus['in_stock'] ?? 0 }},
+                                {{ $stockStatus['low_stock'] ?? 0 }},
+                                {{ $stockStatus['out_of_stock'] ?? 0 }}
+                            ],
+                            backgroundColor: [
+                                'rgb(34, 197, 94)',  // green
+                                'rgb(234, 179, 8)',   // yellow
+                                'rgb(239, 68, 68)'    // red
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Purchase Order Bar Chart
+            const purchaseCtx = document.getElementById('purchaseOrderChart');
+            if (purchaseCtx) {
+                new Chart(purchaseCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Draft', 'Confirmed', 'Packed', 'Shipped'],
+                        datasets: [{
+                            label: 'Quantity',
+                            data: [
+                                {{ $purchaseOrderStatus['draft'] ?? 0 }},
+                                {{ $purchaseOrderStatus['confirmed'] ?? 0 }},
+                                {{ $purchaseOrderStatus['packed'] ?? 0 }},
+                                {{ $purchaseOrderStatus['shipped'] ?? 0 }}
+                            ],
+                            backgroundColor: [
+                                'rgba(59, 130, 246, 0.8)',
+                                'rgba(34, 197, 94, 0.8)',
+                                'rgba(234, 179, 8, 0.8)',
+                                'rgba(249, 115, 22, 0.8)'
+                            ],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Sales Order Summary Line Chart
+            const salesCtx = document.getElementById('salesOrderChart');
+            if (salesCtx) {
+                new Chart(salesCtx, {
+                    type: 'line',
+                    data: {
+                        labels: {!! json_encode($last6Months ?? collect()) !!},
+                        datasets: [{
+                            label: 'Revenue',
+                            data: {!! json_encode($monthlyRevenue ?? collect()) !!},
+                            borderColor: 'rgb(59, 130, 246)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: 'rgb(59, 130, 246)',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return '₱' + context.parsed.y.toLocaleString('en-US', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        });
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '₱' + value.toLocaleString('en-US');
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
 </x-app-layout>

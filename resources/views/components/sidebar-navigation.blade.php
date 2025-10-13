@@ -55,9 +55,9 @@
                         title="Inventory" :is-dropdown="true">
 
                         <!-- Products -->
-                        <x-nav-item route="inventory.products.index" route-pattern="inventory.products.*"
+                        {{-- <x-nav-item route="inventory.products.index" route-pattern="inventory.products.*"
                             :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Products"
-                            size="small" />
+                            size="small" /> --}}
 
                         <!-- Composite Products -->
                         {{-- <x-nav-item href="#"
@@ -70,9 +70,9 @@
                             title="Stock Adjustment" size="small" />
 
                         <!-- Product Movement (Fast/Slow/Non-Moving) -->
-                        <x-nav-item route="inventory.product-movement.index" route-pattern="inventory.product-movement.*"
+                        {{-- <x-nav-item route="inventory.product-movement.index" route-pattern="inventory.product-movement.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>'
-                            title="Product Movement" size="small" />
+                            title="Product Movement" size="small" /> --}}
 
                         <!-- Inventory Thresholds -->
                         <x-nav-item route="inventory.thresholds.index" route-pattern="inventory.thresholds.*"
@@ -86,9 +86,9 @@
                         title="Sales" :is-dropdown="true">
 
                         <!-- Customers -->
-                        <x-nav-item route="sales.customers.index" route-pattern="sales.customers.*"
+                        {{-- <x-nav-item route="sales.customers.index" route-pattern="sales.customers.*"
                             :icon="App\Helpers\NavigationHelper::getIcon('customers', 'w-4 h-4 mr-3')" title="Customers"
-                            size="small" />
+                            size="small" /> --}}
 
                         <!-- Sales Order -->
                         <x-nav-item route="sales.orders.index" route-pattern="sales.orders.*"
@@ -96,24 +96,24 @@
                             title="Sales Order" size="small" />
 
                         <!-- Packages -->
-                        <x-nav-item route="sales.packages.index" route-pattern="sales.packages.*"
+                        {{-- <x-nav-item route="sales.packages.index" route-pattern="sales.packages.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>'
-                            title="Packages" size="small" />
+                            title="Packages" size="small" /> --}}
 
                         <!-- Shipments -->
-                        <x-nav-item route="sales.shipments.index" route-pattern="sales.shipments.*"
+                        {{-- <x-nav-item route="sales.shipments.index" route-pattern="sales.shipments.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>'
-                            title="Shipments" size="small" />
+                            title="Shipments" size="small" /> --}}
 
                         <!-- Invoices -->
-                        <x-nav-item route="sales.invoices.index" route-pattern="sales.invoices.*"
+                        {{-- <x-nav-item route="sales.invoices.index" route-pattern="sales.invoices.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>'
-                            title="Invoices" size="small" />
+                            title="Invoices" size="small" /> --}}
 
                         <!-- Payments Received -->
-                        <x-nav-item route="sales.payments.index" route-pattern="sales.payments.*"
+                        {{-- <x-nav-item route="sales.payments.index" route-pattern="sales.payments.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>'
-                            title="Payments Received" size="small" />
+                            title="Payments Received" size="small" /> --}}
 
                         <!-- Sales Return -->
                         <x-nav-item route="sales.returns.index" route-pattern="sales.returns.*"

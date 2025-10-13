@@ -29,13 +29,13 @@ class DatabaseSeeder extends Seeder
 
         
         // Seed suppliers
-        $this->call(SupplierSeeder::class);
+        // $this->call(SupplierSeeder::class);
         
         // // Seed customers
         $this->call(CustomerSeeder::class);
 
         // Seed products
-        $this->call(ProductSeeder::class);
+        // $this->call(ProductSeeder::class);
 
         // Seed users
         $this->call(UserSeeder::class);
