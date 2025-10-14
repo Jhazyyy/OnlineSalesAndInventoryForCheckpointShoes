@@ -233,6 +233,14 @@ class Product extends Model
     }
 
     /**
+     * Get the category associated with this product.
+     */
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'product_category', 'name');
+    }
+
+    /**
      * Scope a query to only include low stock products.
      */
     public function scopeLowStock(Builder $query, int $threshold = 10): Builder

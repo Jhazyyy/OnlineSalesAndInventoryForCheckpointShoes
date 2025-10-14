@@ -52,9 +52,34 @@
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Brand <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" id="product_brand" name="product_brand"
-                                    value="{{ old('product_brand', $product->product_brand) }}" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('product_brand') border-red-500 @enderror">
+                                <div class="mt-1 flex">
+                                    <select id="product_brand" name="product_brand" required
+                                        class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('product_brand') border-red-500 @enderror">
+                                        <option value="">Select a brand...</option>
+                                        @foreach ($brands as $brand)
+                                            <option value="{{ $brand }}"
+                                                {{ old('product_brand', $product->product_brand) == $brand ? 'selected' : '' }}>
+                                                {{ $brand }}
+                                            </option>
+                                        @endforeach
+                                        <option value="custom"
+                                            {{ !in_array(old('product_brand', $product->product_brand), $brands->toArray()) && old('product_brand', $product->product_brand) ? 'selected' : '' }}>
+                                            + Add New Brand</option>
+                                    </select>
+                                    <a href="{{ route('master_data.brands.create') }}"
+                                        class="ml-2 inline-flex items-center px-3 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                                        title="Add New Brand">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                    </a>
+                                </div>
+                                <input type="text" id="custom_brand" name="custom_brand"
+                                    value="{{ !in_array(old('product_brand', $product->product_brand), $brands->toArray()) && old('product_brand', $product->product_brand) ? old('product_brand', $product->product_brand) : '' }}"
+                                    placeholder="Enter new brand name..."
+                                    style="display: {{ !in_array(old('product_brand', $product->product_brand), $brands->toArray()) && old('product_brand', $product->product_brand) ? 'block' : 'none' }};"
+                                    class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 @error('product_brand')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -93,7 +118,8 @@
 
                             <!-- Price -->
                             <div>
-                                <label for="price" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="price"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Price (Peso) <span class="text-red-500">*</span>
                                 </label>
                                 <div class="mt-1 relative rounded-md shadow-sm">
@@ -101,7 +127,8 @@
                                         <span class="text-gray-500 sm:text-sm">₱</span>
                                     </div>
                                     <input type="number" id="price" name="price"
-                                        value="{{ old('price', $product->price) }}" step="0.01" min="0" required
+                                        value="{{ old('price', $product->price) }}" step="0.01" min="0"
+                                        required
                                         class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('price') border-red-500 @enderror">
                                 </div>
                                 @error('price')
@@ -112,7 +139,7 @@
 
                         <div class="grid grid-cols-1 md:grid-rows-1 gap-6">
                             <!-- Current Image Display -->
-                            @if($product->image)
+                            @if ($product->image)
                                 <div>
                                     <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Current
                                         Image</label>
@@ -126,7 +153,8 @@
 
                             <!-- Image Preview -->
                             <div id="imagePreview" class="mt-4 hidden flex-col items-center">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Image Preview</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Image
+                                    Preview</label>
                                 <img id="previewImg" src="#" alt="Preview"
                                     class="w-48 h-auto object-cover rounded-lg border">
                             </div>
@@ -153,8 +181,8 @@
                                         <label for="image"
                                             class="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
                                             <span>{{ $product->image ? 'Replace image' : 'Upload a file' }}</span>
-                                            <input id="image" name="image" type="file" class="sr-only" accept="image/*"
-                                                onchange="previewImage(this)">
+                                            <input id="image" name="image" type="file" class="sr-only"
+                                                accept="image/*" onchange="previewImage(this)">
                                         </label>
                                         <p class="pl-1">or drag and drop</p>
                                     </div>
@@ -165,11 +193,11 @@
 
                         <!-- Description -->
                         <div>
-                            <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <label for="description"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Description
                             </label>
-                            <textarea id="description" name="description" rows="4"
-                                placeholder="Enter product description..."
+                            <textarea id="description" name="description" rows="4" placeholder="Enter product description..."
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('description') border-red-500 @enderror">{{ old('description', $product->description) }}</textarea>
                             @error('description')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -198,6 +226,37 @@
     </div>
 
     <script>
+        // Handle custom brand selection
+        document.addEventListener('DOMContentLoaded', function() {
+            const brandSelect = document.getElementById('product_brand');
+            const customBrandInput = document.getElementById('custom_brand');
+
+            brandSelect.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customBrandInput.style.display = 'block';
+                    customBrandInput.required = true;
+                    this.required = false;
+                } else {
+                    customBrandInput.style.display = 'none';
+                    customBrandInput.required = false;
+                    this.required = true;
+                }
+            });
+
+            // Form submission handler
+            document.querySelector('form').addEventListener('submit', function(e) {
+                if (brandSelect.value === 'custom') {
+                    if (!customBrandInput.value.trim()) {
+                        e.preventDefault();
+                        alert('Please enter a custom brand name.');
+                        return false;
+                    }
+                    // Replace the select value with the custom input value
+                    brandSelect.value = customBrandInput.value.trim();
+                }
+            });
+        });
+
         function previewImage(input) {
             const preview = document.getElementById('imagePreview');
             const previewImg = document.getElementById('previewImg');
@@ -205,7 +264,7 @@
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
 
-                reader.onload = function (e) {
+                reader.onload = function(e) {
                     previewImg.src = e.target.result;
                     preview.classList.remove('hidden');
                 };

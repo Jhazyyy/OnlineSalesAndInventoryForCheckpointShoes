@@ -7,7 +7,7 @@
                     <h2 class="text-4xl font-bold mb-4">Welcome, {{ Auth::user()->name}}! </h2>
 
                     <!-- Dashboard Stats Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
                         <!-- Inventory Card -->
                         <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
                             <div class="flex items-center">
@@ -56,7 +56,7 @@
                         </div>
 
                         <!-- Customers Card -->
-                        <div class="bg-purple-50 dark:bg-purple-900 p-4 rounded-lg">
+                        {{-- <div class="bg-purple-50 dark:bg-purple-900 p-4 rounded-lg">
                             <div class="flex items-center">
                                 <div class="p-2 bg-purple-500 rounded-lg">
                                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
@@ -77,7 +77,7 @@
                                     </p>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Returns Card -->
                         <div class="bg-red-50 dark:bg-red-900 p-4 rounded-lg">
@@ -92,7 +92,7 @@
                                 </div>
                                 <div class="ml-4">
                                     <p class="text-sm font-medium text-red-600 dark:text-red-400">
-                                        Returns</p>
+                                        Returns & Exchange</p>
                                     <p class="text-2xl font-semibold text-red-900 dark:text-red-100">
                                         {{ $returnStats['total_returns'] ?? 0 }}
                                     </p>
@@ -105,7 +105,7 @@
                     </div>
 
                     <!-- Secondary Stats Row -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
                         <!-- Purchases Card -->
                         <div class="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-lg">
                             <div class="flex items-center">
@@ -155,7 +155,7 @@
                         </div>
 
                         <!-- Inventory Value Card -->
-                        <div class="bg-teal-50 dark:bg-teal-900 p-4 rounded-lg">
+                        {{-- <div class="bg-teal-50 dark:bg-teal-900 p-4 rounded-lg">
                             <div class="flex items-center">
                                 <div class="p-2 bg-teal-500 rounded-lg">
                                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
@@ -178,10 +178,10 @@
                                     </p>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Shipments Card -->
-                        <a href="{{ route('sales.shipments.index') }}" class="block">
+                        {{-- <a href="{{ route('sales.shipments.index') }}" class="block">
                             <div class="bg-orange-50 dark:bg-orange-900 p-4 rounded-lg hover:shadow-md transition-shadow duration-200 border border-orange-200 dark:border-orange-700 hover:border-orange-300 dark:hover:border-orange-600">
                                 <div class="flex items-center">
                                     <div class="p-2 bg-orange-500 rounded-lg">
@@ -206,7 +206,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </a>
+                        </a> --}}
 
                         <!-- Purchase Returns Card -->
                         <a href="{{ route('purchases.purchase-returns.index') }}" class="block">

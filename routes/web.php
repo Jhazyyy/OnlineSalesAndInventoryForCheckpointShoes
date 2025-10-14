@@ -5,6 +5,7 @@ use App\Http\Controllers\ExchangeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseReceiveController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\SalesOrderController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Contracts\Auth;
 
@@ -57,28 +59,28 @@ Route::post('/csrf-test', function () {
 });
 
 // Test dashboard statistics
-Route::get('/test-stats', function () {
-    try {
-        $inventoryStats = [
-            'total_products' => \App\Models\Product::count(),
-            'low_stock_products' => \App\Models\Product::where('quantity', '<=', 10)->count(),
-            'out_of_stock_products' => \App\Models\Product::where('quantity', '<=', 0)->count(),
-            'total_inventory_value' => \App\Models\Product::selectRaw('SUM(quantity * price) as total')->value('total') ?? 0,
-        ];
+// Route::get('/test-stats', function () {
+//     try {
+//         $inventoryStats = [
+//             'total_products' => \App\Models\Product::count(),
+//             'low_stock_products' => \App\Models\Product::where('quantity', '<=', 10)->count(),
+//             'out_of_stock_products' => \App\Models\Product::where('quantity', '<=', 0)->count(),
+//             'total_inventory_value' => \App\Models\Product::selectRaw('SUM(quantity * price) as total')->value('total') ?? 0,
+//         ];
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Dashboard statistics working correctly!',
-            'data' => $inventoryStats
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Error: ' . $e->getMessage(),
-            'error' => $e->getTraceAsString()
-        ]);
-    }
-});
+//         return response()->json([
+//             'success' => true,
+//             'message' => 'Dashboard statistics working correctly!',
+//             'data' => $inventoryStats
+//         ]);
+//     } catch (\Exception $e) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Error: ' . $e->getMessage(),
+//             'error' => $e->getTraceAsString()
+//         ]);
+//     }
+// });
 
 
 // Main Route
@@ -413,31 +415,53 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    
-
     // User Management Routes
     Route::resource('user-management', UserManagementController::class);
 
     // Customer Management Routes
-    Route::prefix('sales/customers')->name('sales.customers.')->group(function () {
-        Route::get('/', [CustomerController::class, 'index'])->name('index');
-        Route::get('/create', [CustomerController::class, 'create'])->name('create');
-        Route::post('/', [CustomerController::class, 'store'])->name('store');
-        Route::get('/{customer}', [CustomerController::class, 'show'])->name('show');
-        Route::get('/{customer}/edit', [CustomerController::class, 'edit'])->name('edit');
-        Route::put('/{customer}', [CustomerController::class, 'update'])->name('update');
-        Route::delete('/{customer}', [CustomerController::class, 'destroy'])->name('destroy');
+    // Route::prefix('sales/customers')->name('sales.customers.')->group(function () {
+    //     Route::get('/', [CustomerController::class, 'index'])->name('index');
+    //     Route::get('/create', [CustomerController::class, 'create'])->name('create');
+    //     Route::post('/', [CustomerController::class, 'store'])->name('store');
+    //     Route::get('/{customer}', [CustomerController::class, 'show'])->name('show');
+    //     Route::get('/{customer}/edit', [CustomerController::class, 'edit'])->name('edit');
+    //     Route::put('/{customer}', [CustomerController::class, 'update'])->name('update');
+    //     Route::delete('/{customer}', [CustomerController::class, 'destroy'])->name('destroy');
 
-        // Import and Export routes
-        Route::get('/import/form', [CustomerController::class, 'showImportForm'])->name('import');
-        Route::post('/import/process', [CustomerController::class, 'import'])->name('import.process');
-        Route::get('/template/download', [CustomerController::class, 'downloadTemplate'])->name('template');
-        Route::get('/export', [CustomerController::class, 'export'])->name('export');
+    //     // Import and Export routes
+    //     Route::get('/import/form', [CustomerController::class, 'showImportForm'])->name('import');
+    //     Route::post('/import/process', [CustomerController::class, 'import'])->name('import.process');
+    //     Route::get('/template/download', [CustomerController::class, 'downloadTemplate'])->name('template');
+    //     Route::get('/export', [CustomerController::class, 'export'])->name('export');
 
-        // Status toggle and analytics
-        Route::post('/{customer}/toggle-status', [CustomerController::class, 'toggleStatus'])->name('toggle-status');
-        Route::get('/analytics', [CustomerController::class, 'analytics'])->name('analytics');
+    //     // Status toggle and analytics
+    //     Route::post('/{customer}/toggle-status', [CustomerController::class, 'toggleStatus'])->name('toggle-status');
+    //     Route::get('/analytics', [CustomerController::class, 'analytics'])->name('analytics');
+    // });
+
+
+    //Master Data Categories Routes
+    Route::prefix('master_data/categories')->name('master_data.categories.')->group(function () {
+        Route::get('/', [CategoryController::class, 'index'])->name('index');
+        Route::get('/create', [CategoryController::class, 'create'])->name('create');
+        Route::post('/', [CategoryController::class, 'store'])->name('store');
+        Route::get('/{category}', [CategoryController::class, 'show'])->name('show');
+        Route::get('/{category}/edit', [CategoryController::class, 'edit'])->name('edit');
+        Route::put('/{category}', [CategoryController::class, 'update'])->name('update');
+        Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('destroy');
     });
+
+    //Master Data Brand Routes
+    Route::prefix('master_data/brands')->name('master_data.brands.')->group(function () {
+        Route::get('/', [BrandController::class, 'index'])->name('index');
+        Route::get('/create', [BrandController::class, 'create'])->name('create');
+        Route::post('/', [BrandController::class, 'store'])->name('store');
+        Route::get('/{brand}', [BrandController::class, 'show'])->name('show');
+        Route::get('/{brand}/edit', [BrandController::class, 'edit'])->name('edit');
+        Route::put('/{brand}', [BrandController::class, 'update'])->name('update');
+        Route::delete('/{brand}', [BrandController::class, 'destroy'])->name('destroy');
+    });
+
 
     //Inventory Routes for products
     Route::prefix('inventory/products')->name('inventory.products.')->group(function () {
@@ -617,6 +641,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/analytics', [\App\Http\Controllers\PurchaseReturnsController::class, 'analytics'])->name('analytics');
     });
 
+    
     // Purchase Payments Management Routes
     Route::prefix('purchases/payments')->name('purchases.payments.')->group(function () {
         Route::get('/', [\App\Http\Controllers\PurchasePaymentController::class, 'index'])->name('index');
@@ -769,31 +794,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Invoice Management Routes
     Route::prefix('sales/invoices')->name('sales.invoices.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\InvoiceController::class, 'index'])->name('index');
-        Route::get('/create', [\App\Http\Controllers\InvoiceController::class, 'create'])->name('create');
-        Route::post('/', [\App\Http\Controllers\InvoiceController::class, 'store'])->name('store');
-        Route::get('/{invoice}', [\App\Http\Controllers\InvoiceController::class, 'show'])->name('show');
-        Route::get('/{invoice}/edit', [\App\Http\Controllers\InvoiceController::class, 'edit'])->name('edit');
-        Route::put('/{invoice}', [\App\Http\Controllers\InvoiceController::class, 'update'])->name('update');
-        Route::delete('/{invoice}', [\App\Http\Controllers\InvoiceController::class, 'destroy'])->name('destroy');
+        Route::get('/', [InvoiceController::class, 'index'])->name('index');
+        Route::get('/create', [InvoiceController::class, 'create'])->name('create');
+        Route::post('/', [InvoiceController::class, 'store'])->name('store');
+        Route::get('/{invoice}', [InvoiceController::class, 'show'])->name('show');
+        Route::get('/{invoice}/edit', [InvoiceController::class, 'edit'])->name('edit');
+        Route::put('/{invoice}', [InvoiceController::class, 'update'])->name('update');
+        Route::delete('/{invoice}', [InvoiceController::class, 'destroy'])->name('destroy');
 
         // Status management routes
-        Route::post('/{invoice}/change-status', [\App\Http\Controllers\InvoiceController::class, 'changeStatus'])->name('change-status');
-        Route::post('/{invoice}/mark-as-sent', [\App\Http\Controllers\InvoiceController::class, 'markAsSent'])->name('mark-as-sent');
-        Route::post('/{invoice}/record-payment', [\App\Http\Controllers\InvoiceController::class, 'recordPayment'])->name('record-payment');
+        Route::post('/{invoice}/change-status', [InvoiceController::class, 'changeStatus'])->name('change-status');
+        Route::post('/{invoice}/mark-as-sent', [InvoiceController::class, 'markAsSent'])->name('mark-as-sent');
+        Route::post('/{invoice}/record-payment', [InvoiceController::class, 'recordPayment'])->name('record-payment');
 
         // Special operations
-        Route::post('/create-from-order/{salesOrder}', [\App\Http\Controllers\InvoiceController::class, 'createFromOrder'])->name('create-from-order');
-        Route::get('/{invoice}/duplicate', [\App\Http\Controllers\InvoiceController::class, 'duplicate'])->name('duplicate');
-        Route::get('/{invoice}/generate-pdf', [\App\Http\Controllers\InvoiceController::class, 'generatePdf'])->name('generate-pdf');
-        Route::post('/{invoice}/send-email', [\App\Http\Controllers\InvoiceController::class, 'sendEmail'])->name('send-email');
+        Route::post('/create-from-order/{salesOrder}', [InvoiceController::class, 'createFromOrder'])->name('create-from-order');
+        Route::get('/{invoice}/duplicate', [InvoiceController::class, 'duplicate'])->name('duplicate');
+        Route::get('/{invoice}/generate-pdf', [InvoiceController::class, 'generatePdf'])->name('generate-pdf');
+        Route::post('/{invoice}/send-email', [InvoiceController::class, 'sendEmail'])->name('send-email');
         
         // Views and reports
-        Route::get('/overdue', [\App\Http\Controllers\InvoiceController::class, 'overdue'])->name('overdue');
-        Route::post('/update-overdue-statuses', [\App\Http\Controllers\InvoiceController::class, 'updateOverdueStatuses'])->name('update-overdue-statuses');
+        Route::get('/overdue', [InvoiceController::class, 'overdue'])->name('overdue');
+        Route::post('/update-overdue-statuses', [InvoiceController::class, 'updateOverdueStatuses'])->name('update-overdue-statuses');
         
         // Analytics
-        Route::get('/analytics', [\App\Http\Controllers\InvoiceController::class, 'analytics'])->name('analytics');
+        Route::get('/analytics', [InvoiceController::class, 'analytics'])->name('analytics');
     });
 
     // Inventory Threshold Management Routes

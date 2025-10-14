@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+use App\Imports\ProductsImport;
+use App\Models\Brand;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use App\Imports\ProductsImport;
 
 class ProductController extends Controller
 {
@@ -24,7 +26,7 @@ class ProductController extends Controller
 
         // Filter by brand
         if ($request->has('brand') && $request->brand) {
-            $query->where('product_brand', 'like', '%' . $request->brand . '%');
+            $query->where('product_brand', 'like', '%'.$request->brand.'%');
         }
 
         // Filter by stock status
@@ -71,7 +73,13 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('inventory.products.create');
+        // Get active brands for dropdown
+        $brands = Brand::where('is_active', true)->orderBy('name')->pluck('name', 'name');
+
+        // Get existing categories for dropdown (can be enhanced with Category model later)
+        $categories = Product::distinct()->pluck('product_category')->filter()->sort();
+
+        return view('inventory.products.create', compact('brands', 'categories'));
     }
 
     /**
@@ -81,34 +89,53 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'product_name' => 'required|string|max:255',
-            'product_brand' => 'required|string|max:255',
             'product_category' => 'required|string|max:255',
             'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'nullable|string|max:1000',
+            // Allow either product_brand OR custom_brand to be filled
+            'product_brand' => 'nullable|string|max:255',
+            'custom_brand' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         $data = $validator->validated();
 
+        // Determine the brand name to use
+        $brandName = $request->product_brand === 'custom' ? $request->custom_brand : $request->product_brand;
+
+        if (! $brandName) {
+            return redirect()->back()->withErrors(['product_brand' => 'Please select or enter a brand.'])->withInput();
+        }
+
+        // Create brand if it doesn't exist
+        $brand = Brand::firstOrCreate(
+            ['name' => $brandName],
+            [
+                'brand_code' => strtoupper(str_replace([' ', '-'], '_', $brandName)),
+                'description' => 'Auto-created brand from product: '.$request->product_name,
+                'is_active' => true,
+            ]
+        );
+
+        // Assign brand name
+        $data['product_brand'] = $brand->name;
+
         // Handle image upload
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imageName = time().'_'.$image->getClientOriginalName();
             $imagePath = $image->storeAs('products', $imageName, 'public');
             $data['image'] = $imagePath;
         }
 
         Product::create($data);
 
-        return redirect()->route('inventory.products.index')
-            ->with('success', 'Product created successfully!');
+        return redirect()->route('inventory.products.index')->with('success', 'Product created successfully!');
     }
 
     /**
@@ -132,7 +159,9 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        return view('inventory.products.edit', compact('product'));
+        $brands = \App\Models\Brand::pluck('name');  // get brand names as a collection
+
+        return view('inventory.products.edit', compact('product', 'brands'));
     }
 
     /**
@@ -142,39 +171,56 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'product_name' => 'required|string|max:255',
-            'product_brand' => 'required|string|max:255',
             'product_category' => 'required|string|max:255',
             'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'nullable|string|max:1000',
+            'product_brand' => 'nullable|string|max:255',
+            'custom_brand' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         $data = $validator->validated();
 
+        // Handle brand selection
+        $brandName = $request->product_brand === 'custom' ? $request->custom_brand : $request->product_brand;
+
+        if (! $brandName) {
+            return redirect()->back()->withErrors(['product_brand' => 'Please select or enter a brand.'])->withInput();
+        }
+
+        // Create brand if not existing
+        $brand = \App\Models\Brand::firstOrCreate(
+            ['name' => $brandName],
+            [
+                'brand_code' => strtoupper(str_replace([' ', '-'], '_', $brandName)),
+                'description' => 'Auto-created brand from product: '.$request->product_name,
+                'is_active' => true,
+            ]
+        );
+
+        // Assign the brand name
+        $data['product_brand'] = $brand->name;
+
         // Handle image upload
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($product->image && Storage::disk('public')->exists($product->image)) {
                 Storage::disk('public')->delete($product->image);
             }
 
             $image = $request->file('image');
-            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imageName = time().'_'.$image->getClientOriginalName();
             $imagePath = $image->storeAs('products', $imageName, 'public');
             $data['image'] = $imagePath;
         }
 
         $product->update($data);
 
-        return redirect()->route('inventory.products.index')
-            ->with('success', 'Product updated successfully!');
+        return redirect()->route('inventory.products.index')->with('success', 'Product updated successfully!');
     }
 
     /**
@@ -217,7 +263,7 @@ class ProductController extends Controller
         }
 
         try {
-            $import = new ProductsImport();
+            $import = new ProductsImport;
             $import->import($request->file('excel_file'));
 
             $importedCount = $import->getRowCount();
@@ -227,7 +273,7 @@ class ProductController extends Controller
 
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'Error importing file: ' . $e->getMessage());
+                ->with('error', 'Error importing file: '.$e->getMessage());
         }
     }
 

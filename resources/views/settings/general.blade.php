@@ -36,7 +36,7 @@
                                 Company Information
                             </h2>
                             
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                                 <!-- Company Name -->
                                 <div>
                                     <x-input-label for="company_name" :value="__('Company Name')" />
@@ -49,7 +49,7 @@
                                         required 
                                     />
                                     <x-input-error class="mt-2" :messages="$errors->get('company_name')" />
-                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">The name of your business displayed throughout the system</p>
+                                    {{-- <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">The name of your business displayed throughout the system</p> --}}
                                 </div>
 
                                 <!-- Company Phone -->
@@ -113,7 +113,7 @@
                                 <textarea 
                                     id="company_address" 
                                     name="company_address" 
-                                    rows="3" 
+                                    rows="1" 
                                     class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
                                     placeholder="123 Main Street, City, Province, Postal Code, Philippines">{{ old('company_address', $settings['company_address'] ?? $defaults['company_address']['value'] ?? '') }}</textarea>
                                 <x-input-error class="mt-2" :messages="$errors->get('company_address')" />
@@ -132,11 +132,11 @@
                             
                             @php
                                 $businessHours = old('business_hours', $settings['business_hours'] ?? $defaults['business_hours']['value'] ?? [
-                                    'monday' => ['open' => '09:00', 'close' => '18:00'],
-                                    'tuesday' => ['open' => '09:00', 'close' => '18:00'],
-                                    'wednesday' => ['open' => '09:00', 'close' => '18:00'],
-                                    'thursday' => ['open' => '09:00', 'close' => '18:00'],
-                                    'friday' => ['open' => '09:00', 'close' => '18:00'],
+                                    'monday' => ['open' => '09:00', 'close' => '17:00'],
+                                    'tuesday' => ['open' => '09:00', 'close' => '17:00'],
+                                    'wednesday' => ['open' => '09:00', 'close' => '17:00'],
+                                    'thursday' => ['open' => '09:00', 'close' => '17:00'],
+                                    'friday' => ['open' => '09:00', 'close' => '17:00'],
                                     'saturday' => ['open' => '09:00', 'close' => '17:00'],
                                     'sunday' => ['open' => '10:00', 'close' => '16:00']
                                 ]);
@@ -257,11 +257,11 @@
             // Reset business hours
             const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
             const defaultHours = {
-                'monday': { open: '09:00', close: '18:00' },
-                'tuesday': { open: '09:00', close: '18:00' },
-                'wednesday': { open: '09:00', close: '18:00' },
-                'thursday': { open: '09:00', close: '18:00' },
-                'friday': { open: '09:00', close: '18:00' },
+                'monday': { open: '09:00', close: '17:00' },
+                'tuesday': { open: '09:00', close: '17:00' },
+                'wednesday': { open: '09:00', close: '17:00' },
+                'thursday': { open: '09:00', close: '17:00' },
+                'friday': { open: '09:00', close: '17:00' },
                 'saturday': { open: '09:00', close: '17:00' },
                 'sunday': { open: '10:00', close: '16:00' }
             };

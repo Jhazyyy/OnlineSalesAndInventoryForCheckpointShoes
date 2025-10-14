@@ -203,7 +203,7 @@
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                {{ $purchase->purchase_date->format('M d, Y') }}
+                                                {{ $purchase->purchase_date ? $purchase->purchase_date->format('M d, Y') : 'N/A' }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                 {{ $purchase->quantity }}
@@ -296,11 +296,15 @@
                             <dl class="space-y-3">
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Created</dt>
-                                    <dd class="text-sm text-gray-900 dark:text-white">{{ $supplier->created_at->format('M d, Y \a\t h:i A') }}</dd>
+                                    <dd class="text-sm text-gray-900 dark:text-white">
+                                        {{ $supplier->created_at ? $supplier->created_at->format('M d, Y \a\t h:i A') : 'Not available' }}
+                                    </dd>
                                 </div>
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Last Updated</dt>
-                                    <dd class="text-sm text-gray-900 dark:text-white">{{ $supplier->updated_at->format('M d, Y \a\t h:i A') }}</dd>
+                                    <dd class="text-sm text-gray-900 dark:text-white">
+                                        {{ $supplier->updated_at ? $supplier->updated_at->format('M d, Y \a\t h:i A') : 'Not available' }}
+                                    </dd>
                                 </div>
                                 @if($performance['last_order_date'])
                                     <div>

@@ -9,7 +9,7 @@
                             <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Sales Orders</h2>
                             <p class="text-gray-600 dark:text-gray-400">Manage your sales orders and track order fulfillment</p>
                         </div>
-                        <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
+                        {{-- <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
                             <a href="{{ route('sales.orders.create') }}" 
                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -17,7 +17,7 @@
                                 </svg>
                                 Create Order
                             </a>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -79,7 +79,7 @@
 
                             <!-- Start Date -->
                             <div>
-                                <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">From Date</label>
+                                <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Froms Date</label>
                                 <input type="date" id="start_date" name="start_date" value="{{ request('start_date') }}" 
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
@@ -253,8 +253,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                             </svg>
                             <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No orders found</h3>
-                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating a new sales order.</p>
-                            <div class="mt-6">
+                            {{-- <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating a new sales order.</p> --}}
+                            {{-- <div class="mt-6">
                                 <a href="{{ route('sales.orders.create') }}" 
                                    class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -262,7 +262,7 @@
                                     </svg>
                                     Create First Order
                                 </a>
-                            </div>
+                            </div> --}}
                         </div>
                     @endif
                 </div>

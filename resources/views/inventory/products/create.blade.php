@@ -51,9 +51,30 @@
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Brand <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" id="product_brand" name="product_brand"
-                                    value="{{ old('product_brand') }}" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('product_brand') border-red-500 @enderror">
+                                <div class="mt-1 flex">
+                                    <select id="product_brand" name="product_brand" required
+                                        class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('product_brand') border-red-500 @enderror">
+                                        <option value="">Select a brand...</option>
+                                        @foreach($brands as $brand)
+                                            <option value="{{ $brand }}" {{ old('product_brand') == $brand ? 'selected' : '' }}>
+                                                {{ $brand }}
+                                            </option>
+                                        @endforeach
+                                        <option value="custom">+ Add New Brand</option>
+                                    </select>
+                                    <a href="{{ route('master_data.brands.create') }}" 
+                                       class="ml-2 inline-flex items-center px-3 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                                       title="Add New Brand">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                    </a>
+                                </div>
+                                <input type="text" id="custom_brand" name="custom_brand" 
+                                    value="{{ old('custom_brand') }}" 
+                                    placeholder="Enter new brand name..."
+                                    style="display: none;"
+                                    class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 @error('product_brand')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -200,6 +221,35 @@
     </div>
 
     <script>
+        // Handle custom brand selection
+        document.addEventListener('DOMContentLoaded', function() {
+            const brandSelect = document.getElementById('product_brand');
+            const customBrandInput = document.getElementById('custom_brand');
+            
+            brandSelect.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customBrandInput.style.display = 'block';
+                    customBrandInput.required = true;
+                    this.required = false;
+                } else {
+                    customBrandInput.style.display = 'none';
+                    customBrandInput.required = false;
+                    this.required = true;
+                }
+            });
+            
+            // Form submission handler
+            document.querySelector('form').addEventListener('submit', function(e) {
+                if (brandSelect.value === 'custom') {
+                    if (!customBrandInput.value.trim()) {
+                        e.preventDefault();
+                        alert('Please enter a custom brand name.');
+                        return false;
+                    }
+                }
+            });
+        });
+
         function previewImage(input) {
             const previewImg = document.getElementById('previewImg');
             const uploadPlaceholder = document.getElementById('uploadPlaceholder');
