@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Spatie\Activitylog\Models\Activity;
 
 class UserManagementController extends Controller
 {
@@ -61,7 +62,28 @@ class UserManagementController extends Controller
     public function show($userManagement): View
     {
         $user = User::findOrFail($userManagement);
-        return view('user-management.show', compact('user'));
+
+
+        if (class_exists(Activity::class)) {
+            $activities = Activity::where('causer_id', $user->id)
+                ->latest()
+                ->take(10)->get();
+        } else {
+            // Example placeholder if you don't use activitylog package
+            $activities = collect([
+                (object)[
+                    'action' => 'login',
+                    'description' => 'User logged in',
+                    'created_at' => now()->subMinutes(10),
+                ],
+                (object)[
+                    'action' => 'update_profile',
+                    'description' => 'Updated profile information',
+                    'created_at' => now()->subHours(1),
+                ],
+            ]);
+        }
+        return view('user-management.show', compact('user', 'activities'));
     }
 
     /**

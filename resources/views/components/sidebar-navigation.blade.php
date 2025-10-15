@@ -150,8 +150,7 @@
                     </x-nav-item>
 
                     <!-- Purchases Section-->
-                    <x-nav-item
-                        route-pattern="inventory.purchase-orders.*|inventory.purchase-receives.*"
+                    <x-nav-item route-pattern="inventory.purchase-orders.*|inventory.purchase-receives.*"
                         :icon="App\Helpers\NavigationHelper::getIcon('purchases')" title="Purchases" :is-dropdown="true">
 
                         <!-- Purchase Order -->
@@ -166,9 +165,8 @@
                             title="Goods Receipt" size="small" />
 
                         <!-- Delivery -->
-                        <x-nav-item route="purchases.purchase-orders.index"
-                            route-pattern="purchases.deliveries.*" :icon="App\Helpers\NavigationHelper::getIcon('delivery', 'w-4 h-4 mr-3')" title="Delivery"
-                            size="small" />
+                        <x-nav-item route="purchases.purchase-orders.index" route-pattern="purchases.deliveries.*"
+                            :icon="App\Helpers\NavigationHelper::getIcon('delivery', 'w-4 h-4 mr-3')" title="Delivery" size="small" />
 
                         <!-- Purchase Return -->
                         {{-- <x-nav-item route="purchases.purchase-returns.index"
@@ -243,17 +241,8 @@
                     <x-nav-item href="#" :icon="App\Helpers\NavigationHelper::getIcon('integration')" title="Integration" />
 
                     <!-- User Management -->
-                    {{-- <a href="{{ route('user-management.index') }}"
-                        class="flex items-center px-3 py-2 text-sm font-medium rounded-md {{ request()->routeIs('user-management.*') ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }} transition-colors duration-150">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
-                            </path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
-                        User Management
-                    </a> --}}
+                    <x-nav-item route="user-management.index" route-pattern="user-management.*" :icon="App\Helpers\NavigationHelper::getIcon('user_accounts_control', 'w-4 h-4 mr-3')"
+                        title="User Accounts Control" size="large" />
 
                     <!-- Profile -->
                     {{-- <a href="{{ route('profile.edit') }}"

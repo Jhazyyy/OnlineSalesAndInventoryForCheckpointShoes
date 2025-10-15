@@ -5,8 +5,9 @@ namespace Database\Seeders;
 use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,13 +20,24 @@ class DatabaseSeeder extends Seeder
 
         // Create test user with default "Test User" name (no first_name/last_name)
         // This will display as "Test User" via the accessor
-        User::factory()->create([
-            'name' => 'Test User',
-            'first_name' => null,
-            'last_name' => null,
-            'email' => 'test@example.com',
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'first_name' => null,
+        //     'last_name' => null,
+        //     'email' => 'test@example.com',
+        // ]);
+
+        $adminRole = Role::create(['name' => 'admin']);
+        $userRole = Role::create(['name' => 'user']);
+
+        $admin = User::create([
+        'name' => 'Admin User',
+        'email' => 'admin@example.com',
+        'password' => bcrypt('password'),
         ]);
-        
+        $admin->assignRole($adminRole);
+
+
 
         
         // Seed suppliers
@@ -40,6 +52,6 @@ class DatabaseSeeder extends Seeder
         // Seed users
         // $this->call(UserSeeder::class);
 
-        $this->call(CategorySeeder::class);
+        // $this->call(CategorySeeder::class);
     }
 }

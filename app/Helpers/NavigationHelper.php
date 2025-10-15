@@ -170,6 +170,11 @@ class NavigationHelper
                                 <path d="M2.25 7.5V17.25A1.5 1.5 0 003.75 18.75H5.25M2.25 7.5L6.75 3H17.25A1.5 1.5 0 0118.75 4.5V6.75M2.25 7.5H18.75M18.75 6.75H20.25A1.5 1.5 0 0121.75 8.25V14.25A1.5 1.5 0 0120.25 15.75H19.5M5.25 18.75A1.5 1.5 0 006.75 20.25H8.25A1.5 1.5 0 009.75 18.75H5.25ZM14.25 18.75A1.5 1.5 0 0015.75 20.25H17.25A1.5 1.5 0 0018.75 18.75H14.25Z" />
                                 </svg>',
 
+            'user_accounts_control' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M16 14c1.656 0 3 1.344 3 3v3H5v-3c0-1.656 1.344-3 3-3h8z" />
+                                            <circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                                        </svg>',
 
         ];
 
