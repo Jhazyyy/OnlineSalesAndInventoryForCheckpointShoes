@@ -112,16 +112,65 @@ class NavigationHelper
                                     d="M4 4h6v6H4V4zM14 4h6v6h-6V4zM4 14h6v6H4v-6zM14 14h6v6h-6v-6z" />
                             </svg>',
 
-            'suppliers' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            'suppliers' => '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 17H7a2 2 0 01-2-2V5a2 2 0 012-2h8a2 2 0 012 2v2h2a2 2 0 012 2v6a2 2 0 01-2 2h-1" />
                                 <circle cx="7" cy="17" r="2" stroke="currentColor" stroke-width="2" />
                                 <circle cx="17" cy="17" r="2" stroke="currentColor" stroke-width="2" />
                             </svg>',
 
-            'warehouse'  =>  '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            'warehouse' => '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                             </svg>',
+
+            'sales_order_master' => '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m4 0V7a2 2 0 00-2-2h-4.586a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 008.586 2H6a2 2 0 00-2 2v13a2 2 0 002 2h1m2 0h6" />
+                                    </svg>',
+
+           'purchase_order_master' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 2h6a1 1 0 011 1v1h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2V3a1 1 0 011-1zm0 0h6v2H9V2z" />
+                                    </svg>',
+
+            'inventory_report' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 2h6a1 1 0 011 1v1h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2V3a1 1 0 011-1zm3 7h4m-4 4h4m-8-4h.01M8 13h.01" />
+                                    </svg>',
+
+
+            'reorder_items' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 3h6l2 3h10a1 1 0 011 1v3M16 21H6a1 1 0 01-1-1V9m13 6l3 3m0 0l-3 3m3-3h-6" />
+                                </svg>',
+
+            'critical_level_items' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M16 3h-4a2 2 0 00-2 2v2h8V5a2 2 0 00-2-2z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 9v4m0 4h.01" />
+                                        </svg>',
+
+            'supplier_cost' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 21v-2a4 4 0 014-4h6a4 4 0 014 4v2" />
+                                    <text x="16" y="18" font-size="6" fill="currentColor" font-weight="bold" font-family="Arial, sans-serif">$</text>
+                                </svg>',
+
+            'block_items' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <!-- Box -->
+                                <rect x="3" y="7" width="18" height="10" rx="2" ry="2" stroke-width="2" stroke="currentColor" />
+                                <!-- X mark -->
+                                <line x1="7" y1="11" x2="17" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                <line x1="17" y1="11" x2="7" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                </svg>',
+
+                                'delivery' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2.25 7.5V17.25A1.5 1.5 0 003.75 18.75H5.25M2.25 7.5L6.75 3H17.25A1.5 1.5 0 0118.75 4.5V6.75M2.25 7.5H18.75M18.75 6.75H20.25A1.5 1.5 0 0121.75 8.25V14.25A1.5 1.5 0 0120.25 15.75H19.5M5.25 18.75A1.5 1.5 0 006.75 20.25H8.25A1.5 1.5 0 009.75 18.75H5.25ZM14.25 18.75A1.5 1.5 0 0015.75 20.25H17.25A1.5 1.5 0 0018.75 18.75H14.25Z" />
+                                </svg>',
+
+
         ];
 
         return $icons[$iconName] ?? '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>';

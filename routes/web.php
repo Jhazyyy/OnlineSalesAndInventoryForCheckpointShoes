@@ -524,7 +524,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Supplier Management Routes
-    Route::prefix('purchases/suppliers')->name('purchases.suppliers.')->group(function () {
+    Route::prefix('master_data/suppliers')->name('master_data.suppliers.')->group(function () {
         Route::get('/', [SupplierController::class, 'index'])->name('index');
         Route::get('/create', [SupplierController::class, 'create'])->name('create');
         Route::post('/', [SupplierController::class, 'store'])->name('store');

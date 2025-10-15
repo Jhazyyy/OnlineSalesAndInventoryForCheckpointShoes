@@ -349,7 +349,7 @@ class ProductController extends Controller
         $outOfStockProducts = Product::outOfStock();
 
         return response()->json([
-            'low_stock_count' => $lowStockProducts->count(),
+            // 'low_stock_count' => $lowStockProducts->count(),
             'low_stock_products' => $lowStockProducts,
             'out_of_stock_count' => $outOfStockProducts->count(),
             'out_of_stock_products' => $outOfStockProducts,
