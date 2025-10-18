@@ -348,14 +348,21 @@
                             </div>
 
                             <!-- Sales Order Summary (Line Chart) -->
-                            <div class="bg-gray-200 dark:bg-gray-700 rounded-xl shadow-lg p-6">
+                            <div class="bg-gray-200 dark:bg-gray-700 rounded-xl shadow-lg p-6 text-gray-800 dark:text-gray-100">
                                 <div class="flex justify-between items-center mb-4">
-                                    <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Sales Order Summary (in PHP)</h4>
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">Monthly Records</span>
+                                    <h4 class="text-lg font-semibold">Sales Order Summary (in PHP)</h4>
+                                    <select name="type" class="border border-gray-600 dark:border-gray-400 rounded-md shadow-sm bg-gray-200 dark:bg-gray-700 dark:text-gray-100" id="salesOrderTypeSelect">
+                                        <option value="monthly" selected>Monthly</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="daily">Daily</option>
+                                    </select>
+                                </div>
+                                <div class="mb-2">
+                                    {{-- <span class="text-sm text-gray-500 dark:text-gray-400">Total Orders</span> --}}
                                 </div>
                                 <div class="mb-4">
                                     <div class="text-3xl font-bold text-gray-900 dark:text-white">₱{{ number_format(($monthlyRevenue ?? collect())->sum(), 2) }}</div>
-                                    <div class="text-sm text-gray-500 dark:text-gray-400">Total Revenue (6 months)</div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">Total Revenue</div>
                                 </div>
                                 <div style="height: 200px;">
                                     <canvas id="salesOrderChart"></canvas>

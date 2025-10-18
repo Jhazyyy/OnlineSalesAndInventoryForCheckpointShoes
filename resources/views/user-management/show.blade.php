@@ -2,23 +2,38 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
-                            <div class="h-16 w-16 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center mr-4">
-                                <span class="text-xl font-bold text-gray-600 dark:text-gray-300">
-                                    {{ strtoupper(substr($user->name, 0, 2)) }}
-                                </span>
-                            </div>
+                            @if($user->profile_photo)
+                                <img class="h-16 w-16 rounded-full object-cover mr-4" 
+                                    src="{{ asset('storage/' . $user->profile_photo) }}" 
+                                    alt="{{ $user->name }}">
+                            @else
+                                <div class="h-16 w-16 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center mr-4">
+                                    <span class="text-xl font-bold text-gray-600 dark:text-gray-300">
+                                        {{ strtoupper(substr($user->name, 0, 2)) }}
+                                    </span>
+                                </div>
+                            @endif
                             <div>
                                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $user->name }}</h2>
                                 <p class="text-gray-600 dark:text-gray-400">
                                     {{ ucfirst($user->role ?? 'User') }}
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-2
-                                        {{ $user->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-green-800' }}">
+                                        {{ $user->status === 'active' ? 'bg-green-100 text-green-800' : ($user->status === 'suspended' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800') }}">
                                         {{ ucfirst($user->status ?? 'active') }}
                                     </span>
+                                    @if($user->is_active)
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-2 bg-blue-100 text-blue-800">
+                                            Active
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-2 bg-gray-100 text-gray-800">
+                                            Inactive
+                                        </span>
+                                    @endif
                                 </p>
                             </div>
                         </div>
@@ -44,53 +59,115 @@
 
             <!-- User Details Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                <!-- Account Info -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <!-- Personal Information -->
+                <div class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Account Information</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
+                            Personal Information
+                        </h3>
                         <div class="space-y-3">
                             <div class="flex justify-between">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Email:</span>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->email }}</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Full Name:</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->name }}</span>
                             </div>
+                            @if($user->first_name || $user->last_name)
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">First Name:</span>
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->first_name ?? 'N/A' }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">Last Name:</span>
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->last_name ?? 'N/A' }}</span>
+                                </div>
+                            @endif
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Email:</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white break-all">{{ $user->email }}</span>
+                            </div>
+                            @if($user->username)
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">Username:</span>
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->username }}</span>
+                                </div>
+                            @endif
+                            @if($user->phone)
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">Phone:</span>
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->phone }}</span>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Information -->
+                <div class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
+                            Account Information
+                        </h3>
+                        <div class="space-y-3">
                             <div class="flex justify-between">
                                 <span class="text-sm text-gray-600 dark:text-gray-400">Role:</span>
                                 <span class="text-sm font-medium text-gray-900 dark:text-white">{{ ucfirst($user->role ?? 'User') }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-sm text-gray-600 dark:text-gray-400">Status:</span>
-                                <span class="text-sm font-medium {{ $user->status === 'active' ? 'text-green-600' : 'text-green-600' }}">
+                                <span class="text-sm font-medium {{ $user->status === 'active' ? 'text-green-600' : ($user->status === 'suspended' ? 'text-red-600' : 'text-gray-600') }}">
                                     {{ ucfirst($user->status ?? 'Active') }}
                                 </span>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Login Stats -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Login Statistics</h3>
-                        <div class="space-y-3">
                             <div class="flex justify-between">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Last Login:</span>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white">
-                                    {{ $user->last_login_at ? $user->last_login_at->format('M d, Y g:i A') : 'Never logged in' }}
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Can Login:</span>
+                                <span class="text-sm font-medium {{ $user->is_active ? 'text-green-600' : 'text-red-600' }}">
+                                    {{ $user->is_active ? 'Yes' : 'No' }}
                                 </span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-sm text-gray-600 dark:text-gray-400">Login Count:</span>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->login_count ?? 0 }}</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Last Login:</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white">
+                                    {{ $user->last_login_at ? $user->last_login_at->format('M d, Y g:i A') : 'Never' }}
+                                </span>
                             </div>
+                            @if(isset($user->login_count))
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">Login Count:</span>
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->login_count ?? 0 }}</span>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
 
-                <!-- Quick Stats -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <!-- Work Information -->
+                <div class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Stats</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
+                            Work Information
+                        </h3>
                         <div class="space-y-3">
+                            @if($user->department)
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">Department:</span>
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->department }}</span>
+                                </div>
+                            @else
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">Department:</span>
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-500">Not specified</span>
+                                </div>
+                            @endif
+                            @if($user->position)
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">Position:</span>
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->position }}</span>
+                                </div>
+                            @else
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">Position:</span>
+                                    <span class="text-sm font-medium text-gray-500 dark:text-gray-500">Not specified</span>
+                                </div>
+                            @endif
                             <div class="flex justify-between">
                                 <span class="text-sm text-gray-600 dark:text-gray-400">Created:</span>
                                 <span class="text-sm font-medium text-gray-900 dark:text-white">
@@ -108,10 +185,24 @@
                 </div>
             </div>
 
+            <!-- Bio Section (if exists) -->
+            @if($user->bio)
+                <div class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
+                            Bio
+                        </h3>
+                        <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ $user->bio }}</p>
+                    </div>
+                </div>
+            @endif
+
             <!-- Activity History -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Activity</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
+                        Recent Activity
+                    </h3>
                     @if($activities->count() > 0)
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -126,10 +217,10 @@
                                     @foreach($activities as $activity)
                                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                             <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                                                {{ ucfirst($activity->action) }}
+                                                {{ ucfirst($activity->action ?? 'Action') }}
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                                                {{ $activity->description }}
+                                                {{ $activity->description ?? 'No description' }}
                                             </td>
                                             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                                                 {{ $activity->created_at->format('M d, Y g:i A') }}

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Spatie\Activitylog\Models\Activity;
 
@@ -15,10 +16,54 @@ class UserManagementController extends Controller
     /**
      * Display a listing of users.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $users = User::simplePaginate(5);
-        return view('user-management.index', compact('users'));
+        $query = User::query();
+
+        // Search
+        if ($request->filled('search')) {
+            $query->search($request->search);
+        }
+
+        // Filter by role
+        if ($request->filled('role')) {
+            $query->byRole($request->role);
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->byStatus($request->status);
+        }
+
+        // Filter by active status
+        if ($request->filled('is_active')) {
+            $query->where('is_active', $request->is_active);
+        }
+
+        // Sorting
+        $sortField = $request->get('sort', 'created_at');
+        $sortOrder = $request->get('order', 'desc');
+        $query->orderBy($sortField, $sortOrder);
+
+        $users = $query->paginate(15)->withQueryString();
+
+        // Statistics
+        $stats = [
+            'total' => User::count(),
+            'active' => User::active()->count(),
+            'inactive' => User::where('status', 'inactive')->count(),
+            'suspended' => User::where('status', 'suspended')->count(),
+            'admins' => User::byRole('admin')->count(),
+            'managers' => User::byRole('manager')->count(),
+            'users' => User::byRole('user')->count(),
+            'new_this_month' => User::whereMonth('created_at', now()->month)->count(),
+        ];
+
+        // Role and status options for filters
+        $roles = ['admin', 'manager', 'user', 'viewer'];
+        $statuses = ['active', 'inactive', 'suspended'];
+
+        return view('user-management.index', compact('users', 'stats', 'roles', 'statuses'));
     }
 
     /**
@@ -26,7 +71,9 @@ class UserManagementController extends Controller
      */
     public function create(): View
     {
-        return view('user-management.create');
+        $roles = ['admin', 'manager', 'user', 'viewer'];
+        $statuses = ['active', 'inactive', 'suspended'];
+        return view('user-management.create', compact('roles', 'statuses'));
     }
 
     /**
@@ -38,19 +85,45 @@ class UserManagementController extends Controller
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'username' => ['nullable', 'string', 'max:255', 'unique:users'],
+            'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'role' => ['required', 'in:admin,manager,user,viewer'],
+            'status' => ['required', 'in:active,inactive,suspended'],
+            'department' => ['nullable', 'string', 'max:255'],
+            'position' => ['nullable', 'string', 'max:255'],
+            'bio' => ['nullable', 'string', 'max:1000'],
+            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
 
         // Auto-generate full name from first_name and last_name
         $fullName = trim($request->first_name . ' ' . $request->last_name);
 
-        User::create([
+        $data = [
             'name' => $fullName,
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
+            'username' => $request->username,
+            'phone' => $request->phone,
             'password' => Hash::make($request->password),
-        ]);
+            'role' => $request->role,
+            'status' => $request->status,
+            'is_active' => $request->has('is_active'),
+            'department' => $request->department,
+            'position' => $request->position,
+            'bio' => $request->bio,
+        ];
+
+        // Handle profile photo upload
+        if ($request->hasFile('profile_photo')) {
+            $image = $request->file('profile_photo');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imagePath = $image->storeAs('profile_photos', $imageName, 'public');
+            $data['profile_photo'] = $imagePath;
+        }
+
+        User::create($data);
 
         return redirect()->route('user-management.index')
             ->with('success', 'User created successfully.');
@@ -92,7 +165,9 @@ class UserManagementController extends Controller
     public function edit($userManagement): View
     {
         $user = User::findOrFail($userManagement);
-        return view('user-management.edit', compact('user'));
+        $roles = ['admin', 'manager', 'user', 'viewer'];
+        $statuses = ['active', 'inactive', 'suspended'];
+        return view('user-management.edit', compact('user', 'roles', 'statuses'));
     }
 
     /**
@@ -106,15 +181,50 @@ class UserManagementController extends Controller
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'username' => ['nullable', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'role' => ['required', 'in:admin,manager,user,viewer'],
+            'status' => ['required', 'in:active,inactive,suspended'],
+            'department' => ['nullable', 'string', 'max:255'],
+            'position' => ['nullable', 'string', 'max:255'],
+            'bio' => ['nullable', 'string', 'max:1000'],
+            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
 
-        $user->update([
+        $data = [
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
+            'name' => trim($request->first_name . ' ' . $request->last_name),
             'email' => $request->email,
-            'password' => $request->password ? Hash::make($request->password) : $user->password,
-        ]);
+            'username' => $request->username,
+            'phone' => $request->phone,
+            'role' => $request->role,
+            'status' => $request->status,
+            'is_active' => $request->has('is_active'),
+            'department' => $request->department,
+            'position' => $request->position,
+            'bio' => $request->bio,
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        // Handle profile photo upload
+        if ($request->hasFile('profile_photo')) {
+            // Delete old photo if exists
+            if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
+                Storage::disk('public')->delete($user->profile_photo);
+            }
+
+            $image = $request->file('profile_photo');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imagePath = $image->storeAs('profile_photos', $imageName, 'public');
+            $data['profile_photo'] = $imagePath;
+        }
+
+        $user->update($data);
 
         return redirect()->route('user-management.index')
             ->with('success', 'User updated successfully.');
@@ -133,9 +243,121 @@ class UserManagementController extends Controller
                 ->with('error', 'You cannot delete your own account.');
         }
 
+        // Delete profile photo if exists
+        if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
+            Storage::disk('public')->delete($user->profile_photo);
+        }
+
         $user->delete();
 
         return redirect()->route('user-management.index')
             ->with('success', 'User deleted successfully.');
+    }
+
+    /**
+     * Toggle user status
+     */
+    public function toggleStatus($id): RedirectResponse
+    {
+        $user = User::findOrFail($id);
+        
+        $user->update([
+            'is_active' => !$user->is_active,
+        ]);
+
+        $status = $user->is_active ? 'activated' : 'deactivated';
+        
+        return redirect()->back()
+            ->with('success', "User {$status} successfully.");
+    }
+
+    /**
+     * Bulk delete users
+     */
+    public function bulkDelete(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id',
+        ]);
+
+        $userIds = $request->user_ids;
+        
+        // Remove current user's ID from the list
+        $userIds = array_diff($userIds, [auth()->id()]);
+
+        if (empty($userIds)) {
+            return redirect()->back()
+                ->with('error', 'No users selected or you cannot delete your own account.');
+        }
+
+        // Delete profile photos
+        $users = User::whereIn('id', $userIds)->get();
+        foreach ($users as $user) {
+            if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
+                Storage::disk('public')->delete($user->profile_photo);
+            }
+        }
+
+        User::whereIn('id', $userIds)->delete();
+
+        return redirect()->back()
+            ->with('success', count($userIds) . ' user(s) deleted successfully.');
+    }
+
+    /**
+     * Export users to CSV
+     */
+    public function export(Request $request)
+    {
+        $query = User::query();
+
+        // Apply same filters as index
+        if ($request->filled('search')) {
+            $query->search($request->search);
+        }
+        if ($request->filled('role')) {
+            $query->byRole($request->role);
+        }
+        if ($request->filled('status')) {
+            $query->byStatus($request->status);
+        }
+
+        $users = $query->get();
+
+        $filename = 'users_' . date('Y-m-d_His') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function() use ($users) {
+            $file = fopen('php://output', 'w');
+            
+            // Headers
+            fputcsv($file, ['ID', 'Name', 'Email', 'Username', 'Phone', 'Role', 'Status', 'Department', 'Position', 'Created At', 'Last Login']);
+
+            // Data
+            foreach ($users as $user) {
+                fputcsv($file, [
+                    $user->id,
+                    $user->name,
+                    $user->email,
+                    $user->username,
+                    $user->phone,
+                    $user->role,
+                    $user->status,
+                    $user->department,
+                    $user->position,
+                    $user->created_at->format('Y-m-d H:i:s'),
+                    $user->last_login_at ? $user->last_login_at->format('Y-m-d H:i:s') : 'Never',
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

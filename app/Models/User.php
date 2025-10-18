@@ -29,6 +29,14 @@ class User extends Authenticatable implements MustVerifyEmail
         'username',
         'password',
         'profile_photo',
+        'status',
+        'last_login_at',
+        'login_count',
+        'is_active',
+        'role',
+        'bio',
+        'department',
+        'position',
     ];
 
     /**
@@ -94,20 +102,115 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_login_at' => 'datetime',
+            'is_active' => 'boolean',
         ];
     }
 
-
-        /**
+    /**
      * Check if user is admin
      */
-    public function isAdmin()
+    public function isAdmin(): bool
     {
-        return $this->user_role === 'admin';
+        return $this->role === 'admin';
     }
 
-        public function isClient()
+    /**
+     * Check if user is manager
+     */
+    public function isManager(): bool
     {
-        return $this->user_role === 'client';   
+        return $this->role === 'manager';
+    }
+
+    /**
+     * Check if user is active
+     */
+    public function isActiveUser(): bool
+    {
+        return $this->is_active && $this->status === 'active';
+    }
+
+    /**
+     * Get status badge color
+     */
+    public function getStatusColorAttribute(): string
+    {
+        return match($this->status) {
+            'active' => 'green',
+            'inactive' => 'gray',
+            'suspended' => 'red',
+            default => 'gray',
+        };
+    }
+
+    /**
+     * Get role badge color
+     */
+    public function getRoleColorAttribute(): string
+    {
+        return match($this->role) {
+            'admin' => 'purple',
+            'manager' => 'blue',
+            'user' => 'gray',
+            'viewer' => 'yellow',
+            default => 'gray',
+        };
+    }
+
+    /**
+     * Scope active users
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true)->where('status', 'active');
+    }
+
+    /**
+     * Scope by role
+     */
+    public function scopeByRole($query, $role)
+    {
+        return $query->where('role', $role);
+    }
+
+    /**
+     * Scope by status
+     */
+    public function scopeByStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    /**
+     * Search users
+     */
+    public function scopeSearch($query, $search)
+    {
+        return $query->where(function($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('email', 'like', "%{$search}%")
+              ->orWhere('username', 'like', "%{$search}%")
+              ->orWhere('phone', 'like', "%{$search}%");
+        });
+    }
+
+    /**
+     * Record user login
+     */
+    public function recordLogin()
+    {
+        $this->update([
+            'last_login_at' => now(),
+            'login_count' => $this->login_count + 1,
+        ]);
+    }
+
+    /**
+     * Check if user is client
+     */
+    public function isClient(): bool
+    {
+        return $this->role === 'client';   
     }
 }

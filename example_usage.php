@@ -118,7 +118,7 @@ $searchResults = $productService->searchProducts([
 echo "Found {$searchResults->count()} products matching search criteria\n";
 
 foreach ($searchResults as $searchProduct) {
-    echo "- {$searchProduct->full_name}: ${$searchProduct->price} (Stock: {$searchProduct->quantity})\n";
+    echo "- {$searchProduct->full_name}: {$searchProduct->price} (Stock: {$searchProduct->quantity})\n";
 }
 echo "\n";
 

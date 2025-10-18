@@ -56,6 +56,10 @@
                         {{-- <x-nav-item route="master_data.items.index" route-pattern="master_data.items.*"
                             :icon="App\Helpers\NavigationHelper::getIcon('items', 'w-4 h-4 mr-3')" title="Items" size="small" /> --}}
 
+                        <!-- Products -->
+                        <x-nav-item route="inventory.products.index" route-pattern="inventory.products.*"
+                            :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Products" size="small" />
+
                         <!-- Vendor/Supplier -->
                         <x-nav-item route="master_data.suppliers.index" route-pattern="master_data.suppliers.*"
                             :icon="App\Helpers\NavigationHelper::getIcon('suppliers', 'w-4 h-4 mr-3')" title="Vendor/Supplier" size="small" />
@@ -79,10 +83,6 @@
                     <x-nav-item
                         route-pattern="inventory.products.*|inventory.product_stocks.*|inventory.thresholds.*|inventory.product-movement.*"
                         :icon="App\Helpers\NavigationHelper::getIcon('inventory')" title="Inventory" :is-dropdown="true">
-
-                        <!-- Products -->
-                        <x-nav-item route="inventory.products.index" route-pattern="inventory.products.*"
-                            :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Products" size="small" />
 
                         <!-- Composite Products -->
                         {{-- <x-nav-item href="#"

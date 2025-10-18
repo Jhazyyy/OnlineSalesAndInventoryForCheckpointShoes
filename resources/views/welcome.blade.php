@@ -73,7 +73,7 @@
             </ul>
         </div>
         <div class="navbar-end">
-            <a href="{{ route('register') }}" class="btn login-blue text-white hover:bg-red-900 border-none">Register</a>
+            <a href="{{ route('login') }}" class="btn login-blue text-white hover:bg-red-900 border-none">Login</a>
         </div>
     </div>
 

@@ -10,7 +10,7 @@
                             <p class="text-gray-600 dark:text-gray-400">Update supplier information</p>
                         </div>
                         <div class="flex space-x-3">
-                            <a href="{{ route('purchases.suppliers.show', $supplier) }}" 
+                            <a href="{{ route('master_data.suppliers.show', $supplier) }}" 
                                class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -18,7 +18,7 @@
                                 </svg>
                                 View Details
                             </a>
-                            <a href="{{ route('purchases.suppliers.index') }}" 
+                            <a href="{{ route('master_data.suppliers.index') }}" 
                                class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -33,7 +33,7 @@
             <!-- Form Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    <form method="POST" action="{{ route('purchases.suppliers.update', $supplier) }}" class="space-y-6">
+                    <form method="POST" action="{{ route('master_data.suppliers.update', $supplier) }}" class="space-y-6">
                         @csrf
                         @method('PUT')
                         
@@ -172,7 +172,7 @@
 
                         <!-- Form Actions -->
                         <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-                            <a href="{{ route('purchases.suppliers.show', $supplier) }}" 
+                            <a href="{{ route('master_data.suppliers.show', $supplier) }}" 
                                class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Cancel
                             </a>

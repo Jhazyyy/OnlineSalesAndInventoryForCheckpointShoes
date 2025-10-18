@@ -19,6 +19,14 @@ return new class extends Migration
             $table->string('username')->nullable()->unique()->after('email');
             $table->string('profile_photo')->nullable()->after('password');
             $table->string('name');
+            $table->string('status')->default('active')->after('email_verified_at'); // active, inactive, suspended
+            $table->timestamp('last_login_at')->nullable()->after('status');
+            $table->integer('login_count')->default(0)->after('last_login_at');
+            $table->boolean('is_active')->default(true)->after('login_count');
+            $table->string('role')->default('user')->after('is_active'); // admin, manager, user, viewer
+            $table->text('bio')->nullable()->after('profile_photo');
+            $table->string('department')->nullable()->after('bio');
+            $table->string('position')->nullable()->after('department');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

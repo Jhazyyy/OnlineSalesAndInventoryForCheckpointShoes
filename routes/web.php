@@ -417,6 +417,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // User Management Routes
     Route::resource('user-management', UserManagementController::class);
+    Route::post('user-management/{user}/toggle-status', [UserManagementController::class, 'toggleStatus'])->name('user-management.toggle-status');
+    Route::post('user-management/bulk-delete', [UserManagementController::class, 'bulkDelete'])->name('user-management.bulk-delete');
+    Route::get('user-management-export', [UserManagementController::class, 'export'])->name('user-management.export');
 
     // Customer Management Routes
     // Route::prefix('sales/customers')->name('sales.customers.')->group(function () {
