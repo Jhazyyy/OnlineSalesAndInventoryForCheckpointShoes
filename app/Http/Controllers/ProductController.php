@@ -65,7 +65,7 @@ class ProductController extends Controller
         // Get unique categories for filter dropdown
         $categories = Product::distinct()->pluck('product_category')->filter()->sort();
 
-        return view('inventory.products.index', compact('products', 'brands', 'categories'));
+        return view('master_data.products.index', compact('products', 'brands', 'categories'));
     }
 
     /**
@@ -79,7 +79,7 @@ class ProductController extends Controller
         // Get existing categories for dropdown (can be enhanced with Category model later)
         $categories = Product::distinct()->pluck('product_category')->filter()->sort();
 
-        return view('inventory.products.create', compact('brands', 'categories'));
+        return view('master_data.products.create', compact('brands', 'categories'));
     }
 
     /**
@@ -135,7 +135,7 @@ class ProductController extends Controller
 
         Product::create($data);
 
-        return redirect()->route('inventory.products.index')->with('success', 'Product created successfully!');
+        return redirect()->route('master_data.products.index')->with('success', 'Product created successfully!');
     }
 
     /**
@@ -151,7 +151,7 @@ class ProductController extends Controller
         $recentSales = $product->sales()->latest()->take(5)->get();
         $recentPurchases = $product->purchases()->latest()->take(5)->get();
 
-        return view('inventory.products.show', compact('product', 'stockMovement', 'recentSales', 'recentPurchases'));
+        return view('master_data.products.show', compact('product', 'stockMovement', 'recentSales', 'recentPurchases'));
     }
 
     /**
@@ -161,7 +161,7 @@ class ProductController extends Controller
     {
         $brands = \App\Models\Brand::pluck('name');  // get brand names as a collection
 
-        return view('inventory.products.edit', compact('product', 'brands'));
+        return view('master_data.products.edit', compact('product', 'brands'));
     }
 
     /**
@@ -220,7 +220,7 @@ class ProductController extends Controller
 
         $product->update($data);
 
-        return redirect()->route('inventory.products.index')->with('success', 'Product updated successfully!');
+        return redirect()->route('master_data.products.index')->with('success', 'Product updated successfully!');
     }
 
     /**
@@ -235,7 +235,7 @@ class ProductController extends Controller
 
         $product->delete();
 
-        return redirect()->route('inventory.products.index')
+        return redirect()->route('master_data.products.index')
             ->with('success', 'Product deleted successfully!');
     }
 
@@ -244,7 +244,7 @@ class ProductController extends Controller
      */
     public function showImportForm()
     {
-        return view('inventory.products.import');
+        return view('master_data.products.import');
     }
 
     /**
@@ -268,7 +268,7 @@ class ProductController extends Controller
 
             $importedCount = $import->getRowCount();
 
-            return redirect()->route('inventory.products.index')
+            return redirect()->route('master_data.products.index')
                 ->with('success', "Successfully imported {$importedCount} products!");
 
         } catch (\Exception $e) {

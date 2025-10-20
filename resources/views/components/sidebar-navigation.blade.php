@@ -49,7 +49,7 @@
 
                     <!-- Master Data Section -->
                     <x-nav-item
-                        route-pattern="master_data.items.*|master_data.categories.*|master_data.brands.*|master_data.suppliers.*"
+                        route-pattern="master_data.products.*|master_data.categories.*|master_data.brands.*|master_data.suppliers.*"
                         :icon="App\Helpers\NavigationHelper::getIcon('master_data')" title="Master Data" :is-dropdown="true">
 
                         {{-- Items --}}
@@ -57,7 +57,7 @@
                             :icon="App\Helpers\NavigationHelper::getIcon('items', 'w-4 h-4 mr-3')" title="Items" size="small" /> --}}
 
                         <!-- Products -->
-                        <x-nav-item route="inventory.products.index" route-pattern="inventory.products.*"
+                        <x-nav-item route="master_data.products.index" route-pattern="master_data.products.*"
                             :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Products" size="small" />
 
                         <!-- Vendor/Supplier -->

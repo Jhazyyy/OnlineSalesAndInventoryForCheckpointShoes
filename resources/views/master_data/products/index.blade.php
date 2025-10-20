@@ -10,7 +10,7 @@
                             <p class="text-gray-600 dark:text-gray-400">Manage your product catalog</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
-                            <a href="{{ route('inventory.products.create') }}" 
+                            <a href="{{ route('master_data.products.create') }}" 
                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -25,7 +25,7 @@
             <!-- Filters Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
-                    <form method="GET" action="{{ route('inventory.products.index') }}" class="space-y-4">
+                    <form method="GET" action="{{ route('master_data.products.index') }}" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
                             <!-- Search -->
                             <div>
@@ -101,7 +101,7 @@
                                     </svg>
                                     Filter
                                 </button>
-                                <a href="{{ route('inventory.products.index') }}" 
+                                <a href="{{ route('master_data.products.index') }}" 
                                    class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     Clear
                                 </a>
@@ -231,11 +231,11 @@
                                                 @endif
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                                <a href="{{ route('inventory.products.show', $product) }}" 
+                                                <a href="{{ route('master_data.products.show', $product) }}" 
                                                    class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">View</a>
-                                                <a href="{{ route('inventory.products.edit', $product) }}" 
+                                                <a href="{{ route('master_data.products.edit', $product) }}" 
                                                    class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">Edit</a>
-                                                <form method="POST" action="{{ route('inventory.products.destroy', $product) }}" 
+                                                <form method="POST" action="{{ route('master_data.products.destroy', $product) }}" 
                                                       class="inline-block" 
                                                       onsubmit="return confirm('Are you sure you want to delete this product?')">
                                                     @csrf
@@ -261,7 +261,7 @@
                             <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No products found</h3>
                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by adding your first product.</p>
                             <div class="mt-6">
-                                <a href="{{ route('inventory.products.create') }}" 
+                                <a href="{{ route('master_data.products.create') }}" 
                                    class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>

@@ -41,11 +41,11 @@
         </div>
 
         <!-- Full Name (Display Name) -->
-        {{-- <div>
+        <div>
             <x-input-label for="name" :value="__('Full Name')" />
             <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
-        </div> --}}
+        </div>
 
         <!-- Email -->
         <div>
@@ -95,7 +95,7 @@
 
         <!-- Action Buttons -->
         <div class="flex items-center gap-4">
-            <button type="submit" class="inline-flex items-center px-6 py-2 bg-orange-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-orange-600 focus:bg-orange-600 active:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition ease-in-out duration-150">
+            <button type="submit" class="inline-flex items-center px-6 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
                 {{ __('Submit') }}
             </button>
 
@@ -103,7 +103,7 @@
                 {{ __('Cancel') }}
             </button>
 
-            @if (session('status') === 'profile-updated')
+            {{-- @if (session('status') === 'profile-updated')
                 <p
                     x-data="{ show: true }"
                     x-show="show"
@@ -111,7 +111,7 @@
                     x-init="setTimeout(() => show = false, 2000)"
                     class="text-sm text-green-600 dark:text-green-400"
                 >{{ __('Saved.') }}</p>
-            @endif
+            @endif --}}
         </div>
     </form>
 </section>

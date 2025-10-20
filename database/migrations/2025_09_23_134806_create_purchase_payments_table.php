@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('reference_number')->nullable();
             $table->enum('status', ['pending', 'completed', 'cancelled', 'refunded'])->default('pending');
             $table->text('notes')->nullable();
+            $table->string('received_by')->nullable()->after('notes');
             $table->timestamps();
             
             // Foreign key constraints

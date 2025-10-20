@@ -10,7 +10,7 @@
                             <p class="text-gray-600 dark:text-gray-400">Create a new product in your inventory</p>
                         </div>
                         <div class="flex space-x-3 mt-4 sm:mt-0">
-                            <a href="{{ route('inventory.products.index') }}"
+                            <a href="{{ route('master_data.products.index') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -26,7 +26,7 @@
             <!-- Form Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    <form method="POST" action="{{ route('inventory.products.store') }}" enctype="multipart/form-data"
+                    <form method="POST" action="{{ route('master_data.products.store') }}" enctype="multipart/form-data"
                         class="space-y-6">
                         @csrf
 
@@ -200,7 +200,7 @@
 
                         <!-- Form Actions -->
                         <div class="flex items-center justify-end space-x-3">
-                            <a href="{{ route('inventory.products.index') }}"
+                            <a href="{{ route('master_data.products.index') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Cancel
                             </a>

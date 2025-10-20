@@ -466,8 +466,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
 
-    //Inventory Routes for products
-    Route::prefix('inventory/products')->name('inventory.products.')->group(function () {
+    //Master Data Product Routes
+    Route::prefix('master_data/products')->name('master_data.products.')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('index');
         Route::get('/create', [ProductController::class, 'create'])->name('create');
         Route::post('/', [ProductController::class, 'store'])->name('store');

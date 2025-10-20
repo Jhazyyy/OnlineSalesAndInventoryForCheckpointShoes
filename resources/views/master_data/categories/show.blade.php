@@ -114,7 +114,7 @@
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Products
                                 ({{ $productsCount }})</h3>
-                            <a href="{{ route('inventory.products.index', ['category' => $category->name]) }}"
+                            <a href="{{ route('master_data.products.index', ['category' => $category->name]) }}"
                                 class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium">
                                 View All Products →
                             </a>

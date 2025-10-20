@@ -34,6 +34,7 @@ class PurchasePayment extends Model
         'bank_charges',
         'status',
         'notes',
+        'received_by',
         'paid_by',
         'bill_number',
     ];
@@ -245,15 +246,15 @@ class PurchasePayment extends Model
     /**
      * Get the payment mode display name.
      */
-    public function getPaymentModeDisplayAttribute(): string
-    {
-        return match ($this->payment_mode) {
-            'cash' => 'Cash',
-            'bank_transfer' => 'Bank Transfer',
-            'standard_chartered' => 'Standard Chartered Bank',
-            'other' => 'Other',
-            default => ucfirst(str_replace('_', ' ', $this->payment_mode)),
-        };
-    }
+    // public function getPaymentModeDisplayAttribute(): string
+    // {
+    //     return match ($this->payment_mode) {
+    //         'cash' => 'Cash',
+    //         'bank_transfer' => 'Bank Transfer',
+    //         'standard_chartered' => 'Standard Chartered Bank',
+    //         'other' => 'Other',
+    //         default => ucfirst(str_replace('_', ' ', $this->payment_mode)),
+    //     };
+    // }
 
 }
