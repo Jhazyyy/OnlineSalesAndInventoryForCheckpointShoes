@@ -6,11 +6,13 @@ use App\Models\SalesOrder;
 use App\Models\SalesOrderItem;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class SalesOrderService
 {
@@ -110,6 +112,15 @@ class SalesOrderService
             $this->addItemsToOrder($order, $data['items']);
         }
 
+        // Create notification for new order
+        Notification::create([
+            'title' => 'New Sales Order Created',
+            'message' => "Order {$order->order_number} has been created successfully",
+            'level' => 'info',
+            'type' => 'sales.order_created',
+            'link' => route('sales.orders.show', $order->order_id),
+        ]);
+
         return $order->fresh(['customer', 'items.product']);
     }
 
@@ -200,6 +211,7 @@ class SalesOrderService
             throw new \Exception("Cannot change status from {$order->status} to {$status}");
         }
 
+        $oldStatus = $order->status;
         $order->update(['status' => $status]);
 
         // Update shipped date when status changes to shipped
@@ -207,7 +219,65 @@ class SalesOrderService
             $order->update(['shipped_date' => Carbon::now()]);
         }
 
+        // Create notifications for status changes
+        $this->createOrderStatusNotification($order, $oldStatus, $status);
+
         return $order->fresh();
+    }
+
+    /**
+     * Create notification when order status changes.
+     */
+    protected function createOrderStatusNotification(SalesOrder $order, string $oldStatus, string $newStatus): void
+    {
+        $notificationData = [
+            'type' => 'sales.order_status_changed',
+            'link' => route('sales.orders.show', $order->order_id),
+        ];
+
+        // Determine notification title, message, and level based on new status
+        switch ($newStatus) {
+            case 'confirmed':
+                $notificationData['title'] = 'Order Confirmed';
+                $notificationData['message'] = "Order {$order->order_number} has been confirmed successfully";
+                $notificationData['level'] = 'success';
+                break;
+
+            case 'delivered':
+                $notificationData['title'] = 'Order Delivered Successfully';
+                $notificationData['message'] = "Order {$order->order_number} has been delivered to {$order->customer->display_name}";
+                $notificationData['level'] = 'success';
+                break;
+
+            case 'cancelled':
+                $notificationData['title'] = 'Order Cancelled';
+                $notificationData['message'] = "Order {$order->order_number} has been cancelled";
+                $notificationData['level'] = 'warning';
+                break;
+
+            case 'failed':
+                $notificationData['title'] = 'Order Failed';
+                $notificationData['message'] = "Order {$order->order_number} has failed";
+                $notificationData['level'] = 'danger';
+                break;
+
+            case 'processing':
+                $notificationData['title'] = 'Order Processing';
+                $notificationData['message'] = "Order {$order->order_number} is now being processed";
+                $notificationData['level'] = 'info';
+                break;
+
+            case 'shipped':
+                $notificationData['title'] = 'Order Shipped';
+                $notificationData['message'] = "Order {$order->order_number} has been shipped";
+                $notificationData['level'] = 'info';
+                break;
+
+            default:
+                return; // Don't create notification for other status changes
+        }
+
+        Notification::create($notificationData);
     }
 
     /**

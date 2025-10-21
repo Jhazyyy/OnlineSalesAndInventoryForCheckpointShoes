@@ -20,22 +20,22 @@ class DatabaseSeeder extends Seeder
 
         // Create test user with default "Test User" name (no first_name/last_name)
         // This will display as "Test User" via the accessor
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'first_name' => null,
-        //     'last_name' => null,
-        //     'email' => 'test@example.com',
-        // ]);
-
-        $adminRole = Role::create(['name' => 'admin']);
-        $userRole = Role::create(['name' => 'user']);
-
-        $admin = User::create([
-        'name' => 'Admin User',
-        'email' => 'admin@example.com',
-        'password' => bcrypt('password'),
+        User::factory()->create([
+            'name' => 'Test User',
+            'first_name' => 'Test',
+            'last_name' => 'User',
+            'email' => 'test@example.com',
         ]);
-        $admin->assignRole($adminRole);
+
+        // $adminRole = Role::create(['name' => 'admin']);
+        // $userRole = Role::create(['name' => 'user']);
+
+        // $admin = User::create([
+        // 'name' => 'Admin User',
+        // 'email' => 'admin@example.com',
+        // 'password' => bcrypt('password'),
+        // ]);
+        // $admin->assignRole($adminRole);
 
 
 
@@ -53,5 +53,8 @@ class DatabaseSeeder extends Seeder
         // $this->call(UserSeeder::class);
 
         // $this->call(CategorySeeder::class);
+
+        // Seed example notifications
+        // $this->call(NotificationSeeder::class);
     }
 }

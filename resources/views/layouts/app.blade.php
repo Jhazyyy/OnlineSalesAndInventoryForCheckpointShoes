@@ -67,3 +67,5 @@
 </body>
 
 </html>
+
+@stack('page-scripts')

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Imports\ProductsImport;
 use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -76,8 +77,8 @@ class ProductController extends Controller
         // Get active brands for dropdown
         $brands = Brand::where('is_active', true)->orderBy('name')->pluck('name', 'name');
 
-        // Get existing categories for dropdown (can be enhanced with Category model later)
-        $categories = Product::distinct()->pluck('product_category')->filter()->sort();
+        // Get active categories for dropdown
+        $categories = Category::where('is_active', true)->orderBy('name')->pluck('name', 'name');
 
         return view('master_data.products.create', compact('brands', 'categories'));
     }
@@ -89,7 +90,8 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'product_name' => 'required|string|max:255',
-            'product_category' => 'required|string|max:255',
+            'product_category' => 'nullable|string|max:255',
+            'custom_category' => 'nullable|string|max:255',
             'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -125,6 +127,26 @@ class ProductController extends Controller
         // Assign brand name
         $data['product_brand'] = $brand->name;
 
+        // Determine the category name to use
+        $categoryName = $request->product_category === 'custom' ? $request->custom_category : $request->product_category;
+
+        if (! $categoryName) {
+            return redirect()->back()->withErrors(['product_category' => 'Please select or enter a category.'])->withInput();
+        }
+
+        // Create category if it doesn't exist
+        $category = Category::firstOrCreate(
+            ['name' => $categoryName],
+            [
+                'category_code' => strtoupper(str_replace([' ', '-'], '_', $categoryName)),
+                'description' => 'Auto-created category from product: '.$request->product_name,
+                'is_active' => true,
+            ]
+        );
+
+        // Assign category name
+        $data['product_category'] = $category->name;
+
         // Handle image upload
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -159,9 +181,10 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $brands = \App\Models\Brand::pluck('name');  // get brand names as a collection
+        $brands = Brand::pluck('name');  // get brand names as a collection
+        $categories = Category::pluck('name');  // get category names as a collection
 
-        return view('master_data.products.edit', compact('product', 'brands'));
+        return view('master_data.products.edit', compact('product', 'brands', 'categories'));
     }
 
     /**
@@ -171,7 +194,8 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'product_name' => 'required|string|max:255',
-            'product_category' => 'required|string|max:255',
+            'product_category' => 'nullable|string|max:255',
+            'custom_category' => 'nullable|string|max:255',
             'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -205,6 +229,26 @@ class ProductController extends Controller
 
         // Assign the brand name
         $data['product_brand'] = $brand->name;
+
+        // Handle category selection
+        $categoryName = $request->product_category === 'custom' ? $request->custom_category : $request->product_category;
+
+        if (! $categoryName) {
+            return redirect()->back()->withErrors(['product_category' => 'Please select or enter a category.'])->withInput();
+        }
+
+        // Create category if not existing
+        $category = Category::firstOrCreate(
+            ['name' => $categoryName],
+            [
+                'category_code' => strtoupper(str_replace([' ', '-'], '_', $categoryName)),
+                'description' => 'Auto-created category from product: '.$request->product_name,
+                'is_active' => true,
+            ]
+        );
+
+        // Assign the category name
+        $data['product_category'] = $category->name;
 
         // Handle image upload
         if ($request->hasFile('image')) {

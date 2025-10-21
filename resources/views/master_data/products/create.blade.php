@@ -86,9 +86,30 @@
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Category <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" id="product_category" name="product_category"
-                                    value="{{ old('product_category') }}" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('product_category') border-red-500 @enderror">
+                                <div class="mt-1 flex">
+                                    <select id="product_category" name="product_category" required
+                                        class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('product_category') border-red-500 @enderror">
+                                        <option value="">Select a category...</option>
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category }}" {{ old('product_category') == $category ? 'selected' : '' }}>
+                                                {{ $category }}
+                                            </option>
+                                        @endforeach
+                                        <option value="custom">+ Add New Category</option>
+                                    </select>
+                                    <a href="{{ route('master_data.categories.create') }}" 
+                                       class="ml-2 inline-flex items-center px-3 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                                       title="Add New Category">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                    </a>
+                                </div>
+                                <input type="text" id="custom_category" name="custom_category" 
+                                    value="{{ old('custom_category') }}" 
+                                    placeholder="Enter new category name..."
+                                    style="display: none;"
+                                    class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 @error('product_category')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -225,6 +246,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             const brandSelect = document.getElementById('product_brand');
             const customBrandInput = document.getElementById('custom_brand');
+            const categorySelect = document.getElementById('product_category');
+            const customCategoryInput = document.getElementById('custom_category');
             
             brandSelect.addEventListener('change', function() {
                 if (this.value === 'custom') {
@@ -237,6 +260,18 @@
                     this.required = true;
                 }
             });
+
+            categorySelect.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customCategoryInput.style.display = 'block';
+                    customCategoryInput.required = true;
+                    this.required = false;
+                } else {
+                    customCategoryInput.style.display = 'none';
+                    customCategoryInput.required = false;
+                    this.required = true;
+                }
+            });
             
             // Form submission handler
             document.querySelector('form').addEventListener('submit', function(e) {
@@ -244,6 +279,13 @@
                     if (!customBrandInput.value.trim()) {
                         e.preventDefault();
                         alert('Please enter a custom brand name.');
+                        return false;
+                    }
+                }
+                if (categorySelect.value === 'custom') {
+                    if (!customCategoryInput.value.trim()) {
+                        e.preventDefault();
+                        alert('Please enter a custom category name.');
                         return false;
                     }
                 }

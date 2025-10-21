@@ -891,6 +891,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         // API routes
         Route::get('/api/{category?}', [\App\Http\Controllers\SettingsController::class, 'getSettings'])->name('api');
+    // Notifications API
+    Route::get('/api/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('api.notifications');
+    Route::get('/api/notifications/unread-count', [\App\Http\Controllers\NotificationController::class, 'unreadCount'])->name('api.notifications.unreadCount');
+    Route::post('/api/notifications', [\App\Http\Controllers\NotificationController::class, 'store'])->name('api.notifications.store');
+    Route::patch('/api/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markRead'])->name('api.notifications.markRead');
         
         // Terms and Conditions Management
         Route::prefix('terms')->name('terms.')->group(function () {
