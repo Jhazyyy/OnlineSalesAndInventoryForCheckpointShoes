@@ -7,7 +7,7 @@
     </button>
 
     <div id="notifications-panel" class="hidden origin-top-right absolute right-0 mt-2 w-96 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
-        <div class="py-2 px-4 border-b dark:border-gray-700 flex items-center justify-between">
+        <div class="py-2 px-4 border-b dark:border-gray-700 flex items-center justify-between dark:text-white">
             <h3 class="text-lg font-semibold">Notifications</h3>
             <span id="notifications-count" class="text-sm text-gray-500">0 new</span>
         </div>

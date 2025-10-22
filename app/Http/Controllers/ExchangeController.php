@@ -7,6 +7,7 @@ use App\Models\ExchangeItem;
 use App\Models\Product;
 use App\Models\Customer;
 use App\Models\SalesOrder;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -196,8 +197,17 @@ class ExchangeController extends Controller
 
             DB::commit();
 
+            // Create notification for the new exchange/return ticket
+            Notification::create([
+                'title' => 'New Return/Exchange Ticket Created',
+                'message' => "Exchange ticket {$exchange->exchange_number} has been created - Reason: " . ($validated['reason'] ?? 'Not specified'),
+                'level' => 'info',
+                'type' => 'exchange.created',
+                'link' => route('sales.exchanges.show', $exchange->exchange_id),
+            ]);
+
             return redirect()->route('sales.exchanges.index')
-                           ->with('success', 'Exchange created successfully.');
+                           ->with('success', 'Return/Exchange ticket created successfully.');
 
         } catch (\Exception $e) {
             DB::rollBack();

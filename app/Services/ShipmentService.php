@@ -7,6 +7,7 @@ use App\Models\ShipmentItem;
 use App\Models\SalesOrder;
 use App\Models\Product;
 use App\Models\Customer;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -257,6 +258,8 @@ class ShipmentService
             throw new \Exception("Cannot change status from {$shipment->status} to {$status}");
         }
 
+        $oldStatus = $shipment->status;
+
         $shipment->update([
             'status' => $status,
             'updated_by' => auth()->user()?->name ?? 'System',
@@ -285,7 +288,57 @@ class ShipmentService
                 break;
         }
 
+        // Create notifications for delivery status changes
+        $this->createShipmentStatusNotification($shipment, $oldStatus, $status);
+
         return $shipment->refresh();
+    }
+
+    /**
+     * Create notification when shipment status changes.
+     */
+    protected function createShipmentStatusNotification(Shipment $shipment, string $oldStatus, string $newStatus): void
+    {
+        $notificationData = [
+            'type' => 'shipment.status_changed',
+            'link' => route('sales.shipments.show', $shipment->shipment_id),
+        ];
+
+        // Determine notification based on new status
+        switch ($newStatus) {
+            case 'delivered':
+                $notificationData['title'] = 'Delivery Successful';
+                $notificationData['message'] = "Shipment {$shipment->shipment_number} has been successfully delivered";
+                $notificationData['level'] = 'success';
+                break;
+
+            case 'exception':
+            case 'returned':
+            case 'failed':
+                $notificationData['title'] = 'Delivery Failed';
+                $notificationData['message'] = "Shipment {$shipment->shipment_number} delivery unsuccessful - Status: " . ucfirst($newStatus);
+                $notificationData['level'] = 'danger';
+                break;
+
+            case 'shipped':
+            case 'in_transit':
+                $notificationData['title'] = 'Shipment In Transit';
+                $notificationData['message'] = "Shipment {$shipment->shipment_number} is on the way";
+                $notificationData['level'] = 'info';
+                break;
+
+            case 'out_for_delivery':
+                $notificationData['title'] = 'Out for Delivery';
+                $notificationData['message'] = "Shipment {$shipment->shipment_number} is out for delivery";
+                $notificationData['level'] = 'info';
+                break;
+
+            default:
+                return; // Don't create notification for other status changes
+        }
+
+        // Create system notification
+        Notification::create($notificationData);
     }
 
     /**

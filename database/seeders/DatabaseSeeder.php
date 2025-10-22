@@ -55,6 +55,6 @@ class DatabaseSeeder extends Seeder
         // $this->call(CategorySeeder::class);
 
         // Seed example notifications
-        // $this->call(NotificationSeeder::class);
+        $this->call(NotificationSeeder::class);
     }
 }

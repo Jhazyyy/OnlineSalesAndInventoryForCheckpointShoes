@@ -7,12 +7,15 @@ use App\Models\SalesOrderItem;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Notification;
+use App\Mail\OrderStatusChanged;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class SalesOrderService
 {
@@ -277,7 +280,19 @@ class SalesOrderService
                 return; // Don't create notification for other status changes
         }
 
+        // Create system notification
         Notification::create($notificationData);
+
+        // Send email notification if customer has email
+        if ($order->customer && $order->customer->email) {
+            try {
+                Mail::to($order->customer->email)->send(
+                    new OrderStatusChanged($order, $oldStatus, $newStatus)
+                );
+            } catch (\Exception $e) {
+                Log::error('Failed to send order status email: ' . $e->getMessage());
+            }
+        }
     }
 
     /**
