@@ -20,12 +20,12 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-sm font-medium mb-2">Start Date</label>
-                                <input type="date" name="start_date" value="{{ request('start_date', $startDate ?? '') }}" 
+                                <input type="date" name="start_date" value="{{ request('start_date', $filters['start_date'] ?? '') }}" 
                                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-2">End Date</label>
-                                <input type="date" name="end_date" value="{{ request('end_date', $endDate ?? '') }}" 
+                                <input type="date" name="end_date" value="{{ request('end_date', $filters['end_date'] ?? '') }}" 
                                     class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800">
                             </div>
                             <div class="flex items-end gap-2">
@@ -81,7 +81,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm opacity-90">Avg. Profit Margin</p>
-                                    <p class="text-3xl font-bold mt-1">{{ number_format($report['summary']['avg_profit_margin'] ?? 0, 1) }}%</p>
+                                    <p class="text-3xl font-bold mt-1">{{ number_format($report['summary']['profit_margin'] ?? 0, 1) }}%</p>
                                 </div>
                                 <svg class="w-12 h-12 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -92,31 +92,23 @@
 
                     <!-- Export Buttons -->
                     <div class="flex gap-4 mb-6">
-                        <form method="POST" action="{{ route('reports.export.pdf') }}" target="_blank" class="inline">
-                            @csrf
-                            <input type="hidden" name="type" value="sales">
-                            <input type="hidden" name="start_date" value="{{ request('start_date', $startDate ?? '') }}">
-                            <input type="hidden" name="end_date" value="{{ request('end_date', $endDate ?? '') }}">
-                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2">
+                        <a href="{{ route('reports.export-pdf', ['reportType' => 'sales', 'start_date' => request('start_date', $filters['start_date'] ?? ''), 'end_date' => request('end_date', $filters['end_date'] ?? '')]) }}" target="_blank" class="inline-block">
+                            <button type="button" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                                 Export PDF
                             </button>
-                        </form>
+                        </a>
 
-                        <form method="POST" action="{{ route('reports.export.excel') }}" class="inline">
-                            @csrf
-                            <input type="hidden" name="type" value="sales">
-                            <input type="hidden" name="start_date" value="{{ request('start_date', $startDate ?? '') }}">
-                            <input type="hidden" name="end_date" value="{{ request('end_date', $endDate ?? '') }}">
-                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2">
+                        <a href="{{ route('reports.export-excel', ['reportType' => 'sales', 'start_date' => request('start_date', $filters['start_date'] ?? ''), 'end_date' => request('end_date', $filters['end_date'] ?? '')]) }}" class="inline-block">
+                            <button type="button" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                                 Export Excel
                             </button>
-                        </form>
+                        </a>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -125,13 +117,14 @@
                         <div class="bg-gray-50 dark:bg-gray-700 rounded-lg shadow p-6">
                             <h3 class="text-xl font-bold mb-4">Orders by Status</h3>
                             <div class="space-y-3">
-                                @forelse($report['orders_by_status'] ?? [] as $status)
-                                <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded">
-                                    <span class="font-medium capitalize">{{ $status->status ?? 'Unknown' }}</span>
-                                    <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full font-bold">
-                                        {{ $status->count ?? 0 }}
-                                    </span>
-                                </div>
+                                @forelse($report['sales_by_status'] ?? [] as $status => $data)
+                                    <div class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded">
+                                        <span class="font-medium capitalize">{{ $status }}</span>
+                                        <div class="text-right">
+                                            <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full font-bold">{{ $data['count'] }}</span>
+                                            <div class="text-xs text-gray-500">₱{{ number_format($data['amount'], 2) }}</div>
+                                        </div>
+                                    </div>
                                 @empty
                                 <p class="text-gray-500 text-center py-4">No data available</p>
                                 @endforelse
@@ -143,18 +136,18 @@
                             <h3 class="text-xl font-bold mb-4">Top 10 Best Selling Products</h3>
                             <div class="space-y-2">
                                 @forelse($report['top_products'] ?? [] as $index => $product)
-                                <div class="flex items-center justify-between p-2 hover:bg-white dark:hover:bg-gray-800 rounded transition">
-                                    <div class="flex items-center gap-3">
-                                        <span class="font-bold text-lg text-gray-400">#{{ $index + 1 }}</span>
-                                        <div>
-                                            <p class="font-medium">{{ $product->name ?? 'Unknown' }}</p>
-                                            <p class="text-xs text-gray-500">{{ $product->quantity_sold ?? 0 }} units sold</p>
+                                    <div class="flex items-center justify-between p-2 hover:bg-white dark:hover:bg-gray-800 rounded transition">
+                                        <div class="flex items-center gap-3">
+                                            <span class="font-bold text-lg text-gray-400">#{{ $index + 1 }}</span>
+                                            <div>
+                                                <p class="font-medium">{{ $product->product_name }}</p>
+                                                <p class="text-xs text-gray-500">{{ (int)($product->total_quantity ?? 0) }} units sold</p>
+                                            </div>
                                         </div>
+                                        <span class="text-green-600 dark:text-green-400 font-bold">
+                                            ₱{{ number_format($product->total_revenue ?? 0, 2) }}
+                                        </span>
                                     </div>
-                                    <span class="text-green-600 dark:text-green-400 font-bold">
-                                        ₱{{ number_format($product->total_revenue ?? 0, 2) }}
-                                    </span>
-                                </div>
                                 @empty
                                 <p class="text-gray-500 text-center py-4">No products sold</p>
                                 @endforelse
@@ -166,20 +159,18 @@
                             <h3 class="text-xl font-bold mb-4">Top 10 Customers</h3>
                             <div class="space-y-2">
                                 @forelse($report['top_customers'] ?? [] as $index => $customer)
-                                <div class="flex items-center justify-between p-2 hover:bg-white dark:hover:bg-gray-800 rounded transition">
-                                    <div class="flex items-center gap-3">
-                                        <span class="font-bold text-lg text-gray-400">#{{ $index + 1 }}</span>
-                                        <div>
-                                            <p class="font-medium">{{ $customer->name ?? 'Unknown' }}</p>
-                                            <p class="text-xs text-gray-500">{{ $customer->total_orders ?? 0 }} orders</p>
+                                    <div class="flex items-center justify-between p-2 hover:bg-white dark:hover:bg-gray-800 rounded transition">
+                                        <div class="flex items-center gap-3">
+                                            <span class="font-bold text-lg text-gray-400">#{{ $index + 1 }}</span>
+                                            <div>
+                                                <p class="font-medium">{{ $customer['customer_name'] ?? 'Unknown' }}</p>
+                                                <p class="text-xs text-gray-500">{{ $customer['order_count'] ?? 0 }} orders</p>
+                                            </div>
                                         </div>
+                                        <span class="text-green-600 dark:text-green-400 font-bold">₱{{ number_format($customer['total_spent'] ?? 0, 2) }}</span>
                                     </div>
-                                    <span class="text-green-600 dark:text-green-400 font-bold">
-                                        ₱{{ number_format($customer->total_spent ?? 0, 2) }}
-                                    </span>
-                                </div>
                                 @empty
-                                <p class="text-gray-500 text-center py-4">No customer data</p>
+                                    <p class="text-gray-500 text-center py-4">No customer data</p>
                                 @endforelse
                             </div>
                         </div>
@@ -188,18 +179,59 @@
                         <div class="bg-gray-50 dark:bg-gray-700 rounded-lg shadow p-6">
                             <h3 class="text-xl font-bold mb-4">Daily Sales Summary</h3>
                             <div class="space-y-2 max-h-96 overflow-y-auto">
-                                @forelse($report['sales_by_date'] ?? [] as $sale)
-                                <div class="flex items-center justify-between p-2 hover:bg-white dark:hover:bg-gray-800 rounded transition">
-                                    <span class="text-sm">{{ \Carbon\Carbon::parse($sale->date ?? now())->format('M d, Y') }}</span>
-                                    <div class="text-right">
-                                        <p class="font-bold text-green-600 dark:text-green-400">₱{{ number_format($sale->revenue ?? 0, 2) }}</p>
-                                        <p class="text-xs text-gray-500">{{ $sale->orders ?? 0 }} orders</p>
+                                @forelse($report['sales_by_date'] ?? [] as $date => $data)
+                                    <div class="flex items-center justify-between p-2 hover:bg-white dark:hover:bg-gray-800 rounded transition">
+                                        <span class="text-sm">{{ \Carbon\Carbon::parse($date)->format('M d, Y') }}</span>
+                                        <div class="text-right">
+                                            <p class="font-bold text-green-600 dark:text-green-400">₱{{ number_format($data['revenue'] ?? 0, 2) }}</p>
+                                            <p class="text-xs text-gray-500">{{ $data['count'] ?? 0 }} orders</p>
+                                        </div>
                                     </div>
-                                </div>
                                 @empty
                                 <p class="text-gray-500 text-center py-4">No sales data</p>
                                 @endforelse
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Sales (Sales Order Master) -->
+                    <div class="mt-6 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold">Sales Order Master</h3>
+                            <div class="flex gap-2">
+                                <a href="{{ route('reports.export-pdf', ['reportType' => 'sales', 'start_date' => request('start_date', $filters['start_date'] ?? ''), 'end_date' => request('end_date', $filters['end_date'] ?? '')]) }}" target="_blank" class="px-3 py-2 rounded bg-red-600 text-white text-sm">PDF</a>
+                                <a href="{{ route('reports.export-excel', ['reportType' => 'sales', 'start_date' => request('start_date', $filters['start_date'] ?? ''), 'end_date' => request('end_date', $filters['end_date'] ?? '')]) }}" class="px-3 py-2 rounded bg-green-600 text-white text-sm">XLS</a>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead>
+                                    <tr class="text-left text-gray-600 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
+                                        <th class="py-2 pr-4">SKU</th>
+                                        <th class="py-2 pr-4">Product Name</th>
+                                        <th class="py-2 pr-4">Brand</th>
+                                        <th class="py-2 pr-4">Category</th>
+                                        <th class="py-2 pr-4 text-right">Sold Qty</th>
+                                        <th class="py-2 pr-4 text-right">Sold Amount</th>
+                                        <th class="py-2 pr-4 text-right">Instock Qty</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse(($report['product_sales'] ?? []) as $row)
+                                        <tr class="border-b border-gray-100 dark:border-gray-700">
+                                            <td class="py-2 pr-4">{{ $row->product_brand ?? 'SKU-' . ($row->product_id ?? '') }}</td>
+                                            <td class="py-2 pr-4">{{ $row->product_name }}</td>
+                                            <td class="py-2 pr-4">{{ $row->product_brand }}</td>
+                                            <td class="py-2 pr-4">{{ $row->product_category }}</td>
+                                            <td class="py-2 pr-4 text-right">{{ (int)($row->total_quantity ?? 0) }}</td>
+                                            <td class="py-2 pr-4 text-right">₱{{ number_format($row->total_revenue ?? 0, 2) }}</td>
+                                            <td class="py-2 pr-4 text-right">{{ (int)($row->instock_qty ?? 0) }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="7" class="py-6 text-center text-gray-500">No sales in selected period.</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

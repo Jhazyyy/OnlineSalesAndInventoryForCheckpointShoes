@@ -49,6 +49,10 @@ class ReportExport implements FromCollection, WithHeadings, WithTitle, WithStyle
     {
         switch ($this->reportType) {
             case 'sales':
+                // Prefer product-level sales (Sales Order Master) if available
+                if (!empty($this->report['product_sales'])) {
+                    return ['SKU', 'Product', 'Brand', 'Category', 'Sold Qty', 'Sold Amount', 'Instock Qty'];
+                }
                 return ['Order ID', 'Date', 'Customer', 'Status', 'Total Amount', 'Payment Status'];
             case 'purchases':
                 return ['Order ID', 'Date', 'Supplier', 'Status', 'Total Amount', 'Items'];
@@ -86,14 +90,29 @@ class ReportExport implements FromCollection, WithHeadings, WithTitle, WithStyle
      */
     protected function formatSalesData()
     {
+        // If product_sales exists, export Sales Order Master format
+        if (!empty($this->report['product_sales'])) {
+            $rows = collect($this->report['product_sales']);
+            return $rows->map(function ($row) {
+                return [
+                    $row->product_brand ?? ('SKU-' . ($row->product_id ?? '')),
+                    $row->product_name ?? 'N/A',
+                    $row->product_brand ?? 'N/A',
+                    $row->product_category ?? 'N/A',
+                    (int)($row->total_quantity ?? 0),
+                    number_format($row->total_revenue ?? 0, 2),
+                    (int)($row->instock_qty ?? 0),
+                ];
+            });
+        }
+
         $orders = $this->report['orders'] ?? collect();
-        
         return $orders->map(function ($order) {
             return [
-                $order->sales_order_id ?? $order->order_id,
+                $order->order_id ?? $order->sales_order_id ?? 'N/A',
                 $order->order_date ? date('Y-m-d', strtotime($order->order_date)) : 'N/A',
                 $order->customer->customer_name ?? 'N/A',
-                $order->order_status ?? 'N/A',
+                $order->status ?? $order->order_status ?? 'N/A',
                 number_format($order->total_amount ?? 0, 2),
                 $order->payment_status ?? 'N/A',
             ];

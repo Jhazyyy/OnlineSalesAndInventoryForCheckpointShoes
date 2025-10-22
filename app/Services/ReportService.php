@@ -26,11 +26,12 @@ class ReportService
         $startDate = isset($filters['start_date']) ? Carbon::parse($filters['start_date']) : now()->subDays(30);
         $endDate = isset($filters['end_date']) ? Carbon::parse($filters['end_date']) : now();
         
+        // Base query for orders in range
         $query = SalesOrder::whereBetween('order_date', [$startDate, $endDate]);
         
         // Apply filters
         if (isset($filters['status'])) {
-            $query->where('order_status', $filters['status']);
+            $query->where('status', $filters['status']);
         }
         if (isset($filters['customer_id'])) {
             $query->where('customer_id', $filters['customer_id']);
@@ -62,13 +63,27 @@ class ReportService
         // Top products
         $topProducts = $this->getTopSellingProducts($startDate, $endDate, 10);
         
+        // Product sales (all products for the period)
+        $productSales = $this->getProductSales($startDate, $endDate);
+        
         // Sales by status
-        $salesByStatus = $orders->groupBy('order_status')->map(function ($statusOrders) {
+        $salesByStatus = $orders->groupBy('status')->map(function ($statusOrders) {
             return [
                 'count' => $statusOrders->count(),
                 'amount' => $statusOrders->sum('total_amount'),
             ];
         });
+
+        // Top customers
+        $topCustomers = $orders->groupBy('customer_id')->map(function ($customerOrders) {
+            $customer = $customerOrders->first()->customer;
+            return [
+                'customer_id' => $customer?->customer_id,
+                'customer_name' => $customer?->customer_name ?? trim(($customer->first_name ?? '') . ' ' . ($customer->last_name ?? '')),
+                'order_count' => $customerOrders->count(),
+                'total_spent' => $customerOrders->sum('total_amount'),
+            ];
+        })->sortByDesc('total_spent')->take(10)->values();
         
         return [
             'period' => [
@@ -87,6 +102,8 @@ class ReportService
             'sales_by_date' => $salesByDate,
             'sales_by_status' => $salesByStatus,
             'top_products' => $topProducts,
+            'top_customers' => $topCustomers,
+            'product_sales' => $productSales,
             'orders' => $orders,
         ];
     }
@@ -428,21 +445,52 @@ class ReportService
     protected function getTopSellingProducts(Carbon $startDate, Carbon $endDate, int $limit = 10)
     {
         return DB::table('sales_order_items')
-            ->join('sales_orders', 'sales_order_items.sales_order_id', '=', 'sales_orders.sales_order_id')
+            ->join('sales_orders', 'sales_order_items.order_id', '=', 'sales_orders.order_id')
             ->join('products', 'sales_order_items.product_id', '=', 'products.product_id')
             ->whereBetween('sales_orders.order_date', [$startDate, $endDate])
-            ->whereIn('sales_orders.order_status', ['confirmed', 'processing', 'shipped', 'delivered'])
+            ->whereIn('sales_orders.status', ['confirmed', 'processing', 'shipped', 'delivered'])
             ->select(
                 'products.product_id',
                 'products.product_name',
                 'products.product_brand',
+                'products.product_category',
                 DB::raw('SUM(sales_order_items.quantity) as total_quantity'),
                 DB::raw('SUM(sales_order_items.quantity * sales_order_items.unit_price) as total_revenue')
             )
-            ->groupBy('products.product_id', 'products.product_name', 'products.product_brand')
+            ->groupBy('products.product_id', 'products.product_name', 'products.product_brand', 'products.product_category')
             ->orderByDesc('total_quantity')
             ->limit($limit)
             ->get();
+    }
+
+    /**
+     * Get product sales for period (aggregated across all sales orders)
+     */
+    protected function getProductSales(Carbon $startDate, Carbon $endDate)
+    {
+        $rows = DB::table('sales_order_items')
+            ->join('sales_orders', 'sales_order_items.order_id', '=', 'sales_orders.order_id')
+            ->join('products', 'sales_order_items.product_id', '=', 'products.product_id')
+            ->whereBetween('sales_orders.order_date', [$startDate, $endDate])
+            ->whereIn('sales_orders.status', ['confirmed', 'processing', 'shipped', 'delivered'])
+            ->select(
+                'products.product_id',
+                'products.product_name',
+                'products.product_brand',
+                'products.product_category',
+                DB::raw('SUM(sales_order_items.quantity) as total_quantity'),
+                DB::raw('SUM(sales_order_items.quantity * sales_order_items.unit_price) as total_revenue')
+            )
+            ->groupBy('products.product_id', 'products.product_name', 'products.product_brand', 'products.product_category')
+            ->orderByDesc('total_revenue')
+            ->get();
+
+        // Attach dynamic stock quantities via model accessor
+        return $rows->map(function ($row) {
+            $product = Product::find($row->product_id);
+            $row->instock_qty = $product?->quantity ?? 0;
+            return $row;
+        });
     }
 
     /**
