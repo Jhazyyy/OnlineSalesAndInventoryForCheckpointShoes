@@ -7,6 +7,7 @@ use App\Models\Supplier;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 use App\Services\PurchaseOrderService;
 
 class PurchaseOrderController extends Controller
@@ -181,48 +182,6 @@ class PurchaseOrderController extends Controller
         try {
             $this->orderService->changeOrderStatus($order, $request->get('status'));
             return redirect()->back()->with('success', 'Order status updated successfully!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
-        }
-    }
-
-    /**
-     * Receive items (update inventory)
-     */
-    public function receiveItems(Request $request, PurchaseOrder $order)
-    {
-        $validator = Validator::make($request->all(), [
-            'items' => 'required|array|min:1',
-            'items.*.product_id' => 'required|exists:products,product_id',
-            'items.*.quantity_received' => 'required|integer|min:0',
-            'receiving_notes' => 'nullable|string|max:1000',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator);
-        }
-
-        try {
-            // Filter out items with 0 quantity
-            $itemsToReceive = array_filter($request->get('items'), function($item) {
-                return intval($item['quantity_received']) > 0;
-            });
-            
-            if (empty($itemsToReceive)) {
-                return redirect()->back()->with('error', 'No items selected for receiving. Please specify quantities to receive.');
-            }
-            
-            $this->orderService->receiveItems(
-                $order, 
-                $itemsToReceive, 
-                $request->get('receiving_notes')
-            );
-            
-            $receivedCount = count($itemsToReceive);
-            $totalQuantity = array_sum(array_column($itemsToReceive, 'quantity_received'));
-            
-            return redirect()->back()->with('success', 
-                "Successfully received {$totalQuantity} items across {$receivedCount} products!");
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

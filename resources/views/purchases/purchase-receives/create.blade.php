@@ -43,11 +43,12 @@
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                             Vendor Name <span class="text-red-500">*</span>
                                         </label>
-                                        <select id="supplier_id" name="supplier_id" required
+                                        <select id="supplier_id" name="supplier_id"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                             <option value="">Select a vendor</option>
-                                            @foreach($suppliers as $supplier)
-                                                <option value="{{ $supplier['id'] }}" {{ old('supplier_id') == $supplier['id'] ? 'selected' : '' }}>
+                                            @foreach ($suppliers as $supplier)
+                                                <option value="{{ $supplier['id'] }}"
+                                                    {{ old('supplier_id') == $supplier['id'] ? 'selected' : '' }}>
                                                     {{ $supplier['name'] }}
                                                 </option>
                                             @endforeach
@@ -55,6 +56,7 @@
                                         @error('supplier_id')
                                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                         @enderror
+                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Auto-filled when PO is selected</p>
                                     </div>
 
                                     <!-- Purchase Order -->
@@ -66,10 +68,11 @@
                                         <select id="purchase_order_id" name="purchase_order_id" required
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                             <option value="">Select a Purchase Order</option>
-                                            @foreach($purchase_orders as $order)
+                                            @foreach ($purchase_orders as $order)
                                                 <option value="{{ $order['id'] }}"
-                                                    data-supplier-id="{{ $order['supplier_id'] ?? '' }}" {{ old('purchase_order_id') == $order['id'] ? 'selected' : '' }}>
-                                                    {{ $order['order_number'] }} - {{ $order['supplier_name'] }}
+                                                    data-supplier-id="{{ $order['supplier_id'] ?? '' }}"
+                                                    {{ old('purchase_order_id', request('purchase_order_id')) == $order['id'] ? 'selected' : '' }}>
+                                                    {{ $order['order_number'] }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -104,28 +107,26 @@
                                     </div>
                                 </div>
 
-                                <div class="mt-4">
-                                    <!-- Select or Scan Items Notice -->
-                                    <div class="bg-orange-50 border border-orange-200 rounded-md p-4">
-                                        <div class="flex">
-                                            <div class="flex-shrink-0">
-                                                <svg class="h-5 w-5 text-orange-400" fill="currentColor"
-                                                    viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd"
-                                                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                                        clip-rule="evenodd"></path>
+                                <!-- Load Items from PO Button -->
+                                <div class="mt-4" id="loadItemsSection" style="display: none;">
+                                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-4">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center">
+                                                <svg class="h-5 w-5 text-blue-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                                                 </svg>
-                                            </div>
-                                            <div class="ml-3">
-                                                <p class="text-sm text-orange-700">
-                                                    You can also select or scan the items to be included from the
-                                                    purchase order.
-                                                    <button type="button" onclick="loadPurchaseOrderItems()"
-                                                        class="text-blue-600 hover:text-blue-800 underline ml-1">
-                                                        Select or Scan items
-                                                    </button>
+                                                <p class="text-sm text-blue-800 dark:text-blue-300">
+                                                    <span id="poItemsLoadedMessage" style="display: none;">Items loaded from Purchase Order. You can adjust quantities or add more items.</span>
+                                                    <span id="poItemsNotLoadedMessage">Click the button to load items from the selected Purchase Order.</span>
                                                 </p>
                                             </div>
+                                            <button type="button" onclick="loadPurchaseOrderItems()" id="loadItemsBtn"
+                                                class="inline-flex items-center px-3 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                                </svg>
+                                                Load Items
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -140,7 +141,8 @@
                                     </h3>
                                     <button type="button" onclick="addItemRow()"
                                         class="inline-flex items-center px-3 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M12 4v16m8-8H4"></path>
                                         </svg>
@@ -219,7 +221,8 @@
                                 <div class="space-y-3">
                                     <button type="submit"
                                         class="w-full inline-flex justify-center items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M5 13l4 4L19 7"></path>
                                         </svg>
@@ -228,7 +231,8 @@
 
                                     <button type="button" onclick="document.getElementById('receiveForm').reset()"
                                         class="w-full inline-flex justify-center items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
                                             </path>
@@ -240,8 +244,8 @@
                         </div>
 
                         <!-- Summary (will be populated by JavaScript) -->
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg" id="summaryCard"
-                            style="display: none;">
+                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg"
+                            id="summaryCard" style="display: none;">
                             <div class="p-6">
                                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Summary</h3>
 
@@ -274,22 +278,53 @@
 
     <script>
         let itemRowCount = 0;
-        let availableProducts = (\App\Models\Product:: all(['product_id', 'product_name', 'product_brand', 'price']));
+        // Preload products for the dropdown. Using Blade to safely embed JSON.
+        let availableProducts = [];
+        
+        @php
+            $products = \App\Models\Product::select(['product_id', 'product_name', 'product_brand', 'price'])
+                ->get()
+                ->map(function ($p) {
+                    return [
+                        'product_id' => $p->product_id,
+                        'product_name' => $p->product_name,
+                        'product_brand' => $p->product_brand ?? '',
+                        'price' => $p->price,
+                        'sku' => $p->sku ?? '',
+                    ];
+                });
+        @endphp
+        
+        availableProducts = @json($products);
 
-        document.addEventListener('DOMContentLoaded', function () {
-            // Purchase order change handler
-            document.getElementById('purchase_order_id').addEventListener('change', function () {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Purchase order change handler - Auto-load items when PO is selected
+            document.getElementById('purchase_order_id').addEventListener('change', function() {
                 const selectedOption = this.options[this.selectedIndex];
+                const loadItemsSection = document.getElementById('loadItemsSection');
+                
                 if (selectedOption.value) {
                     const supplierId = selectedOption.dataset.supplierId;
                     if (supplierId) {
                         document.getElementById('supplier_id').value = supplierId;
                     }
+                    // Show the load items section
+                    loadItemsSection.style.display = 'block';
+                    // Automatically load items from the selected purchase order
+                    loadPurchaseOrderItems();
+                } else {
+                    // Hide the load items section
+                    loadItemsSection.style.display = 'none';
+                    // Clear items if no PO is selected
+                    document.getElementById('itemsTableBody').innerHTML = '';
+                    itemRowCount = 0;
+                    updateNoItemsMessage();
+                    updateSummary();
                 }
             });
 
             // Supplier change handler (filter purchase orders)
-            document.getElementById('supplier_id').addEventListener('change', function () {
+            document.getElementById('supplier_id').addEventListener('change', function() {
                 const selectedSupplierId = this.value;
                 const purchaseOrderSelect = document.getElementById('purchase_order_id');
 
@@ -299,7 +334,8 @@
                         option.style.display = 'block';
                     } else {
                         const optionSupplierId = option.dataset.supplierId;
-                        option.style.display = (selectedSupplierId === '' || optionSupplierId === selectedSupplierId) ? 'block' : 'none';
+                        option.style.display = (selectedSupplierId === '' || optionSupplierId ===
+                            selectedSupplierId) ? 'block' : 'none';
                     }
                 });
 
@@ -307,8 +343,31 @@
                 const currentOption = purchaseOrderSelect.options[purchaseOrderSelect.selectedIndex];
                 if (currentOption.value !== '' && currentOption.dataset.supplierId !== selectedSupplierId) {
                     purchaseOrderSelect.value = '';
+                    // Clear items when PO is cleared
+                    document.getElementById('itemsTableBody').innerHTML = '';
+                    itemRowCount = 0;
+                    updateNoItemsMessage();
+                    updateSummary();
+                    // Hide load items section
+                    document.getElementById('loadItemsSection').style.display = 'none';
                 }
             });
+            
+            // If a purchase order is preselected (e.g., coming from Purchase Order page),
+            // auto-set the supplier and load the PO items into the Goods Receipt form.
+            const preselectedPO = document.getElementById('purchase_order_id').value;
+            if (preselectedPO) {
+                const selectedOption = document.getElementById('purchase_order_id').options[document.getElementById(
+                    'purchase_order_id').selectedIndex];
+                const supplierId = selectedOption ? selectedOption.dataset.supplierId : null;
+                if (supplierId) {
+                    document.getElementById('supplier_id').value = supplierId;
+                }
+                // Show load items section
+                document.getElementById('loadItemsSection').style.display = 'block';
+                // Load items from the selected Purchase Order
+                loadPurchaseOrderItems();
+            }
         });
 
         function loadPurchaseOrderItems() {
@@ -317,6 +376,12 @@
                 alert('Please select a purchase order first.');
                 return;
             }
+
+            // Show loading state
+            const loadBtn = document.getElementById('loadItemsBtn');
+            const originalBtnText = loadBtn.innerHTML;
+            loadBtn.disabled = true;
+            loadBtn.innerHTML = '<svg class="animate-spin h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Loading...';
 
             fetch(`/purchases/purchase-receives/purchase-order/${purchaseOrderId}/items`)
                 .then(response => response.json())
@@ -333,11 +398,25 @@
 
                         updateNoItemsMessage();
                         updateSummary();
+
+                        // Show success message
+                        document.getElementById('poItemsLoadedMessage').style.display = 'inline';
+                        document.getElementById('poItemsNotLoadedMessage').style.display = 'none';
+
+                        // Show order info if available
+                        if (data.order) {
+                            console.log('Loaded PO:', data.order.order_number);
+                        }
                     }
                 })
                 .catch(error => {
                     console.error('Error loading purchase order items:', error);
                     alert('Error loading purchase order items. Please try again.');
+                })
+                .finally(() => {
+                    // Restore button state
+                    loadBtn.disabled = false;
+                    loadBtn.innerHTML = originalBtnText;
                 });
         }
 
@@ -353,6 +432,22 @@
             row.querySelector('.ordered-qty').textContent = poItem.quantity_ordered;
             row.querySelector('.received-qty').textContent = poItem.quantity_received;
             row.querySelector('.in-transit-qty').textContent = poItem.quantity_pending;
+
+            // Add product details to item notes if available
+            const itemNotesInput = row.querySelector('input[name$="[item_notes]"]');
+            let detailsText = [];
+            if (poItem.product_sku && poItem.product_sku !== 'N/A') {
+                detailsText.push('SKU: ' + poItem.product_sku);
+            }
+            if (poItem.product_brand && poItem.product_brand !== 'N/A') {
+                detailsText.push('Brand: ' + poItem.product_brand);
+            }
+            if (poItem.product_category && poItem.product_category !== 'N/A') {
+                detailsText.push('Category: ' + poItem.product_category);
+            }
+            if (detailsText.length > 0) {
+                itemNotesInput.value = detailsText.join(' | ');
+            }
 
             document.getElementById('itemsTableBody').appendChild(row);
             itemRowCount++;
@@ -379,41 +474,56 @@
 
             let productOptions = '<option value="">Select Product</option>';
             availableProducts.forEach(product => {
-                productOptions += '<option value="' + product.product_id + '">' + product.product_name + ' - ' + product.product_brand + '</option>';
+                const brandInfo = product.product_brand ? ' - ' + product.product_brand : '';
+                const skuInfo = product.sku ? ' [' + product.sku + ']' : '';
+                productOptions += '<option value="' + product.product_id + '">' +
+                    product.product_name + brandInfo + skuInfo + '</option>';
             });
 
             row.innerHTML =
                 '<td class="px-6 py-4 whitespace-nowrap">' +
                 '<div class="space-y-2">' +
-                '<select name="items[' + index + '][product_id]" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">' +
+                '<select name="items[' + index +
+                '][product_id]" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">' +
                 productOptions +
                 '</select>' +
                 '<input type="hidden" name="items[' + index + '][purchase_order_item_id]" value="">' +
                 '<input type="hidden" name="items[' + index + '][condition]" value="good">' +
-                '<input type="text" name="items[' + index + '][item_notes]" placeholder="Item notes..." class="block w-full text-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">' +
+                '<input type="text" name="items[' + index +
+                '][item_notes]" placeholder="Item description, notes..." class="block w-full text-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">' +
                 '</div>' +
                 '</td>' +
                 '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">' +
-                '<span class="ordered-qty">-</span>' +
+                '<span class="ordered-qty text-blue-600 dark:text-blue-400 font-medium">-</span>' +
                 '</td>' +
                 '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">' +
-                '<span class="received-qty">-</span>' +
+                '<span class="received-qty text-green-600 dark:text-green-400 font-medium">-</span>' +
                 '</td>' +
                 '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">' +
-                '<span class="in-transit-qty">-</span>' +
+                '<span class="in-transit-qty text-orange-600 dark:text-orange-400 font-medium">-</span>' +
                 '</td>' +
                 '<td class="px-6 py-4 whitespace-nowrap">' +
                 '<div class="grid grid-cols-2 gap-2">' +
-                '<input type="number" name="items[' + index + '][quantity_expected]" min="0" value="0" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Expected" onchange="updateSummary()">' +
-                '<input type="number" name="items[' + index + '][quantity_received]" min="0" value="0" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Received" onchange="updateSummary()">' +
+                '<div>' +
+                '<label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Expected</label>' +
+                '<input type="number" name="items[' + index +
+                '][quantity_expected]" min="0" value="0" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" onchange="updateSummary()">' +
+                '</div>' +
+                '<div>' +
+                '<label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Received</label>' +
+                '<input type="number" name="items[' + index +
+                '][quantity_received]" min="0" value="0" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" onchange="updateSummary()">' +
+                '</div>' +
                 '</div>' +
                 '<div class="mt-2">' +
-                '<input type="number" name="items[' + index + '][unit_price]" min="0" step="0.01" value="0" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Unit Price" onchange="updateSummary()">' +
+                '<label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Unit Price</label>' +
+                '<input type="number" name="items[' + index +
+                '][unit_price]" min="0" step="0.01" value="0" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" placeholder="0.00" onchange="updateSummary()">' +
                 '</div>' +
                 '</td>' +
                 '<td class="px-6 py-4 whitespace-nowrap">' +
-                '<button type="button" onclick="removeItemRow(this)" class="text-red-600 hover:text-red-900">' +
-                '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                '<button type="button" onclick="removeItemRow(this)" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">' +
+                '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
                 '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>' +
                 '</svg>' +
                 '</button>' +

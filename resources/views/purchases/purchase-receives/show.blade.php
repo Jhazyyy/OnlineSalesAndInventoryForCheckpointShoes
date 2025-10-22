@@ -10,7 +10,7 @@
                             <p class="text-gray-600 dark:text-gray-400">View purchase receive details</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
-                            <a href="{{ route('inventory.purchase-receives.index') }}" 
+                            <a href="{{ route('purchases.purchase-receives.index') }}" 
                                class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -18,8 +18,8 @@
                                 Back to List
                             </a>
                             @if($receive->canBeEdited())
-                                <a href="{{ route('inventory.purchase-receives.edit', $receive->receive_id) }}" 
-                                   class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                <a href="{{ route('purchases.purchase-receives.edit', $receive->receive_id) }}" 
+                                   class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:bg-yellow-700 active:bg-yellow-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                     </svg>
@@ -78,7 +78,7 @@
                                 @if($receive->purchaseOrder)
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Purchase Order</label>
-                                    <a href="{{ route('inventory.purchase-orders.show', $receive->purchase_order_id) }}" 
+                                    <a href="{{ route('purchases.purchase-orders.show', $receive->purchase_order_id) }}" 
                                        class="mt-1 text-sm text-blue-600 hover:text-blue-900">
                                         {{ $receive->purchaseOrder->order_number }}
                                     </a>
@@ -131,12 +131,27 @@
                                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                             @foreach($receive->items as $item)
                                                 <tr>
-                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                    <td class="px-6 py-4">
                                                         <div class="text-sm font-medium text-gray-900 dark:text-white">
                                                             {{ $item->product->product_name ?? 'N/A' }}
                                                         </div>
+                                                        @if($item->product)
+                                                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 space-y-0.5">
+                                                                @if($item->product->sku)
+                                                                    <div>SKU: {{ $item->product->sku }}</div>
+                                                                @endif
+                                                                @if($item->product->brand)
+                                                                    <div>Brand: {{ $item->product->brand->brand_name }}</div>
+                                                                @endif
+                                                                @if($item->product->category)
+                                                                    <div>Category: {{ $item->product->category->category_name }}</div>
+                                                                @endif
+                                                            </div>
+                                                        @endif
                                                         @if($item->item_notes)
-                                                            <div class="text-xs text-gray-500">{{ $item->item_notes }}</div>
+                                                            <div class="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                                                                <strong>Notes:</strong> {{ $item->item_notes }}
+                                                            </div>
                                                         @endif
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
@@ -226,8 +241,8 @@
                             
                             <div class="space-y-3">
                                 @if($receive->canBeEdited())
-                                    <a href="{{ route('inventory.purchase-receives.edit', $receive->receive_id) }}" 
-                                       class="w-full inline-flex justify-center items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                    <a href="{{ route('purchases.purchase-receives.edit', $receive->receive_id) }}" 
+                                       class="w-full inline-flex justify-center items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:bg-yellow-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                         </svg>
@@ -236,7 +251,7 @@
                                 @endif
                                 
                                 @if($receive->canBeCancelled())
-                                    <form action="{{ route('inventory.purchase-receives.destroy', $receive->receive_id) }}" method="POST" class="w-full" onsubmit="return confirm('Are you sure you want to delete this purchase receive? This will reverse any inventory changes.')">
+                                    <form action="{{ route('purchases.purchase-receives.destroy', $receive->receive_id) }}" method="POST" class="w-full" onsubmit="return confirm('Are you sure you want to delete this purchase receive? This will reverse any inventory changes.')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="w-full inline-flex justify-center items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">

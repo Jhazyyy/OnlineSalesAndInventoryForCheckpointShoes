@@ -382,185 +382,22 @@
                                     </form>
                                 @endif
 
-                                <!-- Receive Items -->
+                                <!-- Goods Receipt Redirect -->
                                 @if($order->canReceiveItems())
                                     <div class="pt-3 border-t">
-                                        <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3">Receive Items</h4>
-                                        
-                                        <!-- Receive Statistics -->
+                                        <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3">Goods Receipt</h4>
                                         <div class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                                            <div class="grid grid-cols-2 gap-4 text-sm">
-                                                <div>
-                                                    <span class="text-gray-600 dark:text-gray-400">Total Items:</span>
-                                                    <span class="font-semibold text-gray-900 dark:text-white">{{ $order->items->count() }}</span>
-                                                </div>
-                                                <div>
-                                                    <span class="text-gray-600 dark:text-gray-400">Pending:</span>
-                                                    <span class="font-semibold text-orange-600 dark:text-orange-400">{{ $order->items->sum('pending_quantity') }}</span>
-                                                </div>
-                                                <div>
-                                                    <span class="text-gray-600 dark:text-gray-400">Received:</span>
-                                                    <span class="font-semibold text-green-600 dark:text-green-400">{{ $order->items->sum('quantity_received') }}</span>
-                                                </div>
-                                                <div>
-                                                    <span class="text-gray-600 dark:text-gray-400">Progress:</span>
-                                                    <span class="font-semibold text-blue-600 dark:text-blue-400">
-                                                        {{ $order->items->sum('quantity_ordered') > 0 ? round(($order->items->sum('quantity_received') / $order->items->sum('quantity_ordered')) * 100, 1) : 0 }}%
-                                                    </span>
-                                                </div>
-                                            </div>
+                                            <p class="text-sm text-blue-800 dark:text-blue-300">
+                                                Receiving of items is done via Goods Receipt. Create a Goods Receipt for this Purchase Order to record received quantities and update inventory.
+                                            </p>
                                         </div>
-                                        
-                                        <form method="POST" action="{{ route('purchases.purchase-orders.receive-items', $order->order_id) }}" id="receiveItemsForm">
-                                            @csrf
-                                            
-                                            <!-- Bulk Actions -->
-                                            <div class="mb-4 flex flex-wrap gap-2">
-                                                <button type="button" onclick="receiveAllItems()" 
-                                                    class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 text-xs font-medium rounded hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50">
-                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                    </svg>
-                                                    Receive All
-                                                </button>
-                                                <button type="button" onclick="clearAllItems()" 
-                                                    class="inline-flex items-center px-3 py-1.5 bg-gray-100 text-gray-700 text-xs font-medium rounded hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700">
-                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                                    </svg>
-                                                    Clear All
-                                                </button>
-                                            </div>
-                                            
-                                            <div class="space-y-3 max-h-64 overflow-y-auto">
-                                                @foreach($order->items as $index => $item)
-                                                    @if($item->pending_quantity > 0)
-                                                        <div class="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                                                            <input type="hidden" name="items[{{ $index }}][product_id]" value="{{ $item->product_id }}">
-                                                            
-                                                            <!-- Product Header -->
-                                                            <div class="flex items-start justify-between mb-2">
-                                                                <div class="flex-1">
-                                                                    <h5 class="text-sm font-medium text-gray-900 dark:text-white">{{ $item->product->name }}</h5>
-                                                                    <p class="text-xs text-gray-500 dark:text-gray-400">SKU: {{ $item->product->sku ?? 'N/A' }}</p>
-                                                                </div>
-                                                                <div class="text-right">
-                                                                    <div class="text-xs text-gray-500 dark:text-gray-400">Unit Price:</div>
-                                                                    <div class="text-sm font-semibold text-gray-900 dark:text-white">₱{{ number_format($item->unit_price, 2) }}</div>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <!-- Quantities and Input -->
-                                                            <div class="grid grid-cols-4 gap-3 items-end">
-                                                                <div class="text-center">
-                                                                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Ordered</div>
-                                                                    <div class="text-sm font-semibold text-blue-600 dark:text-blue-400">{{ $item->quantity_ordered }}</div>
-                                                                </div>
-                                                                <div class="text-center">
-                                                                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Received</div>
-                                                                    <div class="text-sm font-semibold text-green-600 dark:text-green-400">{{ $item->quantity_received }}</div>
-                                                                </div>
-                                                                <div class="text-center">
-                                                                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Pending</div>
-                                                                    <div class="text-sm font-semibold text-orange-600 dark:text-orange-400">{{ $item->pending_quantity }}</div>
-                                                                </div>
-                                                                <div>
-                                                                    <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Receive Now</label>
-                                                                    <input type="number" name="items[{{ $index }}][quantity_received]" 
-                                                                        min="0" max="{{ $item->pending_quantity }}" value="0"
-                                                                        data-pending="{{ $item->pending_quantity }}"
-                                                                        class="w-full text-center rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm receive-input">
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <!-- Progress Bar -->
-                                                            <div class="mt-3">
-                                                                <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
-                                                                    <span>Progress</span>
-                                                                    <span>{{ $item->received_percentage }}%</span>
-                                                                </div>
-                                                                <div class="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
-                                                                    <div class="bg-green-600 h-2 rounded-full" style="width: {{ $item->received_percentage }}%"></div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                            
-                                            <!-- Receiving Notes -->
-                                            <div class="mt-4">
-                                                <label for="receiving_notes" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Receiving Notes (Optional)</label>
-                                                <textarea id="receiving_notes" name="receiving_notes" rows="2" 
-                                                    placeholder="Add any notes about this receiving session..."
-                                                    class="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"></textarea>
-                                            </div>
-                                            
-                                            <div class="mt-4 flex space-x-2">
-                                                <button type="submit" 
-                                                    class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-                                                    id="receiveButton" disabled>
-                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                    </svg>
-                                                    Receive Selected Items
-                                                </button>
-                                            </div>
-                                        </form>
-                                        
-                                        <script>
-                                        document.addEventListener('DOMContentLoaded', function() {
-                                            const receiveInputs = document.querySelectorAll('.receive-input');
-                                            const receiveButton = document.getElementById('receiveButton');
-                                            
-                                            // Check if any items are selected for receiving
-                                            function updateReceiveButton() {
-                                                let hasItems = false;
-                                                receiveInputs.forEach(input => {
-                                                    if (parseInt(input.value) > 0) {
-                                                        hasItems = true;
-                                                    }
-                                                });
-                                                receiveButton.disabled = !hasItems;
-                                                receiveButton.textContent = hasItems ? 'Receive Selected Items' : 'No Items Selected';
-                                            }
-                                            
-                                            // Add event listeners to all receive inputs
-                                            receiveInputs.forEach(input => {
-                                                input.addEventListener('input', updateReceiveButton);
-                                                input.addEventListener('change', function() {
-                                                    const max = parseInt(this.getAttribute('max'));
-                                                    const value = parseInt(this.value);
-                                                    if (value > max) {
-                                                        this.value = max;
-                                                    }
-                                                    if (value < 0) {
-                                                        this.value = 0;
-                                                    }
-                                                    updateReceiveButton();
-                                                });
-                                            });
-                                            
-                                            // Initial button state update
-                                            updateReceiveButton();
-                                        });
-                                        
-                                        function receiveAllItems() {
-                                            document.querySelectorAll('.receive-input').forEach(input => {
-                                                input.value = input.getAttribute('data-pending');
-                                            });
-                                            document.getElementById('receiveButton').disabled = false;
-                                            document.getElementById('receiveButton').innerHTML = '<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Receive Selected Items';
-                                        }
-                                        
-                                        function clearAllItems() {
-                                            document.querySelectorAll('.receive-input').forEach(input => {
-                                                input.value = 0;
-                                            });
-                                            document.getElementById('receiveButton').disabled = true;
-                                            document.getElementById('receiveButton').textContent = 'No Items Selected';
-                                        }
-                                        </script>
+                                        <a href="{{ route('purchases.purchase-receives.create', ['purchase_order_id' => $order->order_id]) }}"
+                                           class="w-full inline-flex justify-center items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                            </svg>
+                                            Create Goods Receipt
+                                        </a>
                                     </div>
                                 @endif
 

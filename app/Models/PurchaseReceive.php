@@ -37,6 +37,7 @@ class PurchaseReceive extends Model
      */
     protected $fillable = [
         'receive_number',
+        'reference_number',
         'purchase_order_id',
         'supplier_id',
         'receive_date',
@@ -119,6 +120,14 @@ class PurchaseReceive extends Model
         static::creating(function ($receive) {
             if (empty($receive->receive_number)) {
                 $receive->receive_number = static::generateReceiveNumber();
+            }
+            if (empty($receive->reference_number)) {
+                try {
+                    $receive->reference_number = \App\Services\ReferenceNumberService::generate('purchase_receives', 'reference_number', 'GR');
+                } catch (\Throwable $e) {
+                    // Fallback to receive number
+                    $receive->reference_number = $receive->receive_number;
+                }
             }
         });
     }

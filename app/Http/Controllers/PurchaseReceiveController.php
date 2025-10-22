@@ -53,6 +53,7 @@ class PurchaseReceiveController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'purchase_order_id' => 'required|exists:purchase_orders,order_id',
+            'supplier_id' => 'nullable|exists:suppliers,supplier_id', // Made optional as it's auto-filled from PO
             'receive_date' => 'required|date',
             'status' => 'nullable|in:in_transit,received,partially_received,damaged,cancelled',
             'receiver_name' => 'nullable|string|max:255',
@@ -114,6 +115,7 @@ class PurchaseReceiveController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'purchase_order_id' => 'required|exists:purchase_orders,order_id',
+            'supplier_id' => 'nullable|exists:suppliers,supplier_id', // Made optional as it's auto-filled from PO
             'receive_date' => 'required|date',
             'status' => 'nullable|in:in_transit,received,partially_received,damaged,cancelled',
             'receiver_name' => 'nullable|string|max:255',
@@ -186,23 +188,38 @@ class PurchaseReceiveController extends Controller
      */
     public function getPurchaseOrderItems(Request $request, PurchaseOrder $purchaseOrder)
     {
-        $purchaseOrder->load('items.product');
-        
+        // Load only existing relations to avoid errors
+        $purchaseOrder->load('items.product', 'items.product.category');
+
         $items = $purchaseOrder->items->map(function ($item) {
+            $product = $item->product;
             return [
                 'item_id' => $item->item_id,
                 'product_id' => $item->product_id,
-                'product_name' => $item->product->product_name,
-                'quantity_ordered' => $item->quantity_ordered,
-                'quantity_received' => $item->quantity_received,
-                'quantity_pending' => $item->quantity_ordered - $item->quantity_received,
-                'unit_price' => $item->unit_price,
+                'product_name' => $product?->product_name ?? 'Unknown Product',
+                // Product model provides a sku accessor; fall back handled inside accessor
+                'product_sku' => $product?->sku ?? 'N/A',
+                // Our Product stores brand as a simple string field (product_brand)
+                'product_brand' => $product?->product_brand ?? 'N/A',
+                // Category relation maps product_category -> Category name
+                'product_category' => $product?->category?->name ?? ($product?->product_category ?? 'N/A'),
+                'product_description' => $product?->description ?? '',
+                'quantity_ordered' => (int) $item->quantity_ordered,
+                'quantity_received' => (int) $item->quantity_received,
+                'quantity_pending' => max(0, (int) $item->quantity_ordered - (int) $item->quantity_received),
+                'unit_price' => (float) $item->unit_price,
+                'item_notes' => $item->notes ?? '',
             ];
         });
 
         return response()->json([
             'success' => true,
-            'items' => $items
+            'items' => $items,
+            'order' => [
+                'order_number' => $purchaseOrder->order_number,
+                'order_date' => (string) $purchaseOrder->order_date,
+                'expected_date' => (string) $purchaseOrder->expected_date,
+            ]
         ]);
     }
 

@@ -131,6 +131,15 @@ class PurchaseOrder extends Model
             if (empty($order->order_number)) {
                 $order->order_number = static::generateOrderNumber();
             }
+            // Ensure reference number exists for cross-party tracking
+            if (empty($order->reference_number)) {
+                try {
+                    $order->reference_number = \App\Services\ReferenceNumberService::generate('purchase_orders', 'reference_number', 'PO');
+                } catch (\Throwable $e) {
+                    // Fallback to order number if generation fails
+                    $order->reference_number = $order->order_number;
+                }
+            }
         });
     }
 

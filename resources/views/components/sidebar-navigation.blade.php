@@ -197,8 +197,8 @@
                             title="Purchase Order Master" size="small" />
 
                         <!-- Inventory Report -->
-                        <x-nav-item route="reports.inventory" route-pattern="reports.inventory" :icon="App\Helpers\NavigationHelper::getIcon('inventory_report', 'w-4 h-4 mr-3')"
-                            title="Inventory Report" size="small" />
+                        {{-- <x-nav-item route="reports.inventory" route-pattern="reports.inventory" :icon="App\Helpers\NavigationHelper::getIcon('inventory_report', 'w-4 h-4 mr-3')"
+                            title="Inventory Report" size="small" /> --}}
 
                         <!-- Reorder Items -->
                         <x-nav-item route="reports.inventory" route-pattern="reports.inventory" :icon="App\Helpers\NavigationHelper::getIcon('reorder_items', 'w-4 h-4 mr-3')"

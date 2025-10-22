@@ -593,7 +593,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Status management routes
         Route::post('/{order}/change-status', [PurchaseOrderController::class, 'changeStatus'])->name('change-status');
-        Route::post('/{order}/receive-items', [PurchaseOrderController::class, 'receiveItems'])->name('receive-items');
 
         // Analytics and Reports
         Route::get('/analytics', [PurchaseOrderController::class, 'analytics'])->name('analytics');

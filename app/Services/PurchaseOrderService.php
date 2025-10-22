@@ -235,98 +235,21 @@ class PurchaseOrderService
     }
 
     /**
-     * Receive items (update quantities and stock).
+     * Receive items (DEPRECATED - Use PurchaseReceiveService instead).
+     * 
+     * This method is deprecated and should not be used.
+     * All receiving operations must go through the Goods Receipt (Purchase Receive) module.
+     * 
+     * @deprecated Use App\Services\PurchaseReceiveService::createReceive() instead
+     * @throws \Exception Always throws exception to prevent direct receiving
      */
     public function receiveItems(PurchaseOrder $order, array $receivedItems, string $receivingNotes = null): PurchaseOrder
     {
-        if (!$order->canReceiveItems()) {
-            throw new \Exception('Cannot receive items for this order status.');
-        }
-
-        $totalItemsReceived = 0;
-        $receivedItemsList = [];
-
-        foreach ($receivedItems as $itemData) {
-            $orderItem = $order->items()->where('product_id', $itemData['product_id'])->first();
-            
-            if (!$orderItem) {
-                continue;
-            }
-
-            $receivedQty = min($itemData['quantity_received'], $orderItem->pending_quantity);
-            
-            if ($receivedQty > 0) {
-                // Update received quantity
-                $orderItem->quantity_received += $receivedQty;
-                $orderItem->save();
-
-                // Update product stock
-                $product = $orderItem->product;
-                $product->quantity += $receivedQty;
-                $product->save();
-
-                $totalItemsReceived += $receivedQty;
-                $receivedItemsList[] = [
-                    'product_id' => $product->product_id,
-                    'product_name' => $product->name,
-                    'quantity' => $receivedQty,
-                    'unit_price' => $orderItem->unit_price
-                ];
-
-                // Create stock movement record with enhanced notes
-                if (class_exists('App\Models\StockMovement')) {
-                    $movementNotes = "Received from purchase order {$order->order_number}";
-                    if ($receivingNotes) {
-                        $movementNotes .= " - " . $receivingNotes;
-                    }
-                    
-                    \App\Models\StockMovement::recordMovement(
-                        productId: $product->product_id,
-                        quantityBefore: $product->quantity - $receivedQty, // Before we added it
-                        quantityChange: $receivedQty, // Positive because it's inbound
-                        quantityAfter: $product->quantity,
-                        movementType: \App\Models\StockMovement::TYPE_PURCHASE,
-                        userId: auth()->id(),
-                        referenceType: 'purchase_order',
-                        referenceId: $order->order_id,
-                        notes: $movementNotes,
-                        movementDate: Carbon::now()
-                    );
-                }
-            }
-        }
-
-        // If no items were actually received, don't update the order status
-        if ($totalItemsReceived === 0) {
-            throw new \Exception('No items were received. Please specify quantities to receive.');
-        }
-
-        // Update order notes with receiving information
-        $currentNotes = $order->internal_notes ?? '';
-        $receivingLog = "\n\n[" . Carbon::now()->format('Y-m-d H:i:s') . "] Received by " . (auth()->user()->name ?? 'Unknown User') . ":\n";
-        foreach ($receivedItemsList as $item) {
-            $receivingLog .= "- {$item['product_name']}: {$item['quantity']} units\n";
-        }
-        if ($receivingNotes) {
-            $receivingLog .= "Notes: {$receivingNotes}\n";
-        }
-        
-        $order->update([
-            'internal_notes' => $currentNotes . $receivingLog
-        ]);
-
-        // Check if order is fully received
-        $allReceived = $order->items()->get()->every(function ($item) {
-            return $item->isFullyReceived();
-        });
-
-        if ($allReceived) {
-            $order->update(['status' => 'received', 'received_date' => Carbon::now()]);
-        } else {
-            $order->update(['status' => 'partial_received']);
-        }
-
-        return $order->fresh(['supplier', 'items.product']);
+        throw new \Exception(
+            'Direct receiving through Purchase Orders is disabled. ' .
+            'Please use the Goods Receipt module to receive items. ' .
+            'Navigate to Purchase Receives or click "Create Goods Receipt" from the Purchase Order page.'
+        );
     }
 
     /**
@@ -494,7 +417,7 @@ class PurchaseOrderService
                     $receivedValue = $item->quantity_received * $item->unit_price;
                     $summary['total_value_received'] += $receivedValue;
                     $summary['total_items_received'] += $item->quantity_received;
-                    $summary['unique_products_received']->put($item->product_id, $item->product->name);
+                    $summary['unique_products_received']->put($item->product_id, $item->product->product_name);
                 }
             }
         }

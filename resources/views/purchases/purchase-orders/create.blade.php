@@ -111,7 +111,7 @@
                 </div>
 
                 <!-- Order Items -->
-                {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white">Order Items</h3>
@@ -155,8 +155,7 @@
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit
                                             Price</label>
                                         <input type="number" name="items[0][unit_price]" step="0.01"
-                                            class="unit-price-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                            required>
+                                            class="unit-price-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     </div>
                                     <div>
                                         <label
@@ -191,10 +190,10 @@
 
                         <x-input-error :messages="$errors->get('items')" class="mt-2" />
                     </div>
-                </div> --}}
+                </div>
 
                 <!-- Order Summary -->
-                {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Order Summary</h3>
 
@@ -253,7 +252,7 @@
                             </div>
                         </div>
                     </div>
-                </div> --}}
+                </div>
 
                 <!-- Additional Information -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
@@ -346,7 +345,7 @@
 
                     products.forEach(product => {
                         productOptions += `<option value="${product.id}" data-price="${product.price}" data-stock="${product.stock}">
-                                        ${product.name} (Stock: ${product.stock})
+                                        ${product.product_name} (Stock: ${product.stock})
                                     </option>`;
                     });
 
@@ -370,8 +369,7 @@
                                             <div>
                                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit Price</label>
                                                 <input type="number" name="items[${index}][unit_price]" step="0.01"
-                                                    class="unit-price-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                    required>
+                                                    class="unit-price-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                             </div>
                                             <div>
                                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Discount</label>
@@ -447,7 +445,7 @@
                     const discount = parseFloat(row.querySelector('.discount-input').value) || 0;
 
                     const lineTotal = (quantity * price) - discount;
-                    row.querySelector('.line-total').value = '$' + lineTotal.toFixed(2);
+                    row.querySelector('.line-total').value = '₱' + lineTotal.toFixed(2);
 
                     updateOrderSummary();
                 }
@@ -468,11 +466,11 @@
 
                     const total = subtotal + tax + shipping - orderDiscount;
 
-                    document.getElementById('subtotal-display').textContent = '$' + subtotal.toFixed(2);
-                    document.getElementById('tax-display').textContent = '$' + tax.toFixed(2);
-                    document.getElementById('shipping-display').textContent = '$' + shipping.toFixed(2);
-                    document.getElementById('discount-display').textContent = '$' + orderDiscount.toFixed(2);
-                    document.getElementById('total-display').textContent = '$' + total.toFixed(2);
+                    document.getElementById('subtotal-display').textContent = '₱' + subtotal.toFixed(2);
+                    document.getElementById('tax-display').textContent = '₱' + tax.toFixed(2);
+                    document.getElementById('shipping-display').textContent = '₱' + shipping.toFixed(2);
+                    document.getElementById('discount-display').textContent = '₱' + orderDiscount.toFixed(2);
+                    document.getElementById('total-display').textContent = '₱' + total.toFixed(2);
                 }
             });
         </script>

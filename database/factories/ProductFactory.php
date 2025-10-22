@@ -25,7 +25,6 @@ class ProductFactory extends Factory
         return [
             'product_name'   => ucwords($this->faker->words(3, true)), // "Wireless Bluetooth Speaker"
             'product_brand'  => $this->faker->company(),
-            'quantity'       => $this->faker->numberBetween(0, 500),
             'price'          => $price,
             // 'discount_price' => $discount ? round($price - $discount, 2) : null,
             'image'          => $this->faker->imageUrl(640, 480, 'technics', true, 'Product'),
@@ -38,6 +37,29 @@ class ProductFactory extends Factory
                 'Electronics', 'Home Appliances', 'Accessories', 'Gadgets', 'Office Supplies'
             ]),
         ];
+    }
+
+    /**
+     * Configure the factory.
+     * If a test passes a 'quantity' attribute, translate it into an initial stock movement
+     * since 'quantity' is no longer a database column (computed from stock movements).
+     */
+    public function configure()
+    {
+        return $this->afterCreating(function (\App\Models\Product $product, ?array $attributes = []) {
+            if (isset($attributes['quantity'])) {
+                $qty = (int) $attributes['quantity'];
+                // Record an initial stock movement to set quantity
+                \App\Models\StockMovement::recordMovement(
+                    productId: $product->product_id,
+                    quantityBefore: 0,
+                    quantityChange: $qty,
+                    quantityAfter: $qty,
+                    movementType: \App\Models\StockMovement::TYPE_INITIAL_STOCK,
+                    userId: null
+                );
+            }
+        });
     }
 
     /**
@@ -66,6 +88,7 @@ class ProductFactory extends Factory
     public function lowStock(): static
     {
         return $this->state(fn (array $attributes) => [
+            // Quantity is derived from stock movements; keep attribute for backward compatibility
             'quantity' => $this->faker->numberBetween(1, 5),
         ]);
     }
@@ -89,6 +112,7 @@ class ProductFactory extends Factory
     public function outOfStock(): static
     {
         return $this->state(fn (array $attributes) => [
+            // Quantity is derived from stock movements; keep attribute for backward compatibility
             'quantity' => 0,
             'status' => 'inactive',
         ]);

@@ -182,6 +182,16 @@ class PurchaseReceiveService
             // Update inventory for received items
             if ($quantityReceived > 0) {
                 $this->updateProductInventory($product, $quantityReceived, $receive->supplier_id, $unitPrice);
+
+                // If linked to a PO item, sync received quantity there too
+                if (!empty($itemData['purchase_order_item_id'])) {
+                    $poItem = \App\Models\PurchaseOrderItem::find($itemData['purchase_order_item_id']);
+                    if ($poItem) {
+                        $before = $poItem->quantity_received;
+                        $poItem->quantity_received = max(0, $before + $quantityReceived);
+                        $poItem->save();
+                    }
+                }
             }
 
             // Accumulate totals
@@ -201,6 +211,22 @@ class PurchaseReceiveService
 
         // Update status based on completion
         $this->updateReceiveStatus($receive);
+
+        // Also update related Purchase Order status if exists
+        if ($receive->purchase_order_id) {
+            $order = PurchaseOrder::with('items')->find($receive->purchase_order_id);
+            if ($order) {
+                $allReceived = $order->items->every(fn($i) => $i->isFullyReceived());
+                $newStatus = $allReceived ? 'received' : 'partial_received';
+                // Only move forward in the flow
+                if (in_array($order->status, ['ordered','partial_received']) && $order->status !== $newStatus) {
+                    $order->update([
+                        'status' => $newStatus,
+                        'received_date' => $allReceived ? now() : $order->received_date,
+                    ]);
+                }
+            }
+        }
     }
 
     /**
@@ -236,8 +262,8 @@ class PurchaseReceiveService
      */
     protected function updateProductInventory(Product $product, int $quantityChange, ?int $supplierId = null, ?float $unitPrice = null): void
     {
-        // Get current quantity from latest stock movement
-        $currentQuantity = $product->quantity;
+        // Get current on-hand quantity
+        $currentQuantity = (int) $product->quantity;
 
         // Record stock movement instead of directly updating product
         StockMovement::recordMovement(
@@ -251,6 +277,16 @@ class PurchaseReceiveService
             referenceType: 'purchase_receive',
             movementDate: now()
         );
+
+        // Also update product on-hand quantity to reflect the movement
+        if ($quantityChange !== 0) {
+            if ($quantityChange > 0) {
+                $product->increment('quantity', $quantityChange);
+            } else {
+                $product->decrement('quantity', abs($quantityChange));
+            }
+            $product->refresh();
+        }
 
         // Update supplier tracking information only when receiving items (positive quantity)
         if ($quantityChange > 0 && $supplierId && $unitPrice) {

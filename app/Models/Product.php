@@ -295,8 +295,15 @@ class Product extends Model
     /**
      * Get current stock quantity from the latest stock movement.
      * This is the primary way to get product quantity now.
+     * 
+     * NOTE: This accessor has been commented out because the products table now has
+     * a quantity column that is kept in sync with stock movements. The accessor was
+     * causing conflicts with increment/decrement operations in PurchaseReceiveService.
+     * 
+     * If you need to get quantity from stock movements directly, use:
+     * $product->getQuantityFromStockMovements()
      */
-    public function getQuantityAttribute(): int
+    public function getQuantityFromStockMovements(): int
     {
         // Get the latest stock movement for this product
         $latestMovement = $this->stockMovements()
