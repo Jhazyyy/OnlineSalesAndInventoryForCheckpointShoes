@@ -322,10 +322,10 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div class="flex items-center space-x-2">
-                                                <a href="{{ route('inventory.product_stock_adjustment.show', $movement) }}"
+                                                {{-- <a href="{{ route('inventory.product_stock_adjustment.show', $movement) }}"
                                                     class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600">
                                                     View
-                                                </a>
+                                                </a> --}}
                                                 @if($movement->status === 'pending')
                                                     <a href="{{ route('inventory.product_stock_adjustment.edit', $movement) }}"
                                                         class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-600">

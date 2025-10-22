@@ -89,10 +89,10 @@
                             :icon="App\Helpers\NavigationHelper::getIcon('composite-products', 'w-4 h-4 mr-3')"
                             title="Composite Products" size="small" /> --}}
 
-                        <!-- Stock Management -->
+                        <!-- Stock Adjustment -->
                         <x-nav-item route="inventory.product_stock_adjustment.index"
                             route-pattern="inventory.product_stock_adjustment.*" :icon="App\Helpers\NavigationHelper::getIcon('stock-adjustment', 'w-4 h-4 mr-3')"
-                            title="Stock Adjustment" size="small" />
+                            title="Stock Management" size="small" />
 
                         <!-- Product Movement (Fast/Slow/Non-Moving) -->
                         {{-- <x-nav-item route="inventory.product-movement.index"
@@ -101,6 +101,11 @@
                             title="Product Movement" size="small" /> --}}
 
                         <!-- Inventory Thresholds -->
+                        <x-nav-item route="inventory.thresholds.index" route-pattern="inventory.thresholds.*"
+                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>'
+                            title="Inventory Thresholds" size="small" />
+
+                        {{-- Inventory --}}
                         <x-nav-item route="inventory.thresholds.index" route-pattern="inventory.thresholds.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>'
                             title="Inventory Thresholds" size="small" />

@@ -83,14 +83,21 @@ class SalesOrderService
                                          'name' => $customer->display_name,
                                      ];
                                  }),
-            'products' => Product::orderBy('product_name')
+            'products' => Product::with('properties')
+                               ->orderBy('product_name')
                                ->get()
                                ->map(function ($product) {
+                                   // Calculate stock from properties if they exist, otherwise use quantity
+                                   $stock = $product->properties->where('is_active', true)->sum('quantity');
+                                   if ($stock == 0 && $product->properties->isEmpty()) {
+                                       $stock = $product->quantity;
+                                   }
+                                   
                                    return [
                                        'id' => $product->product_id,
                                        'name' => $product->product_name . ' - ' . $product->product_brand,
                                        'price' => $product->price,
-                                       'stock' => $product->quantity,
+                                       'stock' => $stock,
                                    ];
                                }),
         ];

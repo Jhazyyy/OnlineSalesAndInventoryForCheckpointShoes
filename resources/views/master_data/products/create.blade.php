@@ -118,24 +118,10 @@
 
                         <!-- Quantity and Price Row -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Quantity -->
-                            <div>
-                                <label for="quantity"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Quantity <span class="text-red-500">*</span>
-                                </label>
-                                <input type="number" id="quantity" name="quantity" value="{{ old('quantity', 0) }}"
-                                    min="0" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('quantity') border-red-500 @enderror">
-                                @error('quantity')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
                             <!-- Price -->
                             <div>
                                 <label for="price" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Price (Peso) <span class="text-red-500">*</span>
+                                    Base Price (Peso) <span class="text-red-500">*</span>
                                 </label>
                                 <div class="mt-1 relative rounded-md shadow-sm">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -149,16 +135,43 @@
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
+                            
+                            <!-- Inventory Notice -->
+                            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                                <div class="flex">
+                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-blue-800 dark:text-blue-300">Inventory Management</h4>
+                                        <p class="text-xs text-blue-700 dark:text-blue-400 mt-1">
+                                            Stock quantities are managed through <strong>Stock Movements</strong>. 
+                                            After creating this product, set initial inventory via Stock Adjustment.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                            <!-- Status -->
-                            {{-- <div>
-                                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                                <select name="status" id="status"
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-                                    <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                </select>
-                            </div> --}}
+                        <!-- Product Properties/Variants Section -->
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Product Properties / Variants</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Add size, color, or other variants with their quantities</p>
+                                </div>
+                                <button type="button" onclick="addPropertyRow()" 
+                                    class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    Add Property
+                                </button>
+                            </div>
+
+                            <div id="propertiesContainer" class="space-y-3">
+                                <!-- Property rows will be added here dynamically -->
+                            </div>
                         </div>
 
                         {{-- Product Image and Description --}}
@@ -313,4 +326,66 @@
         }
     </script>
 
+        }
+    </script>
+
+    <script>
+        // Product Properties Management
+        let propertyIndex = 0;
+
+        function addPropertyRow() {
+            const container = document.getElementById('propertiesContainer');
+            const row = document.createElement('div');
+            row.className = 'property-row border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-800';
+            row.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Property Name</label>
+                        <input type="text" name="properties[${propertyIndex}][property_name]" 
+                            placeholder="e.g., Size, Color" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Property Value</label>
+                        <input type="text" name="properties[${propertyIndex}][property_value]" 
+                            placeholder="e.g., 42, Red" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
+                        <input type="number" name="properties[${propertyIndex}][quantity]" 
+                            min="0" value="0" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">SKU (Optional)</label>
+                        <input type="text" name="properties[${propertyIndex}][sku]" 
+                            placeholder="SKU-001"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Price Adj.</label>
+                        <div class="flex gap-2">
+                            <input type="number" name="properties[${propertyIndex}][price_adjustment]" 
+                                step="0.01" value="0" 
+                                placeholder="+/- Price"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <button type="button" onclick="removePropertyRow(this)" 
+                                class="mt-1 inline-flex items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(row);
+            propertyIndex++;
+        }
+
+        function removePropertyRow(button) {
+            button.closest('.property-row').remove();
+        }
+    </script>
 </x-app-layout>

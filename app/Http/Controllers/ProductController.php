@@ -92,13 +92,19 @@ class ProductController extends Controller
             'product_name' => 'required|string|max:255',
             'product_category' => 'nullable|string|max:255',
             'custom_category' => 'nullable|string|max:255',
-            'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'nullable|string|max:1000',
             // Allow either product_brand OR custom_brand to be filled
             'product_brand' => 'nullable|string|max:255',
             'custom_brand' => 'nullable|string|max:255',
+            // Product properties validation
+            'properties' => 'nullable|array',
+            'properties.*.property_name' => 'required_with:properties|string|max:255',
+            'properties.*.property_value' => 'required_with:properties|string|max:255',
+            'properties.*.quantity' => 'required_with:properties|integer|min:0',
+            'properties.*.sku' => 'nullable|string|max:255|unique:product_properties,sku',
+            'properties.*.price_adjustment' => 'nullable|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -155,7 +161,22 @@ class ProductController extends Controller
             $data['image'] = $imagePath;
         }
 
-        Product::create($data);
+        // Create the product (no quantity field needed)
+        $product = Product::create($data);
+
+        // Create product properties if provided
+        if ($request->has('properties') && is_array($request->properties)) {
+            foreach ($request->properties as $property) {
+                $product->properties()->create([
+                    'property_name' => $property['property_name'],
+                    'property_value' => $property['property_value'],
+                    'quantity' => $property['quantity'],
+                    'sku' => $property['sku'] ?? null,
+                    'price_adjustment' => $property['price_adjustment'] ?? 0,
+                    'is_active' => true,
+                ]);
+            }
+        }
 
         return redirect()->route('master_data.products.index')->with('success', 'Product created successfully!');
     }
@@ -196,7 +217,6 @@ class ProductController extends Controller
             'product_name' => 'required|string|max:255',
             'product_category' => 'nullable|string|max:255',
             'custom_category' => 'nullable|string|max:255',
-            'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'nullable|string|max:1000',

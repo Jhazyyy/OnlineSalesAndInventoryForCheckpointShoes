@@ -125,22 +125,8 @@
                             </div>
                         </div>
 
-                        <!-- Quantity and Price Row -->
+                        <!-- Price and Current Stock Row -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Quantity -->
-                            <div>
-                                <label for="quantity"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Quantity <span class="text-red-500">*</span>
-                                </label>
-                                <input type="number" id="quantity" name="quantity"
-                                    value="{{ old('quantity', $product->quantity) }}" min="0" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('quantity') border-red-500 @enderror">
-                                @error('quantity')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
                             <!-- Price -->
                             <div>
                                 <label for="price"
@@ -159,6 +145,24 @@
                                 @error('price')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
+                            </div>
+                            
+                            <!-- Current Stock (Read-only Display) -->
+                            <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                                <div class="flex items-start">
+                                    <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                    </svg>
+                                    <div class="flex-1">
+                                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Current Stock Quantity</label>
+                                        <div class="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">
+                                            {{ number_format($product->quantity) }}
+                                        </div>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                            Managed via <a href="{{ route('inventory.product_stock_adjustment.index') }}" class="text-indigo-600 dark:text-indigo-400 hover:underline">Stock Movements</a>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

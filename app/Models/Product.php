@@ -27,7 +27,6 @@ class Product extends Model
         'product_name',
         'product_brand',
         'product_category',
-        'quantity',
         'price',
         'image',
         'description',
@@ -139,7 +138,6 @@ class Product extends Model
             'product_name',
             'product_brand',
             'product_category',
-            'quantity',
             'price',
             'image',
             'description',
@@ -153,7 +151,6 @@ class Product extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'quantity' => 'integer',
         'price' => 'decimal:2',
         'reorder_level' => 'integer',
         'critical_level' => 'integer',
@@ -195,6 +192,14 @@ class Product extends Model
     }
 
     /**
+     * Get the product properties (variants) for the product.
+     */
+    public function properties(): HasMany
+    {
+        return $this->hasMany(ProductProperty::class, 'product_id', 'product_id');
+    }
+
+    /**
      * Get the purchase returns for the product.
      */
     public function purchaseReturns(): HasMany
@@ -216,6 +221,14 @@ class Product extends Model
     public function auditLogs(): HasMany
     {
         return $this->hasMany(InventoryAuditLog::class, 'product_id', 'product_id');
+    }
+
+    /**
+     * Get the stock movements for the product.
+     */
+    public function stockMovements(): HasMany
+    {
+        return $this->hasMany(StockMovement::class, 'product_id', 'product_id');
     }
 
     /**
@@ -247,7 +260,15 @@ class Product extends Model
      */
     public function scopeLowStock(Builder $query, int $threshold = 10): Builder
     {
-        return $query->where('quantity', '<=', $threshold);
+        // This will need to be handled differently - using subquery to get latest stock from movements
+        return $query->whereHas('stockMovements', function($q) use ($threshold) {
+            $q->whereRaw('quantity_after <= ?', [$threshold])
+              ->whereIn('movement_id', function($subQ) {
+                  $subQ->selectRaw('MAX(movement_id)')
+                       ->from('stock_movements')
+                       ->groupBy('product_id');
+              });
+        });
     }
 
     /**
@@ -263,11 +284,51 @@ class Product extends Model
     }
 
     /**
+     * Get the actual total quantity from all product properties.
+     * The quantity field on products table is now just a reference.
+     */
+    public function getActualQuantityAttribute(): int
+    {
+        return $this->properties()->where('is_active', true)->sum('quantity');
+    }
+
+    /**
+     * Get current stock quantity from the latest stock movement.
+     * This is the primary way to get product quantity now.
+     */
+    public function getQuantityAttribute(): int
+    {
+        // Get the latest stock movement for this product
+        $latestMovement = $this->stockMovements()
+            ->orderBy('movement_id', 'desc')
+            ->first();
+        
+        return $latestMovement ? $latestMovement->quantity_after : 0;
+    }
+
+    /**
+     * Check if the product has any properties (variants).
+     */
+    public function hasProperties(): bool
+    {
+        return $this->properties()->exists();
+    }
+
+    /**
+     * Get quantity for display - uses actual_quantity if properties exist, otherwise uses reference quantity.
+     */
+    public function getDisplayQuantityAttribute(): int
+    {
+        return $this->hasProperties() ? $this->actual_quantity : $this->quantity;
+    }
+
+    /**
      * Check if the product is in stock.
      */
     public function isInStock(int $requestedQuantity = 1): bool
     {
-        return $this->quantity >= $requestedQuantity;
+        $availableQuantity = $this->hasProperties() ? $this->actual_quantity : $this->quantity;
+        return $availableQuantity >= $requestedQuantity;
     }
 
     /**
@@ -388,6 +449,7 @@ class Product extends Model
 
     /**
      * Update stock quantity after a sale.
+     * Now uses StockMovement to track changes instead of direct quantity field.
      */
     public function decreaseStock(int $quantity): bool
     {
@@ -395,17 +457,40 @@ class Product extends Model
             return false;
         }
 
-        $this->quantity -= $quantity;
-        return $this->save();
+        $currentQuantity = $this->quantity;
+        
+        // Create a stock movement record instead of directly modifying quantity
+        StockMovement::recordMovement(
+            productId: $this->product_id,
+            quantityBefore: $currentQuantity,
+            quantityChange: -$quantity,
+            quantityAfter: $currentQuantity - $quantity,
+            movementType: StockMovement::TYPE_SALE,
+            userId: auth()->id()
+        );
+        
+        return true;
     }
 
     /**
      * Update stock quantity after a purchase or return.
+     * Now uses StockMovement to track changes instead of direct quantity field.
      */
     public function increaseStock(int $quantity): bool
     {
-        $this->quantity += $quantity;
-        return $this->save();
+        $currentQuantity = $this->quantity;
+        
+        // Create a stock movement record instead of directly modifying quantity
+        StockMovement::recordMovement(
+            productId: $this->product_id,
+            quantityBefore: $currentQuantity,
+            quantityChange: $quantity,
+            quantityAfter: $currentQuantity + $quantity,
+            movementType: StockMovement::TYPE_PURCHASE,
+            userId: auth()->id()
+        );
+        
+        return true;
     }
 
     /**
@@ -453,7 +538,15 @@ class Product extends Model
      */
     public static function outOfStock()
     {
-        return self::where('quantity', '<=', 0)->get();
+        // Get products where the latest stock movement shows 0 or negative quantity
+        return self::whereHas('stockMovements', function($q) {
+            $q->where('quantity_after', '<=', 0)
+              ->whereIn('movement_id', function($subQ) {
+                  $subQ->selectRaw('MAX(movement_id)')
+                       ->from('stock_movements')
+                       ->groupBy('product_id');
+              });
+        })->get();
     }
 
     /**
@@ -461,7 +554,15 @@ class Product extends Model
      */
     public function scopeInStock(Builder $query): Builder
     {
-        return $query->where('quantity', '>', 0);
+        // Products where the latest stock movement shows positive quantity
+        return $query->whereHas('stockMovements', function($q) {
+            $q->where('quantity_after', '>', 0)
+              ->whereIn('movement_id', function($subQ) {
+                  $subQ->selectRaw('MAX(movement_id)')
+                       ->from('stock_movements')
+                       ->groupBy('product_id');
+              });
+        });
     }
 
     /**
@@ -469,7 +570,15 @@ class Product extends Model
      */
     public function scopeOutOfStock(Builder $query): Builder
     {
-        return $query->where('quantity', '<=', 0);
+        // Products where the latest stock movement shows 0 or negative quantity
+        return $query->whereHas('stockMovements', function($q) {
+            $q->where('quantity_after', '<=', 0)
+              ->whereIn('movement_id', function($subQ) {
+                  $subQ->selectRaw('MAX(movement_id)')
+                       ->from('stock_movements')
+                       ->groupBy('product_id');
+              });
+        });
     }
 
     /**
@@ -485,7 +594,12 @@ class Product extends Model
      */
     public static function totalInventoryValue(): float
     {
-        return self::selectRaw('SUM(quantity * price) as total')->value('total') ?? 0;
+        // Calculate from latest stock movements
+        $total = 0;
+        foreach (self::all() as $product) {
+            $total += ($product->quantity * $product->price);
+        }
+        return $total;
     }
 
     /**

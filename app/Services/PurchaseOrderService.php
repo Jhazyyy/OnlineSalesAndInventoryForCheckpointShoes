@@ -78,14 +78,21 @@ class PurchaseOrderService
                                          'name' => $supplier->supplier_name,
                                      ];
                                  }),
-            'products' => Product::orderBy('product_name')
+            'products' => Product::with('properties')
+                               ->orderBy('product_name')
                                ->get()
                                ->map(function ($product) {
+                                   // Calculate stock from properties if they exist, otherwise use quantity
+                                   $stock = $product->properties->where('is_active', true)->sum('quantity');
+                                   if ($stock == 0 && $product->properties->isEmpty()) {
+                                       $stock = $product->quantity;
+                                   }
+                                   
                                    return [
                                        'id' => $product->product_id,
                                        'product_name' => $product->product_name,
                                        'price' => $product->price,
-                                       'stock' => $product->quantity,
+                                       'stock' => $stock,
                                    ];
                                }),
         ];

@@ -119,10 +119,7 @@ class StockService
             $newQuantity = $data['new_quantity'];
             $quantityChange = $newQuantity - $quantityBefore;
 
-            // Update product quantity
-            $product->update(['quantity' => $newQuantity]);
-
-            // Record the movement
+            // Record the movement (no need to update product quantity directly anymore)
             $movement = StockMovement::recordMovement(
                 productId: $data['product_id'],
                 quantityBefore: $quantityBefore,
@@ -176,12 +173,11 @@ class StockService
                 ];
             }
 
-            // Update product quantities
+            // Get quantities before transfer
             $quantityBeforeFrom = $productFrom->quantity;
             $quantityBeforeTo = $productTo->quantity;
             
-            $productFrom->update(['quantity' => $quantityBeforeFrom - $transferQuantity]);
-            $productTo->update(['quantity' => $quantityBeforeTo + $transferQuantity]);
+            // No need to update product quantities directly - movements handle this
 
             // Record outbound movement
             $movementOut = StockMovement::recordMovement(
@@ -258,8 +254,7 @@ class StockService
             $quantityBefore = $product->quantity;
             $quantityAfter = $quantityBefore - $wasteQuantity;
             
-            // Update product quantity
-            $product->update(['quantity' => $quantityAfter]);
+            // No need to update product quantity directly - movement handles this
 
             // Record the movement
             $movement = StockMovement::recordMovement(
@@ -454,9 +449,7 @@ class StockService
         }
 
         try {
-            // Update product stock
-            $product = $movement->product;
-            $product->update(['quantity' => $movement->quantity_after]);
+            // No need to update product stock directly - movement already tracks quantity_after
             
             // Update movement status
             $movement->update(['status' => StockMovement::STATUS_CONFIRMED]);
@@ -465,7 +458,7 @@ class StockService
                 'success' => true,
                 'message' => 'Stock movement confirmed successfully',
                 'movement' => $movement->fresh(),
-                'product' => $product->fresh(),
+                'product' => $movement->product->fresh(),
             ];
         } catch (\Exception $e) {
             return [

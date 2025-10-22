@@ -32,7 +32,8 @@
                             <ul class="list-disc list-inside space-y-1">
                                 <li>Upload Excel (.xlsx, .xls) or CSV files</li>
                                 <li>First row should contain column headers</li>
-                                <li>Required columns: Product Name, Brand, Quantity, Price</li>
+                                <li>Required columns: Product Name, Brand, Price</li>
+                                <li>Optional columns: Category, Description</li>
                                 <li>Optional column: Description</li>
                                 <li>Maximum file size: 5MB</li>
                             </ul>

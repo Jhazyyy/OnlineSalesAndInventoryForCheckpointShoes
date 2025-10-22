@@ -266,7 +266,7 @@
                                                    class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">View</a>
                                                 <a href="{{ route('inventory.thresholds.edit', $product) }}" 
                                                    class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">Edit</a>
-                                                <a href="{{ route('inventory.products.show', $product) }}" 
+                                                <a href="{{ route('master_data.products.show', $product) }}" 
                                                    class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300">Product Details</a>
                                             </td>
                                         </tr>

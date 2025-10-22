@@ -2,15 +2,16 @@
 
 namespace App\Services;
 
+use App\Models\Product;
+use App\Models\PurchaseOrder;
 use App\Models\PurchaseReceive;
 use App\Models\PurchaseReceiveItem;
-use App\Models\PurchaseOrder;
+use App\Models\StockMovement;
 use App\Models\Supplier;
-use App\Models\Product;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PurchaseReceiveService
 {
@@ -25,14 +26,14 @@ class PurchaseReceiveService
         if ($search = $request->get('search')) {
             $query->where(function (Builder $q) use ($search) {
                 $q->where('receive_number', 'like', "%{$search}%")
-                  ->orWhere('receiver_name', 'like', "%{$search}%")
-                  ->orWhereHas('supplier', function (Builder $sq) use ($search) {
-                      $sq->where('supplier_name', 'like', "%{$search}%")
-                        ->orWhere('name', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('purchaseOrder', function (Builder $poq) use ($search) {
-                      $poq->where('order_number', 'like', "%{$search}%");
-                  });
+                    ->orWhere('receiver_name', 'like', "%{$search}%")
+                    ->orWhereHas('supplier', function (Builder $sq) use ($search) {
+                        $sq->where('supplier_name', 'like', "%{$search}%")
+                            ->orWhere('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('purchaseOrder', function (Builder $poq) use ($search) {
+                        $poq->where('order_number', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -61,7 +62,7 @@ class PurchaseReceiveService
         // Apply sorting
         $sortField = $request->get('sort', 'receive_date');
         $sortOrder = $request->get('order', 'desc');
-        
+
         if (in_array($sortField, ['receive_number', 'receive_date', 'total_amount_received', 'status', 'created_at'])) {
             $query->orderBy($sortField, $sortOrder);
         }
@@ -76,26 +77,26 @@ class PurchaseReceiveService
     {
         return [
             'suppliers' => Supplier::where('status', 'active')
-                                 ->orderBy('supplier_name')
-                                 ->get()
-                                 ->map(function ($supplier) {
-                                     return [
-                                         'id' => $supplier->supplier_id,
-                                         'name' => $supplier->supplier_name ?? $supplier->name,
-                                     ];
-                                 }),
+                ->orderBy('supplier_name')
+                ->get()
+                ->map(function ($supplier) {
+                    return [
+                        'id' => $supplier->supplier_id,
+                        'name' => $supplier->supplier_name ?? $supplier->name,
+                    ];
+                }),
             'purchase_orders' => PurchaseOrder::with('supplier')
-                                            ->whereIn('status', ['ordered', 'partial_received'])
-                                            ->orderBy('order_number')
-                                            ->get()
-                                            ->map(function ($order) {
-                                                return [
-                                                    'id' => $order->order_id,
-                                                    'order_number' => $order->order_number,
-                                                    'supplier_name' => $order->supplier->supplier_name ?? $order->supplier->name,
-                                                    'supplier_id' => $order->supplier_id,
-                                                ];
-                                            }),
+                ->whereIn('status', ['ordered', 'partial_received'])
+                ->orderBy('order_number')
+                ->get()
+                ->map(function ($order) {
+                    return [
+                        'id' => $order->order_id,
+                        'order_number' => $order->order_number,
+                        'supplier_name' => $order->supplier->supplier_name ?? $order->supplier->name,
+                        'supplier_id' => $order->supplier_id,
+                    ];
+                }),
         ];
     }
 
@@ -155,8 +156,8 @@ class PurchaseReceiveService
 
         foreach ($items as $itemData) {
             $product = Product::find($itemData['product_id']);
-            
-            if (!$product) {
+
+            if (! $product) {
                 continue;
             }
 
@@ -233,10 +234,24 @@ class PurchaseReceiveService
     /**
      * Update product inventory.
      */
-    protected function updateProductInventory(Product $product, int $quantityChange, int $supplierId = null, float $unitPrice = null): void
+    protected function updateProductInventory(Product $product, int $quantityChange, ?int $supplierId = null, ?float $unitPrice = null): void
     {
-        $product->increment('quantity', $quantityChange);
-        
+        // Get current quantity from latest stock movement
+        $currentQuantity = $product->quantity;
+
+        // Record stock movement instead of directly updating product
+        StockMovement::recordMovement(
+            productId: $product->product_id,
+            quantityBefore: $currentQuantity,
+            quantityChange: $quantityChange,
+            quantityAfter: $currentQuantity + $quantityChange,
+            movementType: $quantityChange > 0 ? StockMovement::TYPE_PURCHASE : StockMovement::TYPE_RETURN,
+            userId: auth()->id(),
+            unitCost: $unitPrice,
+            referenceType: 'purchase_receive',
+            movementDate: now()
+        );
+
         // Update supplier tracking information only when receiving items (positive quantity)
         if ($quantityChange > 0 && $supplierId && $unitPrice) {
             $product->enableSupplierTrackingFields();
@@ -254,7 +269,7 @@ class PurchaseReceiveService
     protected function updateReceiveStatus(PurchaseReceive $receive): void
     {
         $completionPercentage = $receive->completion_percentage;
-        
+
         if ($completionPercentage >= 100) {
             $receive->update(['status' => 'received']);
         } elseif ($completionPercentage > 0) {
@@ -268,7 +283,7 @@ class PurchaseReceiveService
     public function deleteReceive(PurchaseReceive $receive): bool
     {
         // Check if receive can be deleted
-        if (!$receive->canBeCancelled()) {
+        if (! $receive->canBeCancelled()) {
             throw new \Exception('Cannot delete receive that is already fully processed.');
         }
 
@@ -284,8 +299,8 @@ class PurchaseReceiveService
     public function changeReceiveStatus(PurchaseReceive $receive, string $status): PurchaseReceive
     {
         $validTransitions = $this->getValidStatusTransitions($receive->status);
-        
-        if (!in_array($status, $validTransitions)) {
+
+        if (! in_array($status, $validTransitions)) {
             throw new \Exception("Cannot change status from {$receive->status} to {$status}");
         }
 
@@ -320,7 +335,7 @@ class PurchaseReceiveService
         if (isset($filters['start_date'])) {
             $query->where('receive_date', '>=', $filters['start_date']);
         }
-        
+
         if (isset($filters['end_date'])) {
             $query->where('receive_date', '<=', $filters['end_date']);
         }
