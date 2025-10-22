@@ -92,7 +92,7 @@
                         <!-- Stock Adjustment -->
                         <x-nav-item route="inventory.product_stock_adjustment.index"
                             route-pattern="inventory.product_stock_adjustment.*" :icon="App\Helpers\NavigationHelper::getIcon('stock-adjustment', 'w-4 h-4 mr-3')"
-                            title="Stock Management" size="small" />
+                            title="Stock Adjustment" size="small" />
 
                         <!-- Product Movement (Fast/Slow/Non-Moving) -->
                         {{-- <x-nav-item route="inventory.product-movement.index"
@@ -104,21 +104,11 @@
                         <x-nav-item route="inventory.thresholds.index" route-pattern="inventory.thresholds.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>'
                             title="Inventory Thresholds" size="small" />
-
-                        {{-- Inventory --}}
-                        <x-nav-item route="inventory.thresholds.index" route-pattern="inventory.thresholds.*"
-                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>'
-                            title="Inventory Thresholds" size="small" />
                     </x-nav-item>
 
 
                     <!-- Sales Section-->
                     <x-nav-item route-pattern="sales.*" :icon="App\Helpers\NavigationHelper::getIcon('sales')" title="Sales" :is-dropdown="true">
-
-                        <!-- Customers -->
-                        {{-- <x-nav-item route="sales.customers.index" route-pattern="sales.customers.*"
-                            :icon="App\Helpers\NavigationHelper::getIcon('customers', 'w-4 h-4 mr-3')" title="Customers"
-                            size="small" /> --}}
 
                         <!-- Sales Order -->
                         <x-nav-item route="sales.orders.index" route-pattern="sales.orders.*"
