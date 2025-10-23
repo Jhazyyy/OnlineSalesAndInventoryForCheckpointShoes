@@ -23,7 +23,7 @@ return new class extends Migration
             $table->timestamps();
             
             // Foreign key constraint
-            $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
+            // $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
             
             // Indexes for better query performance
             $table->index(['product_id', 'is_active']);
@@ -40,3 +40,4 @@ return new class extends Migration
         Schema::dropIfExists('product_properties');
     }
 };
+

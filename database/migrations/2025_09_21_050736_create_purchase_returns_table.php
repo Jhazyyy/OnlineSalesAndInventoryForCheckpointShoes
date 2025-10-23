@@ -27,10 +27,10 @@ return new class extends Migration
             $table->timestamps();
             
             // Foreign key constraints
-            $table->foreign('purchase_order_id')->references('id')->on('purchase_orders')->onDelete('set null');
-            $table->foreign('product_id')->references('product_id')->on('products')->onDelete('set null');
-            $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('set null');
-            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
+            // $table->foreign('purchase_order_id')->references('id')->on('purchase_orders')->onDelete('set null');
+            // $table->foreign('product_id')->references('product_id')->on('products')->onDelete('set null');
+            // $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('set null');
+            // $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
             
             // Indexes
             $table->index(['return_status', 'return_date']);
@@ -47,3 +47,4 @@ return new class extends Migration
         Schema::dropIfExists('purchase_returns');
     }
 };
+

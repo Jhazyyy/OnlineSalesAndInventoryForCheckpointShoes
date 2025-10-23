@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('sales_order_items', function (Blueprint $table) {
             $table->id('item_id');
-            $table->foreignId('order_id')->constrained('sales_orders', 'order_id')->onDelete('cascade');
-            $table->foreignId('product_id')->constrained('products', 'product_id')->onDelete('cascade');
+            $table->foreignId('order_id'); // ->constrained() commented out - add FK in separate migration->onDelete('cascade')
+            $table->foreignId('product_id'); // ->constrained() commented out - add FK in separate migration->onDelete('cascade')
             $table->integer('quantity');
             $table->decimal('unit_price', 10, 2);
             $table->decimal('discount_amount', 10, 2)->default(0);
@@ -36,3 +36,4 @@ return new class extends Migration
         Schema::dropIfExists('sales_order_items');
     }
 };
+

@@ -23,8 +23,8 @@ return new class extends Migration
             $table->timestamps();
             
             // Foreign key constraints
-            $table->foreign('invoice_id')->references('invoice_id')->on('invoices')->onDelete('cascade');
-            $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
+            // $table->foreign('invoice_id')->references('invoice_id')->on('invoices')->onDelete('cascade');
+            // $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
             
             // Indexes
             $table->index(['invoice_id']);
@@ -40,3 +40,4 @@ return new class extends Migration
         Schema::dropIfExists('invoice_items');
     }
 };
+

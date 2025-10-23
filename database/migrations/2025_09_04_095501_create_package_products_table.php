@@ -20,8 +20,8 @@ return new class extends Migration
             $table->timestamps();
             
             // Foreign key constraints
-            $table->foreign('package_id')->references('package_id')->on('packages')->onDelete('cascade');
-            $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
+            // $table->foreign('package_id')->references('package_id')->on('packages')->onDelete('cascade');
+            // $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
             
             // Unique constraint to prevent duplicate entries
             $table->unique(['package_id', 'product_id']);
@@ -36,3 +36,4 @@ return new class extends Migration
         Schema::dropIfExists('package_products');
     }
 };
+

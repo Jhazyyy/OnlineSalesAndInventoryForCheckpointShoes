@@ -28,12 +28,13 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->text('reason')->nullable();
             $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('confirmed');
-            $table->datetime('movement_date');
+            $table->timestamp('movement_date')->nullable();
             $table->timestamps();
 
-            // Foreign key constraints
-            $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            // Foreign key constraints - commented out due to migration order issues
+            // Add foreign keys in a separate migration after all tables are created
+            // // $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
+            // // $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
             
             // Indexes for better performance
             $table->index(['product_id', 'movement_date']);
@@ -51,3 +52,4 @@ return new class extends Migration
         Schema::dropIfExists('stock_movements');
     }
 };
+

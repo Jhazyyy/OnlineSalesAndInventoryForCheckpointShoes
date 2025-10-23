@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('sales_orders', function (Blueprint $table) {
             $table->id('order_id');
             $table->string('order_number')->unique();
-            $table->foreignId('customer_id')->constrained('customers', 'customer_id')->onDelete('cascade');
+            $table->foreignId('customer_id'); // ->constrained() commented out - add FK in separate migration->onDelete('cascade')
             $table->date('order_date');
             $table->date('required_date')->nullable();
             $table->date('shipped_date')->nullable();
@@ -49,3 +49,4 @@ return new class extends Migration
         Schema::dropIfExists('sales_orders');
     }
 };
+

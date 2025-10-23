@@ -13,23 +13,23 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name')->nullable()->after('name');
-            $table->string('last_name')->nullable()->after('first_name');
-            $table->string('phone')->nullable()->after('email');
-            $table->string('username')->nullable()->unique()->after('email');
-            $table->string('profile_photo')->nullable()->after('password');
             $table->string('name');
-            $table->string('status')->default('active')->after('email_verified_at'); // active, inactive, suspended
-            $table->timestamp('last_login_at')->nullable()->after('status');
-            $table->integer('login_count')->default(0)->after('last_login_at');
-            $table->boolean('is_active')->default(true)->after('login_count');
-            $table->string('role')->default('user')->after('is_active'); // admin, manager, user, viewer
-            $table->text('bio')->nullable()->after('profile_photo');
-            $table->string('department')->nullable()->after('bio');
-            $table->string('position')->nullable()->after('department');
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
             $table->string('email')->unique();
+            $table->string('phone')->nullable();
+            $table->string('username')->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
+            $table->string('status')->default('active'); // active, inactive, suspended
+            $table->timestamp('last_login_at')->nullable();
+            $table->integer('login_count')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->string('role')->default('user'); // admin, manager, user, viewer
             $table->string('password');
+            $table->string('profile_photo')->nullable();
+            $table->text('bio')->nullable();
+            $table->string('department')->nullable();
+            $table->string('position')->nullable();
             $table->rememberToken();
             $table->timestamps();
 

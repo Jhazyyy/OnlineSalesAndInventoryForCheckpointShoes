@@ -15,19 +15,82 @@ return new class extends Migration {
             $table->string('product_name');
             $table->string('product_brand')->nullable();
             $table->string('product_category')->nullable();
-            $table->integer('quantity');
+            $table->integer('quantity')->default(0);
             $table->decimal('price', 10, 2); 
             $table->string('image')->nullable();
             $table->text('description')->nullable();
+            
+            // Movement categorization
+            $table->string('movement_category')->nullable()
+                ->comment('fast, slow, non-moving, or null for uncategorized');
+            
+            // Movement metrics
+            $table->integer('total_sales_quantity')->default(0)
+                ->comment('Total quantity sold over tracked period');
+            $table->decimal('movement_velocity', 10, 2)->nullable()
+                ->comment('Sales per day average');
+            $table->integer('days_since_last_sale')->nullable()
+                ->comment('Number of days since last sale');
+            $table->date('last_sale_date')->nullable()
+                ->comment('Date of most recent sale');
+            
+            // Movement analysis period
+            $table->date('movement_analysis_start_date')->nullable()
+                ->comment('Start date for movement calculation');
+            $table->date('movement_analysis_end_date')->nullable()
+                ->comment('End date for movement calculation');
+            $table->timestamp('last_movement_check')->nullable()
+                ->comment('Last time movement was calculated');
+            
+            // Promotional flags
+            $table->boolean('is_promotional')->default(false)
+                ->comment('Product marked for promotion');
+            $table->text('promotional_reason')->nullable()
+                ->comment('Reason for promotion (e.g., slow moving, overstocked)');
+            
+            // Cost components
+            $table->decimal('raw_material_cost', 10, 2)->nullable()
+                ->comment('Cost of raw materials per unit');
+            $table->decimal('labor_cost', 10, 2)->nullable()
+                ->comment('Direct labor cost per unit');
+            $table->decimal('overhead_cost', 10, 2)->nullable()
+                ->comment('Overhead/indirect costs per unit');
+            $table->decimal('manufacturing_cost', 10, 2)->nullable()
+                ->comment('Total manufacturing cost (calculated)');
+            
+            // Additional costs
+            $table->decimal('shipping_cost_per_unit', 10, 2)->nullable()
+                ->comment('Average shipping/freight cost per unit');
+            $table->decimal('tax_amount_per_unit', 10, 2)->nullable()
+                ->comment('Tax amount per unit');
+            $table->decimal('handling_cost', 10, 2)->nullable()
+                ->comment('Handling and packaging cost per unit');
+            
+            // Total cost and margins
+            $table->decimal('total_cost', 10, 2)->nullable()
+                ->comment('Total cost per unit (all costs included)');
+            $table->decimal('profit_margin', 10, 2)->nullable()
+                ->comment('Profit margin percentage');
+            $table->decimal('profit_amount', 10, 2)->nullable()
+                ->comment('Profit amount per unit (price - total_cost)');
+            
+            // Costing metadata
+            $table->string('cost_calculation_method')->default('standard')
+                ->comment('Method: standard, average, fifo, lifo');
+            $table->timestamp('last_cost_update')->nullable()
+                ->comment('Last time costs were updated');
+            $table->text('cost_notes')->nullable()
+                ->comment('Notes about costing calculations');
+            
             $table->timestamps();
 
             // Preferred supplier (must come before 'last_supplier_id')
             $table->unsignedBigInteger('preferred_supplier_id')->nullable();
-            $table->foreign('preferred_supplier_id')->references('supplier_id')->on('suppliers')->onDelete('set null');
+            // $table->foreign('preferred_supplier_id')->references('supplier_id')->on('suppliers')->onDelete('set null');
 
             // Last supplier
             $table->unsignedBigInteger('last_supplier_id')->nullable();
-            $table->foreign('last_supplier_id')->references('supplier_id')->on('suppliers')->onDelete('set null');
+            // $table->foreign('last_supplier_id')->references('supplier_id')->on('suppliers')->onDelete('set null');
 
             // Date of last receipt
             $table->timestamp('last_received_at')->nullable();
@@ -54,9 +117,10 @@ return new class extends Migration {
 
             // Indexes
             $table->index(['last_supplier_id'], 'idx_last_supplier');
-            $table->index(['reorder_level', 'quantity'], 'idx_reorder_threshold');
-            $table->index(['critical_level', 'quantity'], 'idx_critical_threshold');
             $table->index(['threshold_alerts_enabled'], 'idx_alerts_enabled');
+            $table->index('movement_category');
+            $table->index('last_sale_date');
+            $table->index('is_promotional');
         });
     }
 
@@ -68,3 +132,4 @@ return new class extends Migration {
         Schema::dropIfExists('products');
     }
 };
+

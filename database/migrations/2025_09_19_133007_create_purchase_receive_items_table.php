@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('purchase_receive_items', function (Blueprint $table) {
             $table->id('item_id');
-            $table->foreignId('receive_id')->constrained('purchase_receives', 'receive_id')->cascadeOnDelete();
-            $table->foreignId('product_id')->constrained('products', 'product_id');
+            $table->foreignId('receive_id'); // ->constrained() commented out - add FK in separate migration->cascadeOnDelete()
+            $table->foreignId('product_id'); // ->constrained() commented out - add FK in separate migration
             $table->foreignId('purchase_order_item_id')->nullable()->constrained('purchase_order_items', 'item_id');
             $table->integer('quantity_expected')->default(0);
             $table->integer('quantity_received')->default(0);
@@ -38,3 +38,4 @@ return new class extends Migration
         Schema::dropIfExists('purchase_receive_items');
     }
 };
+

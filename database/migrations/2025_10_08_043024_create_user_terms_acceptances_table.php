@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('user_terms_acceptances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('terms_id')->constrained('terms_and_conditions')->onDelete('cascade');
+            $table->foreignId('terms_id'); // ->constrained() commented out - add FK in separate migration->onDelete('cascade')
             $table->string('version_accepted', 20);
             $table->timestamp('accepted_at');
             $table->string('ip_address', 45)->nullable();
@@ -37,3 +37,4 @@ return new class extends Migration
         Schema::dropIfExists('user_terms_acceptances');
     }
 };
+

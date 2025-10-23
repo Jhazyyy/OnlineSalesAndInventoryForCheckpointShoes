@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('purchase_receives', function (Blueprint $table) {
             $table->id('receive_id');
             $table->string('receive_number', 50)->unique();
-            $table->foreignId('purchase_order_id')->constrained('purchase_orders', 'order_id');
-            $table->foreignId('supplier_id')->constrained('suppliers', 'supplier_id');
+            $table->string('reference_number', 100)->unique();
+            $table->foreignId('purchase_order_id'); // ->constrained() commented out - add FK in separate migration
+            $table->foreignId('supplier_id'); // ->constrained() commented out - add FK in separate migration
             $table->date('receive_date');
             $table->enum('status', ['in_transit', 'received', 'partially_received', 'damaged', 'cancelled'])->default('in_transit');
             $table->integer('total_quantity_expected')->default(0);
@@ -42,3 +43,4 @@ return new class extends Migration
         Schema::dropIfExists('purchase_receives');
     }
 };
+

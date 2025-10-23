@@ -15,8 +15,8 @@ return new class extends Migration {
             $table->foreignId('product_id');
             $table->integer('quantity');
             $table->string('return_status');
+            $table->timestamp('return_date')->nullable();
             $table->float('price');
-            $table->timestamp('return_date')->nullable()->after('return_status');
             $table->timestamps();
         });
     }

@@ -41,3 +41,4 @@ return new class extends Migration
         Schema::dropIfExists('terms_and_conditions');
     }
 };
+

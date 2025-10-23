@@ -643,6 +643,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/analytics', [\App\Http\Controllers\PurchaseReturnsController::class, 'analytics'])->name('analytics');
     });
 
+    // Purchase Deliveries Management Routes
+    Route::prefix('purchases/deliveries')->name('purchases.deliveries.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\PurchaseDeliveryController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\PurchaseDeliveryController::class, 'create'])->name('create');
+        
+        // Analytics (must be before {delivery} route)
+        Route::get('/analytics', [\App\Http\Controllers\PurchaseDeliveryController::class, 'analytics'])->name('analytics');
+        
+        // AJAX routes (must be before {delivery} route)
+        Route::get('/purchase-order/{purchaseOrder}/items', [\App\Http\Controllers\PurchaseDeliveryController::class, 'getPurchaseOrderItems'])->name('purchase-order-items');
+        
+        Route::post('/', [\App\Http\Controllers\PurchaseDeliveryController::class, 'store'])->name('store');
+        Route::get('/{delivery}', [\App\Http\Controllers\PurchaseDeliveryController::class, 'show'])->name('show');
+        Route::get('/{delivery}/edit', [\App\Http\Controllers\PurchaseDeliveryController::class, 'edit'])->name('edit');
+        Route::put('/{delivery}', [\App\Http\Controllers\PurchaseDeliveryController::class, 'update'])->name('update');
+        Route::delete('/{delivery}', [\App\Http\Controllers\PurchaseDeliveryController::class, 'destroy'])->name('destroy');
+
+        // Status management routes
+        Route::post('/{delivery}/change-status', [\App\Http\Controllers\PurchaseDeliveryController::class, 'changeStatus'])->name('change-status');
+        Route::post('/{delivery}/update-tracking', [\App\Http\Controllers\PurchaseDeliveryController::class, 'updateTracking'])->name('update-tracking');
+    });
     
     // Purchase Payments Management Routes
     Route::prefix('purchases/payments')->name('purchases.payments.')->group(function () {

@@ -25,12 +25,12 @@ return new class extends Migration
             $table->string('reference_number')->nullable();
             $table->enum('status', ['pending', 'completed', 'cancelled', 'refunded'])->default('pending');
             $table->text('notes')->nullable();
-            $table->string('received_by')->nullable()->after('notes');
+            $table->string('received_by')->nullable();
             $table->timestamps();
             
             // Foreign key constraints
-            $table->foreign('supplier_id')->references('supplier_id')->on('suppliers')->onDelete('cascade');
-            $table->foreign('purchase_order_id')->references('purchase_order_id')->on('purchase_orders')->onDelete('set null');
+            // $table->foreign('supplier_id')->references('supplier_id')->on('suppliers')->onDelete('cascade');
+            // $table->foreign('purchase_order_id')->references('purchase_order_id')->on('purchase_orders')->onDelete('set null');
             
             // Indexes
             $table->index(['supplier_id', 'payment_date']);
@@ -48,3 +48,4 @@ return new class extends Migration
         Schema::dropIfExists('purchase_payments');
     }
 };
+

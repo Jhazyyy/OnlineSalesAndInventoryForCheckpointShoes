@@ -145,7 +145,7 @@
                     </x-nav-item>
 
                     <!-- Purchases Section-->
-                    <x-nav-item route-pattern="inventory.purchase-orders.*|inventory.purchase-receives.*"
+                    <x-nav-item route-pattern="purchases.purchase-orders.*|purchases.purchase-receives.*|purchases.deliveries.*"
                         :icon="App\Helpers\NavigationHelper::getIcon('purchases')" title="Purchases" :is-dropdown="true">
 
                         <!-- Purchase Order -->
@@ -160,7 +160,7 @@
                             title="Goods Receipt" size="small" />
 
                         <!-- Delivery -->
-                        <x-nav-item route="purchases.purchase-orders.index" route-pattern="purchases.deliveries.*"
+                        <x-nav-item route="purchases.deliveries.index" route-pattern="purchases.deliveries.*"
                             :icon="App\Helpers\NavigationHelper::getIcon('delivery', 'w-4 h-4 mr-3')" title="Delivery" size="small" />
 
                         <!-- Purchase Return -->

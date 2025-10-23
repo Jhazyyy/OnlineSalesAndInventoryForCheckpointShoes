@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('purchase_orders', function (Blueprint $table) {
             $table->id('order_id');
             $table->string('order_number', 50)->unique();
-            $table->foreignId('supplier_id')->constrained('suppliers', 'supplier_id');
+            $table->foreignId('supplier_id'); // ->constrained() commented out - add FK in separate migration
             $table->date('order_date');
             $table->date('expected_date')->nullable();
             $table->date('received_date')->nullable();
@@ -31,7 +31,7 @@ return new class extends Migration
             $table->text('billing_address')->nullable();
             $table->text('notes')->nullable();
             $table->text('internal_notes')->nullable();
-            $table->string('reference_number', 100)->nullable();
+            $table->string('reference_number', 100)->unique();
             $table->timestamps();
             
             $table->index(['status', 'order_date']);
@@ -47,3 +47,4 @@ return new class extends Migration
         Schema::dropIfExists('purchase_orders');
     }
 };
+

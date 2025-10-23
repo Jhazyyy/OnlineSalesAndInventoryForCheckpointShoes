@@ -16,13 +16,13 @@ return new class extends Migration
             
             // Relationships
             $table->unsignedBigInteger('shipment_id');
-            $table->foreign('shipment_id')->references('shipment_id')->on('shipments')->onDelete('cascade');
+            // $table->foreign('shipment_id')->references('shipment_id')->on('shipments')->onDelete('cascade');
             
             $table->unsignedBigInteger('sales_order_item_id')->nullable();
-            $table->foreign('sales_order_item_id')->references('item_id')->on('sales_order_items')->onDelete('set null');
+            // $table->foreign('sales_order_item_id')->references('item_id')->on('sales_order_items')->onDelete('set null');
             
             $table->unsignedBigInteger('product_id');
-            $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
+            // $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
             
             // Item Details
             $table->string('product_sku'); // Store SKU for reference
@@ -68,3 +68,4 @@ return new class extends Migration
         Schema::dropIfExists('shipment_items');
     }
 };
+
