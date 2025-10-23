@@ -12,17 +12,16 @@
         <!-- Logo Section -->
         <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
             <div class="flex items-center space-x-3">
-                <!-- Logo Icon -->
-                <div class="bg-blue-600 p-2 rounded-lg">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
+                <!-- Logo Icon/Image -->
+                <div class="flex-shrink-0">
+                    <img src="{{ companyLogoUrl() }}" 
+                        alt="{{ setting('general.company_name', 'Checkpoint') }}" 
+                        class="w-10 h-10 rounded-lg object-contain bg-white dark:bg-gray-700 p-1 shadow-sm border-2 dark:border-gray-700">
                 </div>
 
                 <!-- Logo Text -->
                 <div>
-                    <h1 class="text-lg font-bold text-gray-900 dark:text-white">Checkpoint</h1>
+                    <h1 class="text-lg font-bold text-gray-900 dark:text-white">{{ setting('general.company_name', 'Checkpoint') }}</h1>
                     <p class="text-xs text-gray-500 dark:text-gray-400">Sales & Inventory</p>
                 </div>
             </div>

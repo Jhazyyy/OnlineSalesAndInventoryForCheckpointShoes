@@ -21,7 +21,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center pl-2">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="h-12 rounded-full border-2" />
+                        <x-application-logo class="h-12 rounded-lg border-2" />
                     </a>
                 </div>
 

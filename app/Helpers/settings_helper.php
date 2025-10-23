@@ -70,6 +70,23 @@ if (!function_exists('companyName')) {
     }
 }
 
+if (!function_exists('companyLogoUrl')) {
+    /**
+     * Get company logo URL from storage; fallback to a default icon.
+     *
+     * @param string|null $fallback Optional custom fallback URL
+     * @return string
+     */
+    function companyLogoUrl($fallback = null)
+    {
+        $path = setting('general.company_logo');
+        if ($path) {
+            return asset('storage/' . ltrim($path, '/'));
+        }
+        return $fallback ?? asset('welcome.png');
+    }
+}
+
 if (!function_exists('companyCurrency')) {
     /**
      * Get company currency setting

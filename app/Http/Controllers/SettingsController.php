@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\SettingsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class SettingsController extends Controller
@@ -55,7 +56,27 @@ class SettingsController extends Controller
     public function updateGeneral(Request $request)
     {
         try {
-            $validatedData = $this->settingsService->validateSettings('general', $request->all());
+            // Validate non-file settings first
+            $validatedData = $this->settingsService->validateSettings('general', $request->except('company_logo'));
+
+            // Validate and handle company logo upload (optional)
+            if ($request->hasFile('company_logo')) {
+                $request->validate([
+                    'company_logo' => 'image|mimes:jpeg,png,gif,webp,svg|max:2048|dimensions:max_width=836,max_height=836',
+                ]);
+
+                $file = $request->file('company_logo');
+
+                // Delete old logo if exists
+                $oldPath = $this->settingsService->get('general', 'company_logo');
+                if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
+                }
+
+                // Store new logo in public disk under logos/
+                $path = $file->store('logos', 'public');
+                $validatedData['company_logo'] = $path;
+            }
             
             DB::transaction(function () use ($validatedData) {
                 foreach ($validatedData as $key => $value) {
@@ -328,6 +349,11 @@ class SettingsController extends Controller
         // JSON fields
         if (in_array($key, ['business_hours'])) {
             return 'json';
+        }
+
+        // File path fields
+        if (in_array($key, ['company_logo'])) {
+            return 'string';
         }
 
         return 'string';

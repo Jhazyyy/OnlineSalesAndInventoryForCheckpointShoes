@@ -55,6 +55,17 @@ class SystemSetting extends Model
      */
     private function encodeValue($value)
     {
+        // If data_type isn't set yet (e.g., during create), infer safely
+        if (empty($this->data_type)) {
+            if (is_array($value)) {
+                return json_encode($value);
+            }
+            if (is_bool($value)) {
+                return $value ? '1' : '0';
+            }
+            return (string) $value;
+        }
+
         return match ($this->data_type) {
             'json' => json_encode($value),
             'boolean' => $value ? '1' : '0',

@@ -65,6 +65,11 @@ class SettingsService
     {
         return [
             'general' => [
+                'company_logo' => [
+                    'value' => '',
+                    'data_type' => 'string',
+                    'description' => 'Path to company logo image stored in public disk'
+                ],
                 'company_name' => [
                     'value' => 'Checkpoint',
                     'data_type' => 'string',
@@ -272,6 +277,8 @@ class SettingsService
     {
         $rules = [
             'general' => [
+                // The file upload is validated in controller; the stored value is a string path
+                'company_logo' => 'nullable|string|max:255',
                 'company_name' => 'required|string|max:100',
                 'company_address' => 'nullable|string|max:500',
                 'company_phone' => 'nullable|string|max:20',
