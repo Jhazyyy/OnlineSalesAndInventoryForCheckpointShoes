@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Services\InventoryService;
+use App\Models\Inventory;
 
 class StockService
 {
@@ -115,29 +117,41 @@ class StockService
                 ];
             }
 
-            $quantityBefore = $product->quantity;
-            $newQuantity = $data['new_quantity'];
-            $quantityChange = $newQuantity - $quantityBefore;
+            // Compute change from current inventory total to the requested new quantity
+            $currentInventoryTotal = (int) Inventory::where('product_id', $product->product_id)->sum('quantity_on_hand');
+            $newQuantity = (int) $data['new_quantity'];
+            $quantityChange = $newQuantity - $currentInventoryTotal;
 
-            // Record the movement (no need to update product quantity directly anymore)
-            $movement = StockMovement::recordMovement(
+            // Use InventoryService to adjust stock so Inventory and Product.quantity stay in sync.
+            // This will also record a StockMovement with the correct before/after.
+            $inventory = InventoryService::adjust(
                 productId: $data['product_id'],
-                quantityBefore: $quantityBefore,
                 quantityChange: $quantityChange,
-                quantityAfter: $newQuantity,
-                movementType: StockMovement::TYPE_ADJUSTMENT,
-                userId: auth()->id(),
                 unitCost: $data['unit_cost'] ?? null,
-                notes: $data['notes'] ?? null,
-                reason: $data['reason'] ?? null,
-                movementDate: isset($data['movement_date']) ? Carbon::parse($data['movement_date']) : now()
+                movementType: StockMovement::TYPE_ADJUSTMENT,
+                referenceType: null,
+                referenceId: null,
+                propertyId: null,
+                location: null,
+                syncProductQuantity: true
             );
+
+            // Optionally, movement_date from input should be respected. If provided, update the just-created movement's date.
+            if (!empty($data['movement_date'])) {
+                $latestMovement = StockMovement::where('product_id', $product->product_id)
+                    ->orderByDesc('movement_id')
+                    ->first();
+                if ($latestMovement) {
+                    $latestMovement->update(['movement_date' => Carbon::parse($data['movement_date'])]);
+                }
+            }
 
             return [
                 'success' => true,
                 'message' => 'Stock adjustment recorded successfully',
-                'movement' => $movement,
+                'movement' => isset($latestMovement) && $latestMovement ? $latestMovement : null,
                 'product' => $product->fresh(),
+                'inventory' => $inventory,
             ];
 
         } catch (\Exception $e) {
@@ -164,7 +178,7 @@ class StockService
                 ];
             }
 
-            $transferQuantity = $data['quantity'];
+            $transferQuantity = (int) $data['quantity'];
             
             if ($productFrom->quantity < $transferQuantity) {
                 return [
@@ -173,50 +187,54 @@ class StockService
                 ];
             }
 
-            // Get quantities before transfer
-            $quantityBeforeFrom = $productFrom->quantity;
-            $quantityBeforeTo = $productTo->quantity;
-            
-            // No need to update product quantities directly - movements handle this
+            // Apply adjustments via InventoryService to keep inventory in sync
+            $movementDate = isset($data['movement_date']) ? Carbon::parse($data['movement_date']) : null;
 
-            // Record outbound movement
-            $movementOut = StockMovement::recordMovement(
+            $invFrom = InventoryService::adjust(
                 productId: $data['product_id_from'],
-                quantityBefore: $quantityBeforeFrom,
                 quantityChange: -$transferQuantity,
-                quantityAfter: $quantityBeforeFrom - $transferQuantity,
-                movementType: StockMovement::TYPE_TRANSFER_OUT,
-                userId: auth()->id(),
                 unitCost: $data['unit_cost'] ?? null,
-                locationFrom: $data['location_from'] ?? null,
-                locationTo: $data['location_to'] ?? null,
-                notes: $data['notes'] ?? null,
-                reason: $data['reason'] ?? null,
-                movementDate: isset($data['movement_date']) ? Carbon::parse($data['movement_date']) : now()
+                movementType: StockMovement::TYPE_TRANSFER_OUT,
+                referenceType: 'transfer',
+                referenceId: null,
+                propertyId: null,
+                location: $data['location_from'] ?? null,
+                syncProductQuantity: true
+            );
+            $invTo = InventoryService::adjust(
+                productId: $data['product_id_to'],
+                quantityChange: $transferQuantity,
+                unitCost: $data['unit_cost'] ?? null,
+                movementType: StockMovement::TYPE_TRANSFER_IN,
+                referenceType: 'transfer',
+                referenceId: null,
+                propertyId: null,
+                location: $data['location_to'] ?? null,
+                syncProductQuantity: true
             );
 
-            // Record inbound movement
-            $movementIn = StockMovement::recordMovement(
-                productId: $data['product_id_to'],
-                quantityBefore: $quantityBeforeTo,
-                quantityChange: $transferQuantity,
-                quantityAfter: $quantityBeforeTo + $transferQuantity,
-                movementType: StockMovement::TYPE_TRANSFER_IN,
-                userId: auth()->id(),
-                unitCost: $data['unit_cost'] ?? null,
-                locationFrom: $data['location_from'] ?? null,
-                locationTo: $data['location_to'] ?? null,
-                notes: $data['notes'] ?? null,
-                reason: $data['reason'] ?? null,
-                movementDate: isset($data['movement_date']) ? Carbon::parse($data['movement_date']) : now()
-            );
+            // If a specific movement date was provided, update the two most recent movements accordingly
+            if ($movementDate) {
+                $movements = StockMovement::whereIn('product_id', [$productFrom->product_id, $productTo->product_id])
+                    ->orderByDesc('movement_id')
+                    ->limit(2)
+                    ->get();
+                foreach ($movements as $m) {
+                    $m->update(['movement_date' => $movementDate]);
+                }
+            }
 
             return [
                 'success' => true,
                 'message' => 'Stock transfer completed successfully',
-                'movements' => [$movementOut, $movementIn],
+                'movements' => StockMovement::whereIn('product_id', [$productFrom->product_id, $productTo->product_id])
+                                ->orderByDesc('movement_id')
+                                ->limit(2)
+                                ->get(),
                 'product_from' => $productFrom->fresh(),
                 'product_to' => $productTo->fresh(),
+                'inventory_from' => $invFrom,
+                'inventory_to' => $invTo,
             ];
 
         } catch (\Exception $e) {
@@ -242,7 +260,7 @@ class StockService
                 ];
             }
 
-            $wasteQuantity = $data['quantity'];
+            $wasteQuantity = (int) $data['quantity'];
             
             if ($product->quantity < $wasteQuantity) {
                 return [
@@ -251,30 +269,35 @@ class StockService
                 ];
             }
 
-            $quantityBefore = $product->quantity;
-            $quantityAfter = $quantityBefore - $wasteQuantity;
-            
-            // No need to update product quantity directly - movement handles this
-
-            // Record the movement
-            $movement = StockMovement::recordMovement(
+            // Apply adjustment via InventoryService (negative change)
+            $inventory = InventoryService::adjust(
                 productId: $data['product_id'],
-                quantityBefore: $quantityBefore,
                 quantityChange: -$wasteQuantity,
-                quantityAfter: $quantityAfter,
-                movementType: StockMovement::TYPE_WASTE,
-                userId: auth()->id(),
                 unitCost: $data['unit_cost'] ?? null,
-                notes: $data['notes'] ?? null,
-                reason: $data['reason'] ?? 'Waste/Damaged goods',
-                movementDate: isset($data['movement_date']) ? Carbon::parse($data['movement_date']) : now()
+                movementType: StockMovement::TYPE_WASTE,
+                referenceType: 'waste',
+                referenceId: null,
+                propertyId: null,
+                location: null,
+                syncProductQuantity: true
             );
+
+            // Respect custom movement date if provided
+            if (!empty($data['movement_date'])) {
+                $latestMovement = StockMovement::where('product_id', $product->product_id)
+                    ->orderByDesc('movement_id')
+                    ->first();
+                if ($latestMovement) {
+                    $latestMovement->update(['movement_date' => Carbon::parse($data['movement_date'])]);
+                }
+            }
 
             return [
                 'success' => true,
                 'message' => 'Waste/damage recorded successfully',
-                'movement' => $movement,
+                'movement' => isset($latestMovement) && $latestMovement ? $latestMovement : null,
                 'product' => $product->fresh(),
+                'inventory' => $inventory,
             ];
 
         } catch (\Exception $e) {
@@ -311,7 +334,9 @@ class StockService
         
         $recentMovements = StockMovement::getRecentMovements(10);
         
-        $lowStockProducts = Product::needsReordering(10);
+        $lowStockProducts = Product::whereNotNull('reorder_level')
+            ->whereColumn('quantity', '<=', 'reorder_level')
+            ->get();
         $outOfStockProducts = Product::outOfStock();
 
         return [

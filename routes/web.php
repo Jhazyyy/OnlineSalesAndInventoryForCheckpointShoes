@@ -59,29 +59,6 @@ Route::post('/csrf-test', function () {
     return response()->json(['success' => true, 'message' => 'CSRF token is working!']);
 });
 
-// Test dashboard statistics
-// Route::get('/test-stats', function () {
-//     try {
-//         $inventoryStats = [
-//             'total_products' => \App\Models\Product::count(),
-//             'low_stock_products' => \App\Models\Product::where('quantity', '<=', 10)->count(),
-//             'out_of_stock_products' => \App\Models\Product::where('quantity', '<=', 0)->count(),
-//             'total_inventory_value' => \App\Models\Product::selectRaw('SUM(quantity * price) as total')->value('total') ?? 0,
-//         ];
-
-//         return response()->json([
-//             'success' => true,
-//             'message' => 'Dashboard statistics working correctly!',
-//             'data' => $inventoryStats
-//         ]);
-//     } catch (\Exception $e) {
-//         return response()->json([
-//             'success' => false,
-//             'message' => 'Error: ' . $e->getMessage(),
-//             'error' => $e->getTraceAsString()
-//         ]);
-//     }
-// });
 
 
 // Main Route
@@ -98,7 +75,7 @@ Route::get('dashboard', function () {
         $inventoryStats = [
             'total_products' => \App\Models\Product::count(),
             'active_products' => \App\Models\Product::count(), 
-            'low_stock_products' => \App\Models\Product::where('quantity', '<=', 10)->count(), // Low stock threshold of 10
+            'low_stock_products' => \App\Models\Product::where('quantity', '<=', 5)->count(), // Low stock threshold of 10
             'out_of_stock_products' => \App\Models\Product::where('quantity', '<=', 0)->count(),
             'total_inventory_value' => \App\Models\Product::selectRaw('SUM(quantity * price) as total')->value('total') ?? 0,
         ];
@@ -956,6 +933,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/inventory', [\App\Http\Controllers\ReportController::class, 'inventory'])->name('inventory');
         Route::get('/financial', [\App\Http\Controllers\ReportController::class, 'financial'])->name('financial');
         Route::get('/movement', [\App\Http\Controllers\ReportController::class, 'movement'])->name('movement');
+    Route::get('/reorder', [\App\Http\Controllers\ReportController::class, 'reorder'])->name('reorder');
+    Route::post('/reorder', [\App\Http\Controllers\ReportController::class, 'reorderProduct'])->name('reorder.create');
         
         // Export routes
         Route::get('/{reportType}/export-pdf', [\App\Http\Controllers\ReportController::class, 'exportPdf'])->name('export-pdf');

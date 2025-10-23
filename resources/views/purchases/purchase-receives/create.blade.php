@@ -296,10 +296,7 @@
     </div>
 
     <script>
-        let itemRowCount = 0;
-        // Preload products for the dropdown. Using Blade to safely embed JSON.
-        let availableProducts = [];
-        
+        // Preload datasets via Blade JSON in a safe, isolated block
         @php
             $products = \App\Models\Product::select(['product_id', 'product_name', 'product_brand', 'price'])
                 ->get()
@@ -313,9 +310,16 @@
                     ];
                 });
         @endphp
-        
-        availableProducts = @json($products);
-        const deliveriesData = @json($deliveries ?? []);
+        window.availableProducts = @json($products);
+        window.deliveriesData = @json($deliveries ?? []);
+    </script>
+
+    @verbatim
+    <script>
+        let itemRowCount = 0;
+        // Datasets populated above
+        let availableProducts = window.availableProducts || [];
+        const deliveriesData = window.deliveriesData || [];
 
         document.addEventListener('DOMContentLoaded', function() {
             // Purchase order change handler - Auto-load items when PO is selected
@@ -627,4 +631,5 @@
             }
         }
     </script>
+    @endverbatim
 </x-app-layout>

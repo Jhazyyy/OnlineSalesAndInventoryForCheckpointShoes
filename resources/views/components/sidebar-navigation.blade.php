@@ -202,16 +202,16 @@
                             title="Purchase Order Master" size="small" />
 
                         <!-- Inventory Report -->
-                        {{-- <x-nav-item route="reports.inventory" route-pattern="reports.inventory" :icon="App\Helpers\NavigationHelper::getIcon('inventory_report', 'w-4 h-4 mr-3')"
-                            title="Inventory Report" size="small" /> --}}
+                        <x-nav-item route="reports.inventory" route-pattern="reports.inventory" :icon="App\Helpers\NavigationHelper::getIcon('inventory_report', 'w-4 h-4 mr-3')"
+                            title="Inventory Report" size="small" />
 
                         <!-- Reorder Items -->
-                        <x-nav-item route="reports.inventory" route-pattern="reports.inventory" :icon="App\Helpers\NavigationHelper::getIcon('reorder_items', 'w-4 h-4 mr-3')"
+                        <x-nav-item route="reports.reorder" route-pattern="reports.reorder" :icon="App\Helpers\NavigationHelper::getIcon('reorder_items', 'w-4 h-4 mr-3')"
                             title="Reorder Items" size="small" />
 
                         <!-- Critical Level Items -->
-                        <x-nav-item route="reports.inventory" route-pattern="reports.inventory" :icon="App\Helpers\NavigationHelper::getIcon('critical_level_items', 'w-4 h-4 mr-3')"
-                            title="Critical Level Items" size="small" />
+                        {{-- <x-nav-item route="reports.critical" route-pattern="reports.critical" :icon="App\Helpers\NavigationHelper::getIcon('critical_level_items', 'w-4 h-4 mr-3')"
+                            title="Critical Level Items" size="small" /> --}}
 
                         <!-- Financial Report (P&L) -->
                         <x-nav-item route="reports.financial" route-pattern="reports.financial" :icon="App\Helpers\NavigationHelper::getIcon('financial_report', 'w-4 h-4 mr-3')"

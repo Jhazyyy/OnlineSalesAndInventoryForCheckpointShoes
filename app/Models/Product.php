@@ -264,6 +264,15 @@ class Product extends Model
     }
 
     /**
+     * Get the brand associated with this product.
+     * Matches the product_brand string to Brand.name.
+     */
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class, 'product_brand', 'name');
+    }
+
+    /**
      * Scope a query to only include low stock products.
      */
     public function scopeLowStock(Builder $query, int $threshold = 10): Builder

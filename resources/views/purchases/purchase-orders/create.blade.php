@@ -139,7 +139,7 @@
                                             @foreach($products as $product)
                                                 <option value="{{ $product['id'] }}" data-price="{{ $product['price'] }}"
                                                     data-stock="{{ $product['stock'] }}">
-                                                    {{ $product['product_name'] }} (Stock: {{ $product['stock'] }})
+                                                    {{ $product['product_name'] }}
                                                 </option>
                                             @endforeach
                                         </select>

@@ -92,31 +92,23 @@
 
                     <!-- Export Buttons -->
                     <div class="flex gap-4 mb-6">
-                        <form method="POST" action="{{ route('reports.export.pdf') }}" target="_blank" class="inline">
-                            @csrf
-                            <input type="hidden" name="type" value="movement">
-                            <input type="hidden" name="start_date" value="{{ request('start_date', $startDate ?? '') }}">
-                            <input type="hidden" name="end_date" value="{{ request('end_date', $endDate ?? '') }}">
-                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2">
+                        <a href="{{ route('reports.export-pdf', ['reportType' => 'movement', 'start_date' => request('start_date', $startDate ?? ''), 'end_date' => request('end_date', $endDate ?? '')]) }}" target="_blank" class="inline-block">
+                            <span class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                                 Export PDF
-                            </button>
-                        </form>
+                            </span>
+                        </a>
 
-                        <form method="POST" action="{{ route('reports.export.excel') }}" class="inline">
-                            @csrf
-                            <input type="hidden" name="type" value="movement">
-                            <input type="hidden" name="start_date" value="{{ request('start_date', $startDate ?? '') }}">
-                            <input type="hidden" name="end_date" value="{{ request('end_date', $endDate ?? '') }}">
-                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2">
+                        <a href="{{ route('reports.export-excel', ['reportType' => 'movement', 'start_date' => request('start_date', $startDate ?? ''), 'end_date' => request('end_date', $endDate ?? '')]) }}" class="inline-block">
+                            <span class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                                 Export Excel
-                            </button>
-                        </form>
+                            </span>
+                        </a>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">

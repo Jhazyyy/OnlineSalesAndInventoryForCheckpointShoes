@@ -118,6 +118,10 @@ class PurchaseOrderService
                                    return [
                                        'id' => $product->product_id,
                                        'product_name' => $product->product_name,
+                                       // Expose SKU and descriptive fields so UIs can always show synced info
+                                       'sku' => $product->sku,
+                                       'product_brand' => $product->product_brand,
+                                       'product_category' => $product->product_category,
                                        'price' => $product->price,
                                        'stock' => $stock,
                                    ];

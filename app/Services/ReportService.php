@@ -16,6 +16,59 @@ use Carbon\Carbon;
 class ReportService
 {
     /**
+     * Generate reorder report (products needing reorder based on thresholds)
+     *
+     * @param array $filters
+     * @return array
+     */
+    public function generateReorderReport(array $filters = []): array
+    {
+        $query = Product::query();
+
+        // Search by product name/brand/category
+        if (!empty($filters['q'])) {
+            $search = $filters['q'];
+            $query->where(function ($q) use ($search) {
+                $q->where('product_name', 'LIKE', "%{$search}%")
+                  ->orWhere('product_brand', 'LIKE', "%{$search}%")
+                  ->orWhere('product_category', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Filter by category if provided
+        if (!empty($filters['category'])) {
+            $query->where('product_category', $filters['category']);
+        }
+
+        // Only include products that have a reorder level defined and are at/below it
+        $query->whereNotNull('reorder_level')
+              ->whereColumn('quantity', '<=', 'reorder_level');
+
+        $products = $query->with(['preferredSupplier'])->orderBy('product_name')->get();
+
+        $totalCandidates = $products->count();
+        $outOfStock = $products->where('quantity', '<=', 0)->count();
+        $critical = $products->filter(function ($p) {
+            return !is_null($p->critical_level) && $p->quantity <= $p->critical_level;
+        })->count();
+
+        // Decorate with suggested order quantity for convenience in views
+        $products = $products->map(function ($p) {
+            $p->suggested_order_qty = $p->getSuggestedOrderQuantity();
+            return $p;
+        });
+
+        return [
+            'summary' => [
+                'total_candidates' => $totalCandidates,
+                'out_of_stock' => $outOfStock,
+                'critical' => $critical,
+            ],
+            'filters' => $filters,
+            'products' => $products,
+        ];
+    }
+    /**
      * Generate sales report
      * 
      * @param array $filters
@@ -513,6 +566,8 @@ class ReportService
                 return $this->generateFinancialReport($filters);
             case 'movement':
                 return $this->generateMovementReport($filters);
+            case 'reorder':
+                return $this->generateReorderReport($filters);
             default:
                 return [];
         }

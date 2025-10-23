@@ -108,7 +108,7 @@ class PurchaseReceiveController extends Controller
      */
     public function show(PurchaseReceive $receive)
     {
-        $receive->load(['supplier', 'purchaseOrder', 'items.product']);
+    $receive->load(['supplier', 'purchaseOrder', 'items.product', 'items.product.brand', 'items.product.category']);
         return view('purchases.purchase-receives.show', compact('receive'));
     }
 
@@ -117,7 +117,7 @@ class PurchaseReceiveController extends Controller
      */
     public function edit(PurchaseReceive $receive)
     {
-        $receive->load(['supplier', 'purchaseOrder', 'items.product']);
+    $receive->load(['supplier', 'purchaseOrder', 'items.product', 'items.product.brand', 'items.product.category']);
         $filterOptions = $this->receiveService->getFilterOptions();
         return view('purchases.purchase-receives.edit', [
             'receive' => $receive,

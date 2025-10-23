@@ -323,11 +323,17 @@
         </div>
     </div>
 
+    <script>
+        // Preload datasets via Blade JSON in a safe, isolated block (avoid verbatim here)
+        window.availableProducts = @json(\App\Models\Product::all(['product_id', 'product_name', 'product_brand', 'price']));
+        window.existingItems = @json($receive->items->load('product')->toArray());
+    </script>
+
     @verbatim
         <script>
             let itemRowCount = 0;
-            let availableProducts = @json(\App\Models\Product::all(['product_id', 'product_name', 'product_brand', 'price']));
-            let existingItems = @json($receive->items->load('product')->toArray());
+            let availableProducts = window.availableProducts || [];
+            let existingItems = window.existingItems || [];
 
             document.addEventListener('DOMContentLoaded', function() {
                 // Load existing items
@@ -407,7 +413,7 @@
                 }
 
                 if (confirm('This will replace all current items with items from the selected purchase order. Continue?')) {
-                    fetch(`/inventory/purchase-receives/purchase-order/${purchaseOrderId}/items`)
+                    fetch(`/purchases/purchase-receives/purchase-order/${purchaseOrderId}/items`)
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {

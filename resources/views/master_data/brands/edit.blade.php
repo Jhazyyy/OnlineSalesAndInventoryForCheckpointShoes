@@ -81,7 +81,7 @@
                             </div>
 
                             <!-- Logo -->
-                            <div>
+                            {{-- <div>
                                 <label for="logo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Logo URL
                                 </label>
@@ -96,7 +96,7 @@
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                     Optional URL to the brand logo
                                 </p>
-                            </div>
+                            </div> --}}
 
                             <!-- Status -->
                             <div>

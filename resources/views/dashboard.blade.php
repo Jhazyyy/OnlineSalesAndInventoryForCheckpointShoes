@@ -25,9 +25,9 @@
                                     <p class="text-2xl font-semibold text-blue-900 dark:text-blue-100">
                                         {{ $inventoryStats['total_products'] ?? 0 }}
                                     </p>
-                                    <p class="text-xs text-blue-500 dark:text-blue-300 mt-1">
+                                    {{-- <p class="text-xs text-blue-500 dark:text-blue-300 mt-1">
                                         {{ $inventoryStats['low_stock_products'] ?? 0 }} low stock
-                                    </p>
+                                    </p> --}}
                                 </div>
                             </div>
                         </div>

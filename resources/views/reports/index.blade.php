@@ -107,6 +107,25 @@
                             </div>
                         </div>
 
+                        <!-- Reorder Items Report Card -->
+                        <div class="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900 dark:to-rose-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-rose-500 rounded-lg">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18M9 3v18m6-18v18M4 7h16M4 12h16M4 17h16" />
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-semibold text-rose-600 dark:text-rose-300 bg-rose-200 dark:bg-rose-700 px-2 py-1 rounded">New</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-rose-900 dark:text-rose-100 mb-2">Reorder Items</h3>
+                            <p class="text-sm text-rose-700 dark:text-rose-300 mb-4">See items below reorder level and create purchase orders quickly</p>
+                            <div class="flex gap-2">
+                                <a href="{{ route('reports.reorder') }}" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white text-center px-4 py-2 rounded font-medium">
+                                    View Reorder List
+                                </a>
+                            </div>
+                        </div>
+
                         <!-- Custom Reports (Coming Soon) -->
                         <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-lg shadow-lg p-6 hover:shadow-xl transition opacity-75">
                             <div class="flex items-center justify-between mb-4">

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Services\ReportService;
+use App\Services\PurchaseOrderService;
+use App\Models\Product;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\Response;
@@ -13,10 +16,12 @@ use App\Exports\ReportExport;
 class ReportController extends Controller
 {
     protected ReportService $reportService;
+    protected PurchaseOrderService $purchaseOrderService;
 
-    public function __construct(ReportService $reportService)
+    public function __construct(ReportService $reportService, PurchaseOrderService $purchaseOrderService)
     {
         $this->reportService = $reportService;
+        $this->purchaseOrderService = $purchaseOrderService;
     }
 
     /**
@@ -117,6 +122,62 @@ class ReportController extends Controller
         $report = $this->reportService->generateMovementReport($filters);
         
         return view('reports.movement', compact('report', 'filters'));
+    }
+
+    /**
+     * Display reorder items report (products that need reordering)
+     */
+    public function reorder(Request $request): View
+    {
+        $filters = $request->only(['q', 'category']);
+        $report = $this->reportService->generateReorderReport($filters);
+
+        // Supplier options for creating POs
+        $suppliers = Supplier::where('status', 'active')
+            ->orderBy('supplier_name')
+            ->get(['supplier_id', 'supplier_name']);
+
+        return view('reports.reorder', [
+            'report' => $report,
+            'filters' => $filters,
+            'suppliers' => $suppliers,
+        ]);
+    }
+
+    /**
+     * Create a purchase order for a specific product (reorder action)
+     */
+    public function reorderProduct(Request $request)
+    {
+        $data = $request->validate([
+            'product_id' => 'required|exists:products,product_id',
+            'supplier_id' => 'nullable|exists:suppliers,supplier_id',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $product = Product::findOrFail($data['product_id']);
+
+        // Determine supplier: prefer provided, then product preferred supplier
+        $supplierId = $data['supplier_id'] ?? $product->preferred_supplier_id;
+        if (!$supplierId) {
+            return back()->with('error', 'Please select a supplier for this product.');
+        }
+
+        // Create a basic PO with one line item
+        $order = $this->purchaseOrderService->createOrder([
+            'supplier_id' => $supplierId,
+            'order_date' => now()->toDateString(),
+            'status' => 'pending',
+            'items' => [[
+                'product_id' => $product->product_id,
+                'quantity_ordered' => (int) $data['quantity'],
+                'unit_price' => $product->price,
+            ]],
+        ]);
+
+        return redirect()
+            ->route('purchases.purchase-orders.show', $order->order_id)
+            ->with('success', 'Purchase order created for reorder: ' . $product->product_name);
     }
 
     /**
