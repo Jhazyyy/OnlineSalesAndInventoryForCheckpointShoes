@@ -37,6 +37,8 @@ class ReportExport implements FromCollection, WithHeadings, WithTitle, WithStyle
                 return $this->formatFinancialData();
             case 'movement':
                 return $this->formatMovementData();
+            case 'blocked':
+                return $this->formatBlockedData();
             default:
                 return $data;
         }
@@ -62,6 +64,8 @@ class ReportExport implements FromCollection, WithHeadings, WithTitle, WithStyle
                 return ['Period', 'Revenue', 'Expenses', 'Profit', 'Margin %'];
             case 'movement':
                 return ['Date', 'Product', 'Movement Type', 'Quantity Change', 'Reason'];
+            case 'blocked':
+                return ['Product', 'Brand', 'Category', 'Refurbished', 'Damaged (Shipped)', 'Damaged (Received)', 'Waste Qty', 'Waste Value'];
             default:
                 return [];
         }
@@ -192,6 +196,26 @@ class ReportExport implements FromCollection, WithHeadings, WithTitle, WithStyle
                 $movement->movement_type ?? 'N/A',
                 $movement->quantity_change ?? 0,
                 $movement->reason ?? 'N/A',
+            ];
+        });
+    }
+
+    /**
+     * Format blocked items data
+     */
+    protected function formatBlockedData()
+    {
+        $rows = collect($this->report['products'] ?? []);
+        return $rows->map(function ($row) {
+            return [
+                $row['product_name'] ?? 'N/A',
+                $row['product_brand'] ?? 'N/A',
+                $row['product_category'] ?? 'N/A',
+                (int)($row['refurbished_qty'] ?? 0),
+                (int)($row['damaged_shipped_qty'] ?? 0),
+                (int)($row['inbound_damaged_qty'] ?? 0),
+                (int)($row['waste_qty'] ?? 0),
+                number_format(($row['waste_value'] ?? 0), 2),
             ];
         });
     }

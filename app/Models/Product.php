@@ -398,6 +398,30 @@ class Product extends Model
     }
 
     /**
+     * Check if auto-reorder is enabled for this product.
+     * Uses product-level setting OR global setting.
+     */
+    public function shouldAutoReorder(): bool
+    {
+        // If explicitly set at product level, use that
+        if ($this->auto_reorder_enabled !== null) {
+            return (bool) $this->auto_reorder_enabled;
+        }
+        
+        // Otherwise, use global setting
+        return isAutoReorderEnabled();
+    }
+
+    /**
+     * Check if negative stock is allowed for this product.
+     * Uses global setting.
+     */
+    public function allowsNegativeStock(): bool
+    {
+        return isNegativeStockAllowed();
+    }
+
+    /**
      * Get stock status with threshold context.
      */
     public function getStockStatus(): array

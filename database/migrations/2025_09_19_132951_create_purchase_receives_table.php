@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('purchase_order_id'); // ->constrained() commented out - add FK in separate migration
             $table->foreignId('supplier_id'); // ->constrained() commented out - add FK in separate migration
             $table->unsignedBigInteger('delivery_id')->nullable();
-            $table->foreign('delivery_id')->references('delivery_id')->on('purchase_deliveries')->onDelete('set null');
+            // $table->foreign('delivery_id')->references('delivery_id')->on('purchase_deliveries')->onDelete('set null');
 
             $table->date('receive_date');
             $table->enum('status', ['in_transit', 'received', 'partially_received', 'damaged', 'cancelled'])->default('in_transit');

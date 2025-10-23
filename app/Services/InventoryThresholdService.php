@@ -429,7 +429,7 @@ class InventoryThresholdService
         }
 
         // Generate reorder suggestion if auto-reorder is enabled
-        if ($product->auto_reorder_enabled && $product->needsReordering()) {
+        if ($product->shouldAutoReorder() && $product->needsReordering()) {
             $alerts->push($this->createOrUpdateAlert($product, 'reorder_needed', 'warning',
                 "Auto-reorder triggered for '{$product->product_name}' - suggested quantity: {$product->getSuggestedOrderQuantity()}", [
                     'current_quantity' => $currentQuantity,

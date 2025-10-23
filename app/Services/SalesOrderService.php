@@ -418,6 +418,11 @@ class SalesOrderService
     public function checkStockAvailability(array $items): array
     {
         $stockIssues = [];
+        
+        // If negative stock is allowed globally, skip stock checks
+        if (isNegativeStockAllowed()) {
+            return $stockIssues;
+        }
 
         foreach ($items as $item) {
             $product = Product::find($item['product_id']);

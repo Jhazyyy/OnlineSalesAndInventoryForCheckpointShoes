@@ -16,6 +16,116 @@ use Carbon\Carbon;
 class ReportService
 {
     /**
+     * Generate blocked items report (refurbished, damaged, wasted)
+     *
+     * @param array $filters
+     * @return array
+     */
+    public function generateBlockedItemsReport(array $filters = []): array
+    {
+        $startDate = isset($filters['start_date']) ? Carbon::parse($filters['start_date']) : now()->subDays(30);
+        $endDate = isset($filters['end_date']) ? Carbon::parse($filters['end_date']) : now();
+
+        // Aggregate refurbished and damaged from shipment items
+        $refurbished = \App\Models\ShipmentItem::query()
+            ->where('condition', 'refurbished')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->select('product_id', DB::raw('SUM(quantity_shipped) as refurbished_qty'))
+            ->groupBy('product_id')
+            ->get()
+            ->keyBy('product_id');
+
+        $damagedShipped = \App\Models\ShipmentItem::query()
+            ->where(function ($q) {
+                $q->where('condition', 'damaged')->orWhere('status', 'damaged');
+            })
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->select('product_id', DB::raw('SUM(quantity_shipped) as damaged_shipped_qty'))
+            ->groupBy('product_id')
+            ->get()
+            ->keyBy('product_id');
+
+        // Damaged received during purchases
+        $inboundDamaged = \App\Models\PurchaseReceiveItem::query()
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->select('product_id', DB::raw('SUM(quantity_damaged) as inbound_damaged_qty'))
+            ->groupBy('product_id')
+            ->get()
+            ->keyBy('product_id');
+
+        // Waste/damaged adjustments from stock movements
+        $waste = StockMovement::query()
+            ->confirmed()
+            ->ofType(StockMovement::TYPE_WASTE)
+            ->whereBetween('movement_date', [$startDate, $endDate])
+            ->select('product_id', DB::raw('SUM(ABS(quantity_change)) as waste_qty'), DB::raw('SUM(total_value) as waste_value'))
+            ->groupBy('product_id')
+            ->get()
+            ->keyBy('product_id');
+
+        // Union of all product IDs
+        $productIds = collect([$refurbished->keys(), $damagedShipped->keys(), $inboundDamaged->keys(), $waste->keys()])
+            ->flatten()
+            ->unique()
+            ->values();
+
+        $products = Product::whereIn('product_id', $productIds)->get()->keyBy('product_id');
+
+        $rows = [];
+        $totals = [
+            'total_refurbished_qty' => 0,
+            'total_damaged_shipped_qty' => 0,
+            'total_inbound_damaged_qty' => 0,
+            'total_waste_qty' => 0,
+            'total_waste_value' => 0.0,
+        ];
+
+        foreach ($productIds as $pid) {
+            $p = $products->get($pid);
+            $refQty = (int)($refurbished[$pid]->refurbished_qty ?? 0);
+            $dmgShipQty = (int)($damagedShipped[$pid]->damaged_shipped_qty ?? 0);
+            $dmgInboundQty = (int)($inboundDamaged[$pid]->inbound_damaged_qty ?? 0);
+            $wasteQty = (int)($waste[$pid]->waste_qty ?? 0);
+            $wasteValue = (float)($waste[$pid]->waste_value ?? 0);
+
+            $rows[] = [
+                'product_id' => $pid,
+                'product_name' => $p->product_name ?? 'Unknown',
+                'product_brand' => $p->product_brand ?? null,
+                'product_category' => $p->product_category ?? null,
+                'refurbished_qty' => $refQty,
+                'damaged_shipped_qty' => $dmgShipQty,
+                'inbound_damaged_qty' => $dmgInboundQty,
+                'waste_qty' => $wasteQty,
+                'waste_value' => round($wasteValue, 2),
+            ];
+
+            $totals['total_refurbished_qty'] += $refQty;
+            $totals['total_damaged_shipped_qty'] += $dmgShipQty;
+            $totals['total_inbound_damaged_qty'] += $dmgInboundQty;
+            $totals['total_waste_qty'] += $wasteQty;
+            $totals['total_waste_value'] += $wasteValue;
+        }
+
+        return [
+            'period' => [
+                'start_date' => $startDate->format('Y-m-d'),
+                'end_date' => $endDate->format('Y-m-d'),
+            ],
+            'summary' => [
+                'total_refurbished_qty' => $totals['total_refurbished_qty'],
+                'total_damaged_shipped_qty' => $totals['total_damaged_shipped_qty'],
+                'total_inbound_damaged_qty' => $totals['total_inbound_damaged_qty'],
+                'total_waste_qty' => $totals['total_waste_qty'],
+                'total_waste_value' => round($totals['total_waste_value'], 2),
+                'total_blocked_qty' => $totals['total_refurbished_qty'] + $totals['total_damaged_shipped_qty'] + $totals['total_inbound_damaged_qty'] + $totals['total_waste_qty'],
+            ],
+            'products' => collect($rows)->sortByDesc(function ($r) {
+                return ($r['refurbished_qty'] + $r['damaged_shipped_qty'] + $r['inbound_damaged_qty'] + $r['waste_qty']);
+            })->values(),
+        ];
+    }
+    /**
      * Generate reorder report (products needing reorder based on thresholds)
      *
      * @param array $filters
@@ -568,6 +678,8 @@ class ReportService
                 return $this->generateMovementReport($filters);
             case 'reorder':
                 return $this->generateReorderReport($filters);
+            case 'blocked':
+                return $this->generateBlockedItemsReport($filters);
             default:
                 return [];
         }

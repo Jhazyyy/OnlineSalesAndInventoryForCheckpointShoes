@@ -104,12 +104,45 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                         </svg>
                                     </div>
-                                    {{-- <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200">
-                                        {{ count($currentSettings['inventory'] ?? []) }} items
-                                    </span> --}}
+                                    {{-- <div class="flex flex-wrap gap-1.5">
+                                        @if(setting('inventory.auto_reorder_enabled', false))
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200" title="Auto-reorder enabled">
+                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path>
+                                                </svg>
+                                                Auto
+                                            </span>
+                                        @endif
+                                        @if(setting('inventory.waste_tracking_enabled', true))
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200" title="Waste tracking enabled">
+                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                Waste
+                                            </span>
+                                        @endif
+                                        @if(setting('inventory.negative_stock_allowed', false))
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-800 dark:text-orange-200" title="Negative stock allowed">
+                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                -Stock
+                                            </span>
+                                        @endif
+                                    </div> --}}
                                 </div>
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Inventory Settings</h3>
-                                <p class="text-gray-600 dark:text-gray-300 text-sm">Stock thresholds, auto-reorder settings, and inventory management preferences</p>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm mb-2">Stock thresholds, auto-reorder settings, and inventory management preferences</p>
+                                {{-- <div class="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                                    <div class="flex items-center">
+                                        <span class="font-medium mr-2">Low Stock:</span>
+                                        <span>{{ setting('inventory.low_stock_threshold', 10) }} units</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="font-medium mr-2">Critical:</span>
+                                        <span>{{ setting('inventory.critical_stock_level', 5) }} units</span>
+                                    </div>
+                                </div> --}}
                                 <div class="mt-4 flex items-center text-yellow-600 dark:text-yellow-400 text-sm font-medium">
                                     Configure <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>

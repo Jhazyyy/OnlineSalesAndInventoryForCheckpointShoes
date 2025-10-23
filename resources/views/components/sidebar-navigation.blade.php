@@ -227,7 +227,7 @@
 
 
                         {{-- Block Items --}}
-                        <x-nav-item route="reports.financial" route-pattern="reports.financial" :icon="App\Helpers\NavigationHelper::getIcon('block_items', 'w-4 h-4 mr-3')"
+                        <x-nav-item route="reports.blocked" route-pattern="reports.blocked" :icon="App\Helpers\NavigationHelper::getIcon('block_items', 'w-4 h-4 mr-3')"
                             title="Block Items" size="small" />
 
                         <!-- Expense Report -->

@@ -204,6 +204,12 @@ class StockController extends Controller
      */
     public function showWasteForm()
     {
+        // Check if waste tracking is enabled
+        if (!isWasteTrackingEnabled()) {
+            return redirect()->route('inventory.product_stock_adjustment.index')
+                ->with('error', 'Waste tracking is currently disabled in system settings.');
+        }
+        
         $products = Product::where('quantity', '>', 0)
                           ->orderBy('product_name')
                           ->get(['product_id', 'product_name', 'product_brand', 'quantity']);
@@ -215,6 +221,12 @@ class StockController extends Controller
      */
     public function processWaste(Request $request)
     {
+        // Check if waste tracking is enabled
+        if (!isWasteTrackingEnabled()) {
+            return redirect()->route('inventory.product_stock_adjustment.index')
+                ->with('error', 'Waste tracking is currently disabled in system settings.');
+        }
+        
         $validator = Validator::make($request->all(), [
             'product_id' => 'required|exists:products,product_id',
             'quantity' => 'required|integer|min:1',

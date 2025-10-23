@@ -126,6 +126,25 @@
                             </div>
                         </div>
 
+                        <!-- Blocked Items Report Card -->
+                        <div class="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-red-500 rounded-lg">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M9.172 16.172a4 4 0 015.656 0M7.05 7.05a7 7 0 019.9 9.9M12 19a7 7 0 110-14 7 7 0 010 14z" />
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-semibold text-red-600 dark:text-red-300 bg-red-200 dark:bg-red-700 px-2 py-1 rounded">New</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-red-900 dark:text-red-100 mb-2">Blocked Items</h3>
+                            <p class="text-sm text-red-700 dark:text-red-300 mb-4">See products that are refurbished, damaged, or wasted</p>
+                            <div class="flex gap-2">
+                                <a href="{{ route('reports.blocked') }}" class="flex-1 bg-red-600 hover:bg-red-700 text-white text-center px-4 py-2 rounded font-medium">
+                                    View Report
+                                </a>
+                            </div>
+                        </div>
+
                         <!-- Custom Reports (Coming Soon) -->
                         <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-lg shadow-lg p-6 hover:shadow-xl transition opacity-75">
                             <div class="flex items-center justify-between mb-4">

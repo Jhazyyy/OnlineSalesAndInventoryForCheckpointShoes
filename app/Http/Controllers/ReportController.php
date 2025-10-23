@@ -125,6 +125,31 @@ class ReportController extends Controller
     }
 
     /**
+     * Display blocked items report (refurbished, damaged, waste)
+     */
+    public function blocked(Request $request): View
+    {
+        $filters = $request->only(['start_date', 'end_date']);
+
+        // Set default dates
+        if (!isset($filters['start_date'])) {
+            $filters['start_date'] = now()->subDays(30)->format('Y-m-d');
+        }
+        if (!isset($filters['end_date'])) {
+            $filters['end_date'] = now()->format('Y-m-d');
+        }
+
+        $report = $this->reportService->generateBlockedItemsReport($filters);
+
+        return view('reports.blocked', [
+            'report' => $report,
+            'filters' => $filters,
+            'startDate' => $filters['start_date'],
+            'endDate' => $filters['end_date'],
+        ]);
+    }
+
+    /**
      * Display reorder items report (products that need reordering)
      */
     public function reorder(Request $request): View

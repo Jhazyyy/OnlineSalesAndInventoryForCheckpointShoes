@@ -208,7 +208,7 @@
                                                 @endif
                                             </a>
                                         </th>
-                                        <th
+                                        {{-- <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a
                                                 href="{{ request()->fullUrlWithQuery(['sort' => 'quantity', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
@@ -218,7 +218,7 @@
                                                         class="ml-1">{{ request('order') === 'asc' ? '↑' : '↓' }}</span>
                                                 @endif
                                             </a>
-                                        </th>
+                                        </th> --}}
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a

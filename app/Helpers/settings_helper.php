@@ -147,6 +147,42 @@ if (!function_exists('criticalStockLevel')) {
     }
 }
 
+if (!function_exists('isAutoReorderEnabled')) {
+    /**
+     * Check if auto-reorder is enabled globally
+     * 
+     * @return bool
+     */
+    function isAutoReorderEnabled()
+    {
+        return (bool) setting('inventory.auto_reorder_enabled', false);
+    }
+}
+
+if (!function_exists('isWasteTrackingEnabled')) {
+    /**
+     * Check if waste tracking is enabled globally
+     * 
+     * @return bool
+     */
+    function isWasteTrackingEnabled()
+    {
+        return (bool) setting('inventory.waste_tracking_enabled', true);
+    }
+}
+
+if (!function_exists('isNegativeStockAllowed')) {
+    /**
+     * Check if negative stock is allowed globally
+     * 
+     * @return bool
+     */
+    function isNegativeStockAllowed()
+    {
+        return (bool) setting('inventory.negative_stock_allowed', false);
+    }
+}
+
 if (!function_exists('returnPolicyDays')) {
     /**
      * Get return policy days setting

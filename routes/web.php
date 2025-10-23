@@ -933,6 +933,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/inventory', [\App\Http\Controllers\ReportController::class, 'inventory'])->name('inventory');
         Route::get('/financial', [\App\Http\Controllers\ReportController::class, 'financial'])->name('financial');
         Route::get('/movement', [\App\Http\Controllers\ReportController::class, 'movement'])->name('movement');
+        Route::get('/blocked', [\App\Http\Controllers\ReportController::class, 'blocked'])->name('blocked');
     Route::get('/reorder', [\App\Http\Controllers\ReportController::class, 'reorder'])->name('reorder');
     Route::post('/reorder', [\App\Http\Controllers\ReportController::class, 'reorderProduct'])->name('reorder.create');
         

@@ -53,14 +53,14 @@ class UserManagementController extends Controller
             'active' => User::active()->count(),
             'inactive' => User::where('status', 'inactive')->count(),
             'suspended' => User::where('status', 'suspended')->count(),
-            'admins' => User::byRole('admin')->count(),
+            // 'admins' => User::byRole('admin')->count(),
             'managers' => User::byRole('manager')->count(),
             'users' => User::byRole('user')->count(),
             'new_this_month' => User::whereMonth('created_at', now()->month)->count(),
         ];
 
         // Role and status options for filters
-        $roles = ['admin', 'manager', 'user', 'viewer'];
+        $roles = ['manager', 'user'];
         $statuses = ['active', 'inactive', 'suspended'];
 
         return view('user-management.index', compact('users', 'stats', 'roles', 'statuses'));
@@ -71,7 +71,7 @@ class UserManagementController extends Controller
      */
     public function create(): View
     {
-        $roles = ['admin', 'manager', 'user', 'viewer'];
+        $roles = ['manager', 'user'];
         $statuses = ['active', 'inactive', 'suspended'];
         return view('user-management.create', compact('roles', 'statuses'));
     }
@@ -165,7 +165,7 @@ class UserManagementController extends Controller
     public function edit($userManagement): View
     {
         $user = User::findOrFail($userManagement);
-        $roles = ['admin', 'manager', 'user', 'viewer'];
+        $roles = ['manager', 'user'];
         $statuses = ['active', 'inactive', 'suspended'];
         return view('user-management.edit', compact('user', 'roles', 'statuses'));
     }
