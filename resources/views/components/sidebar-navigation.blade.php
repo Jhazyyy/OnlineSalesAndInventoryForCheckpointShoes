@@ -84,6 +84,11 @@
                         route-pattern="inventory.products.*|inventory.product_stocks.*|inventory.thresholds.*|inventory.product-movement.*"
                         :icon="App\Helpers\NavigationHelper::getIcon('inventory')" title="Inventory" :is-dropdown="true">
 
+                        <!-- Inventory List -->
+                        <x-nav-item route="inventory.index" route-pattern="inventory.index"
+                            :icon="App\Helpers\NavigationHelper::getIcon('inventory', 'w-4 h-4 mr-3')"
+                            title="Inventory List" size="small" />
+
                         <!-- Composite Products -->
                         {{-- <x-nav-item href="#"
                             :icon="App\Helpers\NavigationHelper::getIcon('composite-products', 'w-4 h-4 mr-3')"

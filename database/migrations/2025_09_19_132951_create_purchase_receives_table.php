@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('reference_number', 100)->unique();
             $table->foreignId('purchase_order_id'); // ->constrained() commented out - add FK in separate migration
             $table->foreignId('supplier_id'); // ->constrained() commented out - add FK in separate migration
+            $table->unsignedBigInteger('delivery_id')->nullable();
+            $table->foreign('delivery_id')->references('delivery_id')->on('purchase_deliveries')->onDelete('set null');
+
             $table->date('receive_date');
             $table->enum('status', ['in_transit', 'received', 'partially_received', 'damaged', 'cancelled'])->default('in_transit');
             $table->integer('total_quantity_expected')->default(0);
@@ -28,10 +31,11 @@ return new class extends Migration
             $table->string('receiver_name', 255)->nullable();
             $table->text('delivery_address')->nullable();
             $table->timestamps();
-            
+
             $table->index(['status', 'receive_date']);
             $table->index(['purchase_order_id', 'receive_date']);
             $table->index(['supplier_id', 'receive_date']);
+            $table->index(['delivery_id', 'receive_date']);
         });
     }
 
@@ -43,4 +47,3 @@ return new class extends Migration
         Schema::dropIfExists('purchase_receives');
     }
 };
-

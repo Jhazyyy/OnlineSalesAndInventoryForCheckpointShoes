@@ -72,6 +72,10 @@ class PurchaseReceiveService
 
     /**
      * Get filter options for purchase receive listing.
+     * 
+     * WORKFLOW NOTE: Receives can be created for:
+     * 1. Orders that are 'ordered' or 'partial_received' (still expecting goods)
+     * 2. Optionally linked to a delivery if shipment tracking was used
      */
     public function getFilterOptions(): array
     {
@@ -102,6 +106,13 @@ class PurchaseReceiveService
 
     /**
      * Create a new purchase receive.
+     * 
+     * WORKFLOW:
+     * 1. Can be created directly from a PO (delivery_id optional)
+     * 2. Can be created from a delivery (delivery_id provided)
+     * 3. Updates inventory via StockMovement
+     * 4. Updates PO status to 'partial_received' or 'received'
+     * 5. Updates PO items' quantity_received
      */
     public function createReceive(array $data): PurchaseReceive
     {
@@ -262,31 +273,18 @@ class PurchaseReceiveService
      */
     protected function updateProductInventory(Product $product, int $quantityChange, ?int $supplierId = null, ?float $unitPrice = null): void
     {
-        // Get current on-hand quantity
-        $currentQuantity = (int) $product->quantity;
-
-        // Record stock movement instead of directly updating product
-        StockMovement::recordMovement(
+        // Adjust Inventory (new source of truth) and record stock movement with inventory-based before/after
+        \App\Services\InventoryService::adjust(
             productId: $product->product_id,
-            quantityBefore: $currentQuantity,
             quantityChange: $quantityChange,
-            quantityAfter: $currentQuantity + $quantityChange,
-            movementType: $quantityChange > 0 ? StockMovement::TYPE_PURCHASE : StockMovement::TYPE_RETURN,
-            userId: auth()->id(),
             unitCost: $unitPrice,
+            movementType: $quantityChange > 0 ? StockMovement::TYPE_PURCHASE : StockMovement::TYPE_RETURN,
             referenceType: 'purchase_receive',
-            movementDate: now()
+            referenceId: null,
+            propertyId: null,
+            location: null,
+            syncProductQuantity: true // keep Product.quantity in sync for backward compatibility
         );
-
-        // Also update product on-hand quantity to reflect the movement
-        if ($quantityChange !== 0) {
-            if ($quantityChange > 0) {
-                $product->increment('quantity', $quantityChange);
-            } else {
-                $product->decrement('quantity', abs($quantityChange));
-            }
-            $product->refresh();
-        }
 
         // Update supplier tracking information only when receiving items (positive quantity)
         if ($quantityChange > 0 && $supplierId && $unitPrice) {

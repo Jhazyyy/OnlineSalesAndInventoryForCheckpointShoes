@@ -12,6 +12,33 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
+/**
+ * Purchase Order Service
+ * 
+ * PURCHASE WORKFLOW OVERVIEW:
+ * ============================
+ * 1. CREATE PURCHASE ORDER (this service)
+ *    - Status: pending → approved → ordered
+ *    - Select supplier and products
+ *    - No inventory changes yet
+ * 
+ * 2. CREATE DELIVERY (optional - PurchaseDeliveryService)
+ *    - Track shipment from supplier
+ *    - Carrier, tracking number, estimated delivery
+ *    - Status updates: scheduled → in_transit → delivered
+ *    - Still no inventory changes
+ * 
+ * 3. CREATE RECEIVE (PurchaseReceiveService)
+ *    - Record actual receipt of goods
+ *    - Can link to delivery if tracking was used
+ *    - Updates inventory via StockMovement
+ *    - Updates PO status: partial_received → received
+ * 
+ * 4. CREATE PAYMENT (PurchasePaymentService)
+ *    - Record payment to supplier
+ *    - Can be partial or full
+ *    - Updates PO payment_status
+ */
 class PurchaseOrderService
 {
     /**

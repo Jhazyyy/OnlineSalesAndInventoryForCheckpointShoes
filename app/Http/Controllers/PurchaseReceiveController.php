@@ -40,9 +40,26 @@ class PurchaseReceiveController extends Controller
     public function create()
     {
         $filterOptions = $this->receiveService->getFilterOptions();
+        
+        // Get deliveries for optional linking
+        $deliveries = \App\Models\PurchaseDelivery::with(['purchaseOrder', 'supplier'])
+            ->whereIn('status', ['delivered', 'out_for_delivery'])
+            ->orderBy('delivery_date', 'desc')
+            ->get()
+            ->map(function ($delivery) {
+                return [
+                    'id' => $delivery->delivery_id,
+                    'delivery_number' => $delivery->delivery_number,
+                    'purchase_order_id' => $delivery->purchase_order_id,
+                    'carrier' => $delivery->carrier,
+                    'tracking_number' => $delivery->tracking_number,
+                ];
+            });
+        
         return view('purchases.purchase-receives.create', [
             'suppliers' => $filterOptions['suppliers'],
             'purchase_orders' => $filterOptions['purchase_orders'],
+            'deliveries' => $deliveries,
         ]);
     }
 
@@ -53,6 +70,7 @@ class PurchaseReceiveController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'purchase_order_id' => 'required|exists:purchase_orders,order_id',
+            'delivery_id' => 'nullable|exists:purchase_deliveries,delivery_id', // Added: optional delivery link
             'supplier_id' => 'nullable|exists:suppliers,supplier_id', // Made optional as it's auto-filled from PO
             'receive_date' => 'required|date',
             'status' => 'nullable|in:in_transit,received,partially_received,damaged,cancelled',

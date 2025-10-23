@@ -200,6 +200,14 @@ class Product extends Model
     }
 
     /**
+     * Get the inventory records for the product.
+     */
+    public function inventories(): HasMany
+    {
+        return $this->hasMany(Inventory::class, 'product_id', 'product_id');
+    }
+
+    /**
      * Get the purchase returns for the product.
      */
     public function purchaseReturns(): HasMany

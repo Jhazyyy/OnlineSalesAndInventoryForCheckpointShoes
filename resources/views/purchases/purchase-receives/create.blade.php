@@ -80,6 +80,25 @@
                                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                         @enderror
                                     </div>
+
+                                    <!-- Related Delivery (Optional) -->
+                                    <div class="md:col-span-2">
+                                        <label for="delivery_id"
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Related Delivery (Optional)
+                                        </label>
+                                        <select id="delivery_id" name="delivery_id"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                            <option value="">No delivery tracking</option>
+                                            {{-- Deliveries will be populated via JavaScript based on selected PO --}}
+                                        </select>
+                                        @error('delivery_id')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
+                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                            Link this receive to a delivery if shipment tracking was used
+                                        </p>
+                                    </div>
                                 </div>
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -296,18 +315,24 @@
         @endphp
         
         availableProducts = @json($products);
+        const deliveriesData = @json($deliveries ?? []);
 
         document.addEventListener('DOMContentLoaded', function() {
             // Purchase order change handler - Auto-load items when PO is selected
             document.getElementById('purchase_order_id').addEventListener('change', function() {
                 const selectedOption = this.options[this.selectedIndex];
                 const loadItemsSection = document.getElementById('loadItemsSection');
+                const selectedPOId = selectedOption.value;
                 
-                if (selectedOption.value) {
+                if (selectedPOId) {
                     const supplierId = selectedOption.dataset.supplierId;
                     if (supplierId) {
                         document.getElementById('supplier_id').value = supplierId;
                     }
+                    
+                    // Filter and populate deliveries for this PO
+                    updateDeliveriesDropdown(selectedPOId);
+                    
                     // Show the load items section
                     loadItemsSection.style.display = 'block';
                     // Automatically load items from the selected purchase order
@@ -315,6 +340,8 @@
                 } else {
                     // Hide the load items section
                     loadItemsSection.style.display = 'none';
+                    // Clear deliveries
+                    updateDeliveriesDropdown(null);
                     // Clear items if no PO is selected
                     document.getElementById('itemsTableBody').innerHTML = '';
                     itemRowCount = 0;
@@ -573,6 +600,30 @@
                 summaryCard.style.display = 'block';
             } else {
                 summaryCard.style.display = 'none';
+            }
+        }
+
+        // Update deliveries dropdown based on selected purchase order
+        function updateDeliveriesDropdown(purchaseOrderId) {
+            const deliverySelect = document.getElementById('delivery_id');
+            
+            // Clear existing options
+            deliverySelect.innerHTML = '<option value="">No delivery tracking</option>';
+            
+            if (!purchaseOrderId) {
+                return;
+            }
+            
+            // Filter deliveries for this PO
+            const relatedDeliveries = deliveriesData.filter(d => d.purchase_order_id == purchaseOrderId);
+            
+            if (relatedDeliveries.length > 0) {
+                relatedDeliveries.forEach(delivery => {
+                    const option = document.createElement('option');
+                    option.value = delivery.id;
+                    option.textContent = `${delivery.delivery_number} - ${delivery.carrier || 'N/A'}${delivery.tracking_number ? ' (' + delivery.tracking_number + ')' : ''}`;
+                    deliverySelect.appendChild(option);
+                });
             }
         }
     </script>

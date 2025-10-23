@@ -242,9 +242,9 @@
                         <h3 class="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Analytics Dashboard</h3>
 
                         <!-- First Row: Sales Activity, Product Details, Top Selling Items -->
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                             <!-- Sales Activity -->
-                            <div class="bg-gray-200 dark:bg-gray-700 rounded-xl shadow-lg p-6">
+                            {{-- <div class="bg-gray-200 dark:bg-gray-700 rounded-xl shadow-lg p-6">
                                 <h4 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Sales Activity</h4>
                                 <div class="space-y-3">
                                     <div class="flex justify-between items-center">
@@ -276,7 +276,7 @@
                                         <span class="text-xl font-bold text-gray-900 dark:text-white">{{ $salesActivity['past_due'] ?? 0 }}</span>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <!-- Product Details (Doughnut Chart) -->
                             <div class="bg-gray-200 dark:bg-gray-700 rounded-xl shadow-lg p-6">
@@ -341,7 +341,7 @@
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                             <!-- Purchase Order (Bar Chart) -->
                             <div class="bg-gray-200 dark:bg-gray-700 rounded-xl shadow-lg p-6">
-                                <h4 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Purchase Order</h4>
+                                <h4 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Purchase Order Status</h4>
                                 <div style="height: 250px;">
                                     <canvas id="purchaseOrderChart"></canvas>
                                 </div>
@@ -501,6 +501,200 @@
                                         ₱{{ number_format($purchaseReturnStats['total_purchase_return_value'], 2) }}
                                     </p>
                                     <p class="text-xs text-gray-600 dark:text-gray-400">Total Value</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- Purchase Receives Analytics -->
+                    @if($purchaseReceiveStats['total_receives'] > 0)
+                    <div class="mt-6">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Purchase Receives Analytics</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                            <!-- Total Receives -->
+                            <div class="bg-blue-50 dark:bg-blue-900 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-blue-900 dark:text-blue-100">
+                                        {{ $purchaseReceiveStats['total_receives'] }}
+                                    </p>
+                                    <p class="text-xs text-blue-600 dark:text-blue-400">Total Receives</p>
+                                </div>
+                            </div>
+
+                            <!-- Received -->
+                            <div class="bg-green-50 dark:bg-green-900 p-3 rounded-lg border border-green-200 dark:border-green-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-green-900 dark:text-green-100">
+                                        {{ $purchaseReceiveStats['received_count'] }}
+                                    </p>
+                                    <p class="text-xs text-green-600 dark:text-green-400">Received</p>
+                                </div>
+                            </div>
+
+                            <!-- In Transit -->
+                            <div class="bg-yellow-50 dark:bg-yellow-900 p-3 rounded-lg border border-yellow-200 dark:border-yellow-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-yellow-900 dark:text-yellow-100">
+                                        {{ $purchaseReceiveStats['in_transit_count'] }}
+                                    </p>
+                                    <p class="text-xs text-yellow-600 dark:text-yellow-400">In Transit</p>
+                                </div>
+                            </div>
+
+                            <!-- This Month -->
+                            <div class="bg-purple-50 dark:bg-purple-900 p-3 rounded-lg border border-purple-200 dark:border-purple-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-purple-900 dark:text-purple-100">
+                                        {{ $purchaseReceiveStats['this_month_receives'] }}
+                                    </p>
+                                    <p class="text-xs text-purple-600 dark:text-purple-400">This Month</p>
+                                </div>
+                            </div>
+
+                            <!-- Total Value -->
+                            <div class="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                                <div class="text-center">
+                                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                        ₱{{ number_format($purchaseReceiveStats['total_value_received'], 2) }}
+                                    </p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400">Total Value</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- Purchase Deliveries Analytics -->
+                    @if($purchaseDeliveryStats['total_deliveries'] > 0)
+                    <div class="mt-6">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Purchase Deliveries Analytics</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                            <!-- Total Deliveries -->
+                            <div class="bg-blue-50 dark:bg-blue-900 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-blue-900 dark:text-blue-100">
+                                        {{ $purchaseDeliveryStats['total_deliveries'] }}
+                                    </p>
+                                    <p class="text-xs text-blue-600 dark:text-blue-400">Total</p>
+                                </div>
+                            </div>
+
+                            <!-- Scheduled -->
+                            <div class="bg-indigo-50 dark:bg-indigo-900 p-3 rounded-lg border border-indigo-200 dark:border-indigo-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-indigo-900 dark:text-indigo-100">
+                                        {{ $purchaseDeliveryStats['scheduled'] }}
+                                    </p>
+                                    <p class="text-xs text-indigo-600 dark:text-indigo-400">Scheduled</p>
+                                </div>
+                            </div>
+
+                            <!-- In Transit -->
+                            <div class="bg-yellow-50 dark:bg-yellow-900 p-3 rounded-lg border border-yellow-200 dark:border-yellow-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-yellow-900 dark:text-yellow-100">
+                                        {{ $purchaseDeliveryStats['in_transit'] }}
+                                    </p>
+                                    <p class="text-xs text-yellow-600 dark:text-yellow-400">In Transit</p>
+                                </div>
+                            </div>
+
+                            <!-- Delivered -->
+                            <div class="bg-green-50 dark:bg-green-900 p-3 rounded-lg border border-green-200 dark:border-green-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-green-900 dark:text-green-100">
+                                        {{ $purchaseDeliveryStats['delivered'] }}
+                                    </p>
+                                    <p class="text-xs text-green-600 dark:text-green-400">Delivered</p>
+                                </div>
+                            </div>
+
+                            <!-- Delayed -->
+                            <div class="bg-red-50 dark:bg-red-900 p-3 rounded-lg border border-red-200 dark:border-red-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-red-900 dark:text-red-100">
+                                        {{ $purchaseDeliveryStats['delayed'] }}
+                                    </p>
+                                    <p class="text-xs text-red-600 dark:text-red-400">Delayed</p>
+                                </div>
+                            </div>
+
+                            <!-- This Week -->
+                            <div class="bg-purple-50 dark:bg-purple-900 p-3 rounded-lg border border-purple-200 dark:border-purple-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-purple-900 dark:text-purple-100">
+                                        {{ $purchaseDeliveryStats['this_week_deliveries'] }}
+                                    </p>
+                                    <p class="text-xs text-purple-600 dark:text-purple-400">This Week</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- Purchase Payments Analytics -->
+                    @if($purchasePaymentStats['total_payments'] > 0)
+                    <div class="mt-6">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Purchase Payments Analytics</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                            <!-- Total Payments -->
+                            <div class="bg-blue-50 dark:bg-blue-900 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-blue-900 dark:text-blue-100">
+                                        {{ $purchasePaymentStats['total_payments'] }}
+                                    </p>
+                                    <p class="text-xs text-blue-600 dark:text-blue-400">Total Payments</p>
+                                </div>
+                            </div>
+
+                            <!-- Pending Payments -->
+                            <div class="bg-amber-50 dark:bg-amber-900 p-3 rounded-lg border border-amber-200 dark:border-amber-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-amber-900 dark:text-amber-100">
+                                        {{ $purchasePaymentStats['pending_payments'] }}
+                                    </p>
+                                    <p class="text-xs text-amber-600 dark:text-amber-400">Pending</p>
+                                </div>
+                            </div>
+
+                            <!-- Partial Paid -->
+                            <div class="bg-yellow-50 dark:bg-yellow-900 p-3 rounded-lg border border-yellow-200 dark:border-yellow-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-yellow-900 dark:text-yellow-100">
+                                        {{ $purchasePaymentStats['partial_paid'] }}
+                                    </p>
+                                    <p class="text-xs text-yellow-600 dark:text-yellow-400">Partial</p>
+                                </div>
+                            </div>
+
+                            <!-- Fully Paid -->
+                            <div class="bg-green-50 dark:bg-green-900 p-3 rounded-lg border border-green-200 dark:border-green-700">
+                                <div class="text-center">
+                                    <p class="text-lg font-semibold text-green-900 dark:text-green-100">
+                                        {{ $purchasePaymentStats['fully_paid'] }}
+                                    </p>
+                                    <p class="text-xs text-green-600 dark:text-green-400">Fully Paid</p>
+                                </div>
+                            </div>
+
+                            <!-- Total Paid -->
+                            <div class="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                                <div class="text-center">
+                                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                        ₱{{ number_format($purchasePaymentStats['total_paid'], 2) }}
+                                    </p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400">Total Paid</p>
+                                </div>
+                            </div>
+
+                            <!-- This Month -->
+                            <div class="bg-purple-50 dark:bg-purple-900 p-3 rounded-lg border border-purple-200 dark:border-purple-700">
+                                <div class="text-center">
+                                    <p class="text-sm font-semibold text-purple-900 dark:text-purple-100">
+                                        ₱{{ number_format($purchasePaymentStats['this_month_payments'], 2) }}
+                                    </p>
+                                    <p class="text-xs text-purple-600 dark:text-purple-400">This Month</p>
                                 </div>
                             </div>
                         </div>
@@ -676,20 +870,24 @@
                 new Chart(purchaseCtx, {
                     type: 'bar',
                     data: {
-                        labels: ['Draft', 'Confirmed', 'Packed', 'Shipped'],
+                        labels: ['Pending', 'Approved', 'Ordered', 'Partial Received', 'Received', 'Cancelled'],
                         datasets: [{
-                            label: 'Quantity',
+                            label: 'Purchase Orders',
                             data: [
-                                {{ $purchaseOrderStatus['draft'] ?? 0 }},
-                                {{ $purchaseOrderStatus['confirmed'] ?? 0 }},
-                                {{ $purchaseOrderStatus['packed'] ?? 0 }},
-                                {{ $purchaseOrderStatus['shipped'] ?? 0 }}
+                                {{ $purchaseOrderStatus['pending'] ?? 0 }},
+                                {{ $purchaseOrderStatus['approved'] ?? 0 }},
+                                {{ $purchaseOrderStatus['ordered'] ?? 0 }},
+                                {{ $purchaseOrderStatus['partial_received'] ?? 0 }},
+                                {{ $purchaseOrderStatus['received'] ?? 0 }},
+                                {{ $purchaseOrderStatus['cancelled'] ?? 0 }}
                             ],
                             backgroundColor: [
-                                'rgba(59, 130, 246, 0.8)',
-                                'rgba(34, 197, 94, 0.8)',
-                                'rgba(234, 179, 8, 0.8)',
-                                'rgba(249, 115, 22, 0.8)'
+                                'rgba(156, 163, 175, 0.8)',  // gray - pending
+                                'rgba(59, 130, 246, 0.8)',   // blue - approved
+                                'rgba(34, 197, 94, 0.8)',    // green - ordered
+                                'rgba(234, 179, 8, 0.8)',    // yellow - partial received
+                                'rgba(34, 197, 94, 0.9)',    // darker green - received
+                                'rgba(239, 68, 68, 0.8)'     // red - cancelled
                             ],
                             borderRadius: 6
                         }]
@@ -700,6 +898,13 @@
                         plugins: {
                             legend: {
                                 display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.parsed.y + ' orders';
+                                    }
+                                }
                             }
                         },
                         scales: {

@@ -82,6 +82,9 @@ class PurchaseDeliveryService
 
     /**
      * Get filter options for purchase delivery listing.
+     * 
+     * WORKFLOW NOTE: Deliveries should only be created for orders that are approved/ordered
+     * but NOT yet received. Once goods are received, no new deliveries should be created.
      */
     public function getFilterOptions(): array
     {
@@ -95,8 +98,9 @@ class PurchaseDeliveryService
                         'name' => $supplier->supplier_name ?? $supplier->name,
                     ];
                 }),
+            // Only show orders that haven't been fully received yet
             'purchase_orders' => PurchaseOrder::with('supplier')
-                ->whereIn('status', ['ordered', 'partial_received', 'received'])
+                ->whereIn('status', ['approved', 'ordered', 'partial_received'])
                 ->orderBy('order_number')
                 ->get()
                 ->map(function ($order) {
@@ -129,6 +133,13 @@ class PurchaseDeliveryService
 
     /**
      * Create a new purchase delivery.
+     * 
+     * WORKFLOW:
+     * 1. Created after PO is approved/ordered
+     * 2. Tracks shipment from supplier to warehouse (carrier, tracking, etc.)
+     * 3. Does NOT update inventory (that happens in Purchase Receive)
+     * 4. When delivered, a Purchase Receive should be created to update inventory
+     * 5. Links to PO and auto-fills supplier info
      */
     public function createDelivery(array $data): PurchaseDelivery
     {

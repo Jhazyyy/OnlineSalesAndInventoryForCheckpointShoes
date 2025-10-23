@@ -136,6 +136,17 @@ class PurchaseDelivery extends Model
     }
 
     /**
+     * Get the receives created from this delivery.
+     * 
+     * WORKFLOW: When a delivery arrives, one or more receives can be created
+     * to record the actual receipt of goods and update inventory.
+     */
+    public function receives(): HasMany
+    {
+        return $this->hasMany(PurchaseReceive::class, 'delivery_id', 'delivery_id');
+    }
+
+    /**
      * Generate unique delivery number.
      */
     public static function generateDeliveryNumber(): string

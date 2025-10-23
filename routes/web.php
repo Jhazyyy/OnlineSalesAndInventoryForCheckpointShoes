@@ -13,6 +13,7 @@ use App\Http\Controllers\ReturnsController;
 use App\Http\Controllers\SalesOrderController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
@@ -346,17 +347,87 @@ Route::get('dashboard', function () {
     // Purchase Order Status
     try {
         $purchaseOrderStatus = [
-            'draft' => \App\Models\Purchase::where('status', 'draft')->count(),
-            'confirmed' => \App\Models\Purchase::where('status', 'confirmed')->count(),
-            'packed' => \App\Models\Purchase::where('status', 'packed')->count(),
-            'shipped' => \App\Models\Purchase::where('status', 'shipped')->count(),
+            'pending' => \App\Models\PurchaseOrder::where('status', 'pending')->count(),
+            'approved' => \App\Models\PurchaseOrder::where('status', 'approved')->count(),
+            'ordered' => \App\Models\PurchaseOrder::where('status', 'ordered')->count(),
+            'partial_received' => \App\Models\PurchaseOrder::where('status', 'partial_received')->count(),
+            'received' => \App\Models\PurchaseOrder::where('status', 'received')->count(),
+            'cancelled' => \App\Models\PurchaseOrder::where('status', 'cancelled')->count(),
         ];
     } catch (\Exception $e) {
         $purchaseOrderStatus = [
-            'draft' => 0,
-            'confirmed' => 0,
-            'packed' => 0,
-            'shipped' => 0,
+            'pending' => 0,
+            'approved' => 0,
+            'ordered' => 0,
+            'partial_received' => 0,
+            'received' => 0,
+            'cancelled' => 0,
+        ];
+    }
+
+    // Purchase Receives Analytics
+    try {
+        $purchaseReceiveStats = [
+            'total_receives' => \App\Models\PurchaseReceive::count(),
+            'received_count' => \App\Models\PurchaseReceive::where('status', 'received')->count(),
+            'in_transit_count' => \App\Models\PurchaseReceive::where('status', 'in_transit')->count(),
+            'total_value_received' => \App\Models\PurchaseReceive::where('status', 'received')->sum('total_amount_received') ?? 0,
+            'this_month_receives' => \App\Models\PurchaseReceive::whereMonth('receive_date', now()->month)
+                                        ->whereYear('receive_date', now()->year)->count(),
+        ];
+    } catch (\Exception $e) {
+        $purchaseReceiveStats = [
+            'total_receives' => 0,
+            'received_count' => 0,
+            'in_transit_count' => 0,
+            'total_value_received' => 0,
+            'this_month_receives' => 0,
+        ];
+    }
+
+    // Purchase Deliveries Analytics
+    try {
+        $purchaseDeliveryStats = [
+            'total_deliveries' => \App\Models\PurchaseDelivery::count(),
+            'scheduled' => \App\Models\PurchaseDelivery::where('status', 'scheduled')->count(),
+            'in_transit' => \App\Models\PurchaseDelivery::where('status', 'in_transit')->count(),
+            'delivered' => \App\Models\PurchaseDelivery::where('status', 'delivered')->count(),
+            'delayed' => \App\Models\PurchaseDelivery::where('status', 'delayed')->count(),
+            'this_week_deliveries' => \App\Models\PurchaseDelivery::whereBetween('created_at', [
+                now()->startOfWeek(), now()->endOfWeek()
+            ])->count(),
+        ];
+    } catch (\Exception $e) {
+        $purchaseDeliveryStats = [
+            'total_deliveries' => 0,
+            'scheduled' => 0,
+            'in_transit' => 0,
+            'delivered' => 0,
+            'delayed' => 0,
+            'this_week_deliveries' => 0,
+        ];
+    }
+
+    // Purchase Payment Analytics
+    try {
+        $purchasePaymentStats = [
+            'total_payments' => \App\Models\PurchasePayment::count(),
+            'total_paid' => \App\Models\PurchasePayment::sum('amount') ?? 0,
+            'pending_payments' => \App\Models\PurchaseOrder::where('payment_status', 'pending')->count(),
+            'partial_paid' => \App\Models\PurchaseOrder::where('payment_status', 'partial')->count(),
+            'fully_paid' => \App\Models\PurchaseOrder::where('payment_status', 'paid')->count(),
+            'this_month_payments' => \App\Models\PurchasePayment::whereMonth('payment_date', now()->month)
+                                        ->whereYear('payment_date', now()->year)
+                                        ->sum('amount') ?? 0,
+        ];
+    } catch (\Exception $e) {
+        $purchasePaymentStats = [
+            'total_payments' => 0,
+            'total_paid' => 0,
+            'pending_payments' => 0,
+            'partial_paid' => 0,
+            'fully_paid' => 0,
+            'this_month_payments' => 0,
         ];
     }
 
@@ -381,7 +452,10 @@ Route::get('dashboard', function () {
     $topSellingItems = $topSellingItems ?? collect();
     $salesActivity = $salesActivity ?? ['total_invoices' => 0, 'paid_invoices' => 0, 'draft_invoices' => 0, 'past_due' => 0];
     $stockStatus = $stockStatus ?? ['in_stock' => 0, 'low_stock' => 0, 'out_of_stock' => 0];
-    $purchaseOrderStatus = $purchaseOrderStatus ?? ['draft' => 0, 'confirmed' => 0, 'packed' => 0, 'shipped' => 0];
+    $purchaseOrderStatus = $purchaseOrderStatus ?? ['pending' => 0, 'approved' => 0, 'ordered' => 0, 'partial_received' => 0, 'received' => 0, 'cancelled' => 0];
+    $purchaseReceiveStats = $purchaseReceiveStats ?? ['total_receives' => 0, 'received_count' => 0, 'in_transit_count' => 0, 'total_value_received' => 0, 'this_month_receives' => 0];
+    $purchaseDeliveryStats = $purchaseDeliveryStats ?? ['total_deliveries' => 0, 'scheduled' => 0, 'in_transit' => 0, 'delivered' => 0, 'delayed' => 0, 'this_week_deliveries' => 0];
+    $purchasePaymentStats = $purchasePaymentStats ?? ['total_payments' => 0, 'total_paid' => 0, 'pending_payments' => 0, 'partial_paid' => 0, 'fully_paid' => 0, 'this_month_payments' => 0];
     $last7Days = $last7Days ?? collect();
     $salesOrderData = $salesOrderData ?? collect();
     $last6Months = $last6Months ?? collect();
@@ -402,6 +476,9 @@ Route::get('dashboard', function () {
         'topSellingItems',
         'stockStatus',
         'purchaseOrderStatus',
+        'purchaseReceiveStats',
+        'purchaseDeliveryStats',
+        'purchasePaymentStats',
         'last6Months',
         'monthlyRevenue'
     ));
@@ -411,6 +488,8 @@ Route::get('dashboard', function () {
 
 // CurrentUser UpdateInfo Routes 
 Route::middleware(['auth', 'verified'])->group(function () {
+    // Inventory list (separate from master data)
+    Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
