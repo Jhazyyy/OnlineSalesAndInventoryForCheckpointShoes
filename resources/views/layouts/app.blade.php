@@ -26,6 +26,9 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
+    <!-- Livewire Styles -->
+    @livewireStyles
+    
     <!-- Sidebar Toggle Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -64,6 +67,9 @@
             </main>
         </div>
     </div>
+    
+    <!-- Livewire Scripts -->
+    @livewireScripts
 </body>
 
 </html>

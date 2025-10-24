@@ -11,11 +11,18 @@ class ProductProperty extends Model
     use HasFactory;
 
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'product_properties';
+
+    /**
      * The primary key for the model.
      *
      * @var string
      */
-    protected $primaryKey = 'property_id';
+    protected $primaryKey = 'id';
 
     /**
      * The attributes that are mass assignable.
@@ -27,9 +34,9 @@ class ProductProperty extends Model
         'property_name',
         'property_value',
         'quantity',
-        'sku',
-        'price_adjustment',
         'is_active',
+        'sku',
+        'barcode',
     ];
 
     /**
@@ -39,7 +46,6 @@ class ProductProperty extends Model
      */
     protected $casts = [
         'quantity' => 'integer',
-        'price_adjustment' => 'decimal:2',
         'is_active' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -51,51 +57,5 @@ class ProductProperty extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id', 'product_id');
-    }
-
-    /**
-     * Get the final price for this product property.
-     */
-    public function getFinalPriceAttribute(): float
-    {
-        return $this->product->price + $this->price_adjustment;
-    }
-
-    /**
-     * Check if this property has sufficient stock.
-     */
-    public function isInStock(int $quantity = 1): bool
-    {
-        return $this->quantity >= $quantity;
-    }
-
-    /**
-     * Decrease stock quantity.
-     */
-    public function decreaseStock(int $quantity): bool
-    {
-        if (!$this->isInStock($quantity)) {
-            return false;
-        }
-
-        $this->quantity -= $quantity;
-        return $this->save();
-    }
-
-    /**
-     * Increase stock quantity.
-     */
-    public function increaseStock(int $quantity): bool
-    {
-        $this->quantity += $quantity;
-        return $this->save();
-    }
-
-    /**
-     * Get the display name for this property.
-     */
-    public function getDisplayNameAttribute(): string
-    {
-        return "{$this->property_name}: {$this->property_value}";
     }
 }

@@ -171,7 +171,8 @@ class Purchase extends Model
             $query->dateRange($startDate, $endDate);
         }
         
-        return $query->get()->sum('total_amount');
+        return $query->selectRaw('SUM(price * quantity) as total')
+                    ->value('total') ?? 0;
     }
 
     /**

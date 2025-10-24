@@ -97,7 +97,7 @@ class SupplierController extends Controller
             })
             ->map(function ($purchases) {
                 return [
-                    'total_amount' => $purchases->sum('total_amount'),
+                    'total_amount' => $purchases->sum(fn($p) => $p->price * $p->quantity),
                     'count' => $purchases->count()
                 ];
             });

@@ -2,112 +2,237 @@
     <div class="w-full h-screen">
         <!-- Main Content Area -->
         <div :class="navOpen ? 'flex-1' : 'w-full'" class="h-full overflow-y-auto">
-            <div class="bg-white dark:bg-gray-800 min-h-full flex flex-col">
+            <div class="bg-gray-50 dark:bg-gray-900 min-h-full flex flex-col">
                 <div class="flex-1 p-6 text-gray-900 dark:text-gray-100">
-                    <h2 class="text-4xl font-bold mb-4">Welcome, {{ Auth::user()->name}}! </h2>
+                    <h2 class="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">Dashboard</h2>
 
-                    <!-- Dashboard Stats Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-                        <!-- Inventory Card -->
-                        <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
-                            <div class="flex items-center">
-                                <div class="p-2 bg-blue-500 rounded-lg">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4">
-                                        </path>
-                                    </svg>
+                    <!-- Main Dashboard Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        
+                        <!-- Left Column: Sales Activity & Item Details -->
+                        <div class="lg:col-span-2 space-y-6">
+                            
+                            <!-- Sales Activity Section -->
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                                <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Sales Activity</h3>
+                                
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <!-- To be Packed -->
+                                    <div class="text-center">
+                                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 mb-2">
+                                            <svg class="w-6 h-6 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                                            {{ $salesOrderData->sum('draft') ?? 0 }}
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wide">
+                                            <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"/>
+                                            </svg>
+                                            To be Packed
+                                        </div>
+                                    </div>
+
+                                    <!-- To be Shipped -->
+                                    <div class="text-center">
+                                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 dark:bg-red-900 mb-2">
+                                            <svg class="w-6 h-6 text-red-600 dark:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="text-3xl font-bold text-red-600 dark:text-red-400">
+                                            {{ $salesOrderData->sum('packed') ?? 0 }}
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wide">
+                                            <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"/>
+                                            </svg>
+                                            To be Shipped
+                                        </div>
+                                    </div>
+
+                                    <!-- To be Delivered -->
+                                    <div class="text-center">
+                                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-100 dark:bg-green-900 mb-2">
+                                            <svg class="w-6 h-6 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="text-3xl font-bold text-green-600 dark:text-green-400">
+                                            {{ $salesOrderData->sum('shipped') ?? 0 }}
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wide">
+                                            <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"/>
+                                            </svg>
+                                            To be Delivered
+                                        </div>
+                                    </div>
+
+                                    <!-- To be Invoiced -->
+                                    <div class="text-center">
+                                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-yellow-100 dark:bg-yellow-900 mb-2">
+                                            <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
+                                            {{ $salesOrderData->sum('confirmed') ?? 0 }}
+                                        </div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wide">
+                                            <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"/>
+                                            </svg>
+                                            To be Invoiced
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-blue-600 dark:text-blue-400">Products
-                                    </p>
-                                    <p class="text-2xl font-semibold text-blue-900 dark:text-blue-100">
-                                        {{ $inventoryStats['total_products'] ?? 0 }}
-                                    </p>
-                                    {{-- <p class="text-xs text-blue-500 dark:text-blue-300 mt-1">
-                                        {{ $inventoryStats['low_stock_products'] ?? 0 }} low stock
-                                    </p> --}}
+                            </div>
+
+                            <!-- Item Details Section -->
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                                <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Product Details</h3>
+                                
+                                <div class="grid grid-cols-3 gap-6">
+                                    <!-- Low Stock Items -->
+                                    <div class="text-left">
+                                        <div class="text-sm text-red-600 dark:text-red-400 font-medium mb-2">Low Stock Items</div>
+                                        <div class="text-4xl font-bold text-gray-800 dark:text-gray-100">
+                                            {{ $inventoryStats['low_stock_products'] ?? 0 }}
+                                        </div>
+                                    </div>
+
+                                    <!-- All Item Groups -->
+                                    <div class="text-left">
+                                        <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">All Item Groups</div>
+                                        <div class="text-4xl font-bold text-gray-800 dark:text-gray-100">
+                                            {{ \App\Models\Product::distinct('product_category')->count('category') }}
+                                        </div>
+                                    </div>
+
+                                    <!-- All Items -->
+                                    <div class="text-left">
+                                        <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">All Items</div>
+                                        <div class="text-4xl font-bold text-gray-800 dark:text-gray-100">
+                                            {{ $inventoryStats['total_products'] ?? 0 }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Active Items Donut Chart -->
+                                <div class="mt-6">
+                                    <div class="flex items-center">
+                                        <div class="relative" style="width: 120px; height: 120px;">
+                                            <canvas id="activeItemsChart"></canvas>
+                                            <div class="absolute inset-0 flex items-center justify-center">
+                                                <div class="text-center">
+                                                    <div class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                                                        {{ $inventoryStats['active_products'] > 0 ? round(($inventoryStats['active_products'] / ($inventoryStats['total_products'] ?: 1)) * 100) : 0 }}%
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="ml-6">
+                                            <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Active Items</div>
+                                            <div class="text-2xl font-bold text-green-600 dark:text-green-400">
+                                                {{ $inventoryStats['active_products'] ?? 0 }}
+                                            </div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                                                Out of {{ $inventoryStats['total_products'] ?? 0 }} total items
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Top Selling Items Section -->
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Top Selling Items</h3>
+                                    <a href="#" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                                        This Month <svg class="w-3 h-3 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </a>
+                                </div>
+
+                                <div class="space-y-4">
+                                    @forelse($topSellingItems->take(3) ?? [] as $item)
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                        <div class="flex items-center space-x-4 flex-1">
+                                            <!-- Product Image Placeholder -->
+                                            <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
+                                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                </svg>
+                                            </div>
+                                            
+                                            <div class="flex-1 min-w-0">
+                                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
+                                                    {{ $item['name'] ?? 'Unknown Product' }}
+                                                </div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                    Sold: {{ number_format($item['quantity'] ?? 0) }} units
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="text-right ml-4">
+                                            <div class="text-lg font-bold text-gray-800 dark:text-gray-100">
+                                                {{ number_format($item['quantity'] ?? 0) }}
+                                            </div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">PCS</div>
+                                        </div>
+                                    </div>
+                                    @empty
+                                    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                                        <svg class="w-12 h-12 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                                        </svg>
+                                        <p class="text-sm">No sales data available</p>
+                                    </div>
+                                    @endforelse
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Right Column: Inventory Summary -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-6">
+                                <h3 class="text-lg font-semibold mb-6 text-gray-800 dark:text-gray-100">Inventory Summary</h3>
+                                
+                                <!-- Quantity in Hand -->
+                                <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
+                                    <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
+                                        QUANTITY IN HAND
+                                    </div>
+                                    <div class="text-5xl font-bold text-gray-800 dark:text-gray-100">
+                                        {{ number_format(\App\Models\Product::sum('quantity') ?? 0) }}
+                                    </div>
+                                </div>
+
+                                <!-- Quantity to be Received -->
+                                <div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
+                                        QUANTITY TO BE RECEIVED
+                                    </div>
+                                    <div class="text-5xl font-bold text-gray-800 dark:text-gray-100">
+                                        {{ $purchaseReceiveStats['in_transit_count'] ?? 0 }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Sales Card -->
-                        <div class="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
-                            <div class="flex items-center">
-                                <div class="p-2 bg-green-500 rounded-lg">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-green-600 dark:text-green-400">Sales
-                                    </p>
-                                    <p class="text-2xl font-semibold text-green-900 dark:text-green-100">
-                                        {{ $salesStats['total_sales'] ?? 0 }}
-                                    </p>
-                                    <p class="text-xs text-green-500 dark:text-green-300 mt-1">
-                                        ₱{{ number_format($salesStats['total_sales_value'] ?? 0, 2) }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Customers Card -->
-                        {{-- <div class="bg-purple-50 dark:bg-purple-900 p-4 rounded-lg">
-                            <div class="flex items-center">
-                                <div class="p-2 bg-purple-500 rounded-lg">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
-                                        </path>
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-purple-600 dark:text-purple-400">
-                                        Customers</p>
-                                    <p class="text-2xl font-semibold text-purple-900 dark:text-purple-100">
-                                        {{ $customerStats['total_customers'] ?? 0 }}
-                                    </p>
-                                    <p class="text-xs text-purple-500 dark:text-purple-300 mt-1">
-                                        {{ $customerStats['active_customers'] ?? 0 }} active
-                                    </p>
-                                </div>
-                            </div>
-                        </div> --}}
-
-                        <!-- Returns Card -->
-                        <div class="bg-red-50 dark:bg-red-900 p-4 rounded-lg">
-                            <div class="flex items-center">
-                                <div class="p-2 bg-red-500 rounded-lg">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6">
-                                        </path>
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-red-600 dark:text-red-400">
-                                        Returns & Exchange</p>
-                                    <p class="text-2xl font-semibold text-red-900 dark:text-red-100">
-                                        {{ $returnStats['total_returns'] ?? 0 }}
-                                    </p>
-                                    <p class="text-xs text-red-500 dark:text-red-300 mt-1">
-                                        {{ $returnStats['pending_returns'] ?? 0 }} pending
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
-                    <!-- Secondary Stats Row -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+                    <!-- Additional Quick Stats (Optional Secondary Row) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
                         <!-- Purchases Card -->
-                        <div class="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-lg">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                             <div class="flex items-center">
                                 <div class="p-2 bg-yellow-500 rounded-lg">
                                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
@@ -118,12 +243,12 @@
                                     </svg>
                                 </div>
                                 <div class="ml-4">
-                                    <p class="text-sm font-medium text-yellow-600 dark:text-yellow-400">
+                                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
                                         Purchases</p>
-                                    <p class="text-2xl font-semibold text-yellow-900 dark:text-yellow-100">
+                                    <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                                         {{ $purchaseStats['total_purchases'] ?? 0 }}
                                     </p>
-                                    <p class="text-xs text-yellow-500 dark:text-yellow-300 mt-1">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                         ₱{{ number_format($purchaseStats['total_purchase_value'] ?? 0, 2) }}
                                     </p>
                                 </div>
@@ -131,7 +256,7 @@
                         </div>
 
                         <!-- Suppliers Card -->
-                        <div class="bg-indigo-50 dark:bg-indigo-900 p-4 rounded-lg">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                             <div class="flex items-center">
                                 <div class="p-2 bg-indigo-500 rounded-lg">
                                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
@@ -142,598 +267,67 @@
                                     </svg>
                                 </div>
                                 <div class="ml-4">
-                                    <p class="text-sm font-medium text-indigo-600 dark:text-indigo-400">
+                                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
                                         Suppliers</p>
-                                    <p class="text-2xl font-semibold text-indigo-900 dark:text-indigo-100">
+                                    <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                                         {{ $supplierStats['total_suppliers'] ?? 0 }}
                                     </p>
-                                    <p class="text-xs text-indigo-500 dark:text-indigo-300 mt-1">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                         {{ $supplierStats['active_suppliers'] ?? 0 }} active
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Inventory Value Card -->
-                        {{-- <div class="bg-teal-50 dark:bg-teal-900 p-4 rounded-lg">
+                        <!-- Customers Card -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                             <div class="flex items-center">
-                                <div class="p-2 bg-teal-500 rounded-lg">
+                                <div class="p-2 bg-purple-500 rounded-lg">
                                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
-                                        <path d="M4 6h2v12h-2V6z" fill="currentColor" />
-                                        <path d="M6 6h6c2.2 0 4 1.8 4 4s-1.8 4-4 4H6v4h-2v-4h2V6z"
-                                            fill="currentColor" />
-                                        <path d="M6 8v4h6c1.1 0 2-0.9 2-2s-0.9-2-2-2H6z" fill="currentColor" />
-                                        <path d="M2 9h8v1H2V9z" fill="currentColor" />
-                                        <path d="M2 12h8v1H2v-1z" fill="currentColor" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                                        </path>
                                     </svg>
                                 </div>
                                 <div class="ml-4">
-                                    <p class="text-sm font-medium text-teal-600 dark:text-teal-400">
-                                        Inventory Value</p>
-                                    <p class="text-2xl font-semibold text-teal-900 dark:text-teal-100">
-                                        ₱{{ number_format($inventoryStats['total_inventory_value'] ?? 0, 2) }}</p>
-                                    <p class="text-xs text-teal-500 dark:text-teal-300 mt-1">
-                                        {{ $inventoryStats['out_of_stock_products'] ?? 0 }} out of stock
+                                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                        Customers</p>
+                                    <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+                                        {{ $customerStats['total_customers'] ?? 0 }}
                                     </p>
-                                </div>
-                            </div>
-                        </div> --}}
-
-                        <!-- Shipments Card -->
-                        {{-- <a href="{{ route('sales.shipments.index') }}" class="block">
-                            <div class="bg-orange-50 dark:bg-orange-900 p-4 rounded-lg hover:shadow-md transition-shadow duration-200 border border-orange-200 dark:border-orange-700 hover:border-orange-300 dark:hover:border-orange-600">
-                                <div class="flex items-center">
-                                    <div class="p-2 bg-orange-500 rounded-lg">
-                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4">
-                                            </path>
-                                        </svg>
-                                    </div>
-                                    <div class="ml-4">
-                                        <p class="text-sm font-medium text-orange-600 dark:text-orange-400">
-                                            Shipments</p>
-                                        <p class="text-2xl font-semibold text-orange-900 dark:text-orange-100">
-                                            {{ $shipmentStats['total_shipments'] ?? 0 }}
-                                        </p>
-                                        <p class="text-xs text-orange-500 dark:text-orange-300 mt-1">
-                                            {{ $shipmentStats['active_shipments'] ?? 0 }} active
-                                            @if($shipmentStats['overdue_shipments'] > 0)
-                                                • <span class="text-red-600 dark:text-red-400 font-medium">{{ $shipmentStats['overdue_shipments'] }} overdue</span>
-                                            @endif
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </a> --}}
-
-                        <!-- Purchase Returns Card -->
-                        <a href="{{ route('purchases.purchase-returns.index') }}" class="block">
-                            <div class="bg-pink-50 dark:bg-pink-900 p-4 rounded-lg hover:shadow-md transition-shadow duration-200 border border-pink-200 dark:border-pink-700 hover:border-pink-300 dark:hover:border-pink-600">
-                                <div class="flex items-center">
-                                    <div class="p-2 bg-pink-500 rounded-lg">
-                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6">
-                                            </path>
-                                        </svg>
-                                    </div>
-                                    <div class="ml-4">
-                                        <p class="text-sm font-medium text-pink-600 dark:text-pink-400">
-                                            Purchase Returns</p>
-                                        <p class="text-2xl font-semibold text-pink-900 dark:text-pink-100">
-                                            {{ $purchaseReturnStats['total_purchase_returns'] ?? 0 }}
-                                        </p>
-                                        <p class="text-xs text-pink-500 dark:text-pink-300 mt-1">
-                                            {{ $purchaseReturnStats['pending_purchase_returns'] ?? 0 }} pending
-                                            @if($purchaseReturnStats['approved_purchase_returns'] > 0)
-                                                • {{ $purchaseReturnStats['approved_purchase_returns'] }} approved
-                                            @endif
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-
-                    <!-- Analytics Section -->
-                    <div class="mt-8">
-                        <h3 class="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">Analytics Dashboard</h3>
-
-                        <!-- First Row: Sales Activity, Product Details, Top Selling Items -->
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                            <!-- Sales Activity -->
-                            {{-- <div class="bg-gray-200 dark:bg-gray-700 rounded-xl shadow-lg p-6">
-                                <h4 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Sales Activity</h4>
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-center">
-                                        <div class="flex items-center">
-                                            <div class="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
-                                            <span class="text-sm text-gray-600 dark:text-gray-300">Total Invoices</span>
-                                        </div>
-                                        <span class="text-xl font-bold text-gray-900 dark:text-white">{{ $salesActivity['total_invoices'] ?? 0 }}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <div class="flex items-center">
-                                            <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-                                            <span class="text-sm text-gray-600 dark:text-gray-300">Paid Invoices</span>
-                                        </div>
-                                        <span class="text-xl font-bold text-gray-900 dark:text-white">{{ $salesActivity['paid_invoices'] ?? 0 }}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <div class="flex items-center">
-                                            <div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
-                                            <span class="text-sm text-gray-600 dark:text-gray-300">Draft Invoices</span>
-                                        </div>
-                                        <span class="text-xl font-bold text-gray-900 dark:text-white">{{ $salesActivity['draft_invoices'] ?? 0 }}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <div class="flex items-center">
-                                            <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-                                            <span class="text-sm text-gray-600 dark:text-gray-300">Past Due Account</span>
-                                        </div>
-                                        <span class="text-xl font-bold text-gray-900 dark:text-white">{{ $salesActivity['past_due'] ?? 0 }}</span>
-                                    </div>
-                                </div>
-                            </div> --}}
-
-                            <!-- Product Details (Doughnut Chart) -->
-                            <div class="bg-gray-200 dark:bg-gray-700 rounded-xl shadow-lg p-6">
-                                <h4 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Product Details</h4>
-                                <div class="flex items-center justify-center" style="height: 200px;">
-                                    <canvas id="productDetailsChart"></canvas>
-                                </div>
-                                <div class="mt-4 space-y-2">
-                                    <div class="flex justify-between items-center text-sm">
-                                        <div class="flex items-center">
-                                            <div class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
-                                            <span class="text-gray-600 dark:text-gray-300">In Stock</span>
-                                        </div>
-                                        <span class="font-semibold text-gray-900 dark:text-white">{{ $stockStatus['in_stock'] ?? 0 }}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center text-sm">
-                                        <div class="flex items-center">
-                                            <div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
-                                            <span class="text-gray-600 dark:text-gray-300">Low Stock</span>
-                                        </div>
-                                        <span class="font-semibold text-gray-900 dark:text-white">{{ $stockStatus['low_stock'] ?? 0 }}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center text-sm">
-                                        <div class="flex items-center">
-                                            <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-                                            <span class="text-gray-600 dark:text-gray-300">Out of Stock</span>
-                                        </div>
-                                        <span class="font-semibold text-gray-900 dark:text-white">{{ $stockStatus['out_of_stock'] ?? 0 }}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Top Selling Items -->
-                            <div class="bg-gray-200 dark:bg-gray-700 rounded-xl shadow-lg p-6">
-                                <h4 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Top Selling Items</h4>
-                                <div class="space-y-4">
-                                    @forelse($topSellingItems ?? [] as $item)
-                                    <div class="flex items-center space-x-3">
-                                        <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center">
-                                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $item['name'] ?? 'Unknown' }}</p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">Qty: {{ number_format($item['quantity'] ?? 0) }}</p>
-                                        </div>
-                                        <div class="flex-shrink-0 text-right">
-                                            <p class="text-sm font-bold text-gray-900 dark:text-white">₱{{ number_format($item['revenue'] ?? 0, 2) }}</p>
-                                        </div>
-                                    </div>
-                                    @empty
-                                    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                                        <p class="text-sm">No sales data available</p>
-                                    </div>
-                                    @endforelse
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        {{ $customerStats['active_customers'] ?? 0 }} active
+                                    </p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Second Row: Purchase Order and Sales Order Summary -->
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                            <!-- Purchase Order (Bar Chart) -->
-                            <div class="bg-gray-200 dark:bg-gray-700 rounded-xl shadow-lg p-6">
-                                <h4 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Purchase Order Status</h4>
-                                <div style="height: 250px;">
-                                    <canvas id="purchaseOrderChart"></canvas>
-                                </div>
-                            </div>
-
-                            <!-- Sales Order Summary (Line Chart) -->
-                            <div class="bg-gray-200 dark:bg-gray-700 rounded-xl shadow-lg p-6 text-gray-800 dark:text-gray-100">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h4 class="text-lg font-semibold">Sales Order Summary (in PHP)</h4>
-                                    <select name="type" class="border border-gray-600 dark:border-gray-400 rounded-md shadow-sm bg-gray-200 dark:bg-gray-700 dark:text-gray-100" id="salesOrderTypeSelect">
-                                        <option value="monthly" selected>Monthly</option>
-                                        <option value="weekly">Weekly</option>
-                                        <option value="daily">Daily</option>
-                                    </select>
-                                </div>
-                                <div class="mb-2">
-                                    {{-- <span class="text-sm text-gray-500 dark:text-gray-400">Total Orders</span> --}}
-                                </div>
-                                <div class="mb-4">
-                                    <div class="text-3xl font-bold text-gray-900 dark:text-white">₱{{ number_format(($monthlyRevenue ?? collect())->sum(), 2) }}</div>
-                                    <div class="text-sm text-gray-500 dark:text-gray-400">Total Revenue</div>
-                                </div>
-                                <div style="height: 200px;">
-                                    <canvas id="salesOrderChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Detailed Shipment Statistics -->
-                    @if($shipmentStats['total_shipments'] > 0)
-                    <div class="mt-6">
-                        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Shipment Analytics</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                            <!-- Pending Shipments -->
-                            <div class="bg-amber-50 dark:bg-amber-900 p-3 rounded-lg border border-amber-200 dark:border-amber-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-amber-900 dark:text-amber-100">
-                                        {{ $shipmentStats['pending_shipments'] }}
-                                    </p>
-                                    <p class="text-xs text-amber-600 dark:text-amber-400">Pending</p>
-                                </div>
-                            </div>
-
-                            <!-- In Transit Shipments -->
-                            <div class="bg-blue-50 dark:bg-blue-900 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-blue-900 dark:text-blue-100">
-                                        {{ $shipmentStats['in_transit_shipments'] }}
-                                    </p>
-                                    <p class="text-xs text-blue-600 dark:text-blue-400">In Transit</p>
-                                </div>
-                            </div>
-
-                            <!-- Delivered Shipments -->
-                            <div class="bg-green-50 dark:bg-green-900 p-3 rounded-lg border border-green-200 dark:border-green-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-green-900 dark:text-green-100">
-                                        {{ $shipmentStats['delivered_shipments'] }}
-                                    </p>
-                                    <p class="text-xs text-green-600 dark:text-green-400">Delivered</p>
-                                </div>
-                            </div>
-
-                            <!-- Overdue Shipments -->
-                            <div class="bg-red-50 dark:bg-red-900 p-3 rounded-lg border border-red-200 dark:border-red-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-red-900 dark:text-red-100">
-                                        {{ $shipmentStats['overdue_shipments'] }}
-                                    </p>
-                                    <p class="text-xs text-red-600 dark:text-red-400">Overdue</p>
-                                </div>
-                            </div>
-
-                            <!-- This Week -->
-                            <div class="bg-purple-50 dark:bg-purple-900 p-3 rounded-lg border border-purple-200 dark:border-purple-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-purple-900 dark:text-purple-100">
-                                        {{ $shipmentStats['this_week_shipments'] }}
-                                    </p>
-                                    <p class="text-xs text-purple-600 dark:text-purple-400">This Week</p>
-                                </div>
-                            </div>
-
-                            <!-- Shipping Cost -->
-                            <div class="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
-                                <div class="text-center">
-                                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                                        ₱{{ number_format($shipmentStats['total_shipping_cost'], 2) }}
-                                    </p>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400">Total Cost</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-
-                    <!-- Detailed Purchase Return Statistics -->
-                    @if($purchaseReturnStats['total_purchase_returns'] > 0)
-                    <div class="mt-6">
-                        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Purchase Return Analytics</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                            <!-- Pending Purchase Returns -->
-                            <div class="bg-amber-50 dark:bg-amber-900 p-3 rounded-lg border border-amber-200 dark:border-amber-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-amber-900 dark:text-amber-100">
-                                        {{ $purchaseReturnStats['pending_purchase_returns'] }}
-                                    </p>
-                                    <p class="text-xs text-amber-600 dark:text-amber-400">Pending</p>
-                                </div>
-                            </div>
-
-                            <!-- Approved Purchase Returns -->
-                            <div class="bg-blue-50 dark:bg-blue-900 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-blue-900 dark:text-blue-100">
-                                        {{ $purchaseReturnStats['approved_purchase_returns'] }}
-                                    </p>
-                                    <p class="text-xs text-blue-600 dark:text-blue-400">Approved</p>
-                                </div>
-                            </div>
-
-                            <!-- Processed Purchase Returns -->
-                            <div class="bg-green-50 dark:bg-green-900 p-3 rounded-lg border border-green-200 dark:border-green-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-green-900 dark:text-green-100">
-                                        {{ $purchaseReturnStats['processed_purchase_returns'] }}
-                                    </p>
-                                    <p class="text-xs text-green-600 dark:text-green-400">Processed</p>
-                                </div>
-                            </div>
-
-                            <!-- Today Purchase Returns -->
-                            <div class="bg-purple-50 dark:bg-purple-900 p-3 rounded-lg border border-purple-200 dark:border-purple-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-purple-900 dark:text-purple-100">
-                                        {{ $purchaseReturnStats['today_purchase_returns'] }}
-                                    </p>
-                                    <p class="text-xs text-purple-600 dark:text-purple-400">Today</p>
-                                </div>
-                            </div>
-
-                            <!-- This Week Purchase Returns -->
-                            <div class="bg-indigo-50 dark:bg-indigo-900 p-3 rounded-lg border border-indigo-200 dark:border-indigo-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-indigo-900 dark:text-indigo-100">
-                                        {{ $purchaseReturnStats['this_week_purchase_returns'] }}
-                                    </p>
-                                    <p class="text-xs text-indigo-600 dark:text-indigo-400">This Week</p>
-                                </div>
-                            </div>
-
-                            <!-- Total Value -->
-                            <div class="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
-                                <div class="text-center">
-                                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                                        ₱{{ number_format($purchaseReturnStats['total_purchase_return_value'], 2) }}
-                                    </p>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400">Total Value</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-
-                    <!-- Purchase Receives Analytics -->
-                    @if($purchaseReceiveStats['total_receives'] > 0)
-                    <div class="mt-6">
-                        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Purchase Receives Analytics</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                            <!-- Total Receives -->
-                            <div class="bg-blue-50 dark:bg-blue-900 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-blue-900 dark:text-blue-100">
-                                        {{ $purchaseReceiveStats['total_receives'] }}
-                                    </p>
-                                    <p class="text-xs text-blue-600 dark:text-blue-400">Total Receives</p>
-                                </div>
-                            </div>
-
-                            <!-- Received -->
-                            <div class="bg-green-50 dark:bg-green-900 p-3 rounded-lg border border-green-200 dark:border-green-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-green-900 dark:text-green-100">
-                                        {{ $purchaseReceiveStats['received_count'] }}
-                                    </p>
-                                    <p class="text-xs text-green-600 dark:text-green-400">Received</p>
-                                </div>
-                            </div>
-
-                            <!-- In Transit -->
-                            <div class="bg-yellow-50 dark:bg-yellow-900 p-3 rounded-lg border border-yellow-200 dark:border-yellow-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-yellow-900 dark:text-yellow-100">
-                                        {{ $purchaseReceiveStats['in_transit_count'] }}
-                                    </p>
-                                    <p class="text-xs text-yellow-600 dark:text-yellow-400">In Transit</p>
-                                </div>
-                            </div>
-
-                            <!-- This Month -->
-                            <div class="bg-purple-50 dark:bg-purple-900 p-3 rounded-lg border border-purple-200 dark:border-purple-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-purple-900 dark:text-purple-100">
-                                        {{ $purchaseReceiveStats['this_month_receives'] }}
-                                    </p>
-                                    <p class="text-xs text-purple-600 dark:text-purple-400">This Month</p>
-                                </div>
-                            </div>
-
-                            <!-- Total Value -->
-                            <div class="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
-                                <div class="text-center">
-                                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                                        ₱{{ number_format($purchaseReceiveStats['total_value_received'], 2) }}
-                                    </p>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400">Total Value</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-
-                    <!-- Purchase Deliveries Analytics -->
-                    @if($purchaseDeliveryStats['total_deliveries'] > 0)
-                    <div class="mt-6">
-                        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Purchase Deliveries Analytics</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                            <!-- Total Deliveries -->
-                            <div class="bg-blue-50 dark:bg-blue-900 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-blue-900 dark:text-blue-100">
-                                        {{ $purchaseDeliveryStats['total_deliveries'] }}
-                                    </p>
-                                    <p class="text-xs text-blue-600 dark:text-blue-400">Total</p>
-                                </div>
-                            </div>
-
-                            <!-- Scheduled -->
-                            <div class="bg-indigo-50 dark:bg-indigo-900 p-3 rounded-lg border border-indigo-200 dark:border-indigo-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-indigo-900 dark:text-indigo-100">
-                                        {{ $purchaseDeliveryStats['scheduled'] }}
-                                    </p>
-                                    <p class="text-xs text-indigo-600 dark:text-indigo-400">Scheduled</p>
-                                </div>
-                            </div>
-
-                            <!-- In Transit -->
-                            <div class="bg-yellow-50 dark:bg-yellow-900 p-3 rounded-lg border border-yellow-200 dark:border-yellow-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-yellow-900 dark:text-yellow-100">
-                                        {{ $purchaseDeliveryStats['in_transit'] }}
-                                    </p>
-                                    <p class="text-xs text-yellow-600 dark:text-yellow-400">In Transit</p>
-                                </div>
-                            </div>
-
-                            <!-- Delivered -->
-                            <div class="bg-green-50 dark:bg-green-900 p-3 rounded-lg border border-green-200 dark:border-green-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-green-900 dark:text-green-100">
-                                        {{ $purchaseDeliveryStats['delivered'] }}
-                                    </p>
-                                    <p class="text-xs text-green-600 dark:text-green-400">Delivered</p>
-                                </div>
-                            </div>
-
-                            <!-- Delayed -->
-                            <div class="bg-red-50 dark:bg-red-900 p-3 rounded-lg border border-red-200 dark:border-red-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-red-900 dark:text-red-100">
-                                        {{ $purchaseDeliveryStats['delayed'] }}
-                                    </p>
-                                    <p class="text-xs text-red-600 dark:text-red-400">Delayed</p>
-                                </div>
-                            </div>
-
-                            <!-- This Week -->
-                            <div class="bg-purple-50 dark:bg-purple-900 p-3 rounded-lg border border-purple-200 dark:border-purple-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-purple-900 dark:text-purple-100">
-                                        {{ $purchaseDeliveryStats['this_week_deliveries'] }}
-                                    </p>
-                                    <p class="text-xs text-purple-600 dark:text-purple-400">This Week</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-
-                    <!-- Purchase Payments Analytics -->
-                    @if($purchasePaymentStats['total_payments'] > 0)
-                    <div class="mt-6">
-                        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Purchase Payments Analytics</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                            <!-- Total Payments -->
-                            <div class="bg-blue-50 dark:bg-blue-900 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-blue-900 dark:text-blue-100">
-                                        {{ $purchasePaymentStats['total_payments'] }}
-                                    </p>
-                                    <p class="text-xs text-blue-600 dark:text-blue-400">Total Payments</p>
-                                </div>
-                            </div>
-
-                            <!-- Pending Payments -->
-                            <div class="bg-amber-50 dark:bg-amber-900 p-3 rounded-lg border border-amber-200 dark:border-amber-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-amber-900 dark:text-amber-100">
-                                        {{ $purchasePaymentStats['pending_payments'] }}
-                                    </p>
-                                    <p class="text-xs text-amber-600 dark:text-amber-400">Pending</p>
-                                </div>
-                            </div>
-
-                            <!-- Partial Paid -->
-                            <div class="bg-yellow-50 dark:bg-yellow-900 p-3 rounded-lg border border-yellow-200 dark:border-yellow-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-yellow-900 dark:text-yellow-100">
-                                        {{ $purchasePaymentStats['partial_paid'] }}
-                                    </p>
-                                    <p class="text-xs text-yellow-600 dark:text-yellow-400">Partial</p>
-                                </div>
-                            </div>
-
-                            <!-- Fully Paid -->
-                            <div class="bg-green-50 dark:bg-green-900 p-3 rounded-lg border border-green-200 dark:border-green-700">
-                                <div class="text-center">
-                                    <p class="text-lg font-semibold text-green-900 dark:text-green-100">
-                                        {{ $purchasePaymentStats['fully_paid'] }}
-                                    </p>
-                                    <p class="text-xs text-green-600 dark:text-green-400">Fully Paid</p>
-                                </div>
-                            </div>
-
-                            <!-- Total Paid -->
-                            <div class="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
-                                <div class="text-center">
-                                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                                        ₱{{ number_format($purchasePaymentStats['total_paid'], 2) }}
-                                    </p>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400">Total Paid</p>
-                                </div>
-                            </div>
-
-                            <!-- This Month -->
-                            <div class="bg-purple-50 dark:bg-purple-900 p-3 rounded-lg border border-purple-200 dark:border-purple-700">
-                                <div class="text-center">
-                                    <p class="text-sm font-semibold text-purple-900 dark:text-purple-100">
-                                        ₱{{ number_format($purchasePaymentStats['this_month_payments'], 2) }}
-                                    </p>
-                                    <p class="text-xs text-purple-600 dark:text-purple-400">This Month</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-
-                    <!-- User Management Section -->
-                    {{-- <div class="mt-8">
-                        <h3 class="text-lg font-semibold mb-4">Quick Access</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <!-- User Management Card -->
-                            <a href="{{ route('user-management.index') }}"
-                                class="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900 dark:to-blue-900 p-6 rounded-lg hover:shadow-lg transition-all duration-200 border border-indigo-100 dark:border-indigo-800 hover:border-indigo-200 dark:hover:border-indigo-700">
-                                <div class="flex items-center">
-                                    <div class="p-3 bg-indigo-500 rounded-lg">
-                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
-                                            </path>
-                                        </svg>
-                                    </div>
-                                    <div class="ml-4">
-                                        <h4 class="text-lg font-semibold text-indigo-900 dark:text-indigo-100">
-                                            User Management</h4>
-                                        <p class="text-sm text-indigo-600 dark:text-indigo-300">Manage system
-                                            users and permissions</p>
-                                    </div>
-                                </div>
-                                <div class="mt-4 flex items-center text-indigo-600 dark:text-indigo-300">
-                                    <span class="text-sm">Access User Management</span>
-                                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <!-- Revenue Card -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+                            <div class="flex items-center">
+                                <div class="p-2 bg-green-500 rounded-lg">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5l7 7-7 7"></path>
+                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                        </path>
                                     </svg>
                                 </div>
-                            </a>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                        Total Revenue</p>
+                                    <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+                                        ₱{{ number_format(($monthlyRevenue ?? collect())->sum(), 2) }}
+                                    </p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        Last 6 months
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                    </div> --}}
+                    </div>
+
                 </div>
 
                 <!-- Footer -->
@@ -831,141 +425,36 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Product Details Doughnut Chart
-            const productCtx = document.getElementById('productDetailsChart');
-            if (productCtx) {
-                new Chart(productCtx, {
+            // Active Items Donut Chart
+            const activeItemsCtx = document.getElementById('activeItemsChart');
+            if (activeItemsCtx) {
+                const activeProducts = {{ $inventoryStats['active_products'] ?? 0 }};
+                const totalProducts = {{ $inventoryStats['total_products'] ?? 1 }};
+                const inactiveProducts = totalProducts - activeProducts;
+                
+                new Chart(activeItemsCtx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['In Stock', 'Low Stock', 'Out of Stock'],
+                        labels: ['Active', 'Inactive'],
                         datasets: [{
-                            data: [
-                                {{ $stockStatus['in_stock'] ?? 0 }},
-                                {{ $stockStatus['low_stock'] ?? 0 }},
-                                {{ $stockStatus['out_of_stock'] ?? 0 }}
-                            ],
+                            data: [activeProducts, inactiveProducts],
                             backgroundColor: [
-                                'rgb(34, 197, 94)',  // green
-                                'rgb(234, 179, 8)',   // yellow
-                                'rgb(239, 68, 68)'    // red
+                                'rgb(34, 197, 94)',  // green for active
+                                'rgb(229, 231, 235)'  // light gray for inactive
                             ],
-                            borderWidth: 0
+                            borderWidth: 0,
+                            cutout: '75%'  // Makes it a donut
                         }]
                     },
                     options: {
                         responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Purchase Order Bar Chart
-            const purchaseCtx = document.getElementById('purchaseOrderChart');
-            if (purchaseCtx) {
-                new Chart(purchaseCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Pending', 'Approved', 'Ordered', 'Partial Received', 'Received', 'Cancelled'],
-                        datasets: [{
-                            label: 'Purchase Orders',
-                            data: [
-                                {{ $purchaseOrderStatus['pending'] ?? 0 }},
-                                {{ $purchaseOrderStatus['approved'] ?? 0 }},
-                                {{ $purchaseOrderStatus['ordered'] ?? 0 }},
-                                {{ $purchaseOrderStatus['partial_received'] ?? 0 }},
-                                {{ $purchaseOrderStatus['received'] ?? 0 }},
-                                {{ $purchaseOrderStatus['cancelled'] ?? 0 }}
-                            ],
-                            backgroundColor: [
-                                'rgba(156, 163, 175, 0.8)',  // gray - pending
-                                'rgba(59, 130, 246, 0.8)',   // blue - approved
-                                'rgba(34, 197, 94, 0.8)',    // green - ordered
-                                'rgba(234, 179, 8, 0.8)',    // yellow - partial received
-                                'rgba(34, 197, 94, 0.9)',    // darker green - received
-                                'rgba(239, 68, 68, 0.8)'     // red - cancelled
-                            ],
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
+                        maintainAspectRatio: true,
                         plugins: {
                             legend: {
                                 display: false
                             },
                             tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return context.parsed.y + ' orders';
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Sales Order Summary Line Chart
-            const salesCtx = document.getElementById('salesOrderChart');
-            if (salesCtx) {
-                new Chart(salesCtx, {
-                    type: 'line',
-                    data: {
-                        labels: {!! json_encode($last6Months ?? collect()) !!},
-                        datasets: [{
-                            label: 'Revenue',
-                            data: {!! json_encode($monthlyRevenue ?? collect()) !!},
-                            borderColor: 'rgb(59, 130, 246)',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            pointBackgroundColor: 'rgb(59, 130, 246)',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return '₱' + context.parsed.y.toLocaleString('en-US', {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2
-                                        });
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: function(value) {
-                                        return '₱' + value.toLocaleString('en-US');
-                                    }
-                                }
+                                enabled: false
                             }
                         }
                     }

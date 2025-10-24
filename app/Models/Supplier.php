@@ -95,7 +95,9 @@ class Supplier extends Model
      */
     public function getTotalPurchasedAttribute(): float
     {
-        return $this->purchases()->sum('total_amount') ?? 0;
+        return $this->purchases()
+            ->selectRaw('SUM(price * quantity) as total')
+            ->value('total') ?? 0;
     }
 
     /**

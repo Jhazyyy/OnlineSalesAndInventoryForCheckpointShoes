@@ -238,7 +238,8 @@ class SupplierService
 
         $recentValue = $supplier->purchases()
                               ->where('purchase_date', '>=', Carbon::now()->subDays(90))
-                              ->sum('total_amount');
+                              ->selectRaw('SUM(price * quantity) as total')
+                              ->value('total') ?? 0;
 
         // Performance rating (based on order frequency, value, and recency)
         $performanceScore = 0;

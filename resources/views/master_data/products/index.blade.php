@@ -10,13 +10,13 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
+
                     <div class="flex-1">
                         <h3 class="text-sm font-medium text-blue-800 dark:text-blue-300">Inventory Management</h3>
                         <p class="text-sm text-blue-700 dark:text-blue-400 mt-1">
                             Stock quantities shown below are managed through <strong>Stock Movements</strong>.
                             To adjust inventory, use <a href="{{ route('inventory.product_stock_adjustment.index') }}"
-                                class="underline hover:text-blue-900 dark:hover:text-blue-200">Stock Adjustments</a>,
-                            Purchase Receives, or Sales Orders.
+                                class="underline hover:text-blue-900 dark:hover:text-blue-200">Stock Adjustments</a>.
                         </p>
                     </div>
                 </div>
@@ -48,7 +48,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <form method="GET" action="{{ route('master_data.products.index') }}" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                             <!-- Search -->
                             <div>
                                 <label for="search"

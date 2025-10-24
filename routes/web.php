@@ -17,7 +17,9 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Contracts\Auth;
+use Illuminate\Contracts\Auth as ContractsAuth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 Route::get('/', function () {
     return view('welcome');
@@ -59,12 +61,20 @@ Route::post('/csrf-test', function () {
     return response()->json(['success' => true, 'message' => 'CSRF token is working!']);
 });
 
+// Livewire demo pages (non-invasive)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/livewire/products', fn () => view('livewire-pages.products'))->name('livewire.products');
+    Route::get('/livewire/inventory', fn () => view('livewire-pages.inventory'))->name('livewire.inventory');
+    Route::get('/livewire/customers', fn () => view('livewire-pages.customers'))->name('livewire.customers');
+    Route::get('/livewire/sales-orders', fn () => view('livewire-pages.sales-orders'))->name('livewire.sales-orders');
+});
+
 
 
 // Main Route
 Route::get('dashboard', function () {
     // Debug: Check if user is authenticated
-    if (!auth()->check()) {
+    if (!Auth::check()) {
         return redirect()->route('login')->with('error', 'You must be logged in to access the dashboard.');
     }
 
@@ -93,10 +103,10 @@ Route::get('dashboard', function () {
     try {
         $salesStats = [
             'total_sales' => \App\Models\Sale::count(),
-            'today_sales' => \App\Models\Sale::whereDate('created_at', today())->count(),
+            'today_sales' => \App\Models\Sale::whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()])->count(),
             'this_month_sales' => \App\Models\Sale::whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->count(),
             'total_sales_value' => \App\Models\Sale::sum('total_amount') ?? 0,
-            'today_sales_value' => \App\Models\Sale::whereDate('created_at', today())->sum('total_amount') ?? 0,
+            'today_sales_value' => \App\Models\Sale::whereBetween('created_at', [now()->startOfDay(), now()->endOfDay()])->sum('total_amount') ?? 0,
         ];
     } catch (\Exception $e) {
         $salesStats = [
@@ -302,7 +312,7 @@ Route::get('dashboard', function () {
             })
             ->values();
     } catch (\Exception $e) {
-        \Log::error('Error fetching top selling items: ' . $e->getMessage());
+    Log::error('Error fetching top selling items: ' . $e->getMessage());
         $topSellingItems = collect();
     }
 

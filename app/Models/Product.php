@@ -191,13 +191,6 @@ class Product extends Model
         return $this->hasMany(Returns::class, 'product_id', 'product_id');
     }
 
-    /**
-     * Get the product properties (variants) for the product.
-     */
-    public function properties(): HasMany
-    {
-        return $this->hasMany(ProductProperty::class, 'product_id', 'product_id');
-    }
 
     /**
      * Get the inventory records for the product.
@@ -253,6 +246,29 @@ class Product extends Model
     public function lastSupplier()
     {
         return $this->belongsTo(Supplier::class, 'last_supplier_id');
+    }
+
+    /**
+     * Get the product properties (variants like size, color, etc.).
+     * Note: This relationship is for future use when product variants are implemented.
+     */
+    public function properties(): HasMany
+    {
+        return $this->hasMany(ProductProperty::class, 'product_id', 'product_id');
+    }
+
+    /**
+     * Check if the product has any properties/variants.
+     */
+    public function hasProperties(): bool
+    {
+        // Check if the product_properties table exists and has records
+        try {
+            return $this->properties()->exists();
+        } catch (\Exception $e) {
+            // If the table doesn't exist, return false
+            return false;
+        }
     }
 
     /**
@@ -330,21 +346,13 @@ class Product extends Model
         return $latestMovement ? $latestMovement->quantity_after : 0;
     }
 
-    /**
-     * Check if the product has any properties (variants).
-     */
-    public function hasProperties(): bool
-    {
-        return $this->properties()->exists();
-    }
-
-    /**
-     * Get quantity for display - uses actual_quantity if properties exist, otherwise uses reference quantity.
-     */
-    public function getDisplayQuantityAttribute(): int
-    {
-        return $this->hasProperties() ? $this->actual_quantity : $this->quantity;
-    }
+        /**
+         * Get quantity for display - uses actual_quantity if properties exist, otherwise uses reference quantity.
+         */
+        public function getDisplayQuantityAttribute(): int
+        {
+            return $this->hasProperties() ? $this->actual_quantity : $this->quantity;
+        }
 
     /**
      * Check if the product is in stock.
