@@ -16,12 +16,34 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // First, seed roles and permissions
+        $this->call(RolesAndPermissionsSeeder::class);
+
+        // Create admin user
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Administrator',
+                'first_name' => 'Admin',
+                'last_name' => 'User',
+                'email' => 'admin@example.com',
+                'password' => bcrypt('admin123'),
+                'role' => 'admin',
+                'is_active' => true,
+                'status' => 'active',
+            ]
+        );
+        
+        // Remove any existing roles and assign only admin role
+        if (!$admin->hasRole('admin') || $admin->roles->count() > 1) {
+            $admin->roles()->detach();
+            $admin->assignRole('admin');
+        }
 
         // Create test user with default "Test User" name (no first_name/last_name)
         // This will display as "Test User" via the accessor
         // Ensure idempotent seeding for the default test user
-        User::firstOrCreate(
+        $testUser = User::firstOrCreate(
             ['email' => 'test@example.com'],
             [
                 'name' => 'Test User',
@@ -29,19 +51,17 @@ class DatabaseSeeder extends Seeder
                 'last_name' => 'User',
                 'email' => 'test@example.com',
                 'password' => bcrypt('password'),
+                'role' => 'user',
+                'is_active' => true,
+                'status' => 'active',
             ]
         );
-
-        // $adminRole = Role::create(['name' => 'admin']);
-        // $userRole = Role::create(['name' => 'user']);
-
-        // $admin = User::create([
-        // 'name' => 'Admin User',
-        // 'email' => 'admin@example.com',
-        // 'password' => bcrypt('password'),
-        // ]);
-        // $admin->assignRole($adminRole);
-
+        
+        // Ensure only user role is assigned
+        if (!$testUser->hasRole('user') || $testUser->roles->count() > 1) {
+            $testUser->roles()->detach();
+            $testUser->assignRole('user');
+        }
 
 
         

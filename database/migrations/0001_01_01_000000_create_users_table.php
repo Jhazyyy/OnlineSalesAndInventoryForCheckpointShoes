@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -24,7 +25,7 @@ return new class extends Migration
             $table->timestamp('last_login_at')->nullable();
             $table->integer('login_count')->default(0);
             $table->boolean('is_active')->default(true);
-            $table->string('role')->default('user'); // admin, manager, user, viewer
+            $table->string('role')->nullable(); // Nullable as we're using Spatie's role tables; values: admin, user
             $table->string('password');
             $table->string('profile_photo')->nullable();
             $table->text('bio')->nullable();
@@ -34,6 +35,18 @@ return new class extends Migration
             $table->timestamps();
 
         });
+
+        // Set default role for any existing users (in case of migration on existing database)
+        DB::table('users')->whereNull('role')->update(['role' => 'user']);
+        
+        // Standardize any existing roles to only 'admin' and 'user'
+        DB::table('users')->where('role', 'manager')->update(['role' => 'admin']);
+        DB::table('users')->where('role', 'viewer')->update(['role' => 'user']);
+        DB::table('users')->where('role', 'client')->update(['role' => 'user']);
+        DB::table('users')
+            ->whereNotIn('role', ['admin', 'user'])
+            ->whereNotNull('role')
+            ->update(['role' => 'user']);
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

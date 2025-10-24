@@ -17,8 +17,7 @@ return new class extends Migration
             $table->string('reference_number', 100)->unique();
             $table->foreignId('purchase_order_id'); // ->constrained() commented out - add FK in separate migration
             $table->foreignId('supplier_id'); // ->constrained() commented out - add FK in separate migration
-            $table->unsignedBigInteger('delivery_id')->nullable();
-            // $table->foreign('delivery_id')->references('delivery_id')->on('purchase_deliveries')->onDelete('set null');
+            $table->unsignedBigInteger('delivery_id')->nullable(); // FK to be added in separate migration after purchase_deliveries table is created
 
             $table->date('receive_date');
             $table->enum('status', ['in_transit', 'received', 'partially_received', 'damaged', 'cancelled'])->default('in_transit');

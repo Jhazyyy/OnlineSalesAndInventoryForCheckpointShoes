@@ -37,8 +37,8 @@
                         <div class="flex items-center mb-4">
                             <a href="{{ route('settings.index') }}"
                                 class="mr-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
-                                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                                 </svg>
@@ -56,13 +56,14 @@
                     </div>
 
                     <!-- Settings Form -->
-                    <form action="{{ route('settings.general.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                    <form action="{{ route('settings.general.update') }}" method="POST" enctype="multipart/form-data"
+                        class="space-y-6">
                         @csrf
 
                         <!-- Company Information Section -->
                         <div
                             class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-                            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -72,131 +73,138 @@
                                 Company Information
                             </h2>
 
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <!-- Company Logo -->
-                                <div class="md:col-span-1">
+                            <!-- Flex Layout: Logo on Left, Fields on Right -->
+                            <div class="flex flex-col md:flex-row gap-8">
+                                <!-- Left: Company Logo Upload -->
+                                <div class="w-full md:w-1/3">
                                     <x-input-label for="company_logo" :value="__('Company Logo')" />
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-2">Max 512x512px, 2MB. Supports JPG, PNG, GIF</p>
-                                    
-                                    <!-- Logo Preview Container -->
-                                    <div class="mt-2">
-                                        <div class="relative inline-block group">
-                                            <!-- Logo Image -->
-                                            <div class="w-32 h-32 rounded-lg border-4 border-gray-300 dark:border-gray-600 overflow-hidden bg-gray-100 dark:bg-gray-700 cursor-pointer"
-                                                onclick="document.getElementById('company_logo').click()">
-                                                <img id="logoPreview" 
-                                                    src="{{ companyLogoUrl() }}" 
-                                                    alt="Company Logo" 
-                                                    class="w-full h-full object-contain transition-opacity duration-300">
-                                                
-                                                <!-- Hover Overlay -->
-                                                <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                                    <svg class="w-8 h-8 text-white mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                                    </svg>
-                                                    <span class="text-white text-xs font-medium">Change Logo</span>
-                                                </div>
-                                            </div>
-                                            
-                                            <!-- Remove Button -->
-                                            <button type="button" 
-                                                id="removeLogoBtn"
-                                                onclick="removeLogo()"
-                                                class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                                                title="Remove logo">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-2">
+                                        Max 512x512px, 2MB. Supports JPG, PNG, GIF
+                                    </p>
+
+                                    <div class="relative inline-block group">
+                                        <!-- Logo Preview Box -->
+                                        <div class="w-40 h-40 rounded-lg border-4 border-gray-300 dark:border-gray-600 overflow-hidden bg-gray-100 dark:bg-gray-700 cursor-pointer"
+                                            onclick="document.getElementById('company_logo').click()">
+                                            <img id="logoPreview" src="{{ companyLogoUrl() }}" alt="Company Logo"
+                                                class="w-full h-full object-contain transition-opacity duration-300">
+
+                                            <!-- Hover Overlay -->
+                                            <div
+                                                class="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                <svg class="w-8 h-8 text-white mb-1" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                    </path>
                                                 </svg>
-                                            </button>
+                                                <span class="text-white text-xs font-medium">Change Logo</span>
+                                            </div>
                                         </div>
-                                        
-                                        <!-- Hidden File Input -->
-                                        <input id="company_logo" 
-                                            name="company_logo" 
-                                            type="file" 
-                                            accept="image/*"
-                                            class="hidden"
-                                            onchange="previewLogo(event)" />
-                                        
-                                        <!-- File Info -->
-                                        <div id="logoFileInfo" class="mt-2 text-xs text-gray-600 dark:text-gray-400 hidden">
-                                            <span id="logoFileName"></span>
-                                        </div>
+
+                                        <!-- Remove Button -->
+                                        <button type="button" id="removeLogoBtn" onclick="removeLogo()"
+                                            class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                            title="Remove logo">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
                                     </div>
+
+                                    <!-- Hidden File Input -->
+                                    <input id="company_logo" name="company_logo" type="file" accept="image/*"
+                                        class="hidden" onchange="previewLogo(event)" />
+
+                                    <!-- File Info -->
+                                    <div id="logoFileInfo" class="mt-2 text-xs text-gray-600 dark:text-gray-400 hidden">
+                                        <span id="logoFileName"></span>
+                                    </div>
+
                                     <x-input-error class="mt-2" :messages="$errors->get('company_logo')" />
                                 </div>
-                                <!-- Company Name -->
-                                <div>
-                                    <x-input-label for="company_name" :value="__('Company Name')" />
-                                    <x-text-input id="company_name" name="company_name" type="text"
-                                        class="mt-1 block w-full" :value="old(
-                                            'company_name',
-                                            $settings['company_name'] ??
-                                                ($defaults['company_name']['value'] ?? 'Checkpoint'),
-                                        )" required />
-                                    <x-input-error class="mt-2" :messages="$errors->get('company_name')" />
-                                    {{-- <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">The name of your business displayed throughout the system</p> --}}
-                                </div>
 
-                                <!-- Company Phone -->
-                                <div>
-                                    <x-input-label for="company_phone" :value="__('Company Phone')" />
-                                    <x-text-input id="company_phone" name="company_phone" type="text"
-                                        class="mt-1 block w-full" :value="old(
-                                            'company_phone',
-                                            $settings['company_phone'] ?? ($defaults['company_phone']['value'] ?? ''),
-                                        )" placeholder="+63-XXX-XXX-XXXX" />
-                                    <x-input-error class="mt-2" :messages="$errors->get('company_phone')" />
-                                </div>
+                                <!-- Right: Other Company Fields -->
+                                <div class="w-full md:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- Company Name -->
+                                    <div class="col-span-1">
+                                        <x-input-label for="company_name" :value="__('Company Name')" />
+                                        <x-text-input id="company_name" name="company_name" type="text"
+                                            class="mt-1 block w-full" :value="old(
+                                                'company_name',
+                                                $settings['company_name'] ??
+                                                    ($defaults['company_name']['value'] ?? 'Checkpoint'),
+                                            )" required />
+                                        <x-input-error class="mt-2" :messages="$errors->get('company_name')" />
+                                    </div>
 
-                                <!-- Company Email -->
-                                <div>
-                                    <x-input-label for="company_email" :value="__('Company Email')" />
-                                    <x-text-input id="company_email" name="company_email" type="email"
-                                        class="mt-1 block w-full" :value="old(
-                                            'company_email',
-                                            $settings['company_email'] ?? ($defaults['company_email']['value'] ?? ''),
-                                        )" placeholder="info@checkpoint.com" />
-                                    <x-input-error class="mt-2" :messages="$errors->get('company_email')" />
-                                </div>
+                                    <!-- Company Phone -->
+                                    <div>
+                                        <x-input-label for="company_phone" :value="__('Company Phone')" />
+                                        <x-text-input id="company_phone" name="company_phone" type="text"
+                                            class="mt-1 block w-full" :value="old(
+                                                'company_phone',
+                                                $settings['company_phone'] ??
+                                                    ($defaults['company_phone']['value'] ?? ''),
+                                            )"
+                                            placeholder="+63-XXX-XXX-XXXX" />
+                                        <x-input-error class="mt-2" :messages="$errors->get('company_phone')" />
+                                    </div>
 
-                                <!-- Timezone -->
-                                <div>
-                                    <x-input-label for="timezone" :value="__('Timezone')" />
-                                    <select id="timezone" name="timezone"
-                                        class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                                        @php
-                                            $timezones = [
-                                                'Asia/Manila' => 'Asia/Manila (Philippines)',
-                                                'UTC' => 'UTC (Coordinated Universal Time)',
-                                            ];
-                                            $currentTimezone = old(
-                                                'timezone',
-                                                $settings['timezone'] ??
-                                                    ($defaults['timezone']['value'] ?? 'Asia/Manila'),
-                                            );
-                                        @endphp
-                                        @foreach ($timezones as $value => $label)
-                                            <option value="{{ $value }}"
-                                                {{ $currentTimezone === $value ? 'selected' : '' }}>
-                                                {{ $label }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <x-input-error class="mt-2" :messages="$errors->get('timezone')" />
-                                </div>
-                            </div>
+                                    <!-- Company Email -->
+                                    <div>
+                                        <x-input-label for="company_email" :value="__('Company Email')" />
+                                        <x-text-input id="company_email" name="company_email" type="email"
+                                            class="mt-1 block w-full" :value="old(
+                                                'company_email',
+                                                $settings['company_email'] ??
+                                                    ($defaults['company_email']['value'] ?? ''),
+                                            )"
+                                            placeholder="info@checkpoint.com" />
+                                        <x-input-error class="mt-2" :messages="$errors->get('company_email')" />
+                                    </div>
 
-                            <!-- Company Address -->
-                            <div class="mt-6">
-                                <x-input-label for="company_address" :value="__('Company Address')" />
-                                <textarea id="company_address" name="company_address" rows="1"
-                                    class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-                                    placeholder="123 Main Street, City, Province, Postal Code, Philippines">{{ old('company_address', $settings['company_address'] ?? ($defaults['company_address']['value'] ?? '')) }}</textarea>
-                                <x-input-error class="mt-2" :messages="$errors->get('company_address')" />
+                                    <!-- Timezone -->
+                                    <div class="col-span-2 md:col-span-1">
+                                        <x-input-label for="timezone" :value="__('Timezone')" />
+                                        <select id="timezone" name="timezone"
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
+                                            @php
+                                                $timezones = [
+                                                    'Asia/Manila' => 'Asia/Manila (Philippines)',
+                                                    'UTC' => 'UTC (Coordinated Universal Time)',
+                                                ];
+                                                $currentTimezone = old(
+                                                    'timezone',
+                                                    $settings['timezone'] ??
+                                                        ($defaults['timezone']['value'] ?? 'Asia/Manila'),
+                                                );
+                                            @endphp
+                                            @foreach ($timezones as $value => $label)
+                                                <option value="{{ $value }}"
+                                                    {{ $currentTimezone === $value ? 'selected' : '' }}>
+                                                    {{ $label }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <x-input-error class="mt-2" :messages="$errors->get('timezone')" />
+                                    </div>
+
+                                    <!-- Company Address -->
+                                    <div class="col-span-2">
+                                        <x-input-label for="company_address" :value="__('Company Address')" />
+                                        <textarea id="company_address" name="company_address" rows="2"
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                            placeholder="123 Main Street, City, Province, Postal Code, Philippines">{{ old('company_address', $settings['company_address'] ?? ($defaults['company_address']['value'] ?? '')) }}</textarea>
+                                        <x-input-error class="mt-2" :messages="$errors->get('company_address')" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
 
                         <!-- Business Hours Section -->
                         <div
@@ -239,7 +247,8 @@
 
                             <div class="space-y-4">
                                 @foreach ($days as $day => $dayLabel)
-                                    <div class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                    <div
+                                        class="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                         <div class="w-24 flex-shrink-0">
                                             <span
                                                 class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ $dayLabel }}</span>
@@ -288,7 +297,7 @@
                     </form>
 
                     <!-- Current Settings Preview -->
-                        <div class="mt-8 bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
+                    <div class="mt-8 bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Current Settings Preview
                         </h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -296,9 +305,8 @@
                                 <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Company Information</h4>
                                 <ul class="space-y-1 text-sm text-gray-600 dark:text-gray-400">
                                     <li class="flex items-center space-x-2">
-                                        <strong class="min-w-[60px]">Logo:</strong> 
-                                        <img src="{{ companyLogoUrl() }}" 
-                                            alt="Logo" 
+                                        <strong class="min-w-[60px]">Logo:</strong>
+                                        <img src="{{ companyLogoUrl() }}" alt="Logo"
                                             class="h-10 w-10 rounded-lg object-contain bg-white dark:bg-gray-800 p-1 border border-gray-300 dark:border-gray-600">
                                     </li>
                                     <li><strong>Name:</strong> {{ $settings['company_name'] ?? 'Not set' }}</li>
@@ -342,7 +350,7 @@
         function previewLogo(event) {
             const input = event.target;
             const file = input.files[0];
-            
+
             if (file) {
                 // Validate file size (2MB max)
                 if (file.size > 2 * 1024 * 1024) {
@@ -363,7 +371,7 @@
                 reader.onload = function(e) {
                     const preview = document.getElementById('logoPreview');
                     preview.src = e.target.result;
-                    
+
                     // Show file info
                     const fileInfo = document.getElementById('logoFileInfo');
                     const fileName = document.getElementById('logoFileName');
@@ -380,7 +388,7 @@
                 const preview = document.getElementById('logoPreview');
                 const input = document.getElementById('company_logo');
                 const fileInfo = document.getElementById('logoFileInfo');
-                
+
                 // Reset to default logo
                 preview.src = "{{ asset('welcome.png') }}";
                 input.value = '';
@@ -391,7 +399,7 @@
         function resetToDefaults() {
             if (confirm(
                     'Are you sure you want to reset all general settings to their default values? This action cannot be undone.'
-                    )) {
+                )) {
                 // Reset form fields to default values
                 document.getElementById('company_name').value = 'Checkpoint';
                 document.getElementById('company_phone').value = '';

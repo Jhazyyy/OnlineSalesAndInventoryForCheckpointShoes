@@ -33,7 +33,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'last_login_at',
         'login_count',
         'is_active',
-        'role',
+        // Note: 'role' removed - now managed by Spatie Permission package
         'bio',
         'department',
         'position',
@@ -112,15 +112,15 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->hasRole('admin');
     }
 
     /**
-     * Check if user is manager
+     * Check if user is a regular user
      */
-    public function isManager(): bool
+    public function isUser(): bool
     {
-        return $this->role === 'manager';
+        return $this->hasRole('user');
     }
 
     /**
@@ -133,29 +133,52 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Get status badge color
+     * Considers both is_active and status fields
      */
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
-            'active' => 'green',
-            'inactive' => 'gray',
-            'suspended' => 'red',
-            default => 'gray',
-        };
+        // If suspended, always show red regardless of is_active
+        if ($this->status === 'suspended') {
+            return 'red';
+        }
+        
+        // If is_active is false or status is inactive, show gray
+        if (!$this->is_active || $this->status === 'inactive') {
+            return 'gray';
+        }
+        
+        // If is_active is true and status is active, show green
+        if ($this->is_active && $this->status === 'active') {
+            return 'green';
+        }
+        
+        return 'gray';
     }
 
     /**
      * Get role badge color
+     * Only supports 'admin' and 'user' roles
      */
     public function getRoleColorAttribute(): string
     {
-        return match($this->role) {
-            'admin' => 'purple',
-            'manager' => 'blue',
-            'user' => 'gray',
-            'viewer' => 'yellow',
-            default => 'gray',
-        };
+        if ($this->hasRole('admin')) {
+            return 'purple';
+        }
+        
+        if ($this->hasRole('user')) {
+            return 'blue';
+        }
+        
+        return 'gray';
+    }
+
+    /**
+     * Get the user's primary role name
+     */
+    public function getPrimaryRoleAttribute(): string
+    {
+        $role = $this->roles->first();
+        return $role ? $role->name : 'user';
     }
 
     /**
@@ -167,11 +190,11 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Scope by role
+     * Scope by role using Spatie's role system
      */
     public function scopeByRole($query, $role)
     {
-        return $query->where('role', $role);
+        return $query->role($role);
     }
 
     /**
@@ -207,10 +230,15 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Check if user is client
+     * Assign default user role after creation
      */
-    public function isClient(): bool
+    protected static function booted(): void
     {
-        return $this->role === 'client';   
+        static::created(function (User $user) {
+            // Only assign default role if user has no roles
+            if ($user->roles->isEmpty()) {
+                $user->assignRole('user');
+            }
+        });
     }
 }

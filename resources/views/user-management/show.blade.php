@@ -20,31 +20,46 @@
                             <div>
                                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $user->name }}</h2>
                                 <p class="text-gray-600 dark:text-gray-400">
-                                    {{ ucfirst($user->role ?? 'User') }}
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-2
-                                        {{ $user->status === 'active' ? 'bg-green-100 text-green-800' : ($user->status === 'suspended' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800') }}">
-                                        {{ ucfirst($user->status ?? 'active') }}
+                                    {{ ucfirst($user->primary_role) }}
+                                    @php
+                                        // Determine the correct badge based on both is_active and status
+                                        $badgeClass = 'bg-gray-100 text-gray-800';
+                                        $badgeText = 'Inactive';
+                                        
+                                        if ($user->is_active && $user->status === 'active') {
+                                            $badgeClass = 'bg-green-100 text-green-800';
+                                            $badgeText = 'Active';
+                                        } elseif ($user->status === 'suspended') {
+                                            $badgeClass = 'bg-red-100 text-red-800';
+                                            $badgeText = 'Suspended';
+                                        } elseif (!$user->is_active || $user->status === 'inactive') {
+                                            $badgeClass = 'bg-gray-100 text-gray-800';
+                                            $badgeText = 'Inactive';
+                                        }
+                                    @endphp
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-2 {{ $badgeClass }}">
+                                        {{ $badgeText }}
                                     </span>
-                                    @if($user->is_active)
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-2 bg-blue-100 text-blue-800">
-                                            Active
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-2 bg-gray-100 text-gray-800">
-                                            Inactive
-                                        </span>
-                                    @endif
                                 </p>
                             </div>
                         </div>
                         <div class="flex space-x-3">
-                            <a href="{{ route('user-management.edit', $user) }}" 
-                               class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:bg-yellow-700 active:bg-yellow-900 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                </svg>
-                                Edit User
-                            </a>
+                            @if (!$user->hasRole('admin'))
+                                <a href="{{ route('user-management.edit', $user) }}" 
+                                   class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:bg-yellow-700 active:bg-yellow-900 transition ease-in-out duration-150">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                    Edit User
+                                </a>
+                            @else
+                                <span class="inline-flex items-center px-4 py-2 bg-gray-400 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest cursor-not-allowed opacity-60" title="Admin users cannot be edited">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                    Edit User
+                                </span>
+                            @endif
                             <a href="{{ route('user-management.index') }}" 
                                class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,7 +124,7 @@
                         <div class="space-y-3">
                             <div class="flex justify-between">
                                 <span class="text-sm text-gray-600 dark:text-gray-400">Role:</span>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ ucfirst($user->role ?? 'User') }}</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ ucfirst($user->primary_role) }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-sm text-gray-600 dark:text-gray-400">Status:</span>

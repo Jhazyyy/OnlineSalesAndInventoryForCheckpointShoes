@@ -53,14 +53,13 @@ class UserManagementController extends Controller
             'active' => User::active()->count(),
             'inactive' => User::where('status', 'inactive')->count(),
             'suspended' => User::where('status', 'suspended')->count(),
-            // 'admins' => User::byRole('admin')->count(),
-            'managers' => User::byRole('manager')->count(),
+            'admins' => User::byRole('admin')->count(),
             'users' => User::byRole('user')->count(),
             'new_this_month' => User::whereMonth('created_at', now()->month)->count(),
         ];
 
         // Role and status options for filters
-        $roles = ['manager', 'user'];
+        $roles = ['admin', 'user'];
         $statuses = ['active', 'inactive', 'suspended'];
 
         return view('user-management.index', compact('users', 'stats', 'roles', 'statuses'));
@@ -71,7 +70,7 @@ class UserManagementController extends Controller
      */
     public function create(): View
     {
-        $roles = ['manager', 'user'];
+        $roles = ['admin', 'user'];
         $statuses = ['active', 'inactive', 'suspended'];
         return view('user-management.create', compact('roles', 'statuses'));
     }
@@ -88,7 +87,7 @@ class UserManagementController extends Controller
             'username' => ['nullable', 'string', 'max:255', 'unique:users'],
             'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'in:admin,manager,user,viewer'],
+            'role' => ['required', 'in:user'],  // Only 'user' role allowed
             'status' => ['required', 'in:active,inactive,suspended'],
             'department' => ['nullable', 'string', 'max:255'],
             'position' => ['nullable', 'string', 'max:255'],
@@ -107,7 +106,6 @@ class UserManagementController extends Controller
             'username' => $request->username,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
             'status' => $request->status,
             'is_active' => $request->has('is_active'),
             'department' => $request->department,
@@ -123,7 +121,10 @@ class UserManagementController extends Controller
             $data['profile_photo'] = $imagePath;
         }
 
-        User::create($data);
+        $user = User::create($data);
+        
+        // Assign role using Spatie Permission
+        $user->syncRoles([$request->role]);
 
         return redirect()->route('user-management.index')
             ->with('success', 'User created successfully.');
@@ -162,10 +163,17 @@ class UserManagementController extends Controller
     /**
      * Show the form for editing the specified user.
      */
-    public function edit($userManagement): View
+    public function edit($userManagement): View|RedirectResponse
     {
         $user = User::findOrFail($userManagement);
-        $roles = ['manager', 'user'];
+        
+        // Prevent editing admin users
+        if ($user->hasRole('admin')) {
+            return redirect()->route('user-management.index')
+                ->with('error', 'Admin users cannot be edited through this interface.');
+        }
+        
+        $roles = ['admin', 'user'];
         $statuses = ['active', 'inactive', 'suspended'];
         return view('user-management.edit', compact('user', 'roles', 'statuses'));
     }
@@ -177,6 +185,12 @@ class UserManagementController extends Controller
     {
         $user = User::findOrFail($userManagement);
         
+        // Prevent editing admin users
+        if ($user->hasRole('admin')) {
+            return redirect()->route('user-management.index')
+                ->with('error', 'Admin users cannot be edited through this interface.');
+        }
+        
         $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
@@ -184,7 +198,7 @@ class UserManagementController extends Controller
             'username' => ['nullable', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
             'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'in:admin,manager,user,viewer'],
+            'role' => ['required', 'in:user'],  // Only 'user' role allowed
             'status' => ['required', 'in:active,inactive,suspended'],
             'department' => ['nullable', 'string', 'max:255'],
             'position' => ['nullable', 'string', 'max:255'],
@@ -199,7 +213,6 @@ class UserManagementController extends Controller
             'email' => $request->email,
             'username' => $request->username,
             'phone' => $request->phone,
-            'role' => $request->role,
             'status' => $request->status,
             'is_active' => $request->has('is_active'),
             'department' => $request->department,
@@ -225,6 +238,9 @@ class UserManagementController extends Controller
         }
 
         $user->update($data);
+        
+        // Update role using Spatie Permission
+        $user->syncRoles([$request->role]);
 
         return redirect()->route('user-management.index')
             ->with('success', 'User updated successfully.');
@@ -241,6 +257,12 @@ class UserManagementController extends Controller
         if ($user->id === auth()->id()) {
             return redirect()->route('user-management.index')
                 ->with('error', 'You cannot delete your own account.');
+        }
+
+        // Prevent deleting admin users
+        if ($user->hasRole('admin')) {
+            return redirect()->route('user-management.index')
+                ->with('error', 'You cannot delete admin users.');
         }
 
         // Delete profile photo if exists
@@ -286,9 +308,19 @@ class UserManagementController extends Controller
         // Remove current user's ID from the list
         $userIds = array_diff($userIds, [auth()->id()]);
 
+        // Remove admin users from the list
+        $adminUserIds = User::whereIn('id', $userIds)
+            ->whereHas('roles', function($q) {
+                $q->where('name', 'admin');
+            })
+            ->pluck('id')
+            ->toArray();
+        
+        $userIds = array_diff($userIds, $adminUserIds);
+
         if (empty($userIds)) {
             return redirect()->back()
-                ->with('error', 'No users selected or you cannot delete your own account.');
+                ->with('error', 'No users selected or you cannot delete your own account or admin users.');
         }
 
         // Delete profile photos
@@ -323,6 +355,11 @@ class UserManagementController extends Controller
             $query->byStatus($request->status);
         }
 
+        // Exclude admin users from export
+        $query->whereDoesntHave('roles', function($q) {
+            $q->where('name', 'admin');
+        });
+
         $users = $query->get();
 
         $filename = 'users_' . date('Y-m-d_His') . '.csv';
@@ -346,7 +383,7 @@ class UserManagementController extends Controller
                     $user->email,
                     $user->username,
                     $user->phone,
-                    $user->role,
+                    $user->primary_role,
                     $user->status,
                     $user->department,
                     $user->position,

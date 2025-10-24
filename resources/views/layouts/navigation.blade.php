@@ -142,9 +142,11 @@
                     {{ __('Notifications') }}
                 </x-responsive-nav-link>
 
-                <x-responsive-nav-link :href="route('user-management.index')">
-                    {{ __('User Management') }}
-                </x-responsive-nav-link>
+                @hasrole('admin')
+                    <x-responsive-nav-link :href="route('user-management.index')">
+                        {{ __('User Management') }}
+                    </x-responsive-nav-link>
+                @endhasrole
 
                 <x-responsive-nav-link :href="route('settings.index')">
                     {{ __('System Settings') }}
