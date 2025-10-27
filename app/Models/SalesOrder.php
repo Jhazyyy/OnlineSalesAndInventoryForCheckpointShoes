@@ -9,6 +9,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
 
+/**
+ * SalesOrder Model - READ ONLY
+ * 
+ * This model represents sales orders received from e-commerce application.
+ * Data is synchronized from the e-commerce system.
+ * Orders should not be created or modified directly in this system.
+ * 
+ * The system tracks delivery status and shipment notifications.
+ * Invoicing is handled by the e-commerce application.
+ */
 class SalesOrder extends Model
 {
     use HasFactory;

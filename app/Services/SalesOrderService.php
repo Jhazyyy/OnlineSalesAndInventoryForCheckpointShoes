@@ -17,6 +17,18 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * SalesOrderService - READ ONLY
+ * 
+ * This service handles viewing and filtering sales orders received from e-commerce.
+ * Create, Update, and Delete operations are removed as orders are managed by the e-commerce system.
+ * 
+ * Available operations:
+ * - View orders (getPaginatedOrders)
+ * - Filter and search orders
+ * - Get order analytics
+ * - Track shipment status
+ */
 class SalesOrderService
 {
     /**
@@ -83,15 +95,11 @@ class SalesOrderService
                                          'name' => $customer->display_name,
                                      ];
                                  }),
-            'products' => Product::with('properties')
-                               ->orderBy('product_name')
+            'products' => Product::orderBy('product_name')
                                ->get()
                                ->map(function ($product) {
-                                   // Calculate stock from properties if they exist, otherwise use quantity
-                                   $stock = $product->properties->where('is_active', true)->sum('quantity');
-                                   if ($stock == 0 && $product->properties->isEmpty()) {
-                                       $stock = $product->quantity;
-                                   }
+                                   // Use quantity from product
+                                   $stock = $product->quantity;
                                    
                                    return [
                                        'id' => $product->product_id,

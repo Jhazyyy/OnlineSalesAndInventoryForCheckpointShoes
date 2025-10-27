@@ -6,17 +6,11 @@
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div class="flex items-center space-x-4">
-                            @if($customer->avatar)
-                                <img src="{{ asset('storage/' . $customer->avatar) }}" 
-                                     alt="{{ $customer->full_name }}" 
-                                     class="h-16 w-16 object-cover rounded-full">
-                            @else
-                                <div class="h-16 w-16 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
-                                    <span class="text-xl font-bold text-gray-600 dark:text-gray-300">
-                                        {{ substr($customer->first_name, 0, 1) }}{{ substr($customer->last_name, 0, 1) }}
-                                    </span>
-                                </div>
-                            @endif
+                            <div class="h-16 w-16 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                                <span class="text-xl font-bold text-gray-600 dark:text-gray-300">
+                                    {{ substr($customer->first_name, 0, 1) }}{{ substr($customer->last_name, 0, 1) }}
+                                </span>
+                            </div>
                             <div>
                                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $customer->display_name }}</h2>
                                 <div class="flex items-center space-x-4 mt-1">

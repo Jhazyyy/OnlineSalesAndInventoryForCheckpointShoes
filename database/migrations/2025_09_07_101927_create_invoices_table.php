@@ -4,6 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * DEPRECATED: Invoice Management Migration
+ * 
+ * Invoices are now managed by the e-commerce application.
+ * This migration is kept for backward compatibility with existing data.
+ * Do not use invoice functionality - it has been removed from the system.
+ */
 return new class extends Migration
 {
     /**

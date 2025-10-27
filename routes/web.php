@@ -272,26 +272,26 @@ Route::get('dashboard', function () {
         $salesOrderData = collect();
     }
 
-    // Sales Activity
+    // Sales Activity - E-commerce Order Tracking
     try {
         $salesActivity = [
-            'total_invoices' => \App\Models\Invoice::count(),
-            'paid_invoices' => \App\Models\Invoice::where('payment_status', 'paid')->count(),
-            'draft_invoices' => \App\Models\Invoice::where('payment_status', 'draft')->count(),
-            'past_due' => \App\Models\Invoice::where('payment_status', 'overdue')->count(),
+            'total_orders' => \App\Models\SalesOrder::count(),
+            'pending_orders' => \App\Models\SalesOrder::where('status', 'pending')->count(),
+            'shipped_orders' => \App\Models\SalesOrder::where('status', 'shipped')->count(),
+            'delivered_orders' => \App\Models\SalesOrder::where('status', 'delivered')->count(),
         ];
     } catch (\Exception $e) {
         $salesActivity = [
-            'total_invoices' => 0,
-            'paid_invoices' => 0,
-            'draft_invoices' => 0,
-            'past_due' => 0,
+            'total_orders' => 0,
+            'pending_orders' => 0,
+            'shipped_orders' => 0,
+            'delivered_orders' => 0,
         ];
     }
 
-    // Top Selling Items
+    // Top Selling Items - From Sales Orders
     try {
-        $topSellingItems = \App\Models\InvoiceItem::select('product_id')
+        $topSellingItems = \App\Models\SalesOrderItem::select('product_id')
             ->selectRaw('SUM(quantity) as total_quantity')
             ->selectRaw('SUM(quantity * unit_price) as total_revenue')
             ->whereNotNull('product_id')
@@ -490,25 +490,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Customer Management Routes
-    // Route::prefix('sales/customers')->name('sales.customers.')->group(function () {
-    //     Route::get('/', [CustomerController::class, 'index'])->name('index');
-    //     Route::get('/create', [CustomerController::class, 'create'])->name('create');
-    //     Route::post('/', [CustomerController::class, 'store'])->name('store');
-    //     Route::get('/{customer}', [CustomerController::class, 'show'])->name('show');
-    //     Route::get('/{customer}/edit', [CustomerController::class, 'edit'])->name('edit');
-    //     Route::put('/{customer}', [CustomerController::class, 'update'])->name('update');
-    //     Route::delete('/{customer}', [CustomerController::class, 'destroy'])->name('destroy');
+    Route::prefix('sales/customers')->name('sales.customers.')->group(function () {
+        Route::get('/', [CustomerController::class, 'index'])->name('index');
+        Route::get('/create', [CustomerController::class, 'create'])->name('create');
+        Route::post('/', [CustomerController::class, 'store'])->name('store');
+        Route::get('/{customer}', [CustomerController::class, 'show'])->name('show');
+        Route::get('/{customer}/edit', [CustomerController::class, 'edit'])->name('edit');
+        Route::put('/{customer}', [CustomerController::class, 'update'])->name('update');
+        Route::delete('/{customer}', [CustomerController::class, 'destroy'])->name('destroy');
 
-    //     // Import and Export routes
-    //     Route::get('/import/form', [CustomerController::class, 'showImportForm'])->name('import');
-    //     Route::post('/import/process', [CustomerController::class, 'import'])->name('import.process');
-    //     Route::get('/template/download', [CustomerController::class, 'downloadTemplate'])->name('template');
-    //     Route::get('/export', [CustomerController::class, 'export'])->name('export');
+        // Import and Export routes
+        Route::get('/import/form', [CustomerController::class, 'showImportForm'])->name('import');
+        Route::post('/import/process', [CustomerController::class, 'import'])->name('import.process');
+        Route::get('/template/download', [CustomerController::class, 'downloadTemplate'])->name('template');
+        Route::get('/export', [CustomerController::class, 'export'])->name('export');
 
-    //     // Status toggle and analytics
-    //     Route::post('/{customer}/toggle-status', [CustomerController::class, 'toggleStatus'])->name('toggle-status');
-    //     Route::get('/analytics', [CustomerController::class, 'analytics'])->name('analytics');
-    // });
+        // Status toggle and analytics
+        Route::post('/{customer}/toggle-status', [CustomerController::class, 'toggleStatus'])->name('toggle-status');
+        Route::get('/analytics', [CustomerController::class, 'analytics'])->name('analytics');
+    });
 
 
     //Master Data Categories Routes
@@ -752,19 +752,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/supplier/{supplierId}/bills', [\App\Http\Controllers\PurchasePaymentController::class, 'getSupplierBills'])->name('supplier-bills');
     });
 
-    // Sales Order Management Routes
+    // Sales Order Management Routes - READ ONLY (Data from E-commerce)
     Route::prefix('sales/orders')->name('sales.orders.')->group(function () {
         Route::get('/', [SalesOrderController::class, 'index'])->name('index');
-        Route::get('/create', [SalesOrderController::class, 'create'])->name('create');
-        Route::post('/', [SalesOrderController::class, 'store'])->name('store');
         Route::get('/{order}', [SalesOrderController::class, 'show'])->name('show');
-        Route::get('/{order}/edit', [SalesOrderController::class, 'edit'])->name('edit');
-        Route::put('/{order}', [SalesOrderController::class, 'update'])->name('update');
-        Route::delete('/{order}', [SalesOrderController::class, 'destroy'])->name('destroy');
-
-        // Status management routes
-        Route::post('/{order}/change-status', [SalesOrderController::class, 'changeStatus'])->name('change-status');
-        Route::post('/{order}/fulfill', [SalesOrderController::class, 'fulfill'])->name('fulfill');
 
         // Analytics
         Route::get('/analytics', [SalesOrderController::class, 'analytics'])->name('analytics');
@@ -883,34 +874,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/export', [\App\Http\Controllers\ShipmentController::class, 'export'])->name('export');
     });
 
-    // Invoice Management Routes
-    Route::prefix('sales/invoices')->name('sales.invoices.')->group(function () {
-        Route::get('/', [InvoiceController::class, 'index'])->name('index');
-        Route::get('/create', [InvoiceController::class, 'create'])->name('create');
-        Route::post('/', [InvoiceController::class, 'store'])->name('store');
-        Route::get('/{invoice}', [InvoiceController::class, 'show'])->name('show');
-        Route::get('/{invoice}/edit', [InvoiceController::class, 'edit'])->name('edit');
-        Route::put('/{invoice}', [InvoiceController::class, 'update'])->name('update');
-        Route::delete('/{invoice}', [InvoiceController::class, 'destroy'])->name('destroy');
-
-        // Status management routes
-        Route::post('/{invoice}/change-status', [InvoiceController::class, 'changeStatus'])->name('change-status');
-        Route::post('/{invoice}/mark-as-sent', [InvoiceController::class, 'markAsSent'])->name('mark-as-sent');
-        Route::post('/{invoice}/record-payment', [InvoiceController::class, 'recordPayment'])->name('record-payment');
-
-        // Special operations
-        Route::post('/create-from-order/{salesOrder}', [InvoiceController::class, 'createFromOrder'])->name('create-from-order');
-        Route::get('/{invoice}/duplicate', [InvoiceController::class, 'duplicate'])->name('duplicate');
-        Route::get('/{invoice}/generate-pdf', [InvoiceController::class, 'generatePdf'])->name('generate-pdf');
-        Route::post('/{invoice}/send-email', [InvoiceController::class, 'sendEmail'])->name('send-email');
-        
-        // Views and reports
-        Route::get('/overdue', [InvoiceController::class, 'overdue'])->name('overdue');
-        Route::post('/update-overdue-statuses', [InvoiceController::class, 'updateOverdueStatuses'])->name('update-overdue-statuses');
-        
-        // Analytics
-        Route::get('/analytics', [InvoiceController::class, 'analytics'])->name('analytics');
-    });
+    // Invoice Management Routes - REMOVED (Invoices handled by e-commerce application)
+    // Route::prefix('sales/invoices')->name('sales.invoices.')->group(function () {
+    //     Invoices are now managed by the e-commerce application
+    // });
 
     // Inventory Threshold Management Routes
     Route::prefix('inventory/thresholds')->name('inventory.thresholds.')->group(function () {

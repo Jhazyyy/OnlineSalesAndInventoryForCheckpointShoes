@@ -90,6 +90,10 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'product_name' => 'required|string|max:255',
+            'sku' => 'nullable|string|max:255|unique:products,sku',
+            'barcode' => 'nullable|string|max:255|unique:products,barcode',
+            'property_name' => 'nullable|string|max:255',
+            'property_value' => 'nullable|string|max:255',
             'product_category' => 'nullable|string|max:255',
             'custom_category' => 'nullable|string|max:255',
             'price' => 'required|numeric|min:0',
@@ -98,13 +102,6 @@ class ProductController extends Controller
             // Allow either product_brand OR custom_brand to be filled
             'product_brand' => 'nullable|string|max:255',
             'custom_brand' => 'nullable|string|max:255',
-            // Product properties validation
-            'properties' => 'nullable|array',
-            'properties.*.property_name' => 'required_with:properties|string|max:255',
-            'properties.*.property_value' => 'required_with:properties|string|max:255',
-            'properties.*.quantity' => 'required_with:properties|integer|min:0',
-            'properties.*.sku' => 'nullable|string|max:255|unique:product_properties,sku',
-            'properties.*.price_adjustment' => 'nullable|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -153,6 +150,23 @@ class ProductController extends Controller
         // Assign category name
         $data['product_category'] = $category->name;
 
+        // Auto-generate SKU if not provided
+        if (empty($data['sku'])) {
+            // Generate SKU based on brand and product name
+            $brandPrefix = strtoupper(substr(str_replace([' ', '-'], '', $brand->name), 0, 3));
+            $namePrefix = strtoupper(substr(str_replace([' ', '-'], '', $request->product_name), 0, 3));
+            $randomSuffix = strtoupper(substr(md5(uniqid()), 0, 4));
+            $data['sku'] = "{$brandPrefix}-{$namePrefix}-{$randomSuffix}";
+            
+            // Ensure uniqueness
+            $counter = 1;
+            $originalSku = $data['sku'];
+            while (Product::where('sku', $data['sku'])->exists()) {
+                $data['sku'] = "{$originalSku}-{$counter}";
+                $counter++;
+            }
+        }
+
         // Handle image upload
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -161,22 +175,8 @@ class ProductController extends Controller
             $data['image'] = $imagePath;
         }
 
-        // Create the product (no quantity field needed)
+        // Create the product
         $product = Product::create($data);
-
-        // Create product properties if provided
-        if ($request->has('properties') && is_array($request->properties)) {
-            foreach ($request->properties as $property) {
-                $product->properties()->create([
-                    'property_name' => $property['property_name'],
-                    'property_value' => $property['property_value'],
-                    'quantity' => $property['quantity'],
-                    'sku' => $property['sku'] ?? null,
-                    'price_adjustment' => $property['price_adjustment'] ?? 0,
-                    'is_active' => true,
-                ]);
-            }
-        }
 
         return redirect()->route('master_data.products.index')->with('success', 'Product created successfully!');
     }
@@ -215,6 +215,10 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'product_name' => 'required|string|max:255',
+            'sku' => 'nullable|string|max:255|unique:products,sku,' . $product->product_id . ',product_id',
+            'barcode' => 'nullable|string|max:255|unique:products,barcode,' . $product->product_id . ',product_id',
+            'property_name' => 'nullable|string|max:255',
+            'property_value' => 'nullable|string|max:255',
             'product_category' => 'nullable|string|max:255',
             'custom_category' => 'nullable|string|max:255',
             'price' => 'required|numeric|min:0',
@@ -238,7 +242,7 @@ class ProductController extends Controller
         }
 
         // Create brand if not existing
-        $brand = \App\Models\Brand::firstOrCreate(
+        $brand = Brand::firstOrCreate(
             ['name' => $brandName],
             [
                 'brand_code' => strtoupper(str_replace([' ', '-'], '_', $brandName)),

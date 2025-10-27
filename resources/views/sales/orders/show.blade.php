@@ -7,18 +7,9 @@
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Sales Order {{ $order->order_number }}</h2>
-                            <p class="text-gray-600 dark:text-gray-400">View and manage sales order details</p>
+                            <p class="text-gray-600 dark:text-gray-400">Order received from e-commerce application</p>
                         </div>
                         <div class="flex space-x-3 mt-4 sm:mt-0">
-                            @if($order->canBeEdited())
-                                <a href="{{ route('sales.orders.edit', $order->order_id) }}" 
-                                    class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:bg-yellow-700 active:bg-yellow-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                    </svg>
-                                    Edit Order
-                                </a>
-                            @endif
                             <a href="{{ route('sales.orders.index') }}" 
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,57 +35,60 @@
                 </div>
             @endif
 
-            <!-- Order Status Actions -->
-            @if($order->canBeConfirmed() || $order->status === 'confirmed' || $order->canBeCancelled())
+            <!-- Delivery Status Tracking -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="p-6">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Delivery Tracking</h3>
+                    <div class="flex flex-wrap gap-3">
+                        @if($order->tracking_number)
+                            <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+                                <p class="text-sm text-gray-700 dark:text-gray-300">
+                                    <strong>Tracking Number:</strong> {{ $order->tracking_number }}
+                                </p>
+                                @if($order->shipping_carrier)
+                                    <p class="text-sm text-gray-700 dark:text-gray-300 mt-1">
+                                        <strong>Carrier:</strong> {{ ucfirst($order->shipping_carrier) }}
+                                    </p>
+                                @endif
+                            </div>
+                        @endif
+                        
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg flex-1">
+                            <p class="text-sm text-gray-700 dark:text-gray-300">
+                                <strong>Current Status:</strong> 
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                    {{ $order->status === 'delivered' ? 'bg-green-100 text-green-800' : '' }}
+                                    {{ in_array($order->status, ['shipped', 'processing']) ? 'bg-yellow-100 text-yellow-800' : '' }}
+                                    {{ in_array($order->status, ['pending', 'confirmed']) ? 'bg-gray-100 text-gray-800' : '' }}
+                                    {{ in_array($order->status, ['cancelled', 'returned']) ? 'bg-red-100 text-red-800' : '' }}">
+                                    {{ ucfirst($order->status) }}
+                                </span>
+                            </p>
+                            @if($order->shipped_date)
+                                <p class="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                                    <strong>Shipped Date:</strong> {{ $order->shipped_date->format('M d, Y') }}
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+                    <p class="mt-4 text-xs text-gray-500 dark:text-gray-400">
+                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Order updates are received from the e-commerce application
+                    </p>
+                </div>
+            </div>
+
+            <!-- Order Status Actions - REMOVED -->
+            {{-- Order actions are managed by the e-commerce application --}}
+            @if(false)
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Order Actions</h3>
                         <div class="flex flex-wrap gap-3">
                             @if($order->canBeConfirmed())
-                                <form method="POST" action="{{ route('sales.orders.change-status', $order->order_id) }}" class="inline">
-                                    @csrf
-                                    <input type="hidden" name="status" value="confirmed">
-                                    <button type="submit" 
-                                            class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                        Confirm Order
-                                    </button>
-                                </form>
-                            @endif
-
-                            @if($order->status === 'confirmed')
-                                <form method="POST" action="{{ route('sales.orders.fulfill', $order->order_id) }}" class="inline">
-                                    @csrf
-                                    <button type="submit" 
-                                            class="inline-flex items-center px-4 py-2 bg-purple-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700 focus:bg-purple-700 active:bg-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                        Start Fulfillment
-                                    </button>
-                                </form>
-                            @endif
-
-                            @if($order->canBeShipped())
-                                <form method="POST" action="{{ route('sales.orders.change-status', $order->order_id) }}" class="inline">
-                                    @csrf
-                                    <input type="hidden" name="status" value="shipped">
-                                    <button type="submit" 
-                                            class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                        Mark as Shipped
-                                    </button>
-                                </form>
-                            @endif
-
-                            @if($order->status === 'shipped')
-                                <form method="POST" action="{{ route('sales.orders.change-status', $order->order_id) }}" class="inline">
-                                    @csrf
-                                    <input type="hidden" name="status" value="delivered">
-                                    <button type="submit" 
-                                            class="inline-flex items-center px-4 py-2 bg-teal-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-teal-700 focus:bg-teal-700 active:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                        Mark as Delivered
-                                    </button>
-                                </form>
-                            @endif
-
-                            @if($order->canBeCancelled())
-                                <form method="POST" action="{{ route('sales.orders.change-status', $order->order_id) }}" class="inline">
+                                <form method="POST" action="#" class="inline">
                                     @csrf
                                     <input type="hidden" name="status" value="cancelled">
                                     <button type="submit" 
@@ -291,7 +285,7 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Customer</label>
                                     <p class="text-sm text-gray-900 dark:text-white">
-                                        <a href="{{ route('sales.customers.show', $order->customer->customer_id) }}" class="text-blue-600 hover:text-blue-900">
+                                        <a href="{{ route('sales.customers.show', $order->customer->customer_id) }}" class="text-blue-600 hover:text-blue-900 hover:underline">
                                             {{ $order->customer->display_name }}
                                         </a>
                                     </p>
@@ -299,6 +293,7 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Email</label>
                                     <p class="text-sm text-gray-900 dark:text-white">{{ $order->customer->email }}</p>
+                                </div>
                                 </div>
                                 @if($order->customer->phone)
                                     <div>

@@ -126,9 +126,8 @@
                                     $reasons = [
                                         'Physical count adjustment',
                                         'Damaged goods removal',
-                                        'Expired products',
                                         'System error correction',
-                                        'Theft or loss',
+                                        'Theft or Loss',
                                         'Initial stock entry',
                                         'Promotional samples',
                                         'Quality control testing',

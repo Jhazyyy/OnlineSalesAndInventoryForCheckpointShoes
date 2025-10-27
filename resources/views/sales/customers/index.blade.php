@@ -140,7 +140,6 @@
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Avatar</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a href="{{ request()->fullUrlWithQuery(['sort' => 'first_name', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
                                                 Name
@@ -174,19 +173,6 @@
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     @foreach($customers as $customer)
                                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                @if($customer->avatar)
-                                                    <img src="{{ asset('storage/' . $customer->avatar) }}" 
-                                                         alt="{{ $customer->full_name }}" 
-                                                         class="h-12 w-12 object-cover rounded-full">
-                                                @else
-                                                    <div class="h-12 w-12 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center">
-                                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">
-                                                            {{ substr($customer->first_name, 0, 1) }}{{ substr($customer->last_name, 0, 1) }}
-                                                        </span>
-                                                    </div>
-                                                @endif
-                                            </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm font-medium text-gray-900 dark:text-white">
                                                     {{ $customer->display_name }}

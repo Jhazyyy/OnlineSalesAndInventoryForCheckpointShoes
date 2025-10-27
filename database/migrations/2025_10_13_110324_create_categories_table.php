@@ -11,9 +11,10 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('category_code')->unique(); // Optional unique code
-            $table->string('name');                    // Category name
-            $table->text('description')->nullable();   // Optional description
-            $table->boolean('is_active')->default(true); // For enabling/disabling
+            $table->string('name'); // Category name
+            $table->foreignId('parent_id')->nullable()->constrained('categories')->nullOnDelete();
+            $table->text('description')->nullable();  
+            $table->boolean('is_active')->default(true); 
             $table->timestamps();
         });
     }

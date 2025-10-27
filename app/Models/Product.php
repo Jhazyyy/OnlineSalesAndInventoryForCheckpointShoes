@@ -25,12 +25,15 @@ class Product extends Model
      */
     protected $fillable = [
         'product_name',
+        'sku',
+        'barcode',
+        'property_name',
+        'property_value',
         'product_brand',
         'product_category',
-        'price',
+        'price', 
         'image',
         'description',
-        'supplier_name',
     ];
 
     /**
@@ -249,27 +252,13 @@ class Product extends Model
     }
 
     /**
-     * Get the product properties (variants like size, color, etc.).
-     * Note: This relationship is for future use when product variants are implemented.
-     */
-    public function properties(): HasMany
-    {
-        return $this->hasMany(ProductProperty::class, 'product_id', 'product_id');
-    }
-
-    /**
-     * Check if the product has any properties/variants.
+     * Check if the product has property information (size, color, etc.).
      */
     public function hasProperties(): bool
     {
-        // Check if the product_properties table exists and has records
-        try {
-            return $this->properties()->exists();
-        } catch (\Exception $e) {
-            // If the table doesn't exist, return false
-            return false;
-        }
+        return !empty($this->property_name) && !empty($this->property_value);
     }
+
 
     /**
      * Get the category associated with this product.
@@ -317,12 +306,12 @@ class Product extends Model
     }
 
     /**
-     * Get the actual total quantity from all product properties.
-     * The quantity field on products table is now just a reference.
+     * Get the actual total quantity.
+     * Returns the quantity field from the products table.
      */
     public function getActualQuantityAttribute(): int
     {
-        return $this->properties()->where('is_active', true)->sum('quantity');
+        return (int) $this->quantity;
     }
 
     /**
@@ -566,11 +555,18 @@ class Product extends Model
     }
 
     /**
-     * Get the product SKU (accessor for compatibility - uses brand as SKU).
+     * Get the product SKU (accessor for compatibility).
+     * Returns the SKU column if set, otherwise generates one from brand or ID.
      */
-    public function getSkuAttribute(): string
+    public function getSkuAttribute($value): string
     {
-        return $this->product_brand ?? 'SKU-' . $this->product_id;
+        // If SKU column has a value, return it
+        if (!empty($value)) {
+            return $value;
+        }
+        
+        // Fallback for products without SKU: use brand, category or generate from ID
+        return $this->attributes['product_brand'] . '-' . ($this->attributes['product_category'] ?? 'SKU-' . $this->product_id);
     }
 
     /**

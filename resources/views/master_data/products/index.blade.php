@@ -14,7 +14,7 @@
                     <div class="flex-1">
                         <h3 class="text-sm font-medium text-blue-800 dark:text-blue-300">Inventory Management</h3>
                         <p class="text-sm text-blue-700 dark:text-blue-400 mt-1">
-                            Stock quantities shown below are managed through <strong>Stock Movements</strong>.
+                            Stock quantities are managed through <strong>Stock Movements</strong>.
                             To adjust inventory, use <a href="{{ route('inventory.product_stock_adjustment.index') }}"
                                 class="underline hover:text-blue-900 dark:hover:text-blue-200">Stock Adjustments</a>.
                         </p>
@@ -282,9 +282,9 @@
                                                 class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                 {{ $product->product_category }}</td>
                                             {{-- Product Quantity --}}
-                                            <td
+                                            {{-- <td
                                                 class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                {{ number_format($product->quantity) }}</td>
+                                                {{ number_format($product->quantity) }}</td> --}}
                                             {{-- Product Price --}}
                                             <td
                                                 class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">

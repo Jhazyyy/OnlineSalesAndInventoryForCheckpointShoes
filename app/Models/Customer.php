@@ -8,6 +8,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
 
+/**
+ * Customer Model - E-commerce Integration
+ * 
+ * Represents customers from the e-commerce application.
+ * Customer data is synchronized from the e-commerce system.
+ */
 class Customer extends Model
 {
     use HasFactory;
@@ -34,13 +40,10 @@ class Customer extends Model
         'state',
         'postal_code',
         'country',
-        'date_of_birth',
-        'avatar',
-        'notes',
-        'status',
         'customer_type',
         'company_name',
-        'tax_id',
+        'status',
+        'notes',
     ];
 
     /**
@@ -49,7 +52,6 @@ class Customer extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'date_of_birth' => 'date',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -88,18 +90,6 @@ class Customer extends Model
         }
         
         return $this->full_name;
-    }
-
-    /**
-     * Get the customer's age.
-     */
-    public function getAgeAttribute(): ?int
-    {
-        if (!$this->date_of_birth) {
-            return null;
-        }
-        
-        return Carbon::parse($this->date_of_birth)->age;
     }
 
     /**

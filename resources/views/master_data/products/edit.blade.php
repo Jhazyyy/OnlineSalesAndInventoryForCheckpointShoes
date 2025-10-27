@@ -44,6 +44,72 @@
                             @enderror
                         </div>
 
+                        <!-- SKU, Barcode Row -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- SKU -->
+                            <div>
+                                <label for="sku"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    SKU
+                                </label>
+                                <input type="text" id="sku" name="sku"
+                                    value="{{ old('sku', $product->sku) }}"
+                                    placeholder="e.g., SHOE-001"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('sku') border-red-500 @enderror">
+                                @error('sku')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Barcode -->
+                            <div>
+                                <label for="barcode"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Barcode
+                                </label>
+                                <input type="text" id="barcode" name="barcode"
+                                    value="{{ old('barcode', $product->barcode) }}"
+                                    placeholder="e.g., 1234567890123"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('barcode') border-red-500 @enderror">
+                                @error('barcode')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Property Name and Value Row -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Property Name -->
+                            <div>
+                                <label for="property_name"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Property Name <span class="text-gray-400 text-xs">(Optional, e.g., Size, Color)</span>
+                                </label>
+                                <input type="text" id="property_name" name="property_name"
+                                    value="{{ old('property_name', $product->property_name) }}"
+                                    placeholder="e.g., Size"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('property_name') border-red-500 @enderror">
+                                @error('property_name')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Property Value -->
+                            <div>
+                                <label for="property_value"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Property Value <span class="text-gray-400 text-xs">(Optional, e.g., 42, Red)</span>
+                                </label>
+                                <input type="text" id="property_value" name="property_value"
+                                    value="{{ old('property_value', $product->property_value) }}"
+                                    placeholder="e.g., 42"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('property_value') border-red-500 @enderror">
+                                @error('property_value')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
                         <!-- Brand and Category Row -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Product Brand -->

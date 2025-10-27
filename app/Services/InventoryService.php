@@ -4,14 +4,13 @@ namespace App\Services;
 
 use App\Models\Inventory;
 use App\Models\Product;
-use App\Models\ProductProperty;
 use App\Models\StockMovement;
 use Illuminate\Support\Facades\DB;
 
 class InventoryService
 {
     /**
-     * Get or create an inventory record for a product/property/location.
+     * Get or create an inventory record for a product/location.
      */
     public static function getOrCreate(int $productId, ?int $propertyId = null, ?string $location = null): Inventory
     {
@@ -27,12 +26,11 @@ class InventoryService
         }
 
         $product = Product::find($productId);
-        $property = $propertyId ? ProductProperty::find($propertyId) : null;
 
-        // Generate SKU if not available from property
-        $sku = $property?->sku;
+        // Use SKU from product if available
+        $sku = $product?->sku;
         if (!$sku && $product) {
-            // Generate SKU from brand and product name
+            // Generate SKU from brand and product name as fallback
             $brandCode = strtoupper(substr($product->product_brand ?? 'XX', 0, 3));
             $productCode = strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $product->product_name), 0, 3));
             $uniqueId = str_pad($product->product_id, 3, '0', STR_PAD_LEFT);
