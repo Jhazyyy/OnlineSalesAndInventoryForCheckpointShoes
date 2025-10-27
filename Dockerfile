@@ -8,7 +8,15 @@
 FROM composer:2 AS composer
 WORKDIR /app
 COPY composer.json composer.lock* ./
-RUN composer install --no-dev --prefer-dist --no-progress --no-interaction --optimize-autoloader
+# Allow running as root inside container and avoid running project scripts during vendor build
+ENV COMPOSER_ALLOW_SUPERUSER=1
+# If a lock file exists, use install for reproducible builds; otherwise fall back to update.
+# Also disable Composer scripts here since the full application code (including artisan) isn't copied in this stage.
+RUN if [ -f composer.lock ]; then \
+            composer install --no-dev --prefer-dist --no-progress --no-interaction --optimize-autoloader --no-scripts; \
+        else \
+            composer update  --no-dev --prefer-dist --no-progress --no-interaction --optimize-autoloader --no-scripts; \
+        fi
 
 # 2) Build frontend assets
 FROM node:20-alpine AS assets
@@ -61,8 +69,8 @@ COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.con
 
 # Ensure Laravel symlink exists; ignore if already present
 RUN php artisan storage:link || true \
-    && php artisan config:cache \
-    && php artisan route:cache \
+    && php artisan config:cache || true \
+    && php artisan route:cache || true \
     && php artisan view:cache || true
 
 # Expose default Apache port
