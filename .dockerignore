@@ -17,9 +17,18 @@ composer.lock
 
 # Laravel
 storage/*.key
-storage/framework/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/framework/testing/*
+!storage/framework/cache/.gitignore
+!storage/framework/sessions/.gitignore
+!storage/framework/views/.gitignore
+!storage/framework/testing/.gitignore
 storage/logs/*
+!storage/logs/.gitignore
 bootstrap/cache/*
+!bootstrap/cache/.gitignore
 public/storage
 
 # Tests and local tooling
