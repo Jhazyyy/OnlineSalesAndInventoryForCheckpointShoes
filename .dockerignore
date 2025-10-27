@@ -1,0 +1,27 @@
+# General
+.git
+.gitignore
+.env
+.env.*
+.DS_Store
+
+# Node
+node_modules
+npm-debug.log*
+yarn.lock
+pnpm-lock.yaml
+
+# PHP
+vendor
+composer.lock
+
+# Laravel
+storage/*.key
+storage/framework/*
+storage/logs/*
+bootstrap/cache/*
+public/storage
+
+# Tests and local tooling
+tests
+*.local
