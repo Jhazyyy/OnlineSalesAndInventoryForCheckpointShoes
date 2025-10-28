@@ -556,17 +556,26 @@ class Product extends Model
 
     /**
      * Get the product SKU (accessor for compatibility).
-     * Returns the SKU column if set, otherwise generates one from brand or ID.
+     * Returns the SKU from inventory table if available, otherwise from product SKU column.
      */
     public function getSkuAttribute($value): string
     {
-        // If SKU column has a value, return it
+        // First, try to get SKU from the first inventory record
+        $inventory = $this->inventories()->first();
+        if ($inventory && !empty($inventory->sku)) {
+            return $inventory->sku;
+        }
+        
+        // If product SKU column has a value, return it
         if (!empty($value)) {
             return $value;
         }
         
-        // Fallback for products without SKU: use brand, category or generate from ID
-        return $this->attributes['product_brand'] . '-' . ($this->attributes['product_category'] ?? 'SKU-' . $this->product_id);
+        // Fallback: generate SKU from brand and product name
+        $brandCode = strtoupper(substr($this->attributes['product_brand'] ?? 'XX', 0, 3));
+        $productCode = strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $this->attributes['product_name'] ?? ''), 0, 3));
+        $uniqueId = str_pad($this->product_id, 3, '0', STR_PAD_LEFT);
+        return "{$brandCode}-{$productCode}{$uniqueId}";
     }
 
     /**

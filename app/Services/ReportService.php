@@ -123,8 +123,45 @@ class ReportService
             'products' => collect($rows)->sortByDesc(function ($r) {
                 return ($r['refurbished_qty'] + $r['damaged_shipped_qty'] + $r['inbound_damaged_qty'] + $r['waste_qty']);
             })->values(),
+            'purchase_order_master' => $this->getPurchaseOrderMaster($startDate, $endDate),
         ];
     }
+
+    /**
+     * Get purchase order master data (aggregated purchase orders by product)
+     */
+    protected function getPurchaseOrderMaster(Carbon $startDate, Carbon $endDate)
+    {
+        // Get database driver to handle CONCAT differently for SQLite
+        $driver = DB::connection()->getDriverName();
+        $concatSql = $driver === 'sqlite' 
+            ? "products.product_brand || '-' || products.product_category"
+            : "CONCAT(products.product_brand, '-', products.product_category)";
+        
+        return DB::table('purchase_order_items')
+            ->join('purchase_orders', 'purchase_order_items.order_id', '=', 'purchase_orders.order_id')
+            ->join('products', 'purchase_order_items.product_id', '=', 'products.product_id')
+            ->leftJoin('inventories', function($join) {
+                $join->on('products.product_id', '=', 'inventories.product_id')
+                     ->whereNull('inventories.property_id');
+            })
+            ->whereBetween('purchase_orders.order_date', [$startDate, $endDate])
+            ->whereIn('purchase_orders.status', ['approved', 'ordered', 'partial_received', 'received'])
+            ->select(
+                'products.product_id',
+                'products.product_name',
+                'products.product_brand',
+                'products.product_category',
+                DB::raw("COALESCE(inventories.sku, products.sku, {$concatSql}) as product_sku"),
+                DB::raw('SUM(purchase_order_items.quantity_ordered) as total_quantity'),
+                DB::raw('SUM(purchase_order_items.quantity_ordered * purchase_order_items.unit_price) as total_cost'),
+                DB::raw('COALESCE((SELECT SUM(inventories.quantity_on_hand) FROM inventories WHERE inventories.product_id = products.product_id), 0) as instock_qty')
+            )
+            ->groupBy('products.product_id', 'products.product_name', 'products.product_brand', 'products.product_category', 'inventories.sku', 'products.sku')
+            ->orderByDesc('total_cost')
+            ->get();
+    }
+
     /**
      * Generate reorder report (products needing reorder based on thresholds)
      *
@@ -292,7 +329,7 @@ class ReportService
             $query->where('supplier_id', $filters['supplier_id']);
         }
         
-        $orders = $query->with(['items.product', 'supplier'])->get();
+        $orders = $query->with(['items.product', 'supplier', 'payments'])->get();
         
         // Calculate totals
         $totalOrders = $orders->count();
@@ -607,9 +644,19 @@ class ReportService
      */
     protected function getTopSellingProducts(Carbon $startDate, Carbon $endDate, int $limit = 10)
     {
+        // Get database driver to handle CONCAT differently for SQLite
+        $driver = DB::connection()->getDriverName();
+        $concatSql = $driver === 'sqlite' 
+            ? "products.product_brand || '-' || products.product_category"
+            : "CONCAT(products.product_brand, '-', products.product_category)";
+        
         return DB::table('sales_order_items')
             ->join('sales_orders', 'sales_order_items.order_id', '=', 'sales_orders.order_id')
             ->join('products', 'sales_order_items.product_id', '=', 'products.product_id')
+            ->leftJoin('inventories', function($join) {
+                $join->on('products.product_id', '=', 'inventories.product_id')
+                     ->whereNull('inventories.property_id');
+            })
             ->whereBetween('sales_orders.order_date', [$startDate, $endDate])
             ->whereIn('sales_orders.status', ['confirmed', 'processing', 'shipped', 'delivered'])
             ->select(
@@ -617,10 +664,11 @@ class ReportService
                 'products.product_name',
                 'products.product_brand',
                 'products.product_category',
+                DB::raw("COALESCE(inventories.sku, products.sku, {$concatSql}) as product_sku"),
                 DB::raw('SUM(sales_order_items.quantity) as total_quantity'),
                 DB::raw('SUM(sales_order_items.quantity * sales_order_items.unit_price) as total_revenue')
             )
-            ->groupBy('products.product_id', 'products.product_name', 'products.product_brand', 'products.product_category')
+            ->groupBy('products.product_id', 'products.product_name', 'products.product_brand', 'products.product_category', 'inventories.sku', 'products.sku')
             ->orderByDesc('total_quantity')
             ->limit($limit)
             ->get();
@@ -631,9 +679,19 @@ class ReportService
      */
     protected function getProductSales(Carbon $startDate, Carbon $endDate)
     {
+        // Get database driver to handle CONCAT differently for SQLite
+        $driver = DB::connection()->getDriverName();
+        $concatSql = $driver === 'sqlite' 
+            ? "products.product_brand || '-' || products.product_category"
+            : "CONCAT(products.product_brand, '-', products.product_category)";
+        
         $rows = DB::table('sales_order_items')
             ->join('sales_orders', 'sales_order_items.order_id', '=', 'sales_orders.order_id')
             ->join('products', 'sales_order_items.product_id', '=', 'products.product_id')
+            ->leftJoin('inventories', function($join) {
+                $join->on('products.product_id', '=', 'inventories.product_id')
+                     ->whereNull('inventories.property_id');
+            })
             ->whereBetween('sales_orders.order_date', [$startDate, $endDate])
             ->whereIn('sales_orders.status', ['confirmed', 'processing', 'shipped', 'delivered'])
             ->select(
@@ -641,10 +699,11 @@ class ReportService
                 'products.product_name',
                 'products.product_brand',
                 'products.product_category',
+                DB::raw("COALESCE(inventories.sku, products.sku, {$concatSql}) as product_sku"),
                 DB::raw('SUM(sales_order_items.quantity) as total_quantity'),
                 DB::raw('SUM(sales_order_items.quantity * sales_order_items.unit_price) as total_revenue')
             )
-            ->groupBy('products.product_id', 'products.product_name', 'products.product_brand', 'products.product_category')
+            ->groupBy('products.product_id', 'products.product_name', 'products.product_brand', 'products.product_category', 'inventories.sku', 'products.sku')
             ->orderByDesc('total_revenue')
             ->get();
 

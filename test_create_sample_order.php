@@ -48,7 +48,7 @@ try {
         'customer_id' => $customer->customer_id,
         'order_date' => Carbon::today(),
         'required_date' => Carbon::today()->addDays(7),
-        'status' => 'pending',
+        'status' => 'shipped',
         'priority' => 'normal',
         'payment_status' => 'pending',
         'payment_method' => 'card',
@@ -96,10 +96,10 @@ try {
     ]);
     
     echo "\n✓ Order totals updated:\n";
-    echo "  - Subtotal: $" . number_format($subtotal, 2) . "\n";
-    echo "  - Tax: $" . number_format($taxAmount, 2) . "\n";
-    echo "  - Shipping: $" . number_format($order->shipping_amount, 2) . "\n";
-    echo "  - Total: $" . number_format($totalAmount, 2) . "\n";
+    echo "  - Subtotal: ₱" . number_format($subtotal, 2) . "\n";
+    echo "  - Tax: ₱" . number_format($taxAmount, 2) . "\n";
+    echo "  - Shipping: ₱" . number_format($order->shipping_amount, 2) . "\n";
+    echo "  - Total: ₱" . number_format($totalAmount, 2) . "\n";
     
     echo "\n✅ Sample sales order created successfully!\n";
     echo "\nYou can now view it at: /sales/orders/{$order->order_id}\n";

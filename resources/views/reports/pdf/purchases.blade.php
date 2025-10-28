@@ -64,28 +64,35 @@
         </table>
     @endif
 
+    <h2 style="margin: 10px 0 6px;">Purchase Order Master</h2>
     <table>
         <thead>
             <tr>
-                <th>Order ID</th>
-                <th>Date</th>
+                <th>PO Number</th>
                 <th>Supplier</th>
+                <th>Order Date</th>
+                <th class="right">Amount Due</th>
+                <th>Due Date</th>
+                <th class="right">Total Paid</th>
                 <th>Status</th>
-                <th class="right">Total Amount</th>
-                <th class="right">Items</th>
             </tr>
         </thead>
         <tbody>
-            @foreach(($report['orders'] ?? []) as $order)
+            @forelse(($report['orders'] ?? []) as $order)
                 <tr>
-                    <td>{{ $order->order_id ?? $order->purchase_order_id ?? 'N/A' }}</td>
-                    <td>{{ $order->order_date ? date('Y-m-d', strtotime($order->order_date)) : 'N/A' }}</td>
+                    <td>{{ $order->order_number ?? 'N/A' }}</td>
                     <td>{{ $order->supplier->supplier_name ?? 'N/A' }}</td>
-                    <td>{{ $order->status ?? 'N/A' }}</td>
+                    <td>{{ $order->order_date ? date('M d, Y', strtotime($order->order_date)) : 'N/A' }}</td>
                     <td class="right">₱{{ number_format($order->total_amount ?? 0, 2) }}</td>
-                    <td class="right">{{ $order->items->count() ?? 0 }}</td>
+                    <td>{{ $order->expected_date ? date('M d, Y', strtotime($order->expected_date)) : 'N/A' }}</td>
+                    <td class="right">₱{{ number_format($order->payments->sum('amount') ?? 0, 2) }}</td>
+                    <td>{{ ucfirst($order->status ?? 'N/A') }}</td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="7" style="text-align: center; color: #666; padding: 20px;">No purchase orders found.</td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
 </body>

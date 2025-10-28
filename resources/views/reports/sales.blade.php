@@ -227,7 +227,7 @@
                                 <tbody>
                                     @forelse(($report['product_sales'] ?? []) as $row)
                                         <tr class="border-b border-gray-100 dark:border-gray-700">
-                                            <td class="py-2 pr-4">{{ $row->product_brand ?? 'SKU-' . ($row->product_id ?? '') }}</td>
+                                            <td class="py-2 pr-4">{{ $row->product_sku ?? 'N/A' }}</td>
                                             <td class="py-2 pr-4">{{ $row->product_name }}</td>
                                             <td class="py-2 pr-4">{{ $row->product_brand }}</td>
                                             <td class="py-2 pr-4">{{ $row->product_category }}</td>

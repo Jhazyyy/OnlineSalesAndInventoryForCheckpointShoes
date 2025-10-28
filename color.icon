@@ -96,3 +96,13 @@ Peso - Icon
                             </svg>
 
 max-w-md h-auto 
+
+
+
+
+Commands
+
+--Check connection and count tables
+php artisan tinker --execute="echo 'Connected to: ' . DB::connection()->getDatabaseName() . PHP_EOL; echo 'Tables: ' . count(DB::select('SHOW TABLES')) . PHP_EOL;" 
+
+
