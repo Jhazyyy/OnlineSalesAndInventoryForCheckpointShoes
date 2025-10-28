@@ -39,8 +39,9 @@
                                 <select id="supplier_id" name="supplier_id" required
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     <option value="">Select Supplier</option>
-                                    @foreach($suppliers as $supplier)
-                                        <option value="{{ $supplier['id'] }}" {{ old('supplier_id') == $supplier['id'] ? 'selected' : '' }}>
+                                    @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier['id'] }}"
+                                            {{ old('supplier_id') == $supplier['id'] ? 'selected' : '' }}>
                                             {{ $supplier['name'] }}
                                         </option>
                                     @endforeach
@@ -70,9 +71,11 @@
                                 <select id="priority" name="priority"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     <option value="low" {{ old('priority') == 'low' ? 'selected' : '' }}>Low</option>
-                                    <option value="normal" {{ old('priority', 'normal') == 'normal' ? 'selected' : '' }}>
+                                    <option value="normal"
+                                        {{ old('priority', 'normal') == 'normal' ? 'selected' : '' }}>
                                         Normal</option>
-                                    <option value="high" {{ old('priority') == 'high' ? 'selected' : '' }}>High</option>
+                                    <option value="high" {{ old('priority') == 'high' ? 'selected' : '' }}>High
+                                    </option>
                                     <option value="urgent" {{ old('priority') == 'urgent' ? 'selected' : '' }}>Urgent
                                     </option>
                                 </select>
@@ -89,8 +92,11 @@
                                     </option>
                                     <option value="card" {{ old('payment_method') == 'card' ? 'selected' : '' }}>Card
                                     </option>
-                                    <option value="bank_transfer" {{ old('payment_method') == 'bank_transfer' ? 'selected' : '' }}>Bank Transfer</option>
-                                    <option value="check" {{ old('payment_method') == 'check' ? 'selected' : '' }}>Check
+                                    <option value="bank_transfer"
+                                        {{ old('payment_method') == 'bank_transfer' ? 'selected' : '' }}>Bank Transfer
+                                    </option>
+                                    <option value="check" {{ old('payment_method') == 'check' ? 'selected' : '' }}>
+                                        Check
                                     </option>
                                     <option value="credit" {{ old('payment_method') == 'credit' ? 'selected' : '' }}>
                                         Credit</option>
@@ -136,8 +142,9 @@
                                             class="product-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                             required>
                                             <option value="">Select Product</option>
-                                            @foreach($products as $product)
-                                                <option value="{{ $product['id'] }}" data-price="{{ $product['price'] }}"
+                                            @foreach ($products as $product)
+                                                <option value="{{ $product['id'] }}"
+                                                    data-price="{{ $product['price'] }}"
                                                     data-stock="{{ $product['stock'] }}">
                                                     {{ $product['product_name'] }}
                                                 </option>
@@ -210,16 +217,16 @@
                                 <!-- Shipping Amount -->
                                 <div>
                                     <x-input-label for="shipping_amount" :value="__('Shipping Amount')" />
-                                    <x-text-input id="shipping_amount" name="shipping_amount" type="number" step="0.01"
-                                        class="mt-1 block w-full" :value="old('shipping_amount', '0.00')" />
+                                    <x-text-input id="shipping_amount" name="shipping_amount" type="number"
+                                        step="0.01" class="mt-1 block w-full" :value="old('shipping_amount', '0.00')" />
                                     <x-input-error :messages="$errors->get('shipping_amount')" class="mt-2" />
                                 </div>
 
                                 <!-- Discount Amount -->
                                 <div>
                                     <x-input-label for="discount_amount" :value="__('Order Discount')" />
-                                    <x-text-input id="discount_amount" name="discount_amount" type="number" step="0.01"
-                                        class="mt-1 block w-full" :value="old('discount_amount', '0.00')" />
+                                    <x-text-input id="discount_amount" name="discount_amount" type="number"
+                                        step="0.01" class="mt-1 block w-full" :value="old('discount_amount', '0.00')" />
                                     <x-input-error :messages="$errors->get('discount_amount')" class="mt-2" />
                                 </div>
                             </div>
@@ -322,22 +329,73 @@
         </div>
     </div>
 
-    @push('scripts')
+    @push('page-scripts')
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 let itemIndex = 1;
 
+                // Use event delegation for better dynamic element handling
+                const orderItemsContainer = document.getElementById('orderItems');
+
+                // Event delegation for product selection
+                orderItemsContainer.addEventListener('change', function(e) {
+                    if (e.target.classList.contains('product-select')) {
+                        const option = e.target.selectedOptions[0];
+                        const price = option.dataset.price || '';
+                        const row = e.target.closest('.item-row');
+                        const priceInput = row.querySelector('.unit-price-input');
+                        priceInput.value = price;
+                        calculateLineTotal(row);
+                    }
+                });
+
+                // Event delegation for quantity, price, and discount inputs
+                orderItemsContainer.addEventListener('input', function(e) {
+                    if (e.target.classList.contains('quantity-input') ||
+                        e.target.classList.contains('unit-price-input') ||
+                        e.target.classList.contains('discount-input')) {
+                        calculateLineTotal(e.target.closest('.item-row'));
+                    }
+                });
+
+                // Event delegation for remove button
+                orderItemsContainer.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('remove-item') || e.target.closest('.remove-item')) {
+                        const button = e.target.classList.contains('remove-item') ? e.target : e.target.closest(
+                            '.remove-item');
+                        const itemRows = document.querySelectorAll('.item-row');
+                        if (itemRows.length > 1) {
+                            button.closest('.item-row').remove();
+                            updateOrderSummary();
+                        } else {
+                            alert('At least one item is required.');
+                        }
+                    }
+                });
+
+                // Update summary on additional field changes
+                document.querySelectorAll('#tax_amount, #shipping_amount, #discount_amount').forEach(input => {
+                    input.addEventListener('input', updateOrderSummary);
+                });
+
                 // Add Item Button
-                document.getElementById('addItemBtn').addEventListener('click', function () {
+                document.getElementById('addItemBtn').addEventListener('click', function() {
                     const itemsContainer = document.getElementById('orderItems');
                     const newItem = createItemRow(itemIndex);
                     itemsContainer.insertAdjacentHTML('beforeend', newItem);
-                    attachItemEvents();
+
+                    // New: Focus on the product select in the newly added row to prompt adding a new product
+                    const newRow = itemsContainer.lastElementChild; // Get the newly added row
+                    const productSelect = newRow.querySelector('.product-select');
+                    if (productSelect) {
+                        productSelect.focus(); // Automatically focus on the product dropdown
+                    }
+
                     itemIndex++;
                 });
 
-                // Initial event attachment
-                attachItemEvents();
+                // Initial calculation
+                updateOrderSummary();
 
                 function createItemRow(index) {
                     const products = @json($products);
@@ -345,98 +403,59 @@
 
                     products.forEach(product => {
                         productOptions += `<option value="${product.id}" data-price="${product.price}" data-stock="${product.stock}">
-                                        ${product.product_name} (Stock: ${product.stock})
-                                    </option>`;
+                                ${product.product_name} (Stock: ${product.stock})
+                            </option>`;
                     });
 
                     return `
-                                    <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-4">
-                                        <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
-                                            <div class="md:col-span-2">
-                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
-                                                <select name="items[${index}][product_id]"
-                                                    class="product-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                    required>
-                                                    ${productOptions}
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
-                                                <input type="number" name="items[${index}][quantity_ordered]"
-                                                    class="quantity-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                    min="1" required>
-                                            </div>
-                                            <div>
-                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit Price</label>
-                                                <input type="number" name="items[${index}][unit_price]" step="0.01"
-                                                    class="unit-price-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                            </div>
-                                            <div>
-                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Discount</label>
-                                                <input type="number" name="items[${index}][discount_amount]" step="0.01"
-                                                    class="discount-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                    value="0">
-                                            </div>
-                                            <div>
-                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Line Total</label>
-                                                <input type="text"
-                                                    class="line-total mt-1 block w-full rounded-md border-gray-300 bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white"
-                                                    readonly>
-                                            </div>
-                                            <div>
-                                                <button type="button"
-                                                    class="remove-item w-full inline-flex justify-center items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                                    Remove
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="mt-4">
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
-                                            <textarea name="items[${index}][notes]" rows="2"
-                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                placeholder="Optional notes for this item"></textarea>
-                                        </div>
+                            <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-4">
+                                <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+                                    <div class="md:col-span-2">
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
+                                        <select name="items[${index}][product_id]"
+                                            class="product-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                            required>
+                                            ${productOptions}
+                                        </select>
                                     </div>
-                                `;
-                }
-
-                function attachItemEvents() {
-                    // Product selection change
-                    document.querySelectorAll('.product-select').forEach(select => {
-                        select.addEventListener('change', function () {
-                            const option = this.selectedOptions[0];
-                            const price = option.dataset.price || '';
-                            const row = this.closest('.item-row');
-                            const priceInput = row.querySelector('.unit-price-input');
-                            priceInput.value = price;
-                            calculateLineTotal(row);
-                        });
-                    });
-
-                    // Calculate line total on input change
-                    document.querySelectorAll('.quantity-input, .unit-price-input, .discount-input').forEach(input => {
-                        input.addEventListener('input', function () {
-                            calculateLineTotal(this.closest('.item-row'));
-                        });
-                    });
-
-                    // Remove item
-                    document.querySelectorAll('.remove-item').forEach(button => {
-                        button.addEventListener('click', function () {
-                            const itemRows = document.querySelectorAll('.item-row');
-                            if (itemRows.length > 1) {
-                                this.closest('.item-row').remove();
-                                updateOrderSummary();
-                            } else {
-                                alert('At least one item is required.');
-                            }
-                        });
-                    });
-
-                    // Update summary on additional field changes
-                    document.querySelectorAll('#tax_amount, #shipping_amount, #discount_amount').forEach(input => {
-                        input.addEventListener('input', updateOrderSummary);
-                    });
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
+                                        <input type="number" name="items[${index}][quantity_ordered]"
+                                            class="quantity-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                            min="1" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit Price</label>
+                                        <input type="number" name="items[${index}][unit_price]" step="0.01"
+                                            class="unit-price-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Discount</label>
+                                        <input type="number" name="items[${index}][discount_amount]" step="0.01"
+                                            class="discount-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                            value="0">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Line Total</label>
+                                        <input type="text"
+                                            class="line-total mt-1 block w-full rounded-md border-gray-300 bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white"
+                                            readonly>
+                                    </div>
+                                    <div>
+                                        <button type="button"
+                                            class="remove-item w-full inline-flex justify-center items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
+                                    <textarea name="items[${index}][notes]" rows="2"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        placeholder="Optional notes for this item"></textarea>
+                                </div>
+                            </div>
+                        `;
                 }
 
                 function calculateLineTotal(row) {

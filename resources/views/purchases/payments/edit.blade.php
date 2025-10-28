@@ -111,18 +111,25 @@
                                 <x-input-error :messages="$errors->get('reference_number')" class="mt-2" />
                             </div>
 
-                            <!-- Payment Mode (Optional) -->
+                            <!-- Bank Account (Optional) -->
                             <div>
-                                <x-input-label for="payment_mode" :value="__('Payment Mode (Optional)')" />
-                                <select id="payment_mode" name="payment_mode"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">Select Mode</option>
-                                    <option value="cash" {{ old('payment_mode', $payment->payment_mode) == 'cash' ? 'selected' : '' }}>Cash</option>
-                                    <option value="bank_transfer" {{ old('payment_mode', $payment->payment_mode) == 'bank_transfer' ? 'selected' : '' }}>Bank Transfer</option>
-                                    <option value="check" {{ old('payment_mode', $payment->payment_mode) == 'check' ? 'selected' : '' }}>Check</option>
-                                    <option value="other" {{ old('payment_mode', $payment->payment_mode) == 'other' ? 'selected' : '' }}>Other</option>
-                                </select>
-                                <x-input-error :messages="$errors->get('payment_mode')" class="mt-2" />
+                                <x-input-label for="bank_account" :value="__('Bank Account (Optional)')" />
+                                <x-text-input id="bank_account" name="bank_account" type="text" class="mt-1 block w-full"
+                                    :value="old('bank_account', $payment->bank_account)" placeholder="Account name or number" />
+                                <x-input-error :messages="$errors->get('bank_account')" class="mt-2" />
+                            </div>
+
+                            <!-- Bank Charges (Optional) -->
+                            <div>
+                                <x-input-label for="bank_charges" :value="__('Bank Charges (Optional)')" />
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">₱</span>
+                                    </div>
+                                    <x-text-input id="bank_charges" name="bank_charges" type="number" step="0.01" min="0"
+                                        class="pl-7 block w-full" :value="old('bank_charges', $payment->bank_charges ?? '0.00')" />
+                                </div>
+                                <x-input-error :messages="$errors->get('bank_charges')" class="mt-2" />
                             </div>
 
                             <!-- Payment Status -->

@@ -271,6 +271,17 @@
                                         <span class="text-gray-900 dark:text-white">Total:</span>
                                         <span class="text-gray-900 dark:text-white">₱{{ number_format($order->total_amount, 2) }}</span>
                                     </div>
+                                    
+                                    @if($order->paid_amount > 0)
+                                    <div class="flex justify-between text-sm mt-2">
+                                        <span class="text-gray-600 dark:text-gray-400">Paid Amount:</span>
+                                        <span class="text-green-600">₱{{ number_format($order->paid_amount, 2) }}</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm mt-1 font-semibold">
+                                        <span class="text-gray-700 dark:text-gray-300">Remaining Balance:</span>
+                                        <span class="text-orange-600">₱{{ number_format($order->remaining_balance, 2) }}</span>
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -355,6 +366,84 @@
                                 @endif
                             </div>
                         </div>
+                    @endif
+
+                    <!-- Payments Section -->
+                    @if($order->payments && $order->payments->count() > 0)
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Payment History</h3>
+                                @if($order->canAcceptPayment())
+                                <a href="{{ route('purchases.payments.create', ['purchase_order_id' => $order->order_id]) }}"
+                                   class="inline-flex items-center px-3 py-1.5 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    Record Payment
+                                </a>
+                                @endif
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead class="bg-gray-50 dark:bg-gray-700">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Payment #</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Method</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                        @foreach($order->payments as $payment)
+                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                <a href="{{ route('purchases.payments.show', $payment->payment_id) }}" class="text-blue-600 hover:text-blue-900 font-medium">
+                                                    {{ $payment->payment_number }}
+                                                </a>
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                {{ $payment->payment_date->format('M d, Y') }}
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                ₱{{ number_format($payment->amount, 2) }}
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                {{ $payment->payment_method_display }}
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $payment->status_badge_class }}">
+                                                    {{ ucfirst($payment->status) }}
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                                <a href="{{ route('purchases.payments.show', $payment->payment_id) }}" class="text-blue-600 hover:text-blue-900">
+                                                    View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">Total Paid:</span>
+                                    <span class="font-semibold text-green-600">₱{{ number_format($order->paid_amount, 2) }}</span>
+                                </div>
+                                @if($order->remaining_balance > 0)
+                                <div class="flex justify-between text-sm mt-2">
+                                    <span class="text-gray-600 dark:text-gray-400">Remaining Balance:</span>
+                                    <span class="font-semibold text-orange-600">₱{{ number_format($order->remaining_balance, 2) }}</span>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
                     @endif
 
                     <!-- Actions -->

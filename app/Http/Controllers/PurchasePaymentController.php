@@ -90,11 +90,10 @@ class PurchasePaymentController extends Controller
 
         $validator = Validator::make($request->all(), [
             'supplier_id' => 'required|exists:suppliers,supplier_id',
-            'purchase_order_id' => 'nullable|exists:purchase_orders,purchase_order_id',
+            'purchase_order_id' => 'nullable|exists:purchase_orders,order_id',
             'amount' => 'required|numeric|min:0.01',
             'payment_date' => 'required|date',
             'payment_method' => 'required|in:cash,card,bank_transfer,check,online,other',
-            'payment_mode' => 'nullable|string|max:255',
             'bank_account' => 'nullable|string|max:255',
             'reference_number' => 'nullable|string|max:255',
             'bank_charges' => 'nullable|numeric|min:0',
@@ -115,7 +114,9 @@ class PurchasePaymentController extends Controller
         }
 
         $data = $validator->validated();
-        $data['status'] = 'pending'; // Default status
+        // Individual payment status is 'completed' when recorded (the payment itself is complete)
+        // The purchase order's payment_status (pending/partial/paid) is calculated separately
+        $data['status'] = 'completed';
         $data['recieved_by'] = $data['received_by'] ?? Auth::user()->name ?? 'System';
 
         try {
@@ -124,10 +125,12 @@ class PurchasePaymentController extends Controller
             Log::info('Purchase Payment Created Successfully', [
                 'payment_id' => $payment->payment_id,
                 'payment_number' => $payment->payment_number,
-                'amount' => $payment->amount
+                'amount' => $payment->amount,
+                'status' => $payment->status
             ]);
 
             // Update purchase order payment status if linked
+            // This will set the order's payment_status to pending/partial/paid based on total paid
             if ($payment->purchase_order_id) {
                 $this->updateOrderPaymentStatus($payment->purchaseOrder);
             }
@@ -198,11 +201,10 @@ class PurchasePaymentController extends Controller
         }
         $validator = Validator::make($request->all(), [
             'supplier_id' => 'required|exists:suppliers,supplier_id',
-            'purchase_order_id' => 'nullable|exists:purchase_orders,purchase_order_id',
+            'purchase_order_id' => 'nullable|exists:purchase_orders,order_id',
             'amount' => 'required|numeric|min:0.01',
             'payment_date' => 'required|date',
             'payment_method' => 'required|in:cash,card,bank_transfer,check,online,other',
-            'payment_mode' => 'nullable|string|max:255',
             'bank_account' => 'nullable|string|max:255',
             'reference_number' => 'nullable|string|max:255',
             'bank_charges' => 'nullable|numeric|min:0',
@@ -341,15 +343,7 @@ class PurchasePaymentController extends Controller
 
     private function updateOrderPaymentStatus(PurchaseOrder $order)
     {
-        $totalPaid = $order->payments()->where('status', 'completed')->sum('amount');
-        $orderTotal = $order->total_amount;
-
-        if ($totalPaid >= $orderTotal) {
-            $order->update(['payment_status' => 'paid']);
-        } elseif ($totalPaid > 0) {
-            $order->update(['payment_status' => 'partial']);
-        } else {
-            $order->update(['payment_status' => 'pending']);
-        }
+        // Use the model's new method to update paid amount and payment status
+        $order->updatePaidAmount();
     }
 }

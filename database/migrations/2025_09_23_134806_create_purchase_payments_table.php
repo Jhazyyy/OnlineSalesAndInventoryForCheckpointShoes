@@ -23,6 +23,8 @@ return new class extends Migration
             $table->date('payment_date');
             $table->enum('payment_method', ['cash', 'card', 'bank_transfer', 'check', 'online', 'other'])->default('cash');
             $table->string('reference_number')->nullable();
+            $table->string('bank_account')->nullable();
+            $table->string('paid_by')->nullable();
             $table->enum('status', ['pending', 'completed', 'cancelled', 'refunded'])->default('pending');
             $table->text('notes')->nullable();
             $table->string('received_by')->nullable();

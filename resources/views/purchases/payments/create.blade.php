@@ -110,18 +110,25 @@
                                 <x-input-error :messages="$errors->get('reference_number')" class="mt-2" />
                             </div>
 
-                            <!-- Payment Mode (Optional) -->
+                            <!-- Bank Account (Optional) -->
                             <div>
-                                <x-input-label for="payment_mode" :value="__('Payment Mode (Optional)')" />
-                                <select id="payment_mode" name="payment_mode"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">Select Mode</option>
-                                    <option value="cash" {{ old('payment_mode') == 'cash' ? 'selected' : '' }}>Cash</option>
-                                    <option value="bank_transfer" {{ old('payment_mode') == 'bank_transfer' ? 'selected' : '' }}>Bank Transfer</option>
-                                    <option value="check" {{ old('payment_mode') == 'check' ? 'selected' : '' }}>Check</option>
-                                    <option value="other" {{ old('payment_mode') == 'other' ? 'selected' : '' }}>Other</option>
-                                </select>
-                                <x-input-error :messages="$errors->get('payment_mode')" class="mt-2" />
+                                <x-input-label for="bank_account" :value="__('Bank Account (Optional)')" />
+                                <x-text-input id="bank_account" name="bank_account" type="text" class="mt-1 block w-full"
+                                    :value="old('bank_account')" placeholder="Account name or number" />
+                                <x-input-error :messages="$errors->get('bank_account')" class="mt-2" />
+                            </div>
+
+                            <!-- Bank Charges (Optional) -->
+                            <div>
+                                <x-input-label for="bank_charges" :value="__('Bank Charges (Optional)')" />
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">₱</span>
+                                    </div>
+                                    <x-text-input id="bank_charges" name="bank_charges" type="number" step="0.01" min="0"
+                                        class="pl-7 block w-full" :value="old('bank_charges', '0.00')" />
+                                </div>
+                                <x-input-error :messages="$errors->get('bank_charges')" class="mt-2" />
                             </div>
 
                             <!-- Paid By -->
@@ -165,42 +172,64 @@
 
     @push('scripts')
     <script>
-        // Filter purchase orders by selected vendor
-        document.getElementById('supplier_id').addEventListener('change', function() {
-            const supplierId = this.value;
+        document.addEventListener('DOMContentLoaded', function() {
+            const supplierSelect = document.getElementById('supplier_id');
             const orderSelect = document.getElementById('purchase_order_id');
-            const options = orderSelect.querySelectorAll('option');
-            
-            options.forEach(option => {
-                if (option.value === '') {
-                    option.style.display = '';
-                    return;
-                }
+            const amountInput = document.getElementById('amount');
+
+            // Filter purchase orders by selected vendor
+            supplierSelect.addEventListener('change', function() {
+                const supplierId = this.value;
+                const options = orderSelect.querySelectorAll('option');
                 
-                const orderSupplierId = option.dataset.supplier;
-                if (!supplierId || orderSupplierId === supplierId) {
-                    option.style.display = '';
-                } else {
-                    option.style.display = 'none';
+                options.forEach(option => {
+                    if (option.value === '') {
+                        option.style.display = '';
+                        return;
+                    }
+                    
+                    const orderSupplierId = option.dataset.supplier;
+                    if (!supplierId || orderSupplierId === supplierId) {
+                        option.style.display = '';
+                    } else {
+                        option.style.display = 'none';
+                    }
+                });
+                
+                // Reset order selection if current order doesn't match selected vendor
+                const currentOption = orderSelect.options[orderSelect.selectedIndex];
+                if (currentOption && currentOption.dataset.supplier && currentOption.dataset.supplier !== supplierId) {
+                    orderSelect.value = '';
+                    amountInput.value = '';
                 }
             });
-            
-            // Reset order selection if current order doesn't match selected vendor
-            const currentOption = orderSelect.options[orderSelect.selectedIndex];
-            if (currentOption && currentOption.dataset.supplier && currentOption.dataset.supplier !== supplierId) {
-                orderSelect.value = '';
-            }
-        });
 
-        // Pre-fill amount when order is selected
-        document.getElementById('purchase_order_id').addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            const amount = selectedOption.dataset.amount;
-            const amountInput = document.getElementById('amount');
-            
-            if (amount && !amountInput.value) {
-                amountInput.value = parseFloat(amount).toFixed(2);
-            }
+            // Auto-fill vendor and amount when order is selected
+            orderSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                
+                if (selectedOption.value) {
+                    // Auto-fill vendor
+                    const orderSupplierId = selectedOption.dataset.supplier;
+                    console.log('Selected order supplier ID:', orderSupplierId);
+                    
+                    if (orderSupplierId) {
+                        supplierSelect.value = orderSupplierId;
+                        console.log('Set supplier select to:', orderSupplierId);
+                    }
+                    
+                    // Pre-fill amount
+                    const amount = selectedOption.dataset.amount;
+                    console.log('Order amount:', amount);
+                    
+                    if (amount) {
+                        amountInput.value = parseFloat(amount).toFixed(2);
+                    }
+                } else {
+                    // Clear amount if no order selected
+                    amountInput.value = '';
+                }
+            });
         });
     </script>
     @endpush

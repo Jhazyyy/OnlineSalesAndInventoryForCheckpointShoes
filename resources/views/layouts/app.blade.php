@@ -74,4 +74,5 @@
 
 </html>
 
+@stack('scripts')
 @stack('page-scripts')

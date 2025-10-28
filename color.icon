@@ -106,3 +106,4 @@ Commands
 php artisan tinker --execute="echo 'Connected to: ' . DB::connection()->getDatabaseName() . PHP_EOL; echo 'Tables: ' . count(DB::select('SHOW TABLES')) . PHP_EOL;" 
 
 
+php artisan tinker --execute="print_r(\Illuminate\Support\Facades\Schema::getColumnListing('purchase_payments'));"

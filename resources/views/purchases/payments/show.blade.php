@@ -96,7 +96,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Vendor Name</label>
                             <p class="mt-1 text-sm text-gray-900 dark:text-white">
-                                <a href="{{ route('purchases.suppliers.show', $purchasePayment->supplier->supplier_id) }}" class="text-blue-600 hover:text-blue-900">
+                                <a href="{{ route('master_data.suppliers.show', $purchasePayment->supplier->supplier_id) }}" class="text-blue-600 hover:text-blue-900">
                                     {{ $purchasePayment->supplier->supplier_name }}
                                 </a>
                             </p>
@@ -134,7 +134,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Order Number</label>
                             <p class="mt-1 text-sm text-gray-900 dark:text-white">
-                                <a href="{{ route('purchases.orders.show', $purchasePayment->purchaseOrder->order_id) }}" class="text-blue-600 hover:text-blue-900">
+                                <a href="{{ route('purchases.purchase-orders.show', $purchasePayment->purchaseOrder->order_id) }}" class="text-blue-600 hover:text-blue-900">
                                     {{ $purchasePayment->purchaseOrder->order_number }}
                                 </a>
                             </p>
@@ -163,6 +163,18 @@
                                 {{ ucfirst($purchasePayment->purchaseOrder->payment_status) }}
                             </span>
                         </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Total Paid</label>
+                            <p class="mt-1 text-sm font-semibold text-green-600">₱{{ number_format($purchasePayment->purchaseOrder->paid_amount, 2) }}</p>
+                        </div>
+
+                        @if($purchasePayment->purchaseOrder->payment_status === 'partial')
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Remaining Balance</label>
+                            <p class="mt-1 text-sm font-semibold text-orange-600">₱{{ number_format($purchasePayment->purchaseOrder->remaining_balance, 2) }}</p>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>

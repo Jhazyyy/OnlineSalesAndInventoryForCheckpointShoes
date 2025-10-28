@@ -48,6 +48,7 @@ class PurchaseOrder extends Model
         'discount_amount',
         'shipping_amount',
         'total_amount',
+        'paid_amount',
         'payment_status',
         'payment_method',
         'delivery_address',
@@ -71,6 +72,7 @@ class PurchaseOrder extends Model
         'discount_amount' => 'decimal:2',
         'shipping_amount' => 'decimal:2',
         'total_amount' => 'decimal:2',
+        'paid_amount' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -443,4 +445,47 @@ class PurchaseOrder extends Model
                      })
                      ->get();
     }
+
+    /**
+     * Get the remaining balance (unpaid amount).
+     */
+    public function getRemainingBalanceAttribute(): float
+    {
+        return (float)($this->total_amount - ($this->paid_amount ?? 0));
+    }
+
+    /**
+     * Update paid amount and payment status based on payments.
+     */
+    public function updatePaidAmount(): void
+    {
+        // Only count completed payments
+        $totalPaid = $this->payments()
+            ->where('status', 'completed')
+            ->sum('amount');
+        
+        $this->paid_amount = $totalPaid;
+        
+        // Update payment status
+        if ($totalPaid >= $this->total_amount) {
+            $this->payment_status = 'paid';
+        } elseif ($totalPaid > 0) {
+            $this->payment_status = 'partial';
+        } else {
+            $this->payment_status = 'pending';
+        }
+        
+        $this->save();
+    }
+
+    /**
+     * Check if order can accept more payments.
+     */
+    public function canAcceptPayment(): bool
+    {
+        return $this->payment_status !== 'paid' && 
+               $this->remaining_balance > 0 &&
+               !in_array($this->status, ['cancelled']);
+    }
+
 }
