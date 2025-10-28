@@ -102,18 +102,19 @@ class PurchaseReceive extends Model
     }
 
     /**
-     * Generate unique receive number.
+     * Generate unique GRN (Goods Receipt Note) number.
+     * Format: GRN-0001, GRN-0002, etc.
      */
     public static function generateReceiveNumber(): string
     {
-        $date = Carbon::now();
-        $prefix = 'PR' . $date->format('Ymd');
+        $prefix = 'PR-';
         $lastReceive = static::where('receive_number', 'LIKE', $prefix . '%')
                           ->orderBy('receive_number', 'desc')
                           ->first();
         
         if ($lastReceive) {
-            $lastNumber = intval(substr($lastReceive->receive_number, -4));
+            // Extract the numeric part after "GRN-"
+            $lastNumber = intval(substr($lastReceive->receive_number, strlen($prefix)));
             $newNumber = $lastNumber + 1;
         } else {
             $newNumber = 1;

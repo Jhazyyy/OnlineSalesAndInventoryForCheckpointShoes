@@ -509,11 +509,11 @@
 
                     const total = subtotal + tax + shipping - orderDiscount;
 
-                    document.getElementById('subtotal-display').textContent = '$' + subtotal.toFixed(2);
-                    document.getElementById('tax-display').textContent = '$' + tax.toFixed(2);
-                    document.getElementById('shipping-display').textContent = '$' + shipping.toFixed(2);
-                    document.getElementById('discount-display').textContent = '$' + orderDiscount.toFixed(2);
-                    document.getElementById('total-display').textContent = '$' + total.toFixed(2);
+                    document.getElementById('subtotal-display').textContent = '₱' + subtotal.toFixed(2);
+                    document.getElementById('tax-display').textContent = '₱' + tax.toFixed(2);
+                    document.getElementById('shipping-display').textContent = '₱' + shipping.toFixed(2);
+                    document.getElementById('discount-display').textContent = '₱' + orderDiscount.toFixed(2);
+                    document.getElementById('total-display').textContent = '₱' + total.toFixed(2);
                 }
             });
         </script>

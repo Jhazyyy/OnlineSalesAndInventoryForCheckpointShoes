@@ -242,18 +242,5 @@ class PurchasePayment extends Model
         return $amountToApply;
     }
 
-    /**
-     * Get the payment mode display name.
-     */
-    // public function getPaymentModeDisplayAttribute(): string
-    // {
-    //     return match ($this->payment_mode) {
-    //         'cash' => 'Cash',
-    //         'bank_transfer' => 'Bank Transfer',
-    //         'standard_chartered' => 'Standard Chartered Bank',
-    //         'other' => 'Other',
-    //         default => ucfirst(str_replace('_', ' ', $this->payment_mode)),
-    //     };
-    // }
 
 }

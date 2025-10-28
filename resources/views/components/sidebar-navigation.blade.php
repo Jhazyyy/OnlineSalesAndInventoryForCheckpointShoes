@@ -1,5 +1,5 @@
 <!-- Sidebar Navigation Component -->
-<div x-data="{ sidebarOpen: false }" x-init="$watch('sidebarOpen', value => console.log('Sidebar:', value))" @sidebar-toggle.window="sidebarOpen = !sidebarOpen" class="relative">
+<div x-data="{ sidebarOpen: true }" x-init="$watch('sidebarOpen', value => console.log('Sidebar:', value))" @sidebar-toggle.window="sidebarOpen = !sidebarOpen" class="relative">
     <!-- Navigation Pane -->
     <div x-show="sidebarOpen" x-transition:enter="transition ease-out duration-200"
         x-transition:enter-start="opacity-0 transform -translate-x-full"
