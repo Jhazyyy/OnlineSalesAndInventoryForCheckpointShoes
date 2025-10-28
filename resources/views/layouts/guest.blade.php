@@ -27,15 +27,15 @@
 
 <body class="font-sans text-gray-900 antialiased">
     
-    <div class="flex flex-col min-h-screen bg-cover bg-center sm:justify-center items-center pt-6 sm:pt-0 sm:min-h-screen"
+    <div class="flex flex-col min-h-screen bg-cover bg-center justify-center items-center px-4 sm:px-6 lg:px-8"
         style="background-image: url('{{ asset('storage/background.jpg') }}');">
-        <div class="w-1/3 mt-6 px-6 py-10 bg-gray-300 dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg sm:max-w-screen-md">
-            <div class="flex justify-center">
+        <div class="w-full max-w-md mx-auto px-4 py-8 sm:px-6 sm:py-10 md:px-8 md:py-12 bg-gray-300/95 dark:bg-gray-800/95 shadow-lg overflow-hidden rounded-lg backdrop-blur-sm">
+            <div class="flex justify-center mb-6 sm:mb-8">
                 <a href="/">
-                    <x-application-logo class="w-30 h-20 object-cover" />
+                    <x-application-logo class="w-24 h-16 sm:w-28 sm:h-18 md:w-30 md:h-20 object-cover" />
                 </a>
             </div>
-            <div class="mt-4">
+            <div>
                 {{ $slot }}
             </div>
         </div>
