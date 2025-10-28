@@ -206,6 +206,20 @@ class ReportController extends Controller
     }
 
     /**
+     * Preview report PDF in browser
+     */
+    public function previewPdf(Request $request, string $reportType)
+    {
+        $filters = $request->all();
+        $report = $this->reportService->exportReportData($reportType, $filters);
+        
+        $pdf = Pdf::loadView('reports.pdf.' . $reportType, compact('report', 'filters'));
+        
+        // Stream the PDF inline (for preview)
+        return $pdf->stream($reportType . '_report_preview.pdf');
+    }
+
+    /**
      * Export report to PDF
      */
     public function exportPdf(Request $request, string $reportType): Response

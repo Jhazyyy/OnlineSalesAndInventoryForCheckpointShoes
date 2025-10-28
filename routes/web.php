@@ -933,6 +933,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reorder', [\App\Http\Controllers\ReportController::class, 'reorderProduct'])->name('reorder.create');
         
         // Export routes
+        Route::get('/{reportType}/preview-pdf', [\App\Http\Controllers\ReportController::class, 'previewPdf'])->name('preview-pdf');
         Route::get('/{reportType}/export-pdf', [\App\Http\Controllers\ReportController::class, 'exportPdf'])->name('export-pdf');
         Route::get('/{reportType}/export-excel', [\App\Http\Controllers\ReportController::class, 'exportExcel'])->name('export-excel');
         Route::get('/{reportType}/data', [\App\Http\Controllers\ReportController::class, 'getData'])->name('data');

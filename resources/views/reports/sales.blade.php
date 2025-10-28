@@ -92,6 +92,14 @@
 
                     <!-- Export Buttons -->
                     <div class="flex gap-4 mb-6">
+                        <button type="button" onclick="openPreviewModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            View/Preview Report
+                        </button>
+
                         <a href="{{ route('reports.export-pdf', ['reportType' => 'sales', 'start_date' => request('start_date', $filters['start_date'] ?? ''), 'end_date' => request('end_date', $filters['end_date'] ?? '')]) }}" target="_blank" class="inline-block">
                             <button type="button" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -238,4 +246,61 @@
             </div>
         </div>
     </div>
+
+    <!-- PDF Preview Modal -->
+    <div id="pdfPreviewModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-10 mx-auto p-5 border w-11/12 max-w-7xl shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100">Sales Report Preview</h3>
+                <button onclick="closePreviewModal()" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4" style="height: 80vh;">
+                <iframe id="pdfPreviewFrame" class="w-full h-full rounded" style="border: none;"></iframe>
+            </div>
+            <div class="mt-4 flex justify-end gap-3">
+                <button onclick="closePreviewModal()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium">
+                    Close
+                </button>
+                <a id="downloadPdfLink" href="#" target="_blank" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium inline-block">
+                    Download PDF
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openPreviewModal() {
+            const startDate = '{{ request('start_date', $filters['start_date'] ?? '') }}';
+            const endDate = '{{ request('end_date', $filters['end_date'] ?? '') }}';
+            const previewUrl = '{{ route('reports.preview-pdf', ['reportType' => 'sales']) }}?start_date=' + startDate + '&end_date=' + endDate;
+            const downloadUrl = '{{ route('reports.export-pdf', ['reportType' => 'sales']) }}?start_date=' + startDate + '&end_date=' + endDate;
+            
+            document.getElementById('pdfPreviewFrame').src = previewUrl;
+            document.getElementById('downloadPdfLink').href = downloadUrl;
+            document.getElementById('pdfPreviewModal').classList.remove('hidden');
+        }
+
+        function closePreviewModal() {
+            document.getElementById('pdfPreviewModal').classList.add('hidden');
+            document.getElementById('pdfPreviewFrame').src = '';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('pdfPreviewModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePreviewModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePreviewModal();
+            }
+        });
+    </script>
 </x-app-layout>
