@@ -10,7 +10,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login') }}" id="loginForm">
         @csrf
 
         <!-- Email Address -->
@@ -55,4 +55,50 @@
                 </x-primary-button>
         </div>
     </form>
+
+    <!-- Auto-refresh token if page is idle for too long -->
+    <script>
+        // Refresh the page if it's been idle for more than 100 minutes (before session expires at 120 minutes)
+        let idleTime = 0;
+        const maxIdleTime = 100; // minutes
+        
+        // Increment idle time counter every minute
+        const idleInterval = setInterval(timerIncrement, 60000); // 1 minute
+        
+        // Reset timer on user activity
+        document.addEventListener('mousemove', resetTimer);
+        document.addEventListener('keypress', resetTimer);
+        document.addEventListener('click', resetTimer);
+        document.addEventListener('scroll', resetTimer);
+        
+        function timerIncrement() {
+            idleTime++;
+            if (idleTime >= maxIdleTime) {
+                // Reload the page to get a fresh CSRF token
+                window.location.reload();
+            }
+        }
+        
+        function resetTimer() {
+            idleTime = 0;
+        }
+
+        // Handle form submission errors (419)
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            // Store form data in case of error
+            const formData = new FormData(this);
+            const email = formData.get('email');
+            if (email) {
+                sessionStorage.setItem('loginEmail', email);
+            }
+        });
+
+        // Restore email if coming back from 419 error
+        window.addEventListener('load', function() {
+            const savedEmail = sessionStorage.getItem('loginEmail');
+            if (savedEmail && document.getElementById('email').value === '') {
+                document.getElementById('email').value = savedEmail;
+            }
+        });
+    </script>
 </x-guest-layout>

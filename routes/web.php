@@ -26,6 +26,22 @@ Route::get('/', function () {
 });
 
 // Debug route to check authentication and session
+Route::get('/debug', function () {
+    return [
+        'authenticated' => auth()->check(),
+        'user' => auth()->user(),
+        'session_id' => session()->getId(),
+        'csrf_token' => csrf_token(),
+        'session_driver' => config('session.driver'),
+        'session_domain' => config('session.domain'),
+        'app_url' => config('app.url'),
+        'session_lifetime' => config('session.lifetime'),
+        'app_key' => config('app.key') ? 'Set' : 'Not set',
+        'session_data' => session()->all(),
+    ];
+});
+
+// Debug route to check authentication and session (old - commented)
 // Route::get('/debug', function () {
 //     return [
 //         'authenticated' => auth()->check(),
@@ -469,12 +485,12 @@ Route::get('dashboard', function () {
         'last6Months',
         'monthlyRevenue'
     ));
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth'])->name('dashboard');
 
 
 
 // CurrentUser UpdateInfo Routes 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     // Inventory list (separate from master data)
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

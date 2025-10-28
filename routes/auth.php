@@ -19,6 +19,11 @@ Route::middleware('guest')->group(function () {
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
+    
+    // Simple login test without Livewire
+    Route::get('login-simple', function () {
+        return view('auth.login-simple');
+    })->name('login.simple');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
