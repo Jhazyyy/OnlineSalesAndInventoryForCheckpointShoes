@@ -50,10 +50,6 @@
                         route-pattern="master_data.products.*|master_data.categories.*|master_data.brands.*|master_data.suppliers.*"
                         :icon="App\Helpers\NavigationHelper::getIcon('master_data')" title="Master Data" :is-dropdown="true">
 
-                        {{-- Items --}}
-                        {{-- <x-nav-item route="master_data.items.index" route-pattern="master_data.items.*"
-                            :icon="App\Helpers\NavigationHelper::getIcon('items', 'w-4 h-4 mr-3')" title="Items" size="small" /> --}}
-
                         <!-- Products -->
                         <x-nav-item route="master_data.products.index" route-pattern="master_data.products.*"
                             :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Products" size="small" />
@@ -173,9 +169,9 @@
                             title="Purchase Return" size="small" /> --}}
 
                         <!-- Payments Made -->
-                        <x-nav-item route="purchases.payments.index" route-pattern="purchases.payments.*"
+                        {{-- <x-nav-item route="purchases.payments.index" route-pattern="purchases.payments.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>'
-                            title="Payments Made" size="small" />
+                            title="Payments Made" size="small" /> --}}
 
                         <!-- Bills -->
                         {{-- <x-nav-item href="#"
@@ -216,8 +212,8 @@
                             title="Financial Report (P&L)" size="small" />
 
                         <!-- Supplier Cost -->
-                        <x-nav-item route="reports.financial" route-pattern="reports.financial" :icon="App\Helpers\NavigationHelper::getIcon('supplier_cost', 'w-4 h-4 mr-3')"
-                            title="Supplier Cost" size="small" />
+                        {{-- <x-nav-item route="reports.financial" route-pattern="reports.financial" :icon="App\Helpers\NavigationHelper::getIcon('supplier_cost', 'w-4 h-4 mr-3')"
+                            title="Supplier Cost" size="small" /> --}}
 
                         <!-- Stock Movement Report -->
                         {{-- <x-nav-item route="reports.movement" route-pattern="reports.movement"

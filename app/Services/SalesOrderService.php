@@ -18,16 +18,20 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
 /**
- * SalesOrderService - READ ONLY
+ * SalesOrderService
  * 
- * This service handles viewing and filtering sales orders received from e-commerce.
- * Create, Update, and Delete operations are removed as orders are managed by the e-commerce system.
+ * This service handles sales orders - can receive orders from e-commerce or create manually.
+ * Provides full CRUD operations for sales order management.
  * 
  * Available operations:
+ * - Create orders (createOrder)
  * - View orders (getPaginatedOrders)
+ * - Update orders (updateOrder)
+ * - Delete orders (deleteOrder)
  * - Filter and search orders
  * - Get order analytics
  * - Track shipment status
+ * - Manage order status changes
  */
 class SalesOrderService
 {

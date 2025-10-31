@@ -768,13 +768,17 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/supplier/{supplierId}/bills', [\App\Http\Controllers\PurchasePaymentController::class, 'getSupplierBills'])->name('supplier-bills');
     });
 
-    // Sales Order Management Routes - READ ONLY (Data from E-commerce)
+    // Sales Order Management Routes
     Route::prefix('sales/orders')->name('sales.orders.')->group(function () {
         Route::get('/', [SalesOrderController::class, 'index'])->name('index');
-        Route::get('/{order}', [SalesOrderController::class, 'show'])->name('show');
-
-        // Analytics
+        Route::get('/create', [SalesOrderController::class, 'create'])->name('create');
+        Route::post('/', [SalesOrderController::class, 'store'])->name('store');
+        
+        // Analytics (before wildcard route)
         Route::get('/analytics', [SalesOrderController::class, 'analytics'])->name('analytics');
+        
+        // Wildcard route should be last
+        Route::get('/{order}', [SalesOrderController::class, 'show'])->name('show');
     });
 
     // Returns Management Routes

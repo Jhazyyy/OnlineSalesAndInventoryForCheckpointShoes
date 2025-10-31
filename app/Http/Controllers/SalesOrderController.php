@@ -10,11 +10,10 @@ use Illuminate\Support\Facades\Validator;
 use App\Services\SalesOrderService;
 
 /**
- * SalesOrderController - READ ONLY
+ * SalesOrderController
  * 
- * Sales orders are received from e-commerce application.
- * This controller only displays and tracks orders.
- * Create/Edit/Delete operations are handled by the e-commerce system.
+ * Manages sales orders - can receive orders from e-commerce application or created manually.
+ * Provides full CRUD operations for sales order management.
  */
 class SalesOrderController extends Controller
 {
@@ -26,7 +25,7 @@ class SalesOrderController extends Controller
     }
 
     /**
-     * Display a listing of sales orders received from e-commerce.
+     * Display a listing of sales orders.
      */
     public function index(Request $request)
     {
@@ -41,6 +40,60 @@ class SalesOrderController extends Controller
     }
 
     /**
+     * Show the form for creating a new sales order.
+     */
+    public function create()
+    {
+        $filterOptions = $this->orderService->getFilterOptions();
+        
+        return view('sales.orders.create', [
+            'customers' => $filterOptions['customers'],
+            'products' => $filterOptions['products'],
+        ]);
+    }
+
+    /**
+     * Store a newly created sales order in storage.
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'customer_id' => 'required|exists:customers,customer_id',
+            'order_date' => 'required|date',
+            'expected_delivery_date' => 'nullable|date|after_or_equal:order_date',
+            'priority' => 'nullable|in:low,normal,high,urgent',
+            'status' => 'nullable|in:pending,confirmed,processing,ready,shipped,delivered,cancelled',
+            'payment_status' => 'nullable|in:pending,partial,paid,refunded',
+            'payment_method' => 'nullable|in:cash,card,bank_transfer,check,online,other',
+            
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|exists:products,product_id',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.unit_price' => 'required|numeric|min:0',
+            'items.*.discount_amount' => 'nullable|numeric|min:0',
+            'items.*.notes' => 'nullable|string|max:1000',
+            
+            'shipping_address' => 'nullable|string|max:2000',
+            'billing_address' => 'nullable|string|max:2000',
+            'notes' => 'nullable|string|max:2000',
+            'internal_notes' => 'nullable|string|max:2000',
+            'reference_number' => 'nullable|string|max:100',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $data = $validator->validated();
+        $order = $this->orderService->createOrder($data);
+
+        return redirect()->route('sales.orders.show', $order->order_id)
+            ->with('success', 'Sales order created successfully.');
+    }
+
+    /**
      * Display the specified sales order details.
      */
     public function show(SalesOrder $order)
@@ -50,7 +103,7 @@ class SalesOrderController extends Controller
     }
 
     /**
-     * Analytics for orders received from e-commerce.
+     * Analytics for orders.
      */
     public function analytics()
     {
