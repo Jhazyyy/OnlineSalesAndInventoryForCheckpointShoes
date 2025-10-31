@@ -29,13 +29,22 @@
     <!-- Livewire Styles -->
     @livewireStyles
     
-    <!-- Sidebar Toggle Script -->
+    <!-- Sidebar Toggle Script with Alpine.js Store -->
     <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('sidebar', {
+                open: true,
+                toggle() {
+                    this.open = !this.open;
+                }
+            });
+        });
+        
         document.addEventListener('DOMContentLoaded', function() {
             const sidebarToggle = document.getElementById('sidebar-toggle');
             if (sidebarToggle) {
                 sidebarToggle.addEventListener('click', function() {
-                    window.dispatchEvent(new CustomEvent('sidebar-toggle'));
+                    Alpine.store('sidebar').toggle();
                 });
             }
         });
@@ -50,7 +59,10 @@
         <!-- Shared Sidebar Navigation -->
         <x-sidebar-navigation />
 
-        <div class="pt-14 scroll-pt-0.5">
+        <!-- Main Content Wrapper with responsive margin -->
+        <div class="pt-14 transition-all duration-200 ease-in-out" 
+             x-data 
+             :class="$store.sidebar.open ? 'lg:ml-72' : 'ml-0'">
             <!-- Page Heading -->
             @isset($header)
                 <header class="bg-gray-100 dark:bg-gray-800 shadow">

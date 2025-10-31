@@ -1,7 +1,7 @@
 <x-app-layout>
-    <div class="w-full h-screen">
+    <div class="w-full min-h-screen">
         <!-- Main Content Area -->
-        <div :class="navOpen ? 'flex-1' : 'w-full'" class="h-full overflow-y-auto">
+        <div class="h-full overflow-y-auto">
             <div class="bg-gray-50 dark:bg-gray-900 min-h-full flex flex-col">
                 <div class="flex-1 p-6 text-gray-900 dark:text-gray-100">
                     <h2 class="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">Dashboard</h2>

@@ -1,12 +1,11 @@
 <!-- Sidebar Navigation Component -->
-<div x-data="{ sidebarOpen: true }" x-init="$watch('sidebarOpen', value => console.log('Sidebar:', value))" @sidebar-toggle.window="sidebarOpen = !sidebarOpen" class="relative">
+<div x-data class="relative">
     <!-- Navigation Pane -->
-    <div x-show="sidebarOpen" x-transition:enter="transition ease-out duration-200"
+    <div x-show="$store.sidebar.open" x-transition:enter="transition ease-out duration-200"
         x-transition:enter-start="opacity-0 transform -translate-x-full"
         x-transition:enter-end="opacity-100 transform translate-x-0" x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="opacity-100 transform translate-x-0"
-        x-transition:leave-end="opacity-0 transform -translate-x-full" {{-- @mouseenter="sidebarOpen = true"
-        @mouseleave="sidebarOpen = false" --}}
+        x-transition:leave-end="opacity-0 transform -translate-x-full"
         class="fixed left-0 top-14 h-screen w-72 bg-white dark:bg-gray-800 shadow-lg z-30 overflow-y-auto">
 
         <!-- Logo Section -->
@@ -27,7 +26,7 @@
             </div>
 
             <!-- Close Button -->
-            <button @click="sidebarOpen = false"
+            <button @click="$store.sidebar.toggle()"
                 class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
                 <svg class="w-6 h-6 text-gray-900 dark:text-white" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24">
@@ -258,9 +257,9 @@
     </div>
 
     <!-- Overlay for mobile -->
-    <div x-show="sidebarOpen" @click="sidebarOpen = false"
+    <div x-show="$store.sidebar.open" @click="$store.sidebar.toggle()"
         x-transition:enter="transition-opacity ease-linear duration-200" x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-200"
-        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @mouseenter="sidebarOpen = true"
-        @mouseleave="sidebarOpen = false" class="fixed inset-0 bg-black bg-opacity-50 z-20 sm:hidden"></div>
+        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+        class="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"></div>
 </div>

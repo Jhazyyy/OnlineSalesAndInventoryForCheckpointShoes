@@ -1,8 +1,8 @@
 <x-app-layout>
-    <div class="w-full h-screen">
-        <div :class="navOpen ? 'flex-1' : 'w-full'" class="h-full overflow-y-auto">
+    <div class="w-full min-h-screen">
+        <div class="h-full overflow-y-auto">
             <div class="bg-white dark:bg-gray-800 min-h-full flex flex-col">
-                <div class="flex-1 p-6 text-gray-900 dark:text-gray-100">
+                <div class="flex-1 p-6">
                     <!-- Header -->
                     <div class="mb-6">
                         <h2 class="text-3xl font-bold">Reports Management</h2>

@@ -1,7 +1,7 @@
 <x-app-layout>
-    <div class="w-full h-screen">
-        <div :class="navOpen ? 'flex-1' : 'w-full'" class="h-full overflow-y-auto">
-            <div class="bg-gray-200 dark:bg-gray-800 min-h-full flex flex-col">
+    <div class="w-full min-h-screen">
+        <div class="h-full overflow-y-auto">
+            <div class="bg-white dark:bg-gray-800 min-h-full flex flex-col">
                 <div class="flex-1 p-6">
                     <!-- Success/Error Messages -->
                     @if (session('success'))
