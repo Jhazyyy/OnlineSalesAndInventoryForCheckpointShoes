@@ -99,7 +99,7 @@ try {
             'total_amount' => $totalAmount,
         ]);
         
-        echo "✓ Created {$statusInfo['name']}: {$orderNumber} - Total: $" . number_format($totalAmount, 2) . "\n";
+        echo "✓ Created {$statusInfo['name']}: {$orderNumber} - Total: ₱" . number_format($totalAmount, 2) . "\n";
     }
     
     $totalOrders = SalesOrder::count();

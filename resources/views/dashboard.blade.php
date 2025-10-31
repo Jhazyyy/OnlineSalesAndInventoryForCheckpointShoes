@@ -150,24 +150,38 @@
 
                             <!-- Top Selling Items Section -->
                             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Top Selling Items</h3>
-                                    <a href="#" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
-                                        This Month <svg class="w-3 h-3 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                        </svg>
-                                    </a>
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                                        Top Selling Items - <span id="topSellingPeriodLabel" class="text-blue-600 dark:text-blue-400">This Month</span>
+                                    </h3>
+                                    <select id="topSellingPeriod" class="appearance-none w-full sm:w-auto text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="today">Today</option>
+                                        <option value="yesterday">Yesterday</option>
+                                        <option value="this_week">This Week</option>
+                                        <option value="last_week">Last Week</option>
+                                        <option value="this_month" selected>This Month</option>
+                                        <option value="last_month">Last Month</option>
+                                        <option value="this_year">This Year</option>
+                                        <option value="all_time">All Time</option>
+                                    </select>
                                 </div>
 
-                                <div class="space-y-4">
-                                    @forelse($topSellingItems->take(3) ?? [] as $item)
+                                <div id="topSellingItemsContainer" class="space-y-4">
+                                    @forelse($topSellingItems->take(10) ?? [] as $item)
                                     <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                                         <div class="flex items-center space-x-4 flex-1">
-                                            <!-- Product Image Placeholder -->
+                                            <!-- Product Image -->
                                             <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
-                                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                                </svg>
+                                                @if(!empty($item['image']))
+                                                    <img src="{{ asset('storage/' . $item['image']) }}" 
+                                                         alt="{{ $item['name'] ?? 'Product' }}" 
+                                                         class="w-full h-full object-cover"
+                                                         onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\'w-8 h-8 text-white\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\'></path></svg>';">
+                                                @else
+                                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                    </svg>
+                                                @endif
                                             </div>
                                             
                                             <div class="flex-1 min-w-0">
@@ -458,6 +472,84 @@
                             }
                         }
                     }
+                });
+            }
+
+            // Top Selling Items Period Filter
+            const topSellingPeriodSelect = document.getElementById('topSellingPeriod');
+            const topSellingPeriodLabel = document.getElementById('topSellingPeriodLabel');
+            
+            if (topSellingPeriodSelect && topSellingPeriodLabel) {
+                topSellingPeriodSelect.addEventListener('change', function() {
+                    const period = this.value;
+                    const selectedText = this.options[this.selectedIndex].text;
+                    const container = document.getElementById('topSellingItemsContainer');
+                    
+                    // Update the label text
+                    topSellingPeriodLabel.textContent = selectedText;
+                    
+                    // Show loading state
+                    container.innerHTML = `
+                        <div class="flex justify-center items-center py-8">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        </div>
+                    `;
+                    
+                    // Fetch new data
+                    fetch('/dashboard/top-selling-items?period=' + period)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.items && data.items.length > 0) {
+                                container.innerHTML = data.items.map(item => `
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                        <div class="flex items-center space-x-4 flex-1">
+                                            <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
+                                                ${item.image 
+                                                    ? `<img src="/storage/${item.image}" 
+                                                           alt="${item.name}" 
+                                                           class="w-full h-full object-cover"
+                                                           onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-8 h-8 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
+                                                    : `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                       </svg>`
+                                                }
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
+                                                    ${item.name}
+                                                </div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                    Sold: ${item.quantity.toLocaleString()} units
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-right ml-4">
+                                            <div class="text-lg font-bold text-gray-800 dark:text-gray-100">
+                                                ${item.quantity.toLocaleString()}
+                                            </div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">PCS</div>
+                                        </div>
+                                    </div>
+                                `).join('');
+                            } else {
+                                container.innerHTML = `
+                                    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                                        <svg class="w-12 h-12 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                                        </svg>
+                                        <p class="text-sm">No sales data available for this period</p>
+                                    </div>
+                                `;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching top selling items:', error);
+                            container.innerHTML = `
+                                <div class="text-center py-8 text-red-500 dark:text-red-400">
+                                    <p class="text-sm">Error loading data. Please try again.</p>
+                                </div>
+                            `;
+                        });
                 });
             }
         });

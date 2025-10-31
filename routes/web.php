@@ -152,9 +152,9 @@ Route::get('dashboard', function () {
     // Purchase Statistics
     try {
         $purchaseStats = [
-            'total_purchases' => \App\Models\Purchase::count(),
-            'this_month_purchases' => \App\Models\Purchase::whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->count(),
-            'total_purchase_value' => \App\Models\Purchase::sum('total_amount') ?? 0,
+            'total_purchases' => \App\Models\PurchaseOrder::count(),
+            'this_month_purchases' => \App\Models\PurchaseOrder::whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->count(),
+            'total_purchase_value' => \App\Models\PurchaseOrder::sum('total_amount') ?? 0,
         ];
     } catch (\Exception $e) {
         $purchaseStats = [
@@ -314,7 +314,7 @@ Route::get('dashboard', function () {
             ->with('product')
             ->groupBy('product_id')
             ->orderByDesc('total_quantity')
-            ->limit(3)
+            ->limit(10)
             ->get()
             ->filter(function ($item) {
                 return $item->product !== null;
@@ -324,6 +324,7 @@ Route::get('dashboard', function () {
                     'name' => $item->product->name ?? 'Unknown Product',
                     'quantity' => (int) $item->total_quantity,
                     'revenue' => (float) $item->total_revenue,
+                    'image' => $item->product->image ?? null,
                 ];
             })
             ->values();
@@ -486,6 +487,87 @@ Route::get('dashboard', function () {
         'monthlyRevenue'
     ));
 })->middleware(['auth'])->name('dashboard');
+
+// Dashboard Top Selling Items AJAX Route
+Route::get('dashboard/top-selling-items', function (Illuminate\Http\Request $request) {
+    if (!Auth::check()) {
+        return response()->json(['items' => []], 401);
+    }
+
+    $period = $request->get('period', 'this_month');
+    $query = \App\Models\SalesOrderItem::query();
+
+    // Apply date filter based on period
+    switch ($period) {
+        case 'today':
+            $query->whereHas('order', function ($q) {
+                $q->whereDate('order_date', today());
+            });
+            break;
+        case 'yesterday':
+            $query->whereHas('order', function ($q) {
+                $q->whereDate('order_date', today()->subDay());
+            });
+            break;
+        case 'this_week':
+            $query->whereHas('order', function ($q) {
+                $q->whereBetween('order_date', [now()->startOfWeek(), now()->endOfWeek()]);
+            });
+            break;
+        case 'last_week':
+            $query->whereHas('order', function ($q) {
+                $q->whereBetween('order_date', [
+                    now()->subWeek()->startOfWeek(),
+                    now()->subWeek()->endOfWeek()
+                ]);
+            });
+            break;
+        case 'this_month':
+            $query->whereHas('order', function ($q) {
+                $q->whereMonth('order_date', now()->month)
+                  ->whereYear('order_date', now()->year);
+            });
+            break;
+        case 'last_month':
+            $query->whereHas('order', function ($q) {
+                $q->whereMonth('order_date', now()->subMonth()->month)
+                  ->whereYear('order_date', now()->subMonth()->year);
+            });
+            break;
+        case 'this_year':
+            $query->whereHas('order', function ($q) {
+                $q->whereYear('order_date', now()->year);
+            });
+            break;
+        case 'all_time':
+            // No date filter
+            break;
+    }
+
+    $topSellingItems = $query->select('product_id')
+        ->selectRaw('SUM(quantity) as total_quantity')
+        ->selectRaw('SUM(quantity * unit_price) as total_revenue')
+        ->whereNotNull('product_id')
+        ->with('product')
+        ->groupBy('product_id')
+        ->orderByDesc('total_quantity')
+        ->limit(10)
+        ->get()
+        ->filter(function ($item) {
+            return $item->product !== null;
+        })
+        ->map(function ($item) {
+            return [
+                'name' => $item->product->name ?? 'Unknown Product',
+                'quantity' => (int) $item->total_quantity,
+                'revenue' => (float) $item->total_revenue,
+                'image' => $item->product->image ?? null,
+            ];
+        })
+        ->values();
+
+    return response()->json(['items' => $topSellingItems]);
+})->middleware(['auth'])->name('dashboard.top-selling-items');
 
 
 
