@@ -136,6 +136,24 @@ class PurchaseReceiveService
             $this->addItemsToReceive($receive, $data['items']);
         }
 
+        // Log activity for goods receipt
+        if ($receive->supplier_id) {
+            \App\Models\SupplierActivityLog::log(
+                supplierId: $receive->supplier_id,
+                activityType: 'purchase_order_received',
+                description: "Goods Receipt {$receive->receive_number} created for Purchase Order " . ($receive->purchaseOrder->order_number ?? 'N/A'),
+                relatedId: $receive->receive_id,
+                relatedType: 'PurchaseReceive',
+                amount: $receive->total_amount_received,
+                metadata: [
+                    'receive_number' => $receive->receive_number,
+                    'purchase_order_id' => $receive->purchase_order_id,
+                    'items_count' => count($data['items'] ?? []),
+                    'status' => $receive->status,
+                ]
+            );
+        }
+
         return $receive->fresh(['supplier', 'purchaseOrder', 'items.product']);
     }
 
@@ -259,7 +277,8 @@ class PurchaseReceiveService
     {
         // First reverse inventory changes for existing items
         foreach ($receive->items as $item) {
-            if ($item->quantity_received > 0) {
+            // Only reverse inventory if product still exists and quantity was received
+            if ($item->quantity_received > 0 && $item->product) {
                 $this->updateProductInventory($item->product, -$item->quantity_received);
             }
         }

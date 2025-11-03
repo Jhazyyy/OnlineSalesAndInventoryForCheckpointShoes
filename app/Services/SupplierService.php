@@ -215,12 +215,17 @@ class SupplierService
      */
     public function calculateSupplierPerformance(Supplier $supplier): array
     {
-        $totalPurchased = $supplier->total_purchased;
-        $totalOrders = $supplier->total_orders;
-        $avgOrderValue = $supplier->average_order_value;
+        // Get all purchase orders for this supplier
+        $purchaseOrders = $supplier->purchaseOrders()->get();
         
-        $firstOrderDate = $supplier->purchases()->oldest('purchase_date')->first()?->purchase_date;
-        $lastOrderDate = $supplier->last_order_date;
+        // Calculate totals from purchase orders
+        $totalPurchased = $purchaseOrders->sum('total_amount');
+        $totalOrders = $purchaseOrders->count();
+        $avgOrderValue = $totalOrders > 0 ? $totalPurchased / $totalOrders : 0;
+        
+        // Get first and last order dates
+        $firstOrderDate = $supplier->purchaseOrders()->oldest('order_date')->first()?->order_date;
+        $lastOrderDate = $supplier->purchaseOrders()->latest('order_date')->first()?->order_date;
         
         $relationshipDays = 0;
         if ($firstOrderDate && $lastOrderDate) {
@@ -232,27 +237,37 @@ class SupplierService
         $orderFrequency = $relationshipDays > 0 ? $totalOrders / ($relationshipDays / 30.44) : 0; // Orders per month
 
         // Recent activity (last 90 days)
-        $recentOrders = $supplier->purchases()
-                               ->where('purchase_date', '>=', Carbon::now()->subDays(90))
+        $recentOrders = $supplier->purchaseOrders()
+                               ->where('order_date', '>=', Carbon::now()->subDays(90))
                                ->count();
 
-        $recentValue = $supplier->purchases()
-                              ->where('purchase_date', '>=', Carbon::now()->subDays(90))
-                              ->selectRaw('SUM(price * quantity) as total')
-                              ->value('total') ?? 0;
+        $recentValue = $supplier->purchaseOrders()
+                              ->where('order_date', '>=', Carbon::now()->subDays(90))
+                              ->sum('total_amount') ?? 0;
 
         // Performance rating (based on order frequency, value, and recency)
         $performanceScore = 0;
-        if ($totalOrders >= 10) $performanceScore += 25;
+        
+        // Orders volume scoring
+        if ($totalOrders >= 20) $performanceScore += 30;
+        elseif ($totalOrders >= 10) $performanceScore += 20;
         elseif ($totalOrders >= 5) $performanceScore += 15;
         elseif ($totalOrders >= 1) $performanceScore += 5;
 
-        if ($totalPurchased >= 50000) $performanceScore += 25;
+        // Purchase value scoring
+        if ($totalPurchased >= 100000) $performanceScore += 30;
+        elseif ($totalPurchased >= 50000) $performanceScore += 20;
         elseif ($totalPurchased >= 10000) $performanceScore += 15;
         elseif ($totalPurchased >= 1000) $performanceScore += 5;
 
-        if ($recentOrders > 0) $performanceScore += 25;
-        if ($orderFrequency >= 1) $performanceScore += 25;
+        // Recent activity scoring
+        if ($recentOrders >= 5) $performanceScore += 25;
+        elseif ($recentOrders > 0) $performanceScore += 15;
+        
+        // Order frequency scoring
+        if ($orderFrequency >= 2) $performanceScore += 15;
+        elseif ($orderFrequency >= 1) $performanceScore += 10;
+        elseif ($orderFrequency >= 0.5) $performanceScore += 5;
 
         return [
             'total_purchased' => $totalPurchased,
@@ -264,9 +279,9 @@ class SupplierService
             'last_order_date' => $lastOrderDate,
             'recent_orders_90_days' => $recentOrders,
             'recent_value_90_days' => $recentValue,
-            'performance_score' => $performanceScore,
+            'performance_score' => min($performanceScore, 100), // Cap at 100
             'performance_rating' => $this->getPerformanceRating($performanceScore),
-            'is_reliable' => $supplier->isReliable(),
+            'is_reliable' => $recentOrders > 0 && $totalOrders >= 3, // Reliable if active and has history
         ];
     }
 

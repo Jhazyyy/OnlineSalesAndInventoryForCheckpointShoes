@@ -222,7 +222,7 @@
                                                     ₱{{ number_format($supplier->total_purchased, 2) }}
                                                 </div>
                                                 <div class="text-sm text-gray-500 dark:text-gray-400">
-                                                    {{ $supplier->total_orders }} orders
+                                                    {{ $supplier->total_orders}} orders
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">

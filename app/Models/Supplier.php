@@ -75,6 +75,14 @@ class Supplier extends Model
     }
 
     /**
+     * Get the activity logs for the supplier.
+     */
+    public function activityLogs(): HasMany
+    {
+        return $this->hasMany(SupplierActivityLog::class, 'supplier_id', 'supplier_id');
+    }
+
+    /**
      * Get the supplier's full address.
      */
     public function getFullAddressAttribute(): string
@@ -95,9 +103,7 @@ class Supplier extends Model
      */
     public function getTotalPurchasedAttribute(): float
     {
-        return $this->purchases()
-            ->selectRaw('SUM(price * quantity) as total')
-            ->value('total') ?? 0;
+        return $this->purchaseOrders()->sum('total_amount') ?? 0;
     }
 
     /**
@@ -105,7 +111,7 @@ class Supplier extends Model
      */
     public function getTotalOrdersAttribute(): int
     {
-        return $this->purchases()->count();
+        return $this->purchaseOrders()->count();
     }
 
     /**
@@ -127,9 +133,9 @@ class Supplier extends Model
      */
     public function getLastOrderDateAttribute(): ?Carbon
     {
-        $lastPurchase = $this->purchases()->latest('purchase_date')->first();
+        $lastOrder = $this->purchaseOrders()->latest('order_date')->first();
 
-        return $lastPurchase ? $lastPurchase->purchase_date : null;
+        return $lastOrder ? $lastOrder->order_date : null;
     }
 
     /**
