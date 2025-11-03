@@ -51,6 +51,10 @@ class PurchaseReceive extends Model
         'damage_notes',
         'receiver_name',
         'delivery_address',
+        'is_short_closed',
+        'short_close_reason',
+        'short_closed_at',
+        'short_closed_by',
     ];
 
     /**
@@ -62,6 +66,8 @@ class PurchaseReceive extends Model
         'receive_date' => 'date',
         'total_amount_expected' => 'decimal:2',
         'total_amount_received' => 'decimal:2',
+        'is_short_closed' => 'boolean',
+        'short_closed_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -253,6 +259,28 @@ class PurchaseReceive extends Model
      */
     public function canBeCancelled(): bool
     {
-        return in_array($this->status, ['in_transit', 'partially_received']);
+        return in_array($this->status, ['in_transit', 'partially_received']) && !$this->is_short_closed;
+    }
+
+    /**
+     * Check if receive can be short closed.
+     * A receive can be short closed if:
+     * - It has status 'partially_received' (not all items received)
+     * - It hasn't been fully received yet
+     * - It's not already short closed
+     */
+    public function canBeShortClosed(): bool
+    {
+        return in_array($this->status, ['partially_received', 'in_transit']) && 
+               !$this->is_short_closed &&
+               $this->total_quantity_received < $this->total_quantity_expected;
+    }
+
+    /**
+     * Get the user who short closed this receive.
+     */
+    public function shortClosedBy(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\User::class, 'short_closed_by');
     }
 }

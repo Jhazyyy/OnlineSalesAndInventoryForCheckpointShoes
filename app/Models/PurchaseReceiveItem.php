@@ -43,6 +43,8 @@ class PurchaseReceiveItem extends Model
         'total_amount',
         'condition',
         'item_notes',
+        'is_short_closed',
+        'short_close_reason',
     ];
 
     /**
@@ -53,6 +55,7 @@ class PurchaseReceiveItem extends Model
     protected $casts = [
         'unit_price' => 'decimal:2',
         'total_amount' => 'decimal:2',
+        'is_short_closed' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

@@ -37,6 +37,14 @@ class Inventory extends Model
         return $this->belongsTo(Product::class, 'product_id', 'product_id');
     }
 
+    /**
+     * Accessor for quantity (alias for quantity_on_hand for backward compatibility)
+     */
+    public function getQuantityAttribute(): int
+    {
+        return (int) $this->quantity_on_hand;
+    }
+
     public function getQuantityAvailableAttribute(): int
     {
         return max(0, (int) $this->quantity_on_hand - (int) $this->quantity_reserved);

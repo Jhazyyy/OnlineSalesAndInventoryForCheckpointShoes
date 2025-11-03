@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseReceiveService
 {
@@ -403,5 +404,115 @@ class PurchaseReceiveService
             'total_value_received' => $query->sum('total_amount_received'),
             'total_quantity_received' => $query->sum('total_quantity_received'),
         ];
+    }
+
+    /**
+     * Short close a purchase receive.
+     * 
+     * This allows closing a purchase order when the supplier cannot deliver
+     * the full expected quantity. The receive is marked as complete with
+     * the quantities that were actually received.
+     * 
+     * WORKFLOW:
+     * 1. Mark the receive as short closed with reason
+     * 2. Mark all items with shortfall as short closed
+     * 3. Update the related Purchase Order status to 'received' (closed)
+     * 4. Update PO items to reflect that no more items are expected
+     * 5. Log the activity
+     * 
+     * @param PurchaseReceive $receive
+     * @param string $reason
+     * @param int|null $userId
+     * @return PurchaseReceive
+     * @throws \Exception
+     */
+    public function shortCloseReceive(PurchaseReceive $receive, string $reason, ?int $userId = null): PurchaseReceive
+    {
+        // Validate that receive can be short closed
+        if (!$receive->canBeShortClosed()) {
+            throw new \Exception('This purchase receive cannot be short closed. It may already be fully received or already short closed.');
+        }
+
+        // Begin transaction to ensure all updates happen together
+        DB::beginTransaction();
+
+        try {
+            // Mark the receive as short closed
+            $receive->update([
+                'is_short_closed' => true,
+                'short_close_reason' => $reason,
+                'short_closed_at' => now(),
+                'short_closed_by' => $userId,
+                'status' => 'received', // Mark as received since we're closing it
+            ]);
+
+            // Mark all items with shortfall as short closed
+            foreach ($receive->items as $item) {
+                if ($item->quantity_received < $item->quantity_expected) {
+                    $item->update([
+                        'is_short_closed' => true,
+                        'short_close_reason' => $reason,
+                    ]);
+                }
+            }
+
+            // Update the related Purchase Order
+            if ($receive->purchase_order_id) {
+                $purchaseOrder = PurchaseOrder::with('items')->find($receive->purchase_order_id);
+                
+                if ($purchaseOrder) {
+                    // Mark the PO as received (closed)
+                    $purchaseOrder->update([
+                        'status' => 'received',
+                        'received_date' => now(),
+                    ]);
+
+                    // Update PO items - mark them as fully received with the actual quantities
+                    // This ensures no more receipts can be created for this PO
+                    foreach ($purchaseOrder->items as $poItem) {
+                        // Find the corresponding receive item
+                        $receiveItem = $receive->items()
+                            ->where('purchase_order_item_id', $poItem->item_id)
+                            ->first();
+                        
+                        if ($receiveItem) {
+                            // Set quantity_ordered to match what was actually received
+                            // This effectively closes the PO item
+                            $poItem->update([
+                                'quantity_ordered' => $poItem->quantity_received,
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            // Log activity
+            if ($receive->supplier_id) {
+                \App\Models\SupplierActivityLog::log(
+                    supplierId: $receive->supplier_id,
+                    activityType: 'purchase_order_short_closed',
+                    description: "Purchase Receive {$receive->receive_number} was short closed. Reason: {$reason}",
+                    relatedId: $receive->receive_id,
+                    relatedType: 'PurchaseReceive',
+                    amount: $receive->total_amount_received,
+                    metadata: [
+                        'receive_number' => $receive->receive_number,
+                        'purchase_order_id' => $receive->purchase_order_id,
+                        'expected_quantity' => $receive->total_quantity_expected,
+                        'received_quantity' => $receive->total_quantity_received,
+                        'shortfall' => $receive->total_quantity_expected - $receive->total_quantity_received,
+                        'short_close_reason' => $reason,
+                    ]
+                );
+            }
+
+            DB::commit();
+
+            return $receive->fresh(['supplier', 'purchaseOrder', 'items.product']);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new \Exception("Failed to short close purchase receive: " . $e->getMessage());
+        }
     }
 }

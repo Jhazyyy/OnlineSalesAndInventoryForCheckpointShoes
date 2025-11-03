@@ -777,6 +777,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Status management routes
         Route::post('/{receive}/change-status', [PurchaseReceiveController::class, 'changeStatus'])->name('change-status');
+        Route::post('/{receive}/short-close', [PurchaseReceiveController::class, 'shortClose'])->name('short-close');
         
         // AJAX routes
         Route::get('/purchase-order/{purchaseOrder}/items', [PurchaseReceiveController::class, 'getPurchaseOrderItems'])->name('purchase-order-items');

@@ -202,6 +202,38 @@ class PurchaseReceiveController extends Controller
     }
 
     /**
+     * Short close a purchase receive
+     * 
+     * This allows marking a purchase receive as complete when the supplier
+     * cannot deliver the full expected quantity.
+     */
+    public function shortClose(Request $request, PurchaseReceive $receive)
+    {
+        $validator = Validator::make($request->all(), [
+            'short_close_reason' => 'required|string|min:10|max:2000',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->with('error', 'Please provide a reason for short closing (minimum 10 characters).');
+        }
+
+        try {
+            $userId = \Illuminate\Support\Facades\Auth::id();
+            $this->receiveService->shortCloseReceive(
+                $receive, 
+                $request->get('short_close_reason'),
+                $userId
+            );
+            
+            return redirect()->back()->with('success', 'Purchase receive has been short closed successfully. The purchase order has been marked as complete.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+    /**
      * Get purchase order items for AJAX
      */
     public function getPurchaseOrderItems(Request $request, PurchaseOrder $purchaseOrder)

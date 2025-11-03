@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Product;
+use App\Models\Inventory;
 use App\Models\StockMovement;
 use Illuminate\Database\Seeder;
 
@@ -13,9 +14,11 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        // Clear existing products to avoid duplicate SKU errors
-        $this->command->info('Clearing existing products...');
+        // Clear existing products and related records to avoid duplicate SKU errors
+        $this->command->info('Clearing existing products and inventory...');
         Product::query()->delete();
+        // Clear orphaned inventory records (cascading delete may not work)
+        Inventory::query()->delete();
         
         // Shoe Products - Various brands and styles
         $shoeProducts = [
@@ -297,16 +300,19 @@ class ProductSeeder extends Seeder
             // Create the product
             $product = Product::create($productData);
 
-            // Record initial stock movement if quantity > 0
+            // Use InventoryService to set initial stock if quantity > 0
+            // This will update both the Inventory table and create a StockMovement record
             if ($quantity > 0) {
-                StockMovement::recordMovement(
+                \App\Services\InventoryService::adjust(
                     productId: $product->product_id,
-                    quantityBefore: 0,
                     quantityChange: $quantity,
-                    quantityAfter: $quantity,
+                    unitCost: null,
                     movementType: StockMovement::TYPE_INITIAL_STOCK,
-                    userId: null,
-                    notes: 'Initial stock from seeder'
+                    referenceType: null,
+                    referenceId: null,
+                    propertyId: null,
+                    location: null,
+                    syncProductQuantity: true // This will sync products.quantity
                 );
             }
         }

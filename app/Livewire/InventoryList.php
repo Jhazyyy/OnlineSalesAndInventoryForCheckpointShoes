@@ -47,16 +47,16 @@ class InventoryList extends Component
             ->with(['product'])
             ->when($this->search, function ($query) {
                 $query->whereHas('product', function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%')
+                    $q->where('product_name', 'like', '%' . $this->search . '%')
                         ->orWhere('sku', 'like', '%' . $this->search . '%');
                 });
             })
             ->when($this->stockFilter === 'low', function ($query) {
-                $query->where('quantity', '>', 0)
-                    ->where('quantity', '<=', 10);
+                $query->where('quantity_on_hand', '>', 0)
+                    ->where('quantity_on_hand', '<=', 10);
             })
             ->when($this->stockFilter === 'out', function ($query) {
-                $query->where('quantity', '<=', 0);
+                $query->where('quantity_on_hand', '<=', 0);
             })
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate($this->perPage);
