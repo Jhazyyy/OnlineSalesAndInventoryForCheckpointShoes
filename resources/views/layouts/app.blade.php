@@ -33,7 +33,7 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.store('sidebar', {
-                open: false,
+                open: true,
                 toggle() {
                     this.open = !this.open;
                 }
@@ -60,7 +60,7 @@
         <x-sidebar-navigation />
 
         <!-- Main Content Wrapper with responsive margin -->
-        <div class="pt-14 transition-all duration-200 ease-in-out" 
+        <div class="pt-14 transition-all duration-100 ease-in-out" 
              x-data 
              :class="$store.sidebar.open ? 'lg:ml-72' : 'ml-0'">
             <!-- Page Heading -->

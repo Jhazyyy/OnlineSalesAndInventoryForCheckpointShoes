@@ -488,7 +488,7 @@
                     const discount = parseFloat(row.querySelector('.discount-input').value) || 0;
 
                     const lineTotal = (quantity * price) - discount;
-                    row.querySelector('.line-total').value = '$' + lineTotal.toFixed(2);
+                    row.querySelector('.line-total').value = '₱' + lineTotal.toFixed(2);
 
                     updateOrderSummary();
                 }

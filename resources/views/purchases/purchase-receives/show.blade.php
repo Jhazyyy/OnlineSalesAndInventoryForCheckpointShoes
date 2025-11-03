@@ -129,55 +129,56 @@
 
                     <!-- Items -->
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div class="p-6">
+                        <div class="p-4 sm:p-6">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Received Items</h3>
 
                             @if ($receive->items->count() > 0)
-                                <div class="overflow-x-auto">
-                                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                        <thead class="bg-gray-50 dark:bg-gray-700">
-                                            <tr>
-                                                <th
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Product</th>
-                                                <th
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Expected</th>
-                                                <th
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Received</th>
-                                                <th
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Damaged</th>
-                                                <th
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Unit Price</th>
-                                                <th
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Condition</th>
-                                                <th
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody
-                                            class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                            @foreach ($receive->items as $item)
+                                <div class="overflow-x-auto -mx-4 sm:mx-0">
+                                    <div class="inline-block min-w-full align-middle">
+                                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                            <thead class="bg-gray-50 dark:bg-gray-700">
                                                 <tr>
-                                                    <td class="px-6 py-4">
-                                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                                            {{ $item->product->product_name ?? 'N/A' }}
-                                                        </div>
-                                                        @if ($item->product)
-                                                            <div
-                                                                class="text-xs text-gray-500 dark:text-gray-400 mt-1 space-y-0.5">
-                                                                @if ($item->product->sku)
-                                                                    <div>SKU: {{ $item->product->sku }}</div>
-                                                                @endif
-                                                                @if ($item->product->brand)
-                                                                    <div>Brand: {{ $item->product->brand->name }}</div>
-                                                                @endif
-                                                                @if ($item->product->category)
+                                                    <th
+                                                        class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        Product</th>
+                                                    <th
+                                                        class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
+                                                        Expected</th>
+                                                    <th
+                                                        class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
+                                                        Received</th>
+                                                    <th
+                                                        class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
+                                                        Damaged</th>
+                                                    <th
+                                                        class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
+                                                        Unit Price</th>
+                                                    <th
+                                                        class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
+                                                        Condition</th>
+                                                    <th
+                                                        class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
+                                                        Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody
+                                                class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                                @foreach ($receive->items as $item)
+                                                    <tr>
+                                                        <td class="px-3 sm:px-4 lg:px-6 py-4">
+                                                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                                {{ $item->product->product_name ?? 'N/A' }}
+                                                            </div>
+                                                            @if ($item->product)
+                                                                <div
+                                                                    class="text-xs text-gray-500 dark:text-gray-400 mt-1 space-y-0.5">
+                                                                    @if ($item->product->sku)
+                                                                        <div>SKU: {{ $item->product->sku }}</div>
+                                                                    @endif
+                                                                    @if ($item->product->brand)
+                                                                        <div>Brand: {{ $item->product->brand->name }}</div>
+                                                                    @endif
+                                                                    @if ($item->product->category)
                                                                     <div>Category: {{ $item->product->category->name }}
                                                                     </div>
                                                                 @endif
@@ -190,11 +191,11 @@
                                                         @endif
                                                     </td>
                                                     <td
-                                                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                        class="px-3 sm:px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                         {{ number_format($item->quantity_expected) }}
                                                     </td>
                                                     <td
-                                                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                        class="px-3 sm:px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                         {{ number_format($item->quantity_received) }}
                                                         @if ($item->quantity_expected > 0)
                                                             <div class="text-xs text-gray-500">
@@ -203,27 +204,28 @@
                                                         @endif
                                                     </td>
                                                     <td
-                                                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                        class="px-3 sm:px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                         {{ number_format($item->quantity_damaged) }}
                                                     </td>
                                                     <td
-                                                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                        class="px-3 sm:px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                         ₱{{ number_format($item->unit_price, 2) }}
                                                     </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                    <td class="px-3 sm:px-4 lg:px-6 py-4 whitespace-nowrap">
                                                         <span
                                                             class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $item->condition_badge_class }}">
                                                             {{ ucfirst($item->condition) }}
                                                         </span>
                                                     </td>
                                                     <td
-                                                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                        class="px-3 sm:px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                         ₱{{ number_format($item->total_amount, 2) }}
                                                     </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
+                                    </div>
                                 </div>
                             @else
                                 <p class="text-gray-500 dark:text-gray-400">No items received yet.</p>

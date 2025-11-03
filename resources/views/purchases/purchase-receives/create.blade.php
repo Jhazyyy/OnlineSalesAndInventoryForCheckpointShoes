@@ -56,7 +56,8 @@
                                         @error('supplier_id')
                                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                         @enderror
-                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Auto-filled when PO is selected</p>
+                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Auto-filled when PO is
+                                            selected</p>
                                     </div>
 
                                     <!-- Purchase Order -->
@@ -128,21 +129,32 @@
 
                                 <!-- Load Items from PO Button -->
                                 <div class="mt-4" id="loadItemsSection" style="display: none;">
-                                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-4">
+                                    <div
+                                        class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-4">
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center">
-                                                <svg class="h-5 w-5 text-blue-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                                <svg class="h-5 w-5 text-blue-400 mr-2" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                                        clip-rule="evenodd"></path>
                                                 </svg>
                                                 <p class="text-sm text-blue-800 dark:text-blue-300">
-                                                    <span id="poItemsLoadedMessage" style="display: none;">Items loaded from Purchase Order. You can adjust quantities or add more items.</span>
-                                                    <span id="poItemsNotLoadedMessage">Click the button to load items from the selected Purchase Order.</span>
+                                                    <span id="poItemsLoadedMessage" style="display: none;">Items loaded
+                                                        from Purchase Order. You can adjust quantities or add more
+                                                        items.</span>
+                                                    <span id="poItemsNotLoadedMessage">Click the button to load items
+                                                        from the selected Purchase Order.</span>
                                                 </p>
                                             </div>
                                             <button type="button" onclick="loadPurchaseOrderItems()" id="loadItemsBtn"
                                                 class="inline-flex items-center px-3 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">
-                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4">
+                                                    </path>
                                                 </svg>
                                                 Load Items
                                             </button>
@@ -169,37 +181,39 @@
                                     </button>
                                 </div>
 
-                                <div class="overflow-hidden">
-                                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
-                                        id="itemsTable">
-                                        <thead class="bg-gray-50 dark:bg-gray-700">
-                                            <tr>
-                                                <th
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Items & Description</th>
-                                                <th
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Ordered</th>
-                                                <th
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Received</th>
-                                                <th
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    In Transit</th>
-                                                <th
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Quantity to Receive</th>
-                                                <th
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody
-                                            class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
-                                            id="itemsTableBody">
-                                            <!-- Items will be added here dynamically -->
-                                        </tbody>
-                                    </table>
+                                <div class="overflow-x-auto -mx-6 sm:mx-0">
+                                    <div class="inline-block min-w-full align-middle">
+                                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+                                            id="itemsTable">
+                                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                                <tr>
+                                                    <th
+                                                        class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider w-full max-w-xs">
+                                                        Items & Description</th>
+                                                    <th
+                                                        class="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
+                                                        Ordered</th>
+                                                    <th
+                                                        class="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
+                                                        Received</th>
+                                                    <th
+                                                        class="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
+                                                        In Transit</th>
+                                                    <th
+                                                        class="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
+                                                        Quantity to Receive</th>
+                                                    <th
+                                                        class="px-3 sm:px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
+                                                        Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody
+                                                class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
+                                                id="itemsTableBody">
+                                                <!-- Items will be added here dynamically -->
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
 
                                 <div id="noItemsMessage" class="text-center py-8 text-gray-500 dark:text-gray-400">
@@ -315,321 +329,324 @@
     </script>
 
     @verbatim
-    <script>
-        let itemRowCount = 0;
-        // Datasets populated above
-        let availableProducts = window.availableProducts || [];
-        const deliveriesData = window.deliveriesData || [];
+        <script>
+            let itemRowCount = 0;
+            // Datasets populated above
+            let availableProducts = window.availableProducts || [];
+            const deliveriesData = window.deliveriesData || [];
 
-        document.addEventListener('DOMContentLoaded', function() {
-            // Purchase order change handler - Auto-load items when PO is selected
-            document.getElementById('purchase_order_id').addEventListener('change', function() {
-                const selectedOption = this.options[this.selectedIndex];
-                const loadItemsSection = document.getElementById('loadItemsSection');
-                const selectedPOId = selectedOption.value;
-                
-                if (selectedPOId) {
-                    const supplierId = selectedOption.dataset.supplierId;
+            document.addEventListener('DOMContentLoaded', function() {
+                // Purchase order change handler - Auto-load items when PO is selected
+                document.getElementById('purchase_order_id').addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const loadItemsSection = document.getElementById('loadItemsSection');
+                    const selectedPOId = selectedOption.value;
+
+                    if (selectedPOId) {
+                        const supplierId = selectedOption.dataset.supplierId;
+                        if (supplierId) {
+                            document.getElementById('supplier_id').value = supplierId;
+                        }
+
+                        // Filter and populate deliveries for this PO
+                        updateDeliveriesDropdown(selectedPOId);
+
+                        // Show the load items section
+                        loadItemsSection.style.display = 'block';
+                        // Automatically load items from the selected purchase order
+                        loadPurchaseOrderItems();
+                    } else {
+                        // Hide the load items section
+                        loadItemsSection.style.display = 'none';
+                        // Clear deliveries
+                        updateDeliveriesDropdown(null);
+                        // Clear items if no PO is selected
+                        document.getElementById('itemsTableBody').innerHTML = '';
+                        itemRowCount = 0;
+                        updateNoItemsMessage();
+                        updateSummary();
+                    }
+                });
+
+                // Supplier change handler (filter purchase orders)
+                document.getElementById('supplier_id').addEventListener('change', function() {
+                    const selectedSupplierId = this.value;
+                    const purchaseOrderSelect = document.getElementById('purchase_order_id');
+
+                    // Show/hide options based on supplier
+                    Array.from(purchaseOrderSelect.options).forEach(option => {
+                        if (option.value === '') {
+                            option.style.display = 'block';
+                        } else {
+                            const optionSupplierId = option.dataset.supplierId;
+                            option.style.display = (selectedSupplierId === '' || optionSupplierId ===
+                                selectedSupplierId) ? 'block' : 'none';
+                        }
+                    });
+
+                    // Reset purchase order selection if current selection doesn't match supplier
+                    const currentOption = purchaseOrderSelect.options[purchaseOrderSelect.selectedIndex];
+                    if (currentOption.value !== '' && currentOption.dataset.supplierId !== selectedSupplierId) {
+                        purchaseOrderSelect.value = '';
+                        // Clear items when PO is cleared
+                        document.getElementById('itemsTableBody').innerHTML = '';
+                        itemRowCount = 0;
+                        updateNoItemsMessage();
+                        updateSummary();
+                        // Hide load items section
+                        document.getElementById('loadItemsSection').style.display = 'none';
+                    }
+                });
+
+                // If a purchase order is preselected (e.g., coming from Purchase Order page),
+                // auto-set the supplier and load the PO items into the Goods Receipt form.
+                const preselectedPO = document.getElementById('purchase_order_id').value;
+                if (preselectedPO) {
+                    const selectedOption = document.getElementById('purchase_order_id').options[document.getElementById(
+                        'purchase_order_id').selectedIndex];
+                    const supplierId = selectedOption ? selectedOption.dataset.supplierId : null;
                     if (supplierId) {
                         document.getElementById('supplier_id').value = supplierId;
                     }
-                    
-                    // Filter and populate deliveries for this PO
-                    updateDeliveriesDropdown(selectedPOId);
-                    
-                    // Show the load items section
-                    loadItemsSection.style.display = 'block';
-                    // Automatically load items from the selected purchase order
+                    // Show load items section
+                    document.getElementById('loadItemsSection').style.display = 'block';
+                    // Load items from the selected Purchase Order
                     loadPurchaseOrderItems();
-                } else {
-                    // Hide the load items section
-                    loadItemsSection.style.display = 'none';
-                    // Clear deliveries
-                    updateDeliveriesDropdown(null);
-                    // Clear items if no PO is selected
-                    document.getElementById('itemsTableBody').innerHTML = '';
-                    itemRowCount = 0;
-                    updateNoItemsMessage();
-                    updateSummary();
                 }
             });
 
-            // Supplier change handler (filter purchase orders)
-            document.getElementById('supplier_id').addEventListener('change', function() {
-                const selectedSupplierId = this.value;
-                const purchaseOrderSelect = document.getElementById('purchase_order_id');
-
-                // Show/hide options based on supplier
-                Array.from(purchaseOrderSelect.options).forEach(option => {
-                    if (option.value === '') {
-                        option.style.display = 'block';
-                    } else {
-                        const optionSupplierId = option.dataset.supplierId;
-                        option.style.display = (selectedSupplierId === '' || optionSupplierId ===
-                            selectedSupplierId) ? 'block' : 'none';
-                    }
-                });
-
-                // Reset purchase order selection if current selection doesn't match supplier
-                const currentOption = purchaseOrderSelect.options[purchaseOrderSelect.selectedIndex];
-                if (currentOption.value !== '' && currentOption.dataset.supplierId !== selectedSupplierId) {
-                    purchaseOrderSelect.value = '';
-                    // Clear items when PO is cleared
-                    document.getElementById('itemsTableBody').innerHTML = '';
-                    itemRowCount = 0;
-                    updateNoItemsMessage();
-                    updateSummary();
-                    // Hide load items section
-                    document.getElementById('loadItemsSection').style.display = 'none';
+            function loadPurchaseOrderItems() {
+                const purchaseOrderId = document.getElementById('purchase_order_id').value;
+                if (!purchaseOrderId) {
+                    alert('Please select a purchase order first.');
+                    return;
                 }
-            });
-            
-            // If a purchase order is preselected (e.g., coming from Purchase Order page),
-            // auto-set the supplier and load the PO items into the Goods Receipt form.
-            const preselectedPO = document.getElementById('purchase_order_id').value;
-            if (preselectedPO) {
-                const selectedOption = document.getElementById('purchase_order_id').options[document.getElementById(
-                    'purchase_order_id').selectedIndex];
-                const supplierId = selectedOption ? selectedOption.dataset.supplierId : null;
-                if (supplierId) {
-                    document.getElementById('supplier_id').value = supplierId;
-                }
-                // Show load items section
-                document.getElementById('loadItemsSection').style.display = 'block';
-                // Load items from the selected Purchase Order
-                loadPurchaseOrderItems();
-            }
-        });
 
-        function loadPurchaseOrderItems() {
-            const purchaseOrderId = document.getElementById('purchase_order_id').value;
-            if (!purchaseOrderId) {
-                alert('Please select a purchase order first.');
-                return;
-            }
+                // Show loading state
+                const loadBtn = document.getElementById('loadItemsBtn');
+                const originalBtnText = loadBtn.innerHTML;
+                loadBtn.disabled = true;
+                loadBtn.innerHTML =
+                    '<svg class="animate-spin h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Loading...';
 
-            // Show loading state
-            const loadBtn = document.getElementById('loadItemsBtn');
-            const originalBtnText = loadBtn.innerHTML;
-            loadBtn.disabled = true;
-            loadBtn.innerHTML = '<svg class="animate-spin h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Loading...';
+                fetch(`/purchases/purchase-receives/purchase-order/${purchaseOrderId}/items`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Clear existing items
+                            document.getElementById('itemsTableBody').innerHTML = '';
+                            itemRowCount = 0;
 
-            fetch(`/purchases/purchase-receives/purchase-order/${purchaseOrderId}/items`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Clear existing items
-                        document.getElementById('itemsTableBody').innerHTML = '';
-                        itemRowCount = 0;
+                            // Add each item from the purchase order
+                            data.items.forEach(item => {
+                                addItemRowFromPO(item);
+                            });
 
-                        // Add each item from the purchase order
-                        data.items.forEach(item => {
-                            addItemRowFromPO(item);
-                        });
+                            updateNoItemsMessage();
+                            updateSummary();
 
-                        updateNoItemsMessage();
-                        updateSummary();
+                            // Show success message
+                            document.getElementById('poItemsLoadedMessage').style.display = 'inline';
+                            document.getElementById('poItemsNotLoadedMessage').style.display = 'none';
 
-                        // Show success message
-                        document.getElementById('poItemsLoadedMessage').style.display = 'inline';
-                        document.getElementById('poItemsNotLoadedMessage').style.display = 'none';
-
-                        // Show order info if available
-                        if (data.order) {
-                            console.log('Loaded PO:', data.order.order_number);
+                            // Show order info if available
+                            if (data.order) {
+                                console.log('Loaded PO:', data.order.order_number);
+                            }
                         }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading purchase order items:', error);
-                    alert('Error loading purchase order items. Please try again.');
-                })
-                .finally(() => {
-                    // Restore button state
-                    loadBtn.disabled = false;
-                    loadBtn.innerHTML = originalBtnText;
+                    })
+                    .catch(error => {
+                        console.error('Error loading purchase order items:', error);
+                        alert('Error loading purchase order items. Please try again.');
+                    })
+                    .finally(() => {
+                        // Restore button state
+                        loadBtn.disabled = false;
+                        loadBtn.innerHTML = originalBtnText;
+                    });
+            }
+
+            function addItemRowFromPO(poItem) {
+                const row = createItemRow(itemRowCount);
+
+                // Populate with PO data
+                row.querySelector('select[name$="[product_id]"]').value = poItem.product_id;
+                row.querySelector('input[name$="[purchase_order_item_id]"]').value = poItem.item_id;
+                row.querySelector('input[name$="[quantity_expected]"]').value = poItem.quantity_pending;
+                row.querySelector('input[name$="[quantity_received]"]').value = poItem
+                .quantity_pending; // Default to full quantity
+                row.querySelector('input[name$="[unit_price]"]').value = poItem.unit_price;
+                row.querySelector('.ordered-qty').textContent = poItem.quantity_ordered;
+                row.querySelector('.received-qty').textContent = poItem.quantity_received;
+                row.querySelector('.in-transit-qty').textContent = poItem.quantity_pending;
+
+                // Add product details to item notes if available
+                const itemNotesInput = row.querySelector('input[name$="[item_notes]"]');
+                let detailsText = [];
+                if (poItem.product_sku && poItem.product_sku !== 'N/A') {
+                    detailsText.push('SKU: ' + poItem.product_sku);
+                }
+                if (poItem.product_brand && poItem.product_brand !== 'N/A') {
+                    detailsText.push('Brand: ' + poItem.product_brand);
+                }
+                if (poItem.product_category && poItem.product_category !== 'N/A') {
+                    detailsText.push('Category: ' + poItem.product_category);
+                }
+                if (detailsText.length > 0) {
+                    itemNotesInput.value = detailsText.join(' | ');
+                }
+
+                document.getElementById('itemsTableBody').appendChild(row);
+                itemRowCount++;
+            }
+
+            function addItemRow(productData = null) {
+                const row = createItemRow(itemRowCount);
+
+                if (productData) {
+                    // Populate with provided data
+                    row.querySelector('select[name$="[product_id]"]').value = productData.product_id;
+                    row.querySelector('input[name$="[quantity_expected]"]').value = productData.quantity_expected || 0;
+                    row.querySelector('input[name$="[quantity_received]"]').value = productData.quantity_received || 0;
+                    row.querySelector('input[name$="[unit_price]"]').value = productData.unit_price || 0;
+                }
+
+                document.getElementById('itemsTableBody').appendChild(row);
+                itemRowCount++;
+                updateNoItemsMessage();
+            }
+
+            function createItemRow(index) {
+                const row = document.createElement('tr');
+
+                let productOptions = '<option value="">Select Product</option>';
+                availableProducts.forEach(product => {
+                    const brandInfo = product.product_brand ? ' - ' + product.product_brand : '';
+                    const skuInfo = product.sku ? ' [' + product.sku + ']' : '';
+                    productOptions += '<option value="' + product.product_id + '">' +
+                        product.product_name + brandInfo + skuInfo + '</option>';
                 });
-        }
 
-        function addItemRowFromPO(poItem) {
-            const row = createItemRow(itemRowCount);
+                row.innerHTML =
+                    '<td class="px-3 sm:px-4 lg:px-6 py-4">' +
+                    '<div class="space-y-2">' +
+                    '<select name="items[' + index +
+                    '][product_id]" required class="block w-full min-w-[200px] rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">' +
+                    productOptions +
+                    '</select>' +
+                    '<input type="hidden" name="items[' + index + '][purchase_order_item_id]" value="">' +
+                    '<input type="hidden" name="items[' + index + '][condition]" value="good">' +
+                    '<input type="text" name="items[' + index +
+                    '][item_notes]" placeholder="Item description, notes..." class="block w-full min-w-[200px] text-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">' +
+                    '</div>' +
+                    '</td>' +
+                    '<td class="px-3 sm:px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">' +
+                    '<span class="ordered-qty text-blue-600 dark:text-blue-400 font-medium">-</span>' +
+                    '</td>' +
+                    '<td class="px-3 sm:px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">' +
+                    '<span class="received-qty text-green-600 dark:text-green-400 font-medium">-</span>' +
+                    '</td>' +
+                    '<td class="px-3 sm:px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white text-center">' +
+                    '<span class="in-transit-qty text-orange-600 dark:text-orange-400 font-medium">-</span>' +
+                    '</td>' +
+                    '<td class="px-3 sm:px-4 py-4 whitespace-nowrap">' +
+                    '<div class="grid grid-cols-2 gap-2 min-w-[180px]">' +
+                    '<div>' +
+                    '<label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Expected</label>' +
+                    '<input type="number" name="items[' + index +
+                    '][quantity_expected]" min="0" value="0" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" onchange="updateSummary()">' +
+                    '</div>' +
+                    '<div>' +
+                    '<label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Received</label>' +
+                    '<input type="number" name="items[' + index +
+                    '][quantity_received]" min="0" value="0" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" onchange="updateSummary()">' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="mt-2">' +
+                    '<label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Unit Price</label>' +
+                    '<input type="number" name="items[' + index +
+                    '][unit_price]" min="0" step="0.01" value="0" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" placeholder="0.00" onchange="updateSummary()">' +
+                    '</div>' +
+                    '</td>' +
+                    '<td class="px-3 sm:px-4 py-4 whitespace-nowrap text-center">' +
+                    '<button type="button" onclick="removeItemRow(this)" class="inline-flex items-center justify-center text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">' +
+                    '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>' +
+                    '</svg>' +
+                    '</button>' +
+                    '</td>';
 
-            // Populate with PO data
-            row.querySelector('select[name$="[product_id]"]').value = poItem.product_id;
-            row.querySelector('input[name$="[purchase_order_item_id]"]').value = poItem.item_id;
-            row.querySelector('input[name$="[quantity_expected]"]').value = poItem.quantity_pending;
-            row.querySelector('input[name$="[quantity_received]"]').value = poItem.quantity_pending; // Default to full quantity
-            row.querySelector('input[name$="[unit_price]"]').value = poItem.unit_price;
-            row.querySelector('.ordered-qty').textContent = poItem.quantity_ordered;
-            row.querySelector('.received-qty').textContent = poItem.quantity_received;
-            row.querySelector('.in-transit-qty').textContent = poItem.quantity_pending;
-
-            // Add product details to item notes if available
-            const itemNotesInput = row.querySelector('input[name$="[item_notes]"]');
-            let detailsText = [];
-            if (poItem.product_sku && poItem.product_sku !== 'N/A') {
-                detailsText.push('SKU: ' + poItem.product_sku);
+                return row;
             }
-            if (poItem.product_brand && poItem.product_brand !== 'N/A') {
-                detailsText.push('Brand: ' + poItem.product_brand);
-            }
-            if (poItem.product_category && poItem.product_category !== 'N/A') {
-                detailsText.push('Category: ' + poItem.product_category);
-            }
-            if (detailsText.length > 0) {
-                itemNotesInput.value = detailsText.join(' | ');
+
+            function removeItemRow(button) {
+                button.closest('tr').remove();
+                updateNoItemsMessage();
+                updateSummary();
             }
 
-            document.getElementById('itemsTableBody').appendChild(row);
-            itemRowCount++;
-        }
+            function updateNoItemsMessage() {
+                const tbody = document.getElementById('itemsTableBody');
+                const message = document.getElementById('noItemsMessage');
 
-        function addItemRow(productData = null) {
-            const row = createItemRow(itemRowCount);
-
-            if (productData) {
-                // Populate with provided data
-                row.querySelector('select[name$="[product_id]"]').value = productData.product_id;
-                row.querySelector('input[name$="[quantity_expected]"]').value = productData.quantity_expected || 0;
-                row.querySelector('input[name$="[quantity_received]"]').value = productData.quantity_received || 0;
-                row.querySelector('input[name$="[unit_price]"]').value = productData.unit_price || 0;
+                if (tbody.children.length === 0) {
+                    message.style.display = 'block';
+                } else {
+                    message.style.display = 'none';
+                }
             }
 
-            document.getElementById('itemsTableBody').appendChild(row);
-            itemRowCount++;
-            updateNoItemsMessage();
-        }
+            function updateSummary() {
+                const rows = document.querySelectorAll('#itemsTableBody tr');
+                let totalItems = rows.length;
+                let totalQuantity = 0;
+                let totalValue = 0;
 
-        function createItemRow(index) {
-            const row = document.createElement('tr');
+                rows.forEach(row => {
+                    const qtyReceived = parseInt(row.querySelector('input[name$="[quantity_received]"]').value) || 0;
+                    const unitPrice = parseFloat(row.querySelector('input[name$="[unit_price]"]').value) || 0;
 
-            let productOptions = '<option value="">Select Product</option>';
-            availableProducts.forEach(product => {
-                const brandInfo = product.product_brand ? ' - ' + product.product_brand : '';
-                const skuInfo = product.sku ? ' [' + product.sku + ']' : '';
-                productOptions += '<option value="' + product.product_id + '">' +
-                    product.product_name + brandInfo + skuInfo + '</option>';
-            });
-
-            row.innerHTML =
-                '<td class="px-6 py-4 whitespace-nowrap">' +
-                '<div class="space-y-2">' +
-                '<select name="items[' + index +
-                '][product_id]" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">' +
-                productOptions +
-                '</select>' +
-                '<input type="hidden" name="items[' + index + '][purchase_order_item_id]" value="">' +
-                '<input type="hidden" name="items[' + index + '][condition]" value="good">' +
-                '<input type="text" name="items[' + index +
-                '][item_notes]" placeholder="Item description, notes..." class="block w-full text-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">' +
-                '</div>' +
-                '</td>' +
-                '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">' +
-                '<span class="ordered-qty text-blue-600 dark:text-blue-400 font-medium">-</span>' +
-                '</td>' +
-                '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">' +
-                '<span class="received-qty text-green-600 dark:text-green-400 font-medium">-</span>' +
-                '</td>' +
-                '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">' +
-                '<span class="in-transit-qty text-orange-600 dark:text-orange-400 font-medium">-</span>' +
-                '</td>' +
-                '<td class="px-6 py-4 whitespace-nowrap">' +
-                '<div class="grid grid-cols-2 gap-2">' +
-                '<div>' +
-                '<label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Expected</label>' +
-                '<input type="number" name="items[' + index +
-                '][quantity_expected]" min="0" value="0" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" onchange="updateSummary()">' +
-                '</div>' +
-                '<div>' +
-                '<label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Received</label>' +
-                '<input type="number" name="items[' + index +
-                '][quantity_received]" min="0" value="0" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" onchange="updateSummary()">' +
-                '</div>' +
-                '</div>' +
-                '<div class="mt-2">' +
-                '<label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Unit Price</label>' +
-                '<input type="number" name="items[' + index +
-                '][unit_price]" min="0" step="0.01" value="0" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" placeholder="0.00" onchange="updateSummary()">' +
-                '</div>' +
-                '</td>' +
-                '<td class="px-6 py-4 whitespace-nowrap">' +
-                '<button type="button" onclick="removeItemRow(this)" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">' +
-                '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
-                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>' +
-                '</svg>' +
-                '</button>' +
-                '</td>';
-
-            return row;
-        }
-
-        function removeItemRow(button) {
-            button.closest('tr').remove();
-            updateNoItemsMessage();
-            updateSummary();
-        }
-
-        function updateNoItemsMessage() {
-            const tbody = document.getElementById('itemsTableBody');
-            const message = document.getElementById('noItemsMessage');
-
-            if (tbody.children.length === 0) {
-                message.style.display = 'block';
-            } else {
-                message.style.display = 'none';
-            }
-        }
-
-        function updateSummary() {
-            const rows = document.querySelectorAll('#itemsTableBody tr');
-            let totalItems = rows.length;
-            let totalQuantity = 0;
-            let totalValue = 0;
-
-            rows.forEach(row => {
-                const qtyReceived = parseInt(row.querySelector('input[name$="[quantity_received]"]').value) || 0;
-                const unitPrice = parseFloat(row.querySelector('input[name$="[unit_price]"]').value) || 0;
-
-                totalQuantity += qtyReceived;
-                totalValue += (qtyReceived * unitPrice);
-            });
-
-            document.getElementById('totalItems').textContent = totalItems;
-            document.getElementById('totalQuantity').textContent = totalQuantity.toLocaleString();
-            document.getElementById('totalValue').textContent = '₱' + totalValue.toFixed(2);
-
-            // Show/hide summary card
-            const summaryCard = document.getElementById('summaryCard');
-            if (totalItems > 0) {
-                summaryCard.style.display = 'block';
-            } else {
-                summaryCard.style.display = 'none';
-            }
-        }
-
-        // Update deliveries dropdown based on selected purchase order
-        function updateDeliveriesDropdown(purchaseOrderId) {
-            const deliverySelect = document.getElementById('delivery_id');
-            
-            // Clear existing options
-            deliverySelect.innerHTML = '<option value="">No delivery tracking</option>';
-            
-            if (!purchaseOrderId) {
-                return;
-            }
-            
-            // Filter deliveries for this PO
-            const relatedDeliveries = deliveriesData.filter(d => d.purchase_order_id == purchaseOrderId);
-            
-            if (relatedDeliveries.length > 0) {
-                relatedDeliveries.forEach(delivery => {
-                    const option = document.createElement('option');
-                    option.value = delivery.id;
-                    option.textContent = `${delivery.delivery_number} - ${delivery.carrier || 'N/A'}${delivery.tracking_number ? ' (' + delivery.tracking_number + ')' : ''}`;
-                    deliverySelect.appendChild(option);
+                    totalQuantity += qtyReceived;
+                    totalValue += (qtyReceived * unitPrice);
                 });
+
+                document.getElementById('totalItems').textContent = totalItems;
+                document.getElementById('totalQuantity').textContent = totalQuantity.toLocaleString();
+                document.getElementById('totalValue').textContent = '₱' + totalValue.toFixed(2);
+
+                // Show/hide summary card
+                const summaryCard = document.getElementById('summaryCard');
+                if (totalItems > 0) {
+                    summaryCard.style.display = 'block';
+                } else {
+                    summaryCard.style.display = 'none';
+                }
             }
-        }
-    </script>
+
+            // Update deliveries dropdown based on selected purchase order
+            function updateDeliveriesDropdown(purchaseOrderId) {
+                const deliverySelect = document.getElementById('delivery_id');
+
+                // Clear existing options
+                deliverySelect.innerHTML = '<option value="">No delivery tracking</option>';
+
+                if (!purchaseOrderId) {
+                    return;
+                }
+
+                // Filter deliveries for this PO
+                const relatedDeliveries = deliveriesData.filter(d => d.purchase_order_id == purchaseOrderId);
+
+                if (relatedDeliveries.length > 0) {
+                    relatedDeliveries.forEach(delivery => {
+                        const option = document.createElement('option');
+                        option.value = delivery.id;
+                        option.textContent =
+                            `${delivery.delivery_number} - ${delivery.carrier || 'N/A'}${delivery.tracking_number ? ' (' + delivery.tracking_number + ')' : ''}`;
+                        deliverySelect.appendChild(option);
+                    });
+                }
+            }
+        </script>
     @endverbatim
 </x-app-layout>
