@@ -16,13 +16,9 @@ return new class extends Migration
             $table->string('delivery_number')->unique();
             $table->string('reference_number')->nullable();
             
-            // Purchase Order Reference
+            // Foreign Keys
             $table->unsignedBigInteger('purchase_order_id')->nullable();
-            // $table->foreign('purchase_order_id')->references('order_id')->on('purchase_orders')->onDelete('set null');
-            
-            // Supplier Reference
             $table->unsignedBigInteger('supplier_id')->nullable();
-            // $table->foreign('supplier_id')->references('supplier_id')->on('suppliers')->onDelete('set null');
             
             // Delivery Information
             $table->string('carrier')->nullable(); // FedEx, UPS, DHL, etc.

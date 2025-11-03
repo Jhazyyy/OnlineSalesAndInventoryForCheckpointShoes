@@ -15,10 +15,7 @@ return new class extends Migration
             $table->id();
             
             $table->unsignedBigInteger('cycle_count_id');
-            // $table->foreign('cycle_count_id')->references('id')->on('inventory_cycle_counts')->onDelete('cascade');
-            
             $table->unsignedBigInteger('product_id');
-            // $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
             
             // System recorded quantities at time of count
             $table->integer('system_quantity');
@@ -40,11 +37,9 @@ return new class extends Migration
             
             // Count details
             $table->unsignedBigInteger('counted_by')->nullable();
-            // $table->foreign('counted_by')->references('id')->on('users')->onDelete('set null');
             $table->timestamp('counted_at')->nullable();
             
             $table->unsignedBigInteger('verified_by')->nullable();
-            // $table->foreign('verified_by')->references('id')->on('users')->onDelete('set null');
             $table->timestamp('verified_at')->nullable();
             
             $table->text('notes')->nullable();

@@ -19,10 +19,6 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->timestamps();
             
-            // Foreign key constraints
-            // $table->foreign('package_id')->references('package_id')->on('packages')->onDelete('cascade');
-            // $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
-            
             // Unique constraint to prevent duplicate entries
             $table->unique(['package_id', 'product_id']);
         });

@@ -17,7 +17,6 @@ return new class extends Migration
             
             // Relationships
             $table->unsignedBigInteger('sales_order_id');
-            // $table->foreign('sales_order_id')->references('order_id')->on('sales_orders')->onDelete('cascade');
             
             // Shipment Details
             $table->string('carrier')->nullable(); // UPS, FedEx, DHL, etc.

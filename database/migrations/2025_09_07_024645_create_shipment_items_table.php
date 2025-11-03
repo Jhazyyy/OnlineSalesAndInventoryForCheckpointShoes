@@ -14,15 +14,10 @@ return new class extends Migration
         Schema::create('shipment_items', function (Blueprint $table) {
             $table->id('shipment_item_id');
             
-            // Relationships
+            // Foreign Keys
             $table->unsignedBigInteger('shipment_id');
-            // $table->foreign('shipment_id')->references('shipment_id')->on('shipments')->onDelete('cascade');
-            
             $table->unsignedBigInteger('sales_order_item_id')->nullable();
-            // $table->foreign('sales_order_item_id')->references('item_id')->on('sales_order_items')->onDelete('set null');
-            
             $table->unsignedBigInteger('product_id');
-            // $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
             
             // Item Details
             $table->string('product_sku'); // Store SKU for reference

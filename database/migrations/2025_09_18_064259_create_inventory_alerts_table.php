@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('inventory_alerts', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('product_id');
-            // $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
             
             $table->enum('alert_type', ['low_stock', 'critical_stock', 'overstock', 'out_of_stock', 'reorder_needed'])->index();
             $table->enum('severity', ['info', 'warning', 'critical', 'urgent'])->default('warning');
@@ -25,11 +24,9 @@ return new class extends Migration
             $table->enum('status', ['active', 'acknowledged', 'resolved', 'dismissed'])->default('active')->index();
             
             $table->unsignedBigInteger('acknowledged_by')->nullable();
-            // $table->foreign('acknowledged_by')->references('id')->on('users')->onDelete('set null');
             $table->timestamp('acknowledged_at')->nullable();
             
             $table->unsignedBigInteger('resolved_by')->nullable();
-            // $table->foreign('resolved_by')->references('id')->on('users')->onDelete('set null');
             $table->timestamp('resolved_at')->nullable();
             
             $table->text('resolution_notes')->nullable();

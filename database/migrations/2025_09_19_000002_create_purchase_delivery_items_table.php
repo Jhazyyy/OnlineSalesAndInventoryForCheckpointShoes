@@ -14,17 +14,10 @@ return new class extends Migration
         Schema::create('purchase_delivery_items', function (Blueprint $table) {
             $table->id('item_id');
             
-            // Delivery Reference
+            // Foreign Keys
             $table->unsignedBigInteger('delivery_id');
-            // $table->foreign('delivery_id')->references('delivery_id')->on('purchase_deliveries')->onDelete('cascade');
-            
-            // Product Reference
             $table->unsignedBigInteger('product_id');
-            // $table->foreign('product_id')->references('product_id')->on('products')->onDelete('restrict');
-            
-            // Purchase Order Item Reference
             $table->unsignedBigInteger('purchase_order_item_id')->nullable();
-            // $table->foreign('purchase_order_item_id')->references('item_id')->on('purchase_order_items')->onDelete('set null');
             
             // Quantities
             $table->integer('quantity_expected')->default(0);

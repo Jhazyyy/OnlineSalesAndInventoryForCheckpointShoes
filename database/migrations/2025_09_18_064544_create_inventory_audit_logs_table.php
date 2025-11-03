@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             
             $table->unsignedBigInteger('product_id');
-            // $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
             
             $table->enum('action_type', [
                 'threshold_update', 'alert_generated', 'alert_updated', 'alert_acknowledged', 'alert_resolved',
@@ -36,7 +35,6 @@ return new class extends Migration
             
             // User and system tracking
             $table->unsignedBigInteger('user_id')->nullable();
-            // $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
             $table->string('user_name')->nullable()->comment('Snapshot of user name at time of action');
             
             // Context information

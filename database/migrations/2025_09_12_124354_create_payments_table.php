@@ -25,10 +25,6 @@ return new class extends Migration
             $table->string('received_by')->nullable();
             $table->timestamps();
             
-            // Foreign key constraints
-            // $table->foreign('customer_id')->references('customer_id')->on('customers')->onDelete('cascade');
-            // $table->foreign('order_id')->references('order_id')->on('sales_orders')->onDelete('set null');
-            
             // Indexes
             $table->index(['customer_id', 'payment_date']);
             $table->index(['status', 'payment_date']);

@@ -23,10 +23,7 @@ return new class extends Migration
             $table->date('completed_date')->nullable();
             
             $table->unsignedBigInteger('created_by');
-            // $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
-            
             $table->unsignedBigInteger('assigned_to')->nullable();
-            // $table->foreign('assigned_to')->references('id')->on('users')->onDelete('set null');
             
             $table->text('description')->nullable();
             $table->text('notes')->nullable();
