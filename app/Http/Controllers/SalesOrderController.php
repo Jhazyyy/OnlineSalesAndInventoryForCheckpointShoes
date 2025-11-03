@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SalesOrder;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Services\SalesOrderService;
@@ -46,9 +47,15 @@ class SalesOrderController extends Controller
     {
         $filterOptions = $this->orderService->getFilterOptions();
         
+        // Get categories for filtering
+        $categories = Category::where('is_active', true)
+            ->orderBy('name')
+            ->get();
+        
         return view('sales.orders.create', [
             'customers' => $filterOptions['customers'],
             'products' => $filterOptions['products'],
+            'categories' => $categories,
         ]);
     }
 

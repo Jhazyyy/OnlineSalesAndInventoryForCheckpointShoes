@@ -110,6 +110,10 @@ class SalesOrderService
                                        'name' => $product->product_name . ' - ' . $product->product_brand,
                                        'price' => $product->price,
                                        'stock' => $stock,
+                                       'category' => $product->product_category,
+                                       'brand' => $product->product_brand,
+                                       'sku' => $product->sku,
+                                       'image' => $product->image,
                                    ];
                                }),
         ];

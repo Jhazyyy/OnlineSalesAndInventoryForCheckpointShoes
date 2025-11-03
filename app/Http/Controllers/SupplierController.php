@@ -81,28 +81,40 @@ class SupplierController extends Controller
     public function show(Supplier $supplier)
     {
         // Load relationships for detailed view
-        $supplier->load(['purchases', 'purchases.product', 'purchases.user']);
+        $supplier->load(['purchaseOrders', 'activityLogs.user']);
+
+        // Get recent purchase orders with items
+        $recentPurchaseOrders = $supplier->purchaseOrders()
+            ->with(['items.product'])
+            ->latest('order_date')
+            ->take(10)
+            ->get();
 
         // Get supplier statistics and performance
-        $recentPurchases = $supplier->purchases()->latest('purchase_date')->take(10)->get();
         $performance = $this->supplierService->calculateSupplierPerformance($supplier);
 
-        // Monthly purchase data for chart
-        $monthlyPurchases = $supplier->purchases()
-            ->with('product')
-            ->whereYear('purchase_date', date('Y'))
+        // Get recent activity logs
+        $recentActivities = $supplier->activityLogs()
+            ->with('user')
+            ->latest()
+            ->take(20)
+            ->get();
+
+        // Monthly purchase data for chart (based on purchase orders)
+        $monthlyPurchases = $supplier->purchaseOrders()
+            ->whereYear('order_date', date('Y'))
             ->get()
-            ->groupBy(function ($purchase) {
-                return $purchase->purchase_date->format('F');
+            ->groupBy(function ($order) {
+                return $order->order_date->format('F');
             })
-            ->map(function ($purchases) {
+            ->map(function ($orders) {
                 return [
-                    'total_amount' => $purchases->sum(fn($p) => $p->price * $p->quantity),
-                    'count' => $purchases->count()
+                    'total_amount' => $orders->sum('total_amount'),
+                    'count' => $orders->count()
                 ];
             });
 
-        return view('master_data.suppliers.show', compact('supplier', 'recentPurchases', 'performance', 'monthlyPurchases'));
+        return view('master_data.suppliers.show', compact('supplier', 'recentPurchaseOrders', 'performance', 'monthlyPurchases', 'recentActivities'));
     }
 
     /**
@@ -142,6 +154,16 @@ class SupplierController extends Controller
 
         $data = $validator->validated();
         $this->supplierService->updateSupplier($supplier, $data);
+
+        // Log supplier update activity
+        \App\Models\SupplierActivityLog::log(
+            supplierId: $supplier->supplier_id,
+            activityType: 'supplier_updated',
+            description: "Supplier information updated",
+            metadata: [
+                'updated_fields' => array_keys($data),
+            ]
+        );
 
         return redirect()->route('master_data.suppliers.index')
             ->with('success', 'Supplier updated successfully!');

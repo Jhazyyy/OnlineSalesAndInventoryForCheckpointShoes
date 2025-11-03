@@ -144,6 +144,22 @@ class PurchaseOrderService
             $this->addItemsToOrder($order, $data['items']);
         }
 
+        // Log activity
+        \App\Models\SupplierActivityLog::log(
+            supplierId: $order->supplier_id,
+            activityType: 'purchase_order_created',
+            description: "Purchase Order {$order->order_number} created with " . count($data['items'] ?? []) . " items",
+            relatedId: $order->order_id,
+            relatedType: 'PurchaseOrder',
+            amount: $order->total_amount,
+            metadata: [
+                'order_number' => $order->order_number,
+                'status' => $order->status,
+                'priority' => $order->priority,
+                'items_count' => count($data['items'] ?? []),
+            ]
+        );
+
         return $order->fresh(['supplier', 'items.product']);
     }
 
@@ -235,12 +251,35 @@ class PurchaseOrderService
             throw new \Exception("Cannot change status from {$order->status} to {$status}");
         }
 
+        $oldStatus = $order->status;
         $order->update(['status' => $status]);
 
         // Update received date when status changes to received
         if ($status === 'received' && !$order->received_date) {
             $order->update(['received_date' => Carbon::now()]);
         }
+
+        // Log activity based on status change
+        $activityType = match($status) {
+            'approved' => 'purchase_order_approved',
+            'received' => 'purchase_order_received',
+            'cancelled' => 'purchase_order_cancelled',
+            default => 'purchase_order_updated',
+        };
+
+        \App\Models\SupplierActivityLog::log(
+            supplierId: $order->supplier_id,
+            activityType: $activityType,
+            description: "Purchase Order {$order->order_number} status changed from {$oldStatus} to {$status}",
+            relatedId: $order->order_id,
+            relatedType: 'PurchaseOrder',
+            amount: $order->total_amount,
+            metadata: [
+                'order_number' => $order->order_number,
+                'old_status' => $oldStatus,
+                'new_status' => $status,
+            ]
+        );
 
         return $order->fresh();
     }
