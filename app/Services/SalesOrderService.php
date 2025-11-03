@@ -113,7 +113,7 @@ class SalesOrderService
                                        'category' => $product->product_category,
                                        'brand' => $product->product_brand,
                                        'sku' => $product->sku,
-                                       'image' => $product->image,
+                                       'image' => $product->image ? asset('storage/' . $product->image) : null,
                                    ];
                                }),
         ];

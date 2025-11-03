@@ -1,5 +1,7 @@
 <x-app-layout>
-    <div class="py-6">
+    <div class="py-6" 
+         x-data="salesOrderCreate()" 
+         x-init="window.addEventListener('clear-cart', () => { cart = []; showToast('Cart cleared', 'info'); })">
         <div class="w-full mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
@@ -30,18 +32,15 @@
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Available Products</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" id="productsGrid">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4" id="productsGrid">
                                 @foreach($products as $product)
-                                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-shadow product-card"
-                                    data-id="{{ $product['id'] }}"
-                                    data-name="{{ $product['name'] }}"
-                                    data-price="{{ $product['price'] }}"
-                                    data-stock="{{ $product['stock'] }}">
+                                <div @click="addToCart({{ $product['id'] }}, '{{ addslashes($product['name']) }}', {{ $product['price'] }}, {{ $product['stock'] }}, '{{ $product['image'] ?? '' }}')"
+                                    class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-shadow product-card">
                                     <div class="aspect-square bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                                         @if(!empty($product['image']))
                                         <img src="{{ $product['image'] }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover">
                                         @else
-                                        <svg class="w-20 h-20 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                         </svg>
                                         @endif
@@ -66,22 +65,68 @@
 
                 <!-- Cart Section (Right Side - 1 column) -->
                 <div class="lg:col-span-1">
-                    <form method="POST" action="{{ route('sales.orders.store') }}" id="orderForm">
-                        @csrf
-
-                        <!-- Cart Card -->
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg sticky top-6">
+                    <!-- Cart Card -->
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                        <form method="POST" action="{{ route('sales.orders.store') }}" id="orderForm">
+                            @csrf
+                            
                             <div class="p-6">
                                 <div class="flex items-center justify-between mb-4">
                                     <h3 class="text-lg font-medium text-gray-900 dark:text-white">Cart</h3>
-                                    <button type="button" id="clearCartBtn" class="text-sm text-red-600 hover:text-red-700 dark:text-red-400">
-                                        Clear(<span id="cartCount">0</span>)
-                                    </button>
+                                    <div class="flex items-center gap-2">
+                                        <span x-show="cart.length > 0" 
+                                              class="text-xs font-medium text-gray-500 dark:text-gray-400"
+                                              x-text="cart.length + ' item' + (cart.length !== 1 ? 's' : '')"></span>
+                                        <button type="button" 
+                                                @click="confirmClearCart()" 
+                                                :disabled="cart.length === 0"
+                                                class="text-sm text-red-600 hover:text-red-700 dark:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed">
+                                            Clear
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <!-- Cart Items -->
-                                <div class="mb-4 max-h-96 overflow-y-auto space-y-3" id="cartItems">
-                                    <p class="text-center text-gray-500 dark:text-gray-400 py-8" id="emptyCartMessage">Cart is empty</p>
+                                <div class="mb-4 space-y-3" id="cartItems">
+                                    <p x-show="cart.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-8">Cart is empty</p>
+                                    
+                                    <template x-for="(item, index) in cart" :key="item.id">
+                                        <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                            <div class="flex-shrink-0 w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-lg overflow-hidden flex items-center justify-center">
+                                                <template x-if="item.image">
+                                                    <img :src="item.image" :alt="item.name" class="w-full h-full object-cover">
+                                                </template>
+                                                <template x-if="!item.image">
+                                                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                    </svg>
+                                                </template>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm font-medium text-gray-900 dark:text-white truncate" x-text="item.name"></p>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                    Qty: <span x-text="item.quantity"></span> <span x-text="item.stock > 0 ? '(' + item.stock + ' in stock)' : ''"></span>
+                                                </p>
+                                                <div class="flex items-center space-x-2 mt-1">
+                                                    <button type="button" @click="updateQuantity(index, -1)" class="w-6 h-6 flex items-center justify-center bg-gray-200 dark:bg-gray-600 rounded hover:bg-gray-300 dark:hover:bg-gray-500">
+                                                        <span class="text-gray-700 dark:text-gray-200">-</span>
+                                                    </button>
+                                                    <span class="text-sm font-medium text-gray-900 dark:text-white" x-text="item.quantity + '.00'"></span>
+                                                    <button type="button" @click="updateQuantity(index, 1)" class="w-6 h-6 flex items-center justify-center bg-blue-100 dark:bg-blue-900 rounded hover:bg-blue-200 dark:hover:bg-blue-800">
+                                                        <span class="text-blue-700 dark:text-blue-300">+</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-base font-bold text-gray-900 dark:text-white" x-text="'₱' + (item.price * item.quantity).toFixed(2)"></p>
+                                                <button type="button" @click="removeFromCart(index)" class="mt-1 text-red-600 hover:text-red-700 dark:text-red-400">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </template>
                                 </div>
 
                                 <!-- Cart Summary -->
@@ -89,15 +134,15 @@
                                     <div class="space-y-2 text-sm">
                                         <div class="flex justify-between text-gray-700 dark:text-gray-300">
                                             <span>Subtotal</span>
-                                            <span id="subtotalDisplay">₱0.00</span>
+                                            <span x-text="'₱' + subtotal.toFixed(2)"></span>
                                         </div>
                                         <div class="flex justify-between text-gray-700 dark:text-gray-300">
                                             <span>Tax (0%)</span>
-                                            <span id="taxDisplay">₱0.00</span>
+                                            <span x-text="'₱' + tax.toFixed(2)"></span>
                                         </div>
                                         <div class="flex justify-between text-gray-700 dark:text-gray-300">
                                             <span>Discount</span>
-                                            <span id="discountDisplay">₱0.00</span>
+                                            <span x-text="'₱' + discount.toFixed(2)"></span>
                                         </div>
                                     </div>
 
@@ -105,14 +150,14 @@
                                     <div class="grid grid-cols-2 gap-2">
                                         <div>
                                             <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Discount Type</label>
-                                            <select id="discount_type" name="discount_type" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                            <select x-model="discountType" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                                                 <option value="percentage">Percentage</option>
                                                 <option value="fixed">Fixed</option>
                                             </select>
                                         </div>
                                         <div>
                                             <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Amount</label>
-                                            <input type="number" id="custom_discount" name="custom_discount" step="0.01" min="0" value="0"
+                                            <input type="number" x-model.number="customDiscount" step="0.01" min="0"
                                                 class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-indigo-500 focus:border-indigo-500">
                                         </div>
                                     </div>
@@ -121,7 +166,7 @@
                                     <div class="pt-3 border-t border-gray-200 dark:border-gray-700">
                                         <div class="flex justify-between items-center">
                                             <span class="text-lg font-bold text-gray-900 dark:text-white">Total</span>
-                                            <span class="text-2xl font-bold text-gray-900 dark:text-white" id="totalDisplay">₱0.00</span>
+                                            <span class="text-2xl font-bold text-gray-900 dark:text-white" x-text="'₱' + total.toFixed(2)"></span>
                                         </div>
                                     </div>
 
@@ -164,7 +209,7 @@
 
                                     <!-- Submit Buttons -->
                                     <div class="flex space-x-2 pt-4">
-                                        <button type="submit" id="submitBtn"
+                                        <button type="submit" @click.prevent="submitOrder" :disabled="cart.length === 0"
                                             class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
                                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -175,44 +220,94 @@
 
                                     <!-- Hidden Fields -->
                                     <input type="hidden" name="order_date" value="{{ date('Y-m-d') }}">
-                                    <input type="hidden" name="tax_amount" id="tax_amount" value="0">
-                                    <input type="hidden" name="discount_amount" id="discount_amount_hidden" value="0">
+                                    <input type="hidden" name="tax_amount" x-model="tax">
+                                    <input type="hidden" name="discount_amount" x-model="discount">
+                                    <input type="hidden" name="discount_type" x-model="discountType">
+                                    <input type="hidden" name="custom_discount" x-model="customDiscount">
+                                    
+                                    <!-- Cart Items Hidden Fields -->
+                                    <template x-for="(item, index) in cart" :key="item.id">
+                                        <div>
+                                            <input type="hidden" :name="'items[' + index + '][product_id]'" :value="item.id">
+                                            <input type="hidden" :name="'items[' + index + '][quantity]'" :value="item.quantity">
+                                            <input type="hidden" :name="'items[' + index + '][unit_price]'" :value="item.price">
+                                            <input type="hidden" :name="'items[' + index + '][discount_amount]'" value="0">
+                                        </div>
+                                    </template>
                                 </div>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Alert Modal -->
-    <div id="alertModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div x-show="alert.show" 
+         x-cloak
+         @click.self="alert.show = false"
+         class="fixed inset-0 z-50 overflow-y-auto" 
+         aria-labelledby="modal-title" 
+         role="dialog" 
+         aria-modal="true">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <!-- Background overlay -->
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            <div x-show="alert.show" 
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
+                 aria-hidden="true"></div>
 
             <!-- Modal panel -->
-            <div class="inline-block align-middle bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full">
+            <div x-show="alert.show"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 class="inline-block align-middle bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full">
                 <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
-                        <div id="alertIcon" class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full sm:mx-0 sm:h-10 sm:w-10">
-                            <!-- Icon will be inserted here -->
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full sm:mx-0 sm:h-10 sm:w-10"
+                             :class="{
+                                'bg-red-100 dark:bg-red-900': alert.type === 'error',
+                                'bg-green-100 dark:bg-green-900': alert.type === 'success',
+                                'bg-yellow-100 dark:bg-yellow-900': alert.type === 'warning'
+                             }">
+                            <template x-if="alert.type === 'error'">
+                                <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </template>
+                            <template x-if="alert.type === 'success'">
+                                <svg class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </template>
+                            <template x-if="alert.type === 'warning'">
+                                <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </template>
                         </div>
                         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-1">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="modal-title">
-                                Alert
-                            </h3>
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" x-text="alert.title"></h3>
                             <div class="mt-2">
-                                <p class="text-sm text-gray-500 dark:text-gray-400" id="alertMessage">
-                                    Message
-                                </p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400" x-text="alert.message"></p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="button" id="closeAlertBtn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    <button type="button" 
+                            @click="alert.show = false" 
+                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
                         OK
                     </button>
                 </div>
@@ -220,315 +315,339 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            let cart = [];
-
-            // Alert Modal Functions
-            function showAlert(message, type = 'error') {
-                const modal = document.getElementById('alertModal');
-                const alertIcon = document.getElementById('alertIcon');
-                const alertMessage = document.getElementById('alertMessage');
-                const modalTitle = document.getElementById('modal-title');
-
-                // Set message
-                alertMessage.textContent = message;
-
-                // Set icon and colors based on type
-                if (type === 'error') {
-                    modalTitle.textContent = 'Error';
-                    alertIcon.className = 'mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10';
-                    alertIcon.innerHTML = `
-                        <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <!-- Clear Cart Confirmation Modal (Plain JS like purchase receives) -->
+    <div id="clearCartModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="mt-3">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between pb-3 border-b dark:border-gray-700">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+                        <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
-                    `;
-                } else if (type === 'success') {
-                    modalTitle.textContent = 'Success';
-                    alertIcon.className = 'mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 dark:bg-green-900 sm:mx-0 sm:h-10 sm:w-10';
-                    alertIcon.innerHTML = `
-                        <svg class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        Confirm Clear Cart
+                    </h3>
+                    <button onclick="closeClearCartModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
-                    `;
-                } else if (type === 'warning') {
-                    modalTitle.textContent = 'Warning';
-                    alertIcon.className = 'mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 dark:bg-yellow-900 sm:mx-0 sm:h-10 sm:w-10';
-                    alertIcon.innerHTML = `
-                        <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                    `;
-                }
-
-                // Show modal
-                modal.classList.remove('hidden');
-            }
-
-            function hideAlert() {
-                const modal = document.getElementById('alertModal');
-                modal.classList.add('hidden');
-            }
-
-            // Close alert button
-            document.getElementById('closeAlertBtn').addEventListener('click', hideAlert);
-
-            // Close on background click
-            document.getElementById('alertModal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    hideAlert();
-                }
-            });
-
-            // Product card click handler
-            document.querySelectorAll('.product-card').forEach(card => {
-                card.addEventListener('click', function() {
-                    const productId = this.dataset.id;
-                    const productName = this.dataset.name;
-                    const productPrice = parseFloat(this.dataset.price);
-                    const productStock = parseInt(this.dataset.stock);
-
-                    addToCart(productId, productName, productPrice, productStock);
-                });
-            });
-
-            // Clear cart button
-            document.getElementById('clearCartBtn').addEventListener('click', function() {
-                if (cart.length === 0) {
-                    showAlert('Cart is already empty', 'warning');
-                    return;
-                }
-                
-                // Create a custom confirmation modal
-                const modal = document.getElementById('alertModal');
-                const alertIcon = document.getElementById('alertIcon');
-                const alertMessage = document.getElementById('alertMessage');
-                const modalTitle = document.getElementById('modal-title');
-                const closeBtn = document.getElementById('closeAlertBtn');
-
-                modalTitle.textContent = 'Confirm Clear Cart';
-                alertMessage.textContent = 'Are you sure you want to clear all items from the cart?';
-                alertIcon.className = 'mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 dark:bg-yellow-900 sm:mx-0 sm:h-10 sm:w-10';
-                alertIcon.innerHTML = `
-                    <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                `;
-
-                // Update buttons for confirmation
-                closeBtn.outerHTML = `
-                    <button type="button" id="confirmClearBtn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
-                        Clear Cart
                     </button>
-                    <button type="button" id="cancelClearBtn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm">
+                </div>
+
+                <!-- Modal Body -->
+                <div class="mt-4">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        Are you sure you want to clear all items from the cart? This action cannot be undone.
+                    </p>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="flex justify-end gap-3 mt-6 pt-4 border-t dark:border-gray-700">
+                    <button type="button" onclick="closeClearCartModal()"
+                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
                         Cancel
                     </button>
-                `;
+                    <button type="button" onclick="executeClearCart()"
+                        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                        Clear Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                modal.classList.remove('hidden');
+    <!-- Toast Notification -->
+    <div x-show="toast.show" 
+         x-cloak
+         x-transition:enter="transform ease-out duration-300 transition"
+         x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+         x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
+         x-transition:leave="transition ease-in duration-100"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed top-4 right-4 z-50 max-w-sm w-full shadow-lg rounded-lg pointer-events-auto overflow-hidden"
+         :class="{
+            'bg-green-50 dark:bg-green-900': toast.type === 'success',
+            'bg-red-50 dark:bg-red-900': toast.type === 'error',
+            'bg-yellow-50 dark:bg-yellow-900': toast.type === 'warning',
+            'bg-blue-50 dark:bg-blue-900': toast.type === 'info'
+         }">
+        <div class="p-4">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <template x-if="toast.type === 'success'">
+                        <svg class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </template>
+                    <template x-if="toast.type === 'error'">
+                        <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </template>
+                    <template x-if="toast.type === 'warning'">
+                        <svg class="h-6 w-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </template>
+                    <template x-if="toast.type === 'info'">
+                        <svg class="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </template>
+                </div>
+                <div class="ml-3 w-0 flex-1 pt-0.5">
+                    <p class="text-sm font-medium" 
+                       :class="{
+                          'text-green-800 dark:text-green-200': toast.type === 'success',
+                          'text-red-800 dark:text-red-200': toast.type === 'error',
+                          'text-yellow-800 dark:text-yellow-200': toast.type === 'warning',
+                          'text-blue-800 dark:text-blue-200': toast.type === 'info'
+                       }"
+                       x-text="toast.message"></p>
+                </div>
+                <div class="ml-4 flex-shrink-0 flex">
+                    <button @click="toast.show = false" 
+                            class="inline-flex rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2"
+                            :class="{
+                               'text-green-500 hover:text-green-600 focus:ring-green-500': toast.type === 'success',
+                               'text-red-500 hover:text-red-600 focus:ring-red-500': toast.type === 'error',
+                               'text-yellow-500 hover:text-yellow-600 focus:ring-yellow-500': toast.type === 'warning',
+                               'text-blue-500 hover:text-blue-600 focus:ring-blue-500': toast.type === 'info'
+                            }">
+                        <span class="sr-only">Close</span>
+                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                // Confirm clear
-                document.getElementById('confirmClearBtn').addEventListener('click', function() {
-                    cart = [];
-                    renderCart();
-                    hideAlert();
-                    // Restore original close button
-                    document.querySelector('.bg-gray-50.dark\\:bg-gray-700').innerHTML = `
-                        <button type="button" id="closeAlertBtn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                            OK
-                        </button>
-                    `;
-                    document.getElementById('closeAlertBtn').addEventListener('click', hideAlert);
-                });
-
-                // Cancel
-                document.getElementById('cancelClearBtn').addEventListener('click', function() {
-                    hideAlert();
-                    // Restore original close button
-                    document.querySelector('.bg-gray-50.dark\\:bg-gray-700').innerHTML = `
-                        <button type="button" id="closeAlertBtn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                            OK
-                        </button>
-                    `;
-                    document.getElementById('closeAlertBtn').addEventListener('click', hideAlert);
-                });
-            });
-
-            // Custom discount change
-            document.getElementById('custom_discount').addEventListener('input', updateCalculations);
-            document.getElementById('discount_type').addEventListener('change', updateCalculations);
-
-            // Form submission
-            document.getElementById('orderForm').addEventListener('submit', function(e) {
-                if (cart.length === 0) {
-                    e.preventDefault();
-                    showAlert('Please add items to cart before submitting', 'warning');
-                    return;
-                }
-
-                // Prepare items data
-                const itemsData = cart.map((item, index) => ({
-                    product_id: item.id,
-                    quantity: item.quantity,
-                    unit_price: item.price,
-                    discount_amount: 0
-                }));
-
-                // Create hidden inputs for items
-                itemsData.forEach((item, index) => {
-                    const container = document.createElement('div');
-                    container.innerHTML = `
-                        <input type="hidden" name="items[${index}][product_id]" value="${item.product_id}">
-                        <input type="hidden" name="items[${index}][quantity]" value="${item.quantity}">
-                        <input type="hidden" name="items[${index}][unit_price]" value="${item.unit_price}">
-                        <input type="hidden" name="items[${index}][discount_amount]" value="${item.discount_amount}">
-                    `;
-                    this.appendChild(container);
-                });
-            });
-
-            function addToCart(id, name, price, stock) {
-                // Check if product already exists in cart
-                const existingItem = cart.find(item => item.id === id);
+    <script>
+        function salesOrderCreate() {
+            return {
+                cart: [],
+                discountType: 'percentage',
+                customDiscount: 0,
+                alert: {
+                    show: false,
+                    type: 'info',
+                    title: 'Alert',
+                    message: ''
+                },
+                confirmation: {
+                    show: false,
+                    title: 'Confirm Action',
+                    message: '',
+                    callback: () => {}
+                },
+                toast: {
+                    show: false,
+                    type: 'info',
+                    message: ''
+                },
                 
-                if (existingItem) {
-                    if (existingItem.quantity < stock) {
-                        existingItem.quantity++;
-                        showAlert(`${name} quantity updated to ${existingItem.quantity}`, 'success');
+                get subtotal() {
+                    return this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                },
+                
+                get tax() {
+                    return this.subtotal * 0; // 0% tax
+                },
+                
+                get discount() {
+                    if (this.discountType === 'percentage') {
+                        return this.subtotal * (this.customDiscount / 100);
+                    }
+                    return this.customDiscount;
+                },
+                
+                get total() {
+                    return this.subtotal + this.tax - this.discount;
+                },
+                
+                showAlert(message, type = 'info', title = null) {
+                    this.alert.message = message;
+                    this.alert.type = type;
+                    this.alert.title = title || (type === 'error' ? 'Error' : type === 'success' ? 'Success' : type === 'warning' ? 'Warning' : 'Information');
+                    this.alert.show = true;
+                },
+                
+                showToast(message, type = 'info') {
+                    this.toast.message = message;
+                    this.toast.type = type;
+                    this.toast.show = true;
+                    setTimeout(() => {
+                        this.toast.show = false;
+                    }, 3000);
+                },
+                
+                showConfirmation(message, callback, title = 'Confirm Action') {
+                    this.confirmation.message = message;
+                    this.confirmation.title = title;
+                    this.confirmation.callback = callback;
+                    this.confirmation.show = true;
+                },
+                
+                addToCart(id, name, price, stock, image = '') {
+                    const existingItem = this.cart.find(item => item.id === id);
+                    
+                    if (existingItem) {
+                        if (existingItem.quantity < stock) {
+                            existingItem.quantity++;
+                            this.showToast(`${name} quantity updated to ${existingItem.quantity}`, 'success');
+                        } else {
+                            this.showToast('Cannot add more. Stock limit reached.', 'warning');
+                        }
                     } else {
-                        showAlert('Cannot add more. Stock limit reached.', 'warning');
+                        if (stock > 0) {
+                            this.cart.push({
+                                id: id,
+                                name: name,
+                                price: price,
+                                quantity: 1,
+                                stock: stock,
+                                image: image
+                            });
+                            this.showToast(`${name} added to cart`, 'success');
+                        } else {
+                            this.showAlert('Product is out of stock', 'error');
+                        }
+                    }
+                },
+                
+                removeFromCart(index) {
+                    this.cart.splice(index, 1);
+                    this.showToast('Item removed from cart', 'info');
+                },
+                
+                updateQuantity(index, change) {
+                    const item = this.cart[index];
+                    const newQuantity = item.quantity + change;
+
+                    if (newQuantity <= 0) {
+                        this.removeFromCart(index);
                         return;
                     }
-                } else {
-                    if (stock > 0) {
-                        cart.push({
-                            id: id,
-                            name: name,
-                            price: price,
-                            quantity: 1,
-                            stock: stock
-                        });
-                        showAlert(`${name} added to cart`, 'success');
-                    } else {
-                        showAlert('Product is out of stock', 'error');
+
+                    if (newQuantity > item.stock) {
+                        this.showToast('Cannot exceed available stock quantity', 'warning');
                         return;
                     }
-                }
 
-                renderCart();
-            }
-
-            function removeFromCart(index) {
-                cart.splice(index, 1);
-                renderCart();
-            }
-
-            function updateQuantity(index, change) {
-                const item = cart[index];
-                const newQuantity = item.quantity + change;
-
-                if (newQuantity <= 0) {
-                    removeFromCart(index);
-                    return;
-                }
-
-                if (newQuantity > item.stock) {
-                    showAlert('Cannot exceed available stock quantity', 'warning');
-                    return;
-                }
-
-                item.quantity = newQuantity;
-                renderCart();
-            }
-
-            function renderCart() {
-                const cartContainer = document.getElementById('cartItems');
-                const emptyMessage = document.getElementById('emptyCartMessage');
-                const cartCount = document.getElementById('cartCount');
-
-                cartCount.textContent = cart.length;
-
-                if (cart.length === 0) {
-                    emptyMessage.style.display = 'block';
-                    cartContainer.innerHTML = '<p class="text-center text-gray-500 dark:text-gray-400 py-8" id="emptyCartMessage">Cart is empty</p>';
-                    updateCalculations();
-                    return;
-                }
-
-                emptyMessage.style.display = 'none';
+                    item.quantity = newQuantity;
+                },
                 
-                cartContainer.innerHTML = cart.map((item, index) => `
-                    <div class="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <div class="flex-shrink-0 w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center">
-                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                            </svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 dark:text-white truncate">${item.name}</p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Q: ${item.quantity} ${item.stock > 0 ? '(' + item.stock + ' in stock)' : ''}</p>
-                            <div class="flex items-center space-x-2 mt-1">
-                                <button type="button" onclick="updateQuantity(${index}, -1)" class="w-6 h-6 flex items-center justify-center bg-gray-200 dark:bg-gray-600 rounded hover:bg-gray-300 dark:hover:bg-gray-500">
-                                    <span class="text-gray-700 dark:text-gray-200">-</span>
-                                </button>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white">${item.quantity}.00</span>
-                                <button type="button" onclick="updateQuantity(${index}, 1)" class="w-6 h-6 flex items-center justify-center bg-blue-100 dark:bg-blue-900 rounded hover:bg-blue-200 dark:hover:bg-blue-800">
-                                    <span class="text-blue-700 dark:text-blue-300">+</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-base font-bold text-gray-900 dark:text-white">₱${(item.price * item.quantity).toFixed(2)}</p>
-                            <button type="button" onclick="removeFromCart(${index})" class="mt-1 text-red-600 hover:text-red-700 dark:text-red-400">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-
-                updateCalculations();
-            }
-
-            function updateCalculations() {
-                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                const taxRate = 0; // 0%
-                const tax = subtotal * taxRate;
-
-                const customDiscount = parseFloat(document.getElementById('custom_discount').value) || 0;
-                const discountType = document.getElementById('discount_type').value;
+                clearCart() {
+                    this.cart = [];
+                    this.showToast('Cart cleared', 'info');
+                },
                 
-                let discount = 0;
-                if (discountType === 'percentage') {
-                    discount = subtotal * (customDiscount / 100);
-                } else {
-                    discount = customDiscount;
+                confirmClearCart() {
+                    if (this.cart.length === 0) {
+                        this.showAlert('Cart is already empty', 'warning');
+                        return;
+                    }
+                    
+                    // Show modal using plain JavaScript like in purchase receives
+                    const modal = document.getElementById('clearCartModal');
+                    modal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                },
+                
+                closeClearCartModal() {
+                    const modal = document.getElementById('clearCartModal');
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                },
+                
+                executeClearCart() {
+                    this.cart = [];
+                    this.closeClearCartModal();
+                    this.showToast('Cart cleared', 'info');
+                },
+                
+                submitOrder() {
+                    if (this.cart.length === 0) {
+                        this.showAlert('Please add items to cart before submitting', 'warning');
+                        return;
+                    }
+                    
+                    // Submit the form
+                    document.getElementById('orderForm').submit();
                 }
-
-                const total = subtotal + tax - discount;
-
-                document.getElementById('subtotalDisplay').textContent = '₱' + subtotal.toFixed(2);
-                document.getElementById('taxDisplay').textContent = '₱' + tax.toFixed(2);
-                document.getElementById('discountDisplay').textContent = '₱' + discount.toFixed(2);
-                document.getElementById('totalDisplay').textContent = '₱' + total.toFixed(2);
-
-                // Update hidden fields
-                document.getElementById('tax_amount').value = tax.toFixed(2);
-                document.getElementById('discount_amount_hidden').value = discount.toFixed(2);
-
-                // Enable/disable submit button
-                const submitBtn = document.getElementById('submitBtn');
-                submitBtn.disabled = cart.length === 0;
             }
+        }
 
-            // Make functions global
-            window.addToCart = addToCart;
-            window.removeFromCart = removeFromCart;
-            window.updateQuantity = updateQuantity;
+        // Global functions for Clear Cart Modal (outside Alpine.js scope)
+        function closeClearCartModal() {
+            const modal = document.getElementById('clearCartModal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
 
-            // Initialize
-            renderCart();
+        function executeClearCart() {
+            // Dispatch custom event that Alpine.js will handle
+            window.dispatchEvent(new CustomEvent('clear-cart'));
+            closeClearCartModal();
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modal = document.getElementById('clearCartModal');
+                if (!modal.classList.contains('hidden')) {
+                    closeClearCartModal();
+                }
+            }
         });
     </script>
+
+    <style>
+        [x-cloak] { display: none !important; }
+        
+        /* Enhanced scrollbar for cart items */
+        .scrollbar-thin {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: rgba(229, 231, 235, 0.3);
+            border-radius: 4px;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.6);
+            border-radius: 4px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+        
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(156, 163, 175, 0.9);
+        }
+        
+        .dark .scrollbar-thin {
+            scrollbar-color: rgba(75, 85, 99, 0.5) transparent;
+        }
+        
+        .dark .scrollbar-thin::-webkit-scrollbar-track {
+            background: rgba(55, 65, 81, 0.3);
+        }
+        
+        .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+            background-color: rgba(75, 85, 99, 0.6);
+        }
+        
+        .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(75, 85, 99, 0.9);
+        }
+    </style>
 </x-app-layout>
