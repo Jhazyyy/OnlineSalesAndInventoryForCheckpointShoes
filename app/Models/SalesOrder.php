@@ -50,6 +50,7 @@ class SalesOrder extends Model
         'total_amount',
         'payment_status',
         'payment_method',
+        'purchase_type',
         'shipping_address',
         'billing_address',
         'notes',

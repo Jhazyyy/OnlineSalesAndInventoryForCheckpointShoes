@@ -129,6 +129,22 @@ class SalesOrderService
         $data['status'] = $data['status'] ?? 'pending';
         $data['priority'] = $data['priority'] ?? 'normal';
         $data['payment_status'] = $data['payment_status'] ?? 'pending';
+        $data['purchase_type'] = $data['purchase_type'] ?? 'in_store';
+
+        // Auto-adjust status based on payment status and purchase type
+        // For in-store purchases: if paid, customer receives product immediately
+        if ($data['purchase_type'] === 'in_store' && $data['payment_status'] === 'paid') {
+            // Set status to delivered since customer gets the product immediately
+            $data['status'] = 'delivered';
+            // Set shipped_date to today since it's instant
+            $data['shipped_date'] = $data['shipped_date'] ?? Carbon::today();
+        } elseif ($data['purchase_type'] === 'in_store' && $data['payment_status'] !== 'paid') {
+            // For in-store but not yet paid, keep as pending or confirmed
+            if (!isset($data['status']) || $data['status'] === 'pending') {
+                $data['status'] = 'pending';
+            }
+        }
+        // For online purchases, follow normal flow (status set manually or defaults to pending)
 
         // Create the order
         $order = SalesOrder::create($data);

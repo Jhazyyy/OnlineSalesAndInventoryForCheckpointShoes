@@ -277,6 +277,19 @@
                                         </select>
                                     </div>
 
+                                    <!-- Purchase Type -->
+                                    <div>
+                                        <x-input-label for="purchase_type" :value="__('Purchase Type')" />
+                                        <select id="purchase_type" name="purchase_type"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                            <option value="in_store" {{ old('purchase_type', 'in_store') == 'in_store' ? 'selected' : '' }}>In-Store Purchase</option>
+                                            <option value="online" {{ old('purchase_type') == 'online' ? 'selected' : '' }}>Online Purchase</option>
+                                        </select>
+                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                            <span id="purchase_type_help">In-Store: Customer receives product immediately upon payment</span>
+                                        </p>
+                                    </div>
+
                                     <!-- Submit Buttons -->
                                     <div class="flex space-x-2 pt-4">
                                         <button type="submit" @click.prevent="submitOrder" :disabled="cart.length === 0"
@@ -672,6 +685,41 @@
                     closeClearCartModal();
                 }
             }
+        });
+
+        // Handle Purchase Type and Payment Status interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentStatusSelect = document.getElementById('payment_status');
+            const purchaseTypeSelect = document.getElementById('purchase_type');
+            const purchaseTypeHelp = document.getElementById('purchase_type_help');
+
+            function updatePurchaseTypeHelp() {
+                const purchaseType = purchaseTypeSelect.value;
+                const paymentStatus = paymentStatusSelect.value;
+
+                if (purchaseType === 'in_store') {
+                    if (paymentStatus === 'paid') {
+                        purchaseTypeHelp.textContent = '✓ In-Store + Paid: Order will be marked as delivered (customer receives product immediately)';
+                        purchaseTypeHelp.classList.remove('text-gray-500');
+                        purchaseTypeHelp.classList.add('text-green-600', 'dark:text-green-400', 'font-medium');
+                    } else {
+                        purchaseTypeHelp.textContent = 'In-Store: Customer receives product immediately upon payment';
+                        purchaseTypeHelp.classList.remove('text-green-600', 'dark:text-green-400', 'font-medium');
+                        purchaseTypeHelp.classList.add('text-gray-500', 'dark:text-gray-400');
+                    }
+                } else {
+                    purchaseTypeHelp.textContent = 'Online: Order will be processed and shipped to customer';
+                    purchaseTypeHelp.classList.remove('text-green-600', 'dark:text-green-400', 'font-medium');
+                    purchaseTypeHelp.classList.add('text-gray-500', 'dark:text-gray-400');
+                }
+            }
+
+            // Update help text when either field changes
+            paymentStatusSelect.addEventListener('change', updatePurchaseTypeHelp);
+            purchaseTypeSelect.addEventListener('change', updatePurchaseTypeHelp);
+
+            // Initial update
+            updatePurchaseTypeHelp();
         });
     </script>
 

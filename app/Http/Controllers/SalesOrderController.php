@@ -72,6 +72,7 @@ class SalesOrderController extends Controller
             'status' => 'nullable|in:pending,confirmed,processing,ready,shipped,delivered,cancelled',
             'payment_status' => 'nullable|in:pending,partial,paid,refunded',
             'payment_method' => 'nullable|in:cash,card,bank_transfer,check,online,other',
+            'purchase_type' => 'nullable|in:in_store,online',
             
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,product_id',
