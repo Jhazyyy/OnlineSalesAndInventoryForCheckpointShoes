@@ -121,10 +121,10 @@ class PurchaseDeliveryService
     public function getCarriers(): array
     {
         return [
-            ['id' => 'FedEx', 'name' => 'FedEx'],
-            ['id' => 'UPS', 'name' => 'UPS'],
-            ['id' => 'DHL', 'name' => 'DHL'],
-            ['id' => 'USPS', 'name' => 'USPS'],
+            // ['id' => 'FedEx', 'name' => 'FedEx'],
+            // ['id' => 'UPS', 'name' => 'UPS'],
+            // ['id' => 'DHL', 'name' => 'DHL'],
+            // ['id' => 'USPS', 'name' => 'USPS'],
             ['id' => 'Local Courier', 'name' => 'Local Courier'],
             ['id' => 'Supplier Direct', 'name' => 'Supplier Direct'],
             ['id' => 'Other', 'name' => 'Other'],

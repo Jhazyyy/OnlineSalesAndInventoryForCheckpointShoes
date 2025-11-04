@@ -34,27 +34,97 @@
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Available Products</h3>
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4" id="productsGrid">
                                 @foreach($products as $product)
-                                <div @click="addToCart({{ $product['id'] }}, '{{ addslashes($product['name']) }}', {{ $product['price'] }}, {{ $product['stock'] }}, '{{ $product['image'] ?? '' }}')"
-                                    class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-shadow product-card">
-                                    <div class="aspect-square bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                                        @if(!empty($product['image']))
-                                        <img src="{{ $product['image'] }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover">
-                                        @else
-                                        <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                        </svg>
-                                        @endif
-                                    </div>
-                                    <div class="p-4">
-                                        <div class="flex items-start justify-between mb-2">
-                                            <span class="inline-block px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 dark:bg-green-900 dark:text-green-300 rounded">
-                                                {{ $product['stock'] }} {{ $product['unit'] ?? 'pcs' }}
-                                            </span>
+                                <div class="relative" 
+                                     x-data="{ showTooltip: false }"
+                                     @mouseenter="showTooltip = true" 
+                                     @mouseleave="showTooltip = false">
+                                    <div @click="addToCart({{ $product['id'] }}, '{{ addslashes($product['name']) }}', {{ $product['price'] }}, {{ $product['stock'] }}, '{{ $product['image'] ?? '' }}')"
+                                        class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg transition-shadow product-card">
+                                        <div class="aspect-square bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                                            @if(!empty($product['image']))
+                                            <img src="{{ $product['image'] }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover">
+                                            @else
+                                            <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                            </svg>
+                                            @endif
                                         </div>
-                                        <h3 class="font-medium text-gray-900 dark:text-white text-sm mb-1 truncate" title="{{ $product['name'] }}">
-                                            {{ $product['name'] }}
-                                        </h3>
-                                        <p class="text-lg font-bold text-gray-900 dark:text-white">₱{{ number_format($product['price'], 2) }}</p>
+                                        <div class="p-4">
+                                            <div class="flex items-start justify-between mb-2">
+                                                <span class="inline-block px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 dark:bg-green-900 dark:text-green-300 rounded">
+                                                    {{ $product['stock'] }} {{ $product['unit'] ?? 'pcs' }}
+                                                </span>
+                                            </div>
+                                            <h3 class="font-medium text-gray-900 dark:text-white text-sm mb-1 truncate" title="{{ $product['name'] }}">
+                                                {{ $product['name'] }}
+                                            </h3>
+                                            <p class="text-lg font-bold text-gray-900 dark:text-white">₱{{ number_format($product['price'], 2) }}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Hover Tooltip -->
+                                    <div x-show="showTooltip"
+                                         x-transition:enter="transition ease-out duration-200"
+                                         x-transition:enter-start="opacity-0 scale-95"
+                                         x-transition:enter-end="opacity-100 scale-100"
+                                         x-transition:leave="transition ease-in duration-150"
+                                         x-transition:leave-start="opacity-100 scale-100"
+                                         x-transition:leave-end="opacity-0 scale-95"
+                                         class="absolute z-50 inset-0 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded-lg shadow-2xl p-3 overflow-y-auto cursor-pointer"
+                                         style="display: none;"
+                                         @click="addToCart({{ $product['id'] }}, '{{ addslashes($product['name']) }}', {{ $product['price'] }}, {{ $product['stock'] }}, '{{ $product['image'] ?? '' }}'); showTooltip = false">
+                                        <div class="space-y-2 h-full flex flex-col">
+                                            <!-- Product Image -->
+                                            @if(!empty($product['image']))
+                                            <div class="w-full h-28 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
+                                                <img src="{{ $product['image'] }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover">
+                                            </div>
+                                            @endif
+                                            
+                                            <!-- Product Name -->
+                                            <div class="flex-shrink-0">
+                                                <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-0.5 line-clamp-2">
+                                                    {{ $product['name'] }}
+                                                </h4>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                                    SKU: {{ $product['sku'] ?? 'N/A' }}
+                                                </p>
+                                            </div>
+                                            
+                                            <!-- Product Details -->
+                                            <div class="space-y-1.5 text-xs border-t border-gray-200 dark:border-gray-700 pt-2 flex-1">
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600 dark:text-gray-400">Category:</span>
+                                                    <span class="font-medium text-gray-900 dark:text-white truncate ml-2">{{ $product['category'] ?? 'N/A' }}</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600 dark:text-gray-400">Brand:</span>
+                                                    <span class="font-medium text-gray-900 dark:text-white truncate ml-2">{{ $product['brand'] ?? 'N/A' }}</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600 dark:text-gray-400">Price:</span>
+                                                    <span class="font-bold text-base text-blue-600 dark:text-blue-400">₱{{ number_format($product['price'], 2) }}</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600 dark:text-gray-400">Stock:</span>
+                                                    <span class="font-semibold" 
+                                                          :class="{ 
+                                                              'text-green-600 dark:text-green-400': {{ $product['stock'] }} > 10,
+                                                              'text-yellow-600 dark:text-yellow-400': {{ $product['stock'] }} <= 10 && {{ $product['stock'] }} > 0,
+                                                              'text-red-600 dark:text-red-400': {{ $product['stock'] }} === 0
+                                                          }">
+                                                        {{ $product['stock'] }} {{ $product['unit'] ?? 'pcs' }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Click to Add Hint -->
+                                            <div class="text-center pt-1.5 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 italic">
+                                                    Click to add to cart
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 @endforeach
@@ -111,7 +181,7 @@
                                                     <button type="button" @click="updateQuantity(index, -1)" class="w-6 h-6 flex items-center justify-center bg-gray-200 dark:bg-gray-600 rounded hover:bg-gray-300 dark:hover:bg-gray-500">
                                                         <span class="text-gray-700 dark:text-gray-200">-</span>
                                                     </button>
-                                                    <span class="text-sm font-medium text-gray-900 dark:text-white" x-text="item.quantity + '.00'"></span>
+                                                    <span class="text-sm font-medium text-gray-900 dark:text-white" x-text="item.quantity"></span>
                                                     <button type="button" @click="updateQuantity(index, 1)" class="w-6 h-6 flex items-center justify-center bg-blue-100 dark:bg-blue-900 rounded hover:bg-blue-200 dark:hover:bg-blue-800">
                                                         <span class="text-blue-700 dark:text-blue-300">+</span>
                                                     </button>
