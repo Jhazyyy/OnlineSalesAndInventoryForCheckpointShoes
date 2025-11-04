@@ -4,6 +4,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ExchangeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\POSController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\ProfileController;
@@ -862,6 +863,17 @@ Route::middleware(['auth'])->group(function () {
         
         // Wildcard route should be last
         Route::get('/{order}', [SalesOrderController::class, 'show'])->name('show');
+    });
+
+    // POS (Point of Sale) - In-Store Purchase Routes
+    Route::prefix('pos')->name('pos.')->group(function () {
+        Route::get('/', [POSController::class, 'index'])->name('index');
+        Route::get('/create', [POSController::class, 'create'])->name('create');
+        Route::post('/', [POSController::class, 'store'])->name('store');
+        Route::get('/{order}', [POSController::class, 'show'])->name('show');
+        
+        // AJAX endpoints
+        Route::get('/search/customers', [POSController::class, 'searchCustomers'])->name('search.customers');
     });
 
     // Returns Management Routes
