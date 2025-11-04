@@ -86,6 +86,7 @@ class PurchaseReceiveController extends Controller
             'items.*.quantity_received' => 'required|integer|min:0',
             'items.*.quantity_damaged' => 'nullable|integer|min:0',
             'items.*.unit_price' => 'required|numeric|min:0',
+            'items.*.update_product_price' => 'nullable|boolean',
             'items.*.condition' => 'nullable|in:good,damaged,expired,partial',
             'items.*.item_notes' => 'nullable|string|max:1000',
         ]);
@@ -148,6 +149,7 @@ class PurchaseReceiveController extends Controller
             'items.*.quantity_received' => 'required|integer|min:0',
             'items.*.quantity_damaged' => 'nullable|integer|min:0',
             'items.*.unit_price' => 'required|numeric|min:0',
+            'items.*.update_product_price' => 'nullable|boolean',
             'items.*.condition' => 'nullable|in:good,damaged,expired,partial',
             'items.*.item_notes' => 'nullable|string|max:1000',
         ]);

@@ -512,7 +512,14 @@
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <input type="number" name="items[${index}][quantity_damaged]" min="0" value="0" class="block w-full text-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Damaged" onchange="updateSummary()">
-                    <input type="number" name="items[${index}][unit_price]" min="0" step="0.01" value="0" required class="block w-full text-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Unit Price" onchange="updateSummary()">
+                    <input type="number" name="items[${index}][unit_price]" min="0" step="0.01" value="0" required class="unit-price-input block w-full text-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Unit Price" onchange="updateSummary(); checkPriceDifference(this, ${index})" data-product-select="items[${index}][product_id]">
+                </div>
+                <div class="mt-2 price-update-section" id="priceUpdateSection_${index}" style="display:none;">
+                    <label class="flex items-center text-xs">
+                        <input type="checkbox" name="items[${index}][update_product_price]" value="1" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 mr-2">
+                        <span class="text-gray-700 dark:text-gray-300">Update product master price</span>
+                    </label>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1" id="priceDifferenceInfo_${index}"></div>
                 </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
@@ -561,6 +568,75 @@
                 document.getElementById('totalQuantity').textContent = totalQuantity.toLocaleString();
                 document.getElementById('totalValue').textContent = '₱' + totalValue.toFixed(2);
             }
+
+            // Check if unit price differs from product master price
+            function checkPriceDifference(priceInput, rowIndex) {
+                const row = priceInput.closest('tr');
+                const productSelect = row.querySelector('select[name$="[product_id]"]');
+                const priceUpdateSection = document.getElementById('priceUpdateSection_' + rowIndex);
+                const priceDifferenceInfo = document.getElementById('priceDifferenceInfo_' + rowIndex);
+                
+                if (!productSelect || !productSelect.value || !priceInput.value) {
+                    if (priceUpdateSection) priceUpdateSection.style.display = 'none';
+                    return;
+                }
+
+                const productId = productSelect.value;
+                const unitPrice = parseFloat(priceInput.value);
+                
+                // Find the product in availableProducts
+                const product = availableProducts.find(p => p.product_id == productId);
+                
+                if (!product) {
+                    if (priceUpdateSection) priceUpdateSection.style.display = 'none';
+                    return;
+                }
+
+                const currentPrice = parseFloat(product.price);
+                const lastPurchasePrice = product.last_purchase_price ? parseFloat(product.last_purchase_price) : null;
+                
+                // Check if there's a price difference (more than 1 cent tolerance)
+                const hasDifference = Math.abs(unitPrice - currentPrice) > 0.01;
+                
+                if (hasDifference && priceUpdateSection) {
+                    const difference = unitPrice - currentPrice;
+                    const percentChange = ((difference / currentPrice) * 100).toFixed(2);
+                    const direction = difference > 0 ? 'higher' : 'lower';
+                    const directionClass = difference > 0 ? 'text-green-600' : 'text-red-600';
+                    
+                    let infoText = `Current: ₱${currentPrice.toFixed(2)} → New: ₱${unitPrice.toFixed(2)}`;
+                    infoText += ` <span class="${directionClass}">(${Math.abs(percentChange)}% ${direction})</span>`;
+                    
+                    if (lastPurchasePrice && Math.abs(unitPrice - lastPurchasePrice) > 0.01) {
+                        infoText += `<br>Last purchase: ₱${lastPurchasePrice.toFixed(2)}`;
+                    }
+                    
+                    priceDifferenceInfo.innerHTML = infoText;
+                    priceUpdateSection.style.display = 'block';
+                } else {
+                    if (priceUpdateSection) priceUpdateSection.style.display = 'none';
+                }
+            }
+
+            // Add event listener to product select to also check price when product changes
+            document.addEventListener('change', function(e) {
+                if (e.target.matches('select[name$="[product_id]"]')) {
+                    const row = e.target.closest('tr');
+                    const priceInput = row.querySelector('input[name$="[unit_price]"]');
+                    const rowIndex = Array.from(row.parentNode.children).indexOf(row);
+                    
+                    // Auto-fill price from product data if available
+                    const productId = e.target.value;
+                    if (productId) {
+                        const product = availableProducts.find(p => p.product_id == productId);
+                        if (product && priceInput) {
+                            priceInput.value = parseFloat(product.price).toFixed(2);
+                            checkPriceDifference(priceInput, rowIndex);
+                            updateSummary();
+                        }
+                    }
+                }
+            });
         </script>
     @endverbatim
 </x-app-layout>

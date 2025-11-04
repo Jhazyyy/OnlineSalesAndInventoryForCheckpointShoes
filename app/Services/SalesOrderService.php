@@ -6,6 +6,9 @@ use App\Models\SalesOrder;
 use App\Models\SalesOrderItem;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\StockMovement;
+use App\Services\InventoryService;
+use App\Services\InventoryThresholdService;
 use App\Models\Notification;
 use App\Mail\OrderStatusChanged;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,6 +19,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 /**
  * SalesOrderService
@@ -199,7 +203,7 @@ class SalesOrderService
             $quantity = $itemData['quantity'];
             $discountAmount = $itemData['discount_amount'] ?? 0;
 
-            SalesOrderItem::create([
+            $item = SalesOrderItem::create([
                 'order_id' => $order->order_id,
                 'product_id' => $product->product_id,
                 'quantity' => $quantity,
@@ -208,6 +212,52 @@ class SalesOrderService
                 'line_total' => ($quantity * $unitPrice) - $discountAmount,
                 'notes' => $itemData['notes'] ?? null,
             ]);
+
+            // If this order should immediately affect stock (e.g., in-store paid or delivered), adjust inventory
+            try {
+                $shouldDeduct = false;
+
+                // Deduct when payment_status is paid (common for POS in-store immediate sales)
+                if (isset($order->payment_status) && $order->payment_status === 'paid') {
+                    $shouldDeduct = true;
+                }
+
+                // Also deduct when order status indicates delivered/processing/confirmed/shipped
+                if (in_array($order->status, ['delivered', 'processing', 'confirmed', 'shipped'])) {
+                    $shouldDeduct = true;
+                }
+
+                    if ($shouldDeduct) {
+                    // Use InventoryService to adjust inventories and record stock movement properly
+                    InventoryService::adjust(
+                        productId: $product->product_id,
+                        quantityChange: -1 * (int) $quantity,
+                        unitCost: null,
+                        movementType: StockMovement::TYPE_SALE,
+                        referenceType: 'sales_order',
+                        referenceId: $order->order_id,
+                        propertyId: null,
+                        location: null,
+                        syncProductQuantity: true
+                    );
+
+                        // Run threshold checks for this product to generate/rescue alerts if needed
+                        try {
+                            $thresholdService = new InventoryThresholdService();
+                            $productRefreshed = Product::find($product->product_id);
+                            if ($productRefreshed) {
+                                $thresholdService->checkProductThresholds($productRefreshed);
+                            }
+                        } catch (\Exception $e) {
+                            Log::warning('Threshold check failed after inventory adjust', ['error' => $e->getMessage(), 'product_id' => $product->product_id]);
+                        }
+
+                    Log::info('Inventory adjusted for sale', ['product_id' => $product->product_id, 'quantity' => $quantity, 'order_id' => $order->order_id]);
+                }
+            } catch (\Exception $e) {
+                // Log but continue; inventory sync should not prevent order creation
+                Log::error('Failed to adjust inventory for order item', ['error' => $e->getMessage(), 'product_id' => $product->product_id, 'order_id' => $order->order_id]);
+            }
         }
 
         // Recalculate order totals
@@ -255,6 +305,34 @@ class SalesOrderService
 
         $oldStatus = $order->status;
         $order->update(['status' => $status]);
+
+        // If order is cancelled or returned, restore inventory for items that were previously deducted
+        if (in_array($status, ['cancelled', 'returned'])) {
+            try {
+                DB::beginTransaction();
+                foreach ($order->items as $item) {
+                    $product = $item->product;
+                    if (!$product) continue;
+
+                    InventoryService::adjust(
+                        productId: $product->product_id,
+                        quantityChange: (int) $item->quantity,
+                        unitCost: null,
+                        movementType: StockMovement::TYPE_RETURN,
+                        referenceType: 'sales_order',
+                        referenceId: $order->order_id,
+                        propertyId: null,
+                        location: null,
+                        syncProductQuantity: true
+                    );
+                }
+                DB::commit();
+                Log::info('Inventory restored for cancelled/returned order', ['order_id' => $order->order_id]);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('Failed to restore inventory on order cancel/return', ['order_id' => $order->order_id, 'error' => $e->getMessage()]);
+            }
+        }
 
         // Update shipped date when status changes to shipped
         if ($status === 'shipped' && !$order->shipped_date) {
@@ -337,6 +415,7 @@ class SalesOrderService
     /**
      * Get valid status transitions for current status.
      */
+    
     public function getValidStatusTransitions(string $currentStatus): array
     {
         return match($currentStatus) {

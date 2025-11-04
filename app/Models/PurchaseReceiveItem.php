@@ -40,6 +40,7 @@ class PurchaseReceiveItem extends Model
         'quantity_received',
         'quantity_damaged',
         'unit_price',
+        'update_product_price',
         'total_amount',
         'condition',
         'item_notes',
@@ -55,6 +56,7 @@ class PurchaseReceiveItem extends Model
     protected $casts = [
         'unit_price' => 'decimal:2',
         'total_amount' => 'decimal:2',
+        'update_product_price' => 'boolean',
         'is_short_closed' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -132,5 +134,41 @@ class PurchaseReceiveItem extends Model
     public function hasDamage(): bool
     {
         return $this->quantity_damaged > 0;
+    }
+
+    /**
+     * Check if the unit price differs from product's current price.
+     */
+    public function hasPriceDifference(): bool
+    {
+        if (!$this->product) {
+            return false;
+        }
+        
+        return abs($this->unit_price - $this->product->price) > 0.01;
+    }
+
+    /**
+     * Check if the unit price differs from product's last purchase price.
+     */
+    public function hasLastPurchasePriceDifference(): bool
+    {
+        if (!$this->product || !$this->product->last_purchase_price) {
+            return false;
+        }
+        
+        return abs($this->unit_price - $this->product->last_purchase_price) > 0.01;
+    }
+
+    /**
+     * Get the price difference from product's current price.
+     */
+    public function getPriceDifferenceAttribute(): float
+    {
+        if (!$this->product) {
+            return 0;
+        }
+        
+        return $this->unit_price - $this->product->price;
     }
 }

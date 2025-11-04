@@ -195,6 +195,7 @@ class PurchaseReceiveService
             $quantityReceived = $itemData['quantity_received'] ?? 0;
             $quantityDamaged = $itemData['quantity_damaged'] ?? 0;
             $unitPrice = $itemData['unit_price'] ?? 0;
+            $updateProductPrice = $itemData['update_product_price'] ?? false;
 
             $item = PurchaseReceiveItem::create([
                 'receive_id' => $receive->receive_id,
@@ -204,6 +205,7 @@ class PurchaseReceiveService
                 'quantity_received' => $quantityReceived,
                 'quantity_damaged' => $quantityDamaged,
                 'unit_price' => $unitPrice,
+                'update_product_price' => $updateProductPrice,
                 'total_amount' => $quantityReceived * $unitPrice,
                 'condition' => $itemData['condition'] ?? 'good',
                 'item_notes' => $itemData['item_notes'] ?? null,
@@ -212,6 +214,21 @@ class PurchaseReceiveService
             // Update inventory for received items
             if ($quantityReceived > 0) {
                 $this->updateProductInventory($product, $quantityReceived, $receive->supplier_id, $unitPrice);
+
+                // Always update last_purchase_price when products are successfully received
+                $product->enableSupplierTrackingFields();
+                $updateData = [
+                    'last_purchase_price' => $unitPrice,
+                    'last_supplier_id' => $receive->supplier_id,
+                    'last_received_at' => now(),
+                ];
+                
+                // Update product master price only if flag is set and receive is successful
+                if ($updateProductPrice && $receive->status === 'received') {
+                    $updateData['price'] = $unitPrice;
+                }
+                
+                $product->update($updateData);
 
                 // If linked to a PO item, sync received quantity there too
                 if (!empty($itemData['purchase_order_item_id'])) {
