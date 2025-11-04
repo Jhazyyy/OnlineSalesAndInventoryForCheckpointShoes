@@ -153,7 +153,11 @@
                                             Number</label>
                                         <input type="text" id="tracking_number" name="tracking_number"
                                             value="{{ old('tracking_number') }}"
+                                            placeholder="Auto-generated if left blank"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                            Leave blank to auto-generate a tracking number (Format: TRK-YYYYMMDD-XXXX)
+                                        </p>
                                     </div>
 
                                     <!-- Recipient Name -->

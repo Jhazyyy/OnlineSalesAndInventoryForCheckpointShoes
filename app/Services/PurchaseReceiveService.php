@@ -8,6 +8,7 @@ use App\Models\PurchaseReceive;
 use App\Models\PurchaseReceiveItem;
 use App\Models\StockMovement;
 use App\Models\Supplier;
+use App\Models\Notification;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -74,9 +75,11 @@ class PurchaseReceiveService
     /**
      * Get filter options for purchase receive listing.
      * 
-     * WORKFLOW NOTE: Receives can be created for:
+     * WORKFLOW NOTE: Receives can ONLY be created for:
      * 1. Orders that are 'ordered' or 'partial_received' (still expecting goods)
-     * 2. Optionally linked to a delivery if shipment tracking was used
+     * 2. A delivery MUST exist for the order (delivery is mandatory)
+     * 3. At least one delivery must be in 'delivered' status
+     * 4. The receive is linked to a delivered delivery (auto-assigned if not specified)
      */
     public function getFilterOptions(): array
     {
@@ -90,10 +93,14 @@ class PurchaseReceiveService
                         'name' => $supplier->supplier_name ?? $supplier->name,
                     ];
                 }),
-            'purchase_orders' => PurchaseOrder::with('supplier')
+            'purchase_orders' => PurchaseOrder::with(['supplier', 'deliveries'])
                 ->whereIn('status', ['ordered', 'partial_received'])
                 ->orderBy('order_number')
                 ->get()
+                ->filter(function ($order) {
+                    // Only include orders that can receive items (checks delivery status)
+                    return $order->canReceiveItems();
+                })
                 ->map(function ($order) {
                     return [
                         'id' => $order->order_id,
@@ -101,7 +108,8 @@ class PurchaseReceiveService
                         'supplier_name' => $order->supplier->supplier_name ?? $order->supplier->name,
                         'supplier_id' => $order->supplier_id,
                     ];
-                }),
+                })
+                ->values(), // Re-index array after filter
         ];
     }
 
@@ -155,6 +163,15 @@ class PurchaseReceiveService
             );
         }
 
+        // Create notification for new purchase receive
+        Notification::create([
+            'title' => 'Goods Receipt Created',
+            'message' => "Goods Receipt {$receive->receive_number} has been created successfully",
+            'level' => 'success',
+            'type' => 'purchases.receive_created',
+            'link' => route('purchases.purchase-receives.show', $receive->receive_id),
+        ]);
+
         return $receive->fresh(['supplier', 'purchaseOrder', 'items.product']);
     }
 
@@ -170,6 +187,15 @@ class PurchaseReceiveService
         if (isset($data['items']) && is_array($data['items'])) {
             $this->updateReceiveItems($receive, $data['items']);
         }
+
+        // Create notification for updated purchase receive
+        Notification::create([
+            'title' => 'Goods Receipt Updated',
+            'message' => "Goods Receipt {$receive->receive_number} has been updated",
+            'level' => 'info',
+            'type' => 'purchases.receive_updated',
+            'link' => route('purchases.purchase-receives.show', $receive->receive_id),
+        ]);
 
         return $receive->fresh(['supplier', 'purchaseOrder', 'items.product']);
     }
@@ -375,7 +401,24 @@ class PurchaseReceiveService
             throw new \Exception("Cannot change status from {$receive->status} to {$status}");
         }
 
+        $oldStatus = $receive->status;
         $receive->update(['status' => $status]);
+
+        // Create notification for status change
+        $level = match($status) {
+            'received' => 'success',
+            'damaged' => 'warning',
+            'cancelled' => 'warning',
+            default => 'info',
+        };
+
+        Notification::create([
+            'title' => 'Goods Receipt Status Changed',
+            'message' => "Goods Receipt {$receive->receive_number} status changed from {$oldStatus} to {$status}",
+            'level' => $level,
+            'type' => 'purchases.receive_status_changed',
+            'link' => route('purchases.purchase-receives.show', $receive->receive_id),
+        ]);
 
         return $receive->fresh();
     }
@@ -522,6 +565,15 @@ class PurchaseReceiveService
                     ]
                 );
             }
+
+            // Create notification for short close
+            Notification::create([
+                'title' => 'Purchase Receive Short Closed',
+                'message' => "Goods Receipt {$receive->receive_number} has been short closed. Reason: {$reason}",
+                'level' => 'warning',
+                'type' => 'purchases.receive_short_closed',
+                'link' => route('purchases.purchase-receives.show', $receive->receive_id),
+            ]);
 
             DB::commit();
 

@@ -82,22 +82,26 @@
                                         @enderror
                                     </div>
 
-                                    <!-- Related Delivery (Optional) -->
+                                    <!-- Related Delivery (Auto-assigned from PO) -->
                                     <div class="md:col-span-2">
                                         <label for="delivery_id"
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Related Delivery (Optional)
+                                            Related Delivery
+                                            <span class="text-red-500">*</span>
                                         </label>
                                         <select id="delivery_id" name="delivery_id"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                            <option value="">No delivery tracking</option>
+                                            <option value="">Select a delivery...</option>
                                             {{-- Deliveries will be populated via JavaScript based on selected PO --}}
                                         </select>
                                         @error('delivery_id')
                                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                         @enderror
-                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                            Link this receive to a delivery if shipment tracking was used
+                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="deliveryHelpText">
+                                            All purchase orders require delivery confirmation before receiving items. The most recent delivered shipment will be auto-assigned.
+                                        </p>
+                                        <p class="mt-1 text-xs text-orange-600 dark:text-orange-400" id="deliveryWarning" style="display:none;">
+                                            ⚠️ This PO has no delivered shipments yet. Please create and mark a delivery as delivered first.
                                         </p>
                                     </div>
                                 </div>
@@ -710,9 +714,13 @@
             // Update deliveries dropdown based on selected purchase order
             function updateDeliveriesDropdown(purchaseOrderId) {
                 const deliverySelect = document.getElementById('delivery_id');
+                const deliveryWarning = document.getElementById('deliveryWarning');
 
-                // Clear existing options
-                deliverySelect.innerHTML = '<option value="">No delivery tracking</option>';
+                // Clear existing options and show default
+                deliverySelect.innerHTML = '<option value="">Select a delivery...</option>';
+                
+                // Always show warning by default when no PO selected
+                if (deliveryWarning) deliveryWarning.style.display = 'none';
 
                 if (!purchaseOrderId) {
                     return;
@@ -721,14 +729,53 @@
                 // Filter deliveries for this PO
                 const relatedDeliveries = deliveriesData.filter(d => d.purchase_order_id == purchaseOrderId);
 
-                if (relatedDeliveries.length > 0) {
-                    relatedDeliveries.forEach(delivery => {
-                        const option = document.createElement('option');
-                        option.value = delivery.id;
-                        option.textContent =
-                            `${delivery.delivery_number} - ${delivery.carrier || 'N/A'}${delivery.tracking_number ? ' (' + delivery.tracking_number + ')' : ''}`;
-                        deliverySelect.appendChild(option);
+                // Always show warning if no deliveries exist or none are delivered
+                if (relatedDeliveries.length === 0) {
+                    if (deliveryWarning) {
+                        deliveryWarning.style.display = 'block';
+                        deliveryWarning.innerHTML = '⚠️ This PO has no deliveries. Please create a delivery first before receiving items.';
+                    }
+                    return;
+                }
+
+                // Find delivered deliveries
+                const deliveredDeliveries = relatedDeliveries.filter(d => d.status === 'delivered');
+                
+                // Show warning if there are deliveries but none are delivered
+                if (deliveredDeliveries.length === 0) {
+                    if (deliveryWarning) {
+                        deliveryWarning.style.display = 'block';
+                        deliveryWarning.innerHTML = '⚠️ This PO has no delivered shipments yet. Please mark a delivery as delivered first.';
+                    }
+                }
+                
+                relatedDeliveries.forEach(delivery => {
+                    const option = document.createElement('option');
+                    option.value = delivery.id;
+                    const statusBadge = delivery.status === 'delivered' ? '✓' : '⏳';
+                    option.textContent =
+                        `${statusBadge} ${delivery.delivery_number} - ${delivery.carrier || 'N/A'}${delivery.tracking_number ? ' (' + delivery.tracking_number + ')' : ''} [${delivery.status}]`;
+                    // Disable non-delivered options
+                    if (delivery.status !== 'delivered') {
+                        option.disabled = true;
+                        option.style.color = '#999';
+                    }
+                    deliverySelect.appendChild(option);
+                });
+                
+                // Auto-select the most recent delivered delivery
+                if (deliveredDeliveries.length > 0) {
+                    // Sort by actual_delivery_date or delivery_date, most recent first
+                    deliveredDeliveries.sort((a, b) => {
+                        const dateA = new Date(a.actual_delivery_date || a.delivery_date);
+                        const dateB = new Date(b.actual_delivery_date || b.delivery_date);
+                        return dateB - dateA;
                     });
+                    
+                    deliverySelect.value = deliveredDeliveries[0].id;
+                    
+                    // Hide warning if we have a delivered delivery
+                    if (deliveryWarning) deliveryWarning.style.display = 'none';
                 }
             }
         </script>

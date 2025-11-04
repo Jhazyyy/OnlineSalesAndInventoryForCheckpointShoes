@@ -183,6 +183,15 @@ class SalesOrderService
             $this->updateOrderItems($order, $data['items']);
         }
 
+        // Create notification for updated sales order
+        Notification::create([
+            'title' => 'Sales Order Updated',
+            'message' => "Sales Order {$order->order_number} has been updated",
+            'level' => 'info',
+            'type' => 'sales.order_updated',
+            'link' => route('sales.orders.show', $order->order_id),
+        ]);
+
         return $order->fresh(['customer', 'items.product']);
     }
 

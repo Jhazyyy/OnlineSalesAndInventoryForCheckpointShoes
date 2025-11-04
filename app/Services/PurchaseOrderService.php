@@ -6,6 +6,7 @@ use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\Supplier;
 use App\Models\Product;
+use App\Models\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
@@ -160,6 +161,15 @@ class PurchaseOrderService
             ]
         );
 
+        // Create notification for new purchase order
+        Notification::create([
+            'title' => 'New Purchase Order Created',
+            'message' => "Purchase Order {$order->order_number} has been created successfully",
+            'level' => 'info',
+            'type' => 'purchases.order_created',
+            'link' => route('purchases.purchase-orders.show', $order->order_id),
+        ]);
+
         return $order->fresh(['supplier', 'items.product']);
     }
 
@@ -175,6 +185,15 @@ class PurchaseOrderService
         if (isset($data['items']) && is_array($data['items'])) {
             $this->updateOrderItems($order, $data['items']);
         }
+
+        // Create notification for updated purchase order
+        Notification::create([
+            'title' => 'Purchase Order Updated',
+            'message' => "Purchase Order {$order->order_number} has been updated",
+            'level' => 'info',
+            'type' => 'purchases.order_updated',
+            'link' => route('purchases.purchase-orders.show', $order->order_id),
+        ]);
 
         return $order->fresh(['supplier', 'items.product']);
     }
@@ -280,6 +299,23 @@ class PurchaseOrderService
                 'new_status' => $status,
             ]
         );
+
+        // Create notification for status change
+        $level = match($status) {
+            'approved' => 'success',
+            'received' => 'success',
+            'cancelled' => 'warning',
+            'ordered' => 'info',
+            default => 'info',
+        };
+
+        Notification::create([
+            'title' => 'Purchase Order Status Changed',
+            'message' => "Purchase Order {$order->order_number} status changed from {$oldStatus} to {$status}",
+            'level' => $level,
+            'type' => 'purchases.order_status_changed',
+            'link' => route('purchases.purchase-orders.show', $order->order_id),
+        ]);
 
         return $order->fresh();
     }

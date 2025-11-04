@@ -102,6 +102,14 @@ class PurchaseOrder extends Model
     }
 
     /**
+     * Get the deliveries for the purchase order.
+     */
+    public function deliveries(): HasMany
+    {
+        return $this->hasMany(PurchaseDelivery::class, 'purchase_order_id', 'order_id');
+    }
+
+    /**
      * Generate unique order number.
      */
     public static function generateOrderNumber(): string
@@ -344,10 +352,29 @@ class PurchaseOrder extends Model
 
     /**
      * Check if items can be received.
+     * 
+     * Items can only be received if:
+     * 1. The order status is 'ordered' or 'partial_received'
+     * 2. A delivery MUST exist for this order (delivery is mandatory)
+     * 3. At least one delivery must be in 'delivered' status
      */
     public function canReceiveItems(): bool
     {
-        return in_array($this->status, ['ordered', 'partial_received']);
+        // Check if order status allows receiving
+        if (!in_array($this->status, ['ordered', 'partial_received'])) {
+            return false;
+        }
+
+        // Check if there's any delivery for this order (excluding cancelled)
+        $deliveries = $this->deliveries()->whereNotIn('status', ['cancelled'])->get();
+        
+        // Delivery is MANDATORY - PO cannot be received without delivery
+        if ($deliveries->count() === 0) {
+            return false;
+        }
+
+        // At least one delivery must be in 'delivered' status
+        return $deliveries->where('status', 'delivered')->count() > 0;
     }
 
     /**

@@ -55,7 +55,11 @@
                             <div>
                                 <label for="tracking_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tracking Number</label>
                                 <input type="text" id="tracking_number" name="tracking_number" value="{{ old('tracking_number', $delivery->tracking_number) }}"
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                       readonly>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                    Tracking number is auto-generated and cannot be changed
+                                </p>
                             </div>
 
                             <!-- Scheduled Delivery Date -->

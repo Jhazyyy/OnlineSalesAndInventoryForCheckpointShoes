@@ -7,6 +7,7 @@ use App\Models\InventoryAlert;
 use App\Models\InventoryAuditLog;
 use App\Models\Supplier;
 use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -505,7 +506,38 @@ class InventoryThresholdService
             'System'
         );
 
+        // Create notification for inventory alert
+        $notificationLevel = match($severity) {
+            'urgent', 'critical' => 'danger',
+            'warning' => 'warning',
+            'info' => 'info',
+            default => 'info',
+        };
+
+        Notification::create([
+            'title' => $this->getAlertTitle($alertType, $severity),
+            'message' => $message,
+            'level' => $notificationLevel,
+            'type' => 'inventory.' . $alertType,
+            'link' => route('inventory.thresholds.alerts'),
+        ]);
+
         return $alert;
+    }
+
+    /**
+     * Get a user-friendly title for alert type
+     */
+    protected function getAlertTitle(string $alertType, string $severity): string
+    {
+        return match($alertType) {
+            'out_of_stock' => 'Out of Stock Alert',
+            'critical_stock' => 'Critical Stock Level',
+            'low_stock' => 'Low Stock Alert',
+            'overstock' => 'Overstock Alert',
+            'reorder_needed' => 'Reorder Suggestion',
+            default => 'Inventory Alert',
+        };
     }
 
     /**

@@ -58,10 +58,6 @@
                     </svg>
                 </a>
 
-                <!-- Notification Dropdown -->
-                @include('partials.notifications_dropdown')
-                {{-- notifications script is bundled by Vite (imported in resources/js/app.js) --}}
-
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <!-- Profile Icon with Name -->

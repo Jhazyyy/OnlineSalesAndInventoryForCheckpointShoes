@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\StockMovement;
 use App\Models\Product;
 use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -145,6 +146,16 @@ class StockService
                     $latestMovement->update(['movement_date' => Carbon::parse($data['movement_date'])]);
                 }
             }
+
+            // Create notification for stock adjustment
+            $adjustmentType = $quantityChange > 0 ? 'increased' : 'decreased';
+            Notification::create([
+                'title' => 'Stock Adjustment Recorded',
+                'message' => "Stock for {$product->product_name} has been {$adjustmentType} by " . abs($quantityChange) . " units (New quantity: {$newQuantity})",
+                'level' => 'info',
+                'type' => 'inventory.stock_adjustment',
+                'link' => route('inventory.product_stock_adjustment.index'),
+            ]);
 
             return [
                 'success' => true,

@@ -341,6 +341,86 @@
                         </div>
                     </div>
                     
+                    <!-- Deliveries -->
+                    @if($order->deliveries && $order->deliveries->count() > 0)
+                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                            <div class="p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Deliveries</h3>
+                                    <a href="{{ route('purchases.deliveries.create', ['purchase_order_id' => $order->order_id]) }}"
+                                       class="inline-flex items-center px-3 py-1.5 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        Add Delivery
+                                    </a>
+                                </div>
+                                
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                        <thead class="bg-gray-50 dark:bg-gray-700">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Delivery#</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tracking#</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Carrier</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Delivery Date</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                            @foreach($order->deliveries as $delivery)
+                                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                                        {{ $delivery->delivery_number }}
+                                                    </td>
+                                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 font-mono">
+                                                        {{ $delivery->tracking_number ?? 'N/A' }}
+                                                    </td>
+                                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                        {{ $delivery->carrier ?? 'N/A' }}
+                                                    </td>
+                                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                        {{ $delivery->delivery_date ? $delivery->delivery_date->format('M d, Y') : 'N/A' }}
+                                                    </td>
+                                                    <td class="px-4 py-3 whitespace-nowrap">
+                                                        @php
+                                                            $statusColors = [
+                                                                'scheduled' => 'bg-gray-100 text-gray-800',
+                                                                'in_transit' => 'bg-blue-100 text-blue-800',
+                                                                'out_for_delivery' => 'bg-purple-100 text-purple-800',
+                                                                'delivered' => 'bg-green-100 text-green-800',
+                                                                'delayed' => 'bg-orange-100 text-orange-800',
+                                                                'failed' => 'bg-red-100 text-red-800',
+                                                                'cancelled' => 'bg-gray-100 text-gray-800',
+                                                            ];
+                                                            $statusClass = $statusColors[$delivery->status] ?? 'bg-gray-100 text-gray-800';
+                                                        @endphp
+                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusClass }}">
+                                                            {{ ucwords(str_replace('_', ' ', $delivery->status)) }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                        <a href="{{ route('purchases.deliveries.show', $delivery->delivery_id) }}"
+                                                           class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-3">
+                                                            View
+                                                        </a>
+                                                        @if($delivery->status !== 'delivered' && $delivery->status !== 'cancelled')
+                                                            <a href="{{ route('purchases.deliveries.edit', $delivery->delivery_id) }}"
+                                                               class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">
+                                                                Edit
+                                                            </a>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                    
                     <!-- Receiving History -->
                     @if($order->internal_notes && (str_contains($order->internal_notes, 'Received by') || in_array($order->status, ['partial_received', 'received'])))
                         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -469,6 +549,25 @@
                                             </button>
                                         </div>
                                     </form>
+                                @endif
+
+                                <!-- Create Delivery Button (shown when status is ordered) -->
+                                @if(in_array($order->status, ['ordered', 'partial_received']))
+                                    <div class="pt-3 border-t">
+                                        <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3">Delivery Management</h4>
+                                        <div class="mb-4 p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+                                            <p class="text-sm text-indigo-800 dark:text-indigo-300">
+                                                <strong>Next Step:</strong> Create a delivery record to track shipment from supplier. A delivery must be marked as "delivered" before you can create a Goods Receipt.
+                                            </p>
+                                        </div>
+                                        <a href="{{ route('purchases.deliveries.create', ['purchase_order_id' => $order->order_id]) }}"
+                                           class="w-full inline-flex justify-center items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                                            </svg>
+                                            Create Delivery
+                                        </a>
+                                    </div>
                                 @endif
 
                                 <!-- Goods Receipt Redirect -->

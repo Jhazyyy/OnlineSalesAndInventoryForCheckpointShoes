@@ -168,16 +168,46 @@ class PurchaseDelivery extends Model
     }
 
     /**
-     * Boot method to auto-generate delivery number.
+     * Generate unique tracking number.
+     * Format: TRK-YYYYMMDD-XXXX (e.g., TRK-20251104-0001)
+     */
+    public static function generateTrackingNumber(): string
+    {
+        $date = Carbon::now();
+        $prefix = 'TRK-' . $date->format('Ymd') . '-';
+        $lastDelivery = static::where('tracking_number', 'LIKE', $prefix . '%')
+                          ->orderBy('tracking_number', 'desc')
+                          ->first();
+        
+        if ($lastDelivery) {
+            $lastNumber = intval(substr($lastDelivery->tracking_number, -4));
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+        
+        return $prefix . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Boot method to auto-generate delivery number, tracking number, and reference number.
      */
     protected static function boot()
     {
         parent::boot();
         
         static::creating(function ($delivery) {
+            // Auto-generate delivery number if not provided
             if (empty($delivery->delivery_number)) {
                 $delivery->delivery_number = static::generateDeliveryNumber();
             }
+            
+            // Auto-generate tracking number if not provided
+            if (empty($delivery->tracking_number)) {
+                $delivery->tracking_number = static::generateTrackingNumber();
+            }
+            
+            // Auto-generate reference number if not provided
             if (empty($delivery->reference_number)) {
                 try {
                     $delivery->reference_number = \App\Services\ReferenceNumberService::generate('purchase_deliveries', 'reference_number', 'PD');

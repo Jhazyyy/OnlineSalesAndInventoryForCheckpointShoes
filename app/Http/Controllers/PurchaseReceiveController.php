@@ -41,9 +41,9 @@ class PurchaseReceiveController extends Controller
     {
         $filterOptions = $this->receiveService->getFilterOptions();
         
-        // Get deliveries for optional linking
+        // Get deliveries for optional linking (include all non-cancelled deliveries)
         $deliveries = \App\Models\PurchaseDelivery::with(['purchaseOrder', 'supplier'])
-            ->whereIn('status', ['delivered', 'out_for_delivery'])
+            ->whereNotIn('status', ['cancelled'])
             ->orderBy('delivery_date', 'desc')
             ->get()
             ->map(function ($delivery) {
@@ -53,6 +53,9 @@ class PurchaseReceiveController extends Controller
                     'purchase_order_id' => $delivery->purchase_order_id,
                     'carrier' => $delivery->carrier,
                     'tracking_number' => $delivery->tracking_number,
+                    'status' => $delivery->status,
+                    'delivery_date' => (string) $delivery->delivery_date,
+                    'actual_delivery_date' => (string) $delivery->actual_delivery_date,
                 ];
             });
         
@@ -98,6 +101,38 @@ class PurchaseReceiveController extends Controller
         }
 
         $data = $validator->validated();
+        
+        // Check if the purchase order can receive items (includes delivery status check)
+        $purchaseOrder = PurchaseOrder::with('deliveries')->find($data['purchase_order_id']);
+        if ($purchaseOrder && !$purchaseOrder->canReceiveItems()) {
+            $errorMessage = 'This purchase order cannot receive items yet.';
+            
+            // Provide specific error message based on the reason
+            $deliveries = $purchaseOrder->deliveries()->whereNotIn('status', ['cancelled'])->get();
+            
+            if ($deliveries->count() === 0) {
+                $errorMessage = 'This purchase order requires a delivery to be created first. Please create a delivery for this PO before receiving items.';
+            } elseif ($deliveries->where('status', 'delivered')->count() === 0) {
+                $errorMessage = 'This purchase order has deliveries that have not been delivered yet. Please wait for delivery confirmation before receiving items.';
+            }
+            
+            return redirect()->back()
+                ->withErrors(['purchase_order_id' => $errorMessage])
+                ->withInput();
+        }
+        
+        // Auto-assign delivered delivery if exists and not provided
+        if ($purchaseOrder && empty($data['delivery_id'])) {
+            $deliveredDelivery = $purchaseOrder->deliveries()
+                ->where('status', 'delivered')
+                ->orderBy('actual_delivery_date', 'desc')
+                ->first();
+                
+            if ($deliveredDelivery) {
+                $data['delivery_id'] = $deliveredDelivery->delivery_id;
+            }
+        }
+        
         $receive = $this->receiveService->createReceive($data);
 
         return redirect()->route('purchases.purchase-receives.show', $receive->receive_id)
