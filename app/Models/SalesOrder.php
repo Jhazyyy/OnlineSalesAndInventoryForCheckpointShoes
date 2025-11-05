@@ -46,10 +46,13 @@ class SalesOrder extends Model
         'subtotal',
         'tax_amount',
         'discount_amount',
+        'tax_rule_id',
+        'discount_rule_id',
         'shipping_amount',
         'total_amount',
         'payment_status',
         'payment_method',
+        'amount_received',
         'purchase_type',
         'shipping_address',
         'billing_address',
@@ -73,6 +76,7 @@ class SalesOrder extends Model
         'discount_amount' => 'decimal:2',
         'shipping_amount' => 'decimal:2',
         'total_amount' => 'decimal:2',
+        'amount_received' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -91,6 +95,22 @@ class SalesOrder extends Model
     public function items(): HasMany
     {
         return $this->hasMany(SalesOrderItem::class, 'order_id', 'order_id');
+    }
+
+    /**
+     * Get the tax rule applied to this order.
+     */
+    public function taxRule(): BelongsTo
+    {
+        return $this->belongsTo(TaxDiscount::class, 'tax_rule_id');
+    }
+
+    /**
+     * Get the discount rule applied to this order.
+     */
+    public function discountRule(): BelongsTo
+    {
+        return $this->belongsTo(TaxDiscount::class, 'discount_rule_id');
     }
 
     /**
@@ -544,10 +564,20 @@ class SalesOrder extends Model
         
         $this->subtotal = $subtotal;
         
+        \Log::info('calculateTotals called:', [
+            'order_id' => $this->order_id,
+            'applyAutoTaxDiscount' => $applyAutoTaxDiscount,
+            'subtotal' => $subtotal,
+            'current_tax' => $this->tax_amount,
+            'current_discount' => $this->discount_amount,
+        ]);
+        
         // Apply automatic tax and discount calculation if enabled
         if ($applyAutoTaxDiscount) {
             $taxDiscountService = new \App\Services\TaxDiscountService();
             $calculation = $taxDiscountService->calculateForOrder($subtotal, $this->items, 'sales');
+            
+            \Log::info('Auto tax/discount calculated:', $calculation);
             
             $this->tax_amount = $calculation['total_tax'];
             $this->discount_amount = $calculation['total_discount'];

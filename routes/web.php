@@ -895,6 +895,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/create', [POSController::class, 'create'])->name('create');
         Route::post('/', [POSController::class, 'store'])->name('store');
         Route::get('/{order}', [POSController::class, 'show'])->name('show');
+        Route::patch('/{order}/complete-payment', [POSController::class, 'completePayment'])->name('complete-payment');
         
         // AJAX endpoints
         Route::get('/search/customers', [POSController::class, 'searchCustomers'])->name('search.customers');

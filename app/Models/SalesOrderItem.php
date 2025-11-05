@@ -79,15 +79,19 @@ class SalesOrderItem extends Model
         
         static::saved(function ($item) {
             // Recalculate order totals when item changes
+            // For POS orders, don't apply auto tax/discount
             if ($item->order) {
-                $item->order->calculateTotals();
+                $applyAuto = $item->order->purchase_type !== 'in_store';
+                $item->order->calculateTotals($applyAuto);
             }
         });
         
         static::deleted(function ($item) {
             // Recalculate order totals when item is deleted
+            // For POS orders, don't apply auto tax/discount
             if ($item->order) {
-                $item->order->calculateTotals();
+                $applyAuto = $item->order->purchase_type !== 'in_store';
+                $item->order->calculateTotals($applyAuto);
             }
         });
     }

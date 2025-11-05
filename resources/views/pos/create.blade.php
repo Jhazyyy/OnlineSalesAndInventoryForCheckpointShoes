@@ -406,6 +406,12 @@
 
                                 <!-- Hidden Fields -->
                                 <input type="hidden" name="order_date" :value="new Date().toISOString().split('T')[0]">
+                                <input type="hidden" name="tax_rule_id" :value="selectedTaxRule || ''">
+                                <input type="hidden" name="tax_amount" :value="selectedTaxRule ? taxAmount : 0">
+                                <input type="hidden" name="discount_rule_id" :value="selectedDiscountRule || ''">
+                                <input type="hidden" name="discount_amount" :value="selectedDiscountRule ? discountAmount : 0">
+                                <input type="hidden" name="subtotal_amount" :value="subtotal">
+                                <input type="hidden" name="total_amount" :value="total">
 
                                 <!-- Action Buttons -->
                                 <div class="mt-6 space-y-2">
@@ -416,7 +422,7 @@
                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
-                                        Complete Sale
+                                        Confirm
                                     </button>
                                     <button type="button" 
                                             @click="clearAll()"

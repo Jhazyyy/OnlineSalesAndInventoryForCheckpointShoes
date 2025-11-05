@@ -112,8 +112,8 @@
 
 
                         <!-- Customers -->
-                        <x-nav-item route="sales.customers.index" route-pattern="sales.customers.*"
-                            :icon="App\Helpers\NavigationHelper::getIcon('customers', 'w-4 h-4 mr-3')" title="Customers" size="small" />    
+                        {{-- <x-nav-item route="sales.customers.index" route-pattern="sales.customers.*"
+                            :icon="App\Helpers\NavigationHelper::getIcon('customers', 'w-4 h-4 mr-3')" title="Customers" size="small" />     --}}
 
                         <!-- Packages -->
                         {{-- <x-nav-item route="sales.packages.index" route-pattern="sales.packages.*"

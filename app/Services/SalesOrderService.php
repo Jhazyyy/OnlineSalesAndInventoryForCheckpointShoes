@@ -270,7 +270,25 @@ class SalesOrderService
         }
 
         // Recalculate order totals
-        $order->calculateTotals();
+        // For POS (in_store), don't apply auto tax/discount - user manually selected them (or chose none)
+        // For online orders, apply auto calculation
+        $applyAutoTaxDiscount = $order->purchase_type !== 'in_store';
+        
+        Log::info('Before calculateTotals:', [
+            'order_id' => $order->order_id,
+            'purchase_type' => $order->purchase_type,
+            'applyAutoTaxDiscount' => $applyAutoTaxDiscount,
+            'tax_amount_before' => $order->tax_amount,
+            'discount_amount_before' => $order->discount_amount,
+        ]);
+        
+        $order->calculateTotals($applyAutoTaxDiscount);
+        
+        Log::info('After calculateTotals:', [
+            'order_id' => $order->order_id,
+            'tax_amount_after' => $order->tax_amount,
+            'discount_amount_after' => $order->discount_amount,
+        ]);
     }
 
     /**

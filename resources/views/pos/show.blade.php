@@ -13,6 +13,32 @@
             </div>
             @endif
 
+            <!-- Info Message -->
+            @if(session('info'))
+            <div class="bg-blue-50 dark:bg-blue-900 border-l-4 border-blue-500 p-4 mb-6 rounded">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="text-blue-700 dark:text-blue-300 font-medium">{{ session('info') }}</p>
+                </div>
+            </div>
+            @endif
+
+            <!-- Error Messages -->
+            @if($errors->any())
+            <div class="bg-red-50 dark:bg-red-900 border-l-4 border-red-500 p-4 mb-6 rounded">
+                <div class="flex items-start">
+                    <svg class="w-6 h-6 text-red-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div class="flex-1">
+                        <p class="text-red-700 dark:text-red-300 font-medium">{{ $errors->first() }}</p>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Receipt -->
             <div id="receipt" class="bg-white dark:bg-gray-800 shadow-lg sm:rounded-lg overflow-hidden">
                 <!-- Receipt Header -->
@@ -117,7 +143,7 @@
                             </div>
                             <div>
                                 <span class="text-gray-600 dark:text-gray-400">Status:</span>
-                                <span class="ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $order->payment_status === 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' }}">
+                                <span class="ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $order->payment_status === 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : ($order->payment_status === 'partial' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300') }}">
                                     {{ ucfirst($order->payment_status) }}
                                 </span>
                             </div>
@@ -131,10 +157,76 @@
                                 <span class="text-gray-600 dark:text-gray-400">Change:</span>
                                 <span class="ml-2 font-medium text-green-600 dark:text-green-400">₱{{ number_format($change, 2) }}</span>
                             </div>
+                            @else
+                            <div>
+                                <span class="text-gray-600 dark:text-gray-400">Remaining Balance:</span>
+                                <span class="ml-2 font-medium text-red-600 dark:text-red-400">₱{{ number_format(abs($change), 2) }}</span>
+                            </div>
                             @endif
                             @endif
                         </div>
                     </div>
+
+                    <!-- Payment Update Form (for partial/pending payments) -->
+                    @if(in_array($order->payment_status, ['partial', 'pending']))
+                    <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700 print:hidden">
+                        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                            <h3 class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 uppercase mb-3 flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Update Payment
+                            </h3>
+                            <form action="{{ route('pos.complete-payment', $order->order_id) }}" method="POST" class="space-y-3">
+                                @csrf
+                                @method('PATCH')
+                                
+                                <div>
+                                    <label for="additional_payment" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Additional Payment Amount
+                                    </label>
+                                    <input type="number" 
+                                           id="additional_payment" 
+                                           name="additional_payment" 
+                                           step="0.01" 
+                                           min="0.01"
+                                           max="{{ $order->total_amount - ($order->amount_received ?? 0) }}"
+                                           value="{{ $order->total_amount - ($order->amount_received ?? 0) }}"
+                                           required
+                                           class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        Remaining balance: ₱{{ number_format($order->total_amount - ($order->amount_received ?? 0), 2) }}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <label for="payment_method" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Payment Method (Optional)
+                                    </label>
+                                    <select id="payment_method" 
+                                            name="payment_method"
+                                            class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <option value="">Keep current ({{ ucfirst(str_replace('_', ' ', $order->payment_method)) }})</option>
+                                        <option value="cash">Cash</option>
+                                        <option value="card">Card</option>
+                                        <option value="bank_transfer">Bank Transfer</option>
+                                        <option value="check">Check</option>
+                                        <option value="online">Online Payment</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" 
+                                        class="w-full inline-flex justify-center items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Update Payment
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    @endif
 
                     <!-- Order Status -->
                     <div class="text-center mb-6">
@@ -143,7 +235,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
                             <span class="text-sm font-semibold text-green-800 dark:text-green-300">
-                                Order Status: {{ ucfirst($order->status) }}
+                                Order Status: {{ $order->status === 'delivered' ? 'Completed' : ucfirst($order->status) }}
                             </span>
                         </div>
                     </div>
@@ -151,7 +243,7 @@
                     <!-- Footer -->
                     <div class="text-center text-xs text-gray-500 dark:text-gray-400 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                         <p>Thank you for your purchase!</p>
-                        <p class="mt-1">For inquiries, please contact us at your nearest Checkpoint Shoes branch</p>
+                        <p class="mt-1">For inquiries, please contact us at +639603316595 or visit our Facebook Page.</p>
                         <p class="mt-2">Printed: {{ now()->format('F d, Y - h:i A') }}</p>
                     </div>
                 </div>

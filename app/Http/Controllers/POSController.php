@@ -124,7 +124,7 @@ class POSController extends Controller
         $validator = Validator::make($request->all(), [
             // Customer data (either existing or new)
             'customer_id' => 'nullable|exists:customers,customer_id',
-            'new_customer_first_name' => 'required_without:customer_id|string|max:255',
+            'new_customer_first_name' => 'nullable|required_without:customer_id|string|max:255',
             'new_customer_last_name' => 'nullable|string|max:255',
             'new_customer_phone' => 'nullable|string|max:20',
             'new_customer_email' => 'nullable|email|max:255',
@@ -138,6 +138,14 @@ class POSController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
             'items.*.discount_amount' => 'nullable|numeric|min:0',
+            
+            // Tax and discount
+            'tax_rule_id' => 'nullable|exists:tax_discounts,id',
+            'tax_amount' => 'nullable|numeric|min:0',
+            'discount_rule_id' => 'nullable|exists:tax_discounts,id',
+            'discount_amount' => 'nullable|numeric|min:0',
+            'subtotal_amount' => 'required|numeric|min:0',
+            'total_amount' => 'required|numeric|min:0',
             
             'notes' => 'nullable|string|max:2000',
             'amount_received' => 'nullable|numeric|min:0',
@@ -159,34 +167,84 @@ class POSController extends Controller
                 $customerId = $request->customer_id;
                 Log::info('Using existing customer:', ['customer_id' => $customerId]);
             } else {
-                // Create quick customer with generated email if not provided
+                // Check if customer with this email already exists
                 $email = $request->new_customer_email;
-                if (empty($email)) {
-                    // Generate a unique placeholder email for walk-in customers
+                
+                if (!empty($email)) {
+                    // Try to find existing customer by email
+                    $existingCustomer = Customer::where('email', $email)->first();
+                    
+                    if ($existingCustomer) {
+                        $customerId = $existingCustomer->customer_id;
+                        Log::info('Found existing customer by email:', ['customer_id' => $customerId, 'email' => $email]);
+                    } else {
+                        // Email provided but doesn't exist, create new customer
+                        $customer = Customer::create([
+                            'first_name' => $request->new_customer_first_name,
+                            'last_name' => $request->new_customer_last_name ?? '',
+                            'phone' => $request->new_customer_phone ?? '',
+                            'email' => $email,
+                            'customer_type' => 'individual',
+                            'status' => 'active',
+                        ]);
+                        $customerId = $customer->customer_id;
+                        Log::info('Created new customer with email:', ['customer_id' => $customerId, 'email' => $email]);
+                    }
+                } else {
+                    // No email provided, generate unique placeholder for walk-in customers
                     $email = 'walkin_' . time() . '_' . rand(1000, 9999) . '@pos.local';
+                    
+                    $customer = Customer::create([
+                        'first_name' => $request->new_customer_first_name,
+                        'last_name' => $request->new_customer_last_name ?? '',
+                        'phone' => $request->new_customer_phone ?? '',
+                        'email' => $email,
+                        'customer_type' => 'individual',
+                        'status' => 'active',
+                    ]);
+                    $customerId = $customer->customer_id;
+                    Log::info('Created walk-in customer:', ['customer_id' => $customerId, 'email' => $email]);
                 }
-
-                $customer = Customer::create([
-                    'first_name' => $request->new_customer_first_name,
-                    'last_name' => $request->new_customer_last_name ?? '',
-                    'phone' => $request->new_customer_phone ?? '',
-                    'email' => $email,
-                    'customer_type' => 'individual',
-                    'status' => 'active',
-                ]);
-                $customerId = $customer->customer_id;
-                Log::info('Created new customer:', ['customer_id' => $customerId, 'email' => $email]);
             }
 
             // Prepare order data
+            Log::info('POS Tax/Discount values from request:', [
+                'tax_rule_id' => $request->tax_rule_id,
+                'tax_amount' => $request->tax_amount,
+                'discount_rule_id' => $request->discount_rule_id,
+                'discount_amount' => $request->discount_amount,
+            ]);
+            
+            $taxRuleId = !empty($request->tax_rule_id) ? $request->tax_rule_id : null;
+            $discountRuleId = !empty($request->discount_rule_id) ? $request->discount_rule_id : null;
+            
+            // Check if amount received matches total amount
+            $totalAmount = (float) $request->total_amount;
+            $amountReceived = (float) ($request->amount_received ?? 0);
+            $paymentStatus = $request->payment_status;
+            
+            // If amount received is less than total, set to pending/partial
+            if ($amountReceived > 0 && $amountReceived < $totalAmount) {
+                $paymentStatus = 'partial';
+            } elseif ($amountReceived >= $totalAmount && $request->payment_status === 'paid') {
+                $paymentStatus = 'paid';
+            }
+            
             $orderData = [
                 'customer_id' => $customerId,
                 'order_date' => $request->order_date,
                 'payment_method' => $request->payment_method,
-                'payment_status' => $request->payment_status,
+                'payment_status' => $paymentStatus,
+                'amount_received' => $amountReceived > 0 ? $amountReceived : null,
                 'purchase_type' => 'in_store',
                 'items' => $request->items,
                 'notes' => $request->notes,
+                'tax_rule_id' => $taxRuleId,
+                'tax_amount' => $taxRuleId ? ($request->tax_amount ?? 0) : 0,
+                'discount_rule_id' => $discountRuleId,
+                'discount_amount' => $discountRuleId ? ($request->discount_amount ?? 0) : 0,
+                'subtotal' => $request->subtotal_amount,
+                'total_amount' => $totalAmount,
             ];
 
             Log::info('Creating order with data:', $orderData);
@@ -222,11 +280,87 @@ class POSController extends Controller
     {
         $order->load(['customer', 'items.product']);
         
-        // Calculate change if amount_received is in session
-        $amountReceived = session('amount_received');
+        // Use amount_received from database first, then fall back to session
+        $amountReceived = $order->amount_received ?? session('amount_received');
         $change = $amountReceived ? $amountReceived - $order->total_amount : null;
         
         return view('pos.show', compact('order', 'amountReceived', 'change'));
+    }
+
+    /**
+     * Complete a partial payment
+     */
+    public function completePayment(Request $request, SalesOrder $order)
+    {
+        // Validate that this is a POS order and not already fully paid
+        if ($order->purchase_type !== 'in_store') {
+            return redirect()->back()->withErrors(['error' => 'This is not a POS order.']);
+        }
+
+        if ($order->payment_status === 'paid') {
+            return redirect()->back()->with('info', 'This order is already fully paid.');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'additional_payment' => 'required|numeric|min:0.01',
+            'payment_method' => 'nullable|in:cash,card,bank_transfer,check,online,other',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        DB::beginTransaction();
+        try {
+            $additionalPayment = $request->additional_payment;
+            $currentPaid = $order->amount_received ?? 0;
+            $totalPaid = $currentPaid + $additionalPayment;
+            
+            // Update payment method if provided
+            if ($request->payment_method) {
+                $order->payment_method = $request->payment_method;
+            }
+            
+            // Update payment status and order status
+            if ($totalPaid >= $order->total_amount) {
+                $order->payment_status = 'paid';
+                $order->status = 'delivered'; // Mark order as completed/delivered
+                $order->amount_received = $order->total_amount; // Set exactly to total
+                $successMessage = 'Payment completed successfully! Order is now fully paid and completed.';
+            } else {
+                $order->payment_status = 'partial';
+                $order->amount_received = $totalPaid;
+                $remaining = $order->total_amount - $totalPaid;
+                $successMessage = 'Payment updated successfully! Remaining balance: ₱' . number_format($remaining, 2);
+            }
+            
+            $order->save();
+
+            Log::info('Payment updated for POS order:', [
+                'order_id' => $order->order_id,
+                'order_number' => $order->order_number,
+                'additional_payment' => $additionalPayment,
+                'total_paid' => $totalPaid,
+                'payment_status' => $order->payment_status,
+                'order_status' => $order->status
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('pos.show', $order->order_id)
+                ->with('success', $successMessage)
+                ->with('amount_received', $order->amount_received);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Payment update failed:', [
+                'error' => $e->getMessage(),
+                'order_id' => $order->order_id
+            ]);
+            return redirect()->back()
+                ->withErrors(['error' => 'Failed to update payment: ' . $e->getMessage()])
+                ->withInput();
+        }
     }
 
     /**
