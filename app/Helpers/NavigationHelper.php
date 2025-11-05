@@ -187,6 +187,16 @@ class NavigationHelper
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 13l2 2 2-2M16 9v6" />
                                 </svg>',
 
+            'tax_and_discount' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <!-- Document shape -->
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 3h8a2 2 0 0 1 2 2v14l-4-2-4 2-4-2V5a2 2 0 0 1 2-2z" />
+                                    
+                                    <!-- Percentage symbol -->
+                                    <line x1="9" y1="9" x2="15" y2="15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                    <circle cx="9" cy="15" r="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                    <circle cx="15" cy="9" r="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                                </svg>',
 
         ];
 

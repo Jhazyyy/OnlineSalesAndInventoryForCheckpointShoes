@@ -147,24 +147,49 @@ class SettingsController extends Controller
             $data = $request->all();
             
             // Handle checkbox values that aren't submitted when unchecked
-            $checkboxes = ['auto_reorder_enabled', 'waste_tracking_enabled', 'negative_stock_allowed'];
+            $checkboxes = ['auto_reorder_enabled', 'waste_tracking_enabled', 'negative_stock_allowed', 'apply_to_all_products'];
             foreach ($checkboxes as $checkbox) {
                 if (!isset($data[$checkbox])) {
                     $data[$checkbox] = false;
                 }
             }
             
+            // Extract the apply_to_all_products flag before validation
+            $applyToAllProducts = $data['apply_to_all_products'] ?? false;
+            unset($data['apply_to_all_products']); // Remove from data to avoid validation issues
+            
             $validatedData = $this->settingsService->validateSettings('inventory', $data);
             
-            DB::transaction(function () use ($validatedData) {
+            DB::transaction(function () use ($validatedData, $applyToAllProducts) {
+                // Save settings
                 foreach ($validatedData as $key => $value) {
                     $dataType = $this->getDataType($key, $value);
                     $this->settingsService->set('inventory', $key, $value, $dataType);
                 }
+                
+                // Apply thresholds to all products if checkbox is checked
+                if ($applyToAllProducts) {
+                    $lowStockThreshold = $validatedData['low_stock_threshold'] ?? 10;
+                    $criticalStockLevel = $validatedData['critical_stock_level'] ?? 5;
+                    
+                    // Update all products with threshold fields enabled
+                    \App\Models\Product::query()->update([
+                        'reorder_level' => $lowStockThreshold,
+                        'critical_level' => $criticalStockLevel,
+                        'threshold_alerts_enabled' => true,
+                        'updated_at' => now()
+                    ]);
+                }
             });
 
+            $message = 'Inventory settings updated successfully.';
+            if ($applyToAllProducts) {
+                $productCount = \App\Models\Product::count();
+                $message .= " Thresholds have been applied to {$productCount} products.";
+            }
+
             return redirect()->route('settings.inventory')
-                           ->with('success', 'Inventory settings updated successfully.');
+                           ->with('success', $message);
         } catch (ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         }

@@ -21,7 +21,7 @@ $customerTax = \App\Models\TaxDiscount::create([
     'is_active' => true,
 ]);
 
-echo "✅ Created: {$customerTax->name} (ID: {$customerTax->id})\n";
+echo "Created: {$customerTax->name} (ID: {$customerTax->id})\n";
 
 // Create customer discount (5% loyalty)
 $customerDiscount = \App\Models\TaxDiscount::create([
@@ -37,7 +37,7 @@ $customerDiscount = \App\Models\TaxDiscount::create([
     'is_active' => true,
 ]);
 
-echo "✅ Created: {$customerDiscount->name} (ID: {$customerDiscount->id})\n\n";
+echo "Created: {$customerDiscount->name} (ID: {$customerDiscount->id})\n\n";
 
 echo "=== Summary: What Shows Where ===\n\n";
 

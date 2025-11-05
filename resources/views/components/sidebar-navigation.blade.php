@@ -68,7 +68,7 @@
 
                         <!-- Tax & Discount -->
                         <x-nav-item route="master_data.tax_discounts.index" route-pattern="master_data.tax_discounts.*"
-                            :icon="App\Helpers\NavigationHelper::getIcon('settings', 'w-4 h-4 mr-3')" title="Tax & Discount" size="small" />
+                            :icon="App\Helpers\NavigationHelper::getIcon('tax_and_discount', 'w-4 h-4 mr-3')" title="Tax & Discount" size="small" />
 
                     </x-nav-item>
 

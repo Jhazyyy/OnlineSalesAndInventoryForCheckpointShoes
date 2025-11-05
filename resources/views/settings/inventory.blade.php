@@ -48,6 +48,25 @@
                                 </div>
                             </div>
 
+                            <!-- Apply to All Products -->
+                            <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                                <div class="flex items-start">
+                                    <input id="apply_to_all_products" name="apply_to_all_products" type="checkbox" value="1" {{ old('apply_to_all_products') ? 'checked' : '' }} class="mt-1 mr-3 border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                                    <div class="flex-1">
+                                        <label for="apply_to_all_products" class="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                                            Apply These Thresholds to All Products
+                                        </label>
+                                        <p class="text-sm text-blue-800 dark:text-blue-200 mt-1">
+                                            When checked, the Low Stock Threshold will be applied to all products as their <strong>reorder_level</strong> and 
+                                            the Critical Stock Level will be applied as their <strong>critical_level</strong>. This will override existing product-specific thresholds.
+                                        </p>
+                                        <p class="text-xs text-blue-700 dark:text-blue-300 mt-2">
+                                            <strong>Note:</strong> This will update {{ \App\Models\Product::count() }} products in the system.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="mt-6 space-y-6">
                                 <!-- Auto Reorder Enabled -->
                                 <div class="flex items-start">
@@ -68,13 +87,13 @@
                                 </div>
 
                                 <!-- Negative Stock Allowed -->
-                                <div class="flex items-start">
+                                {{-- <div class="flex items-start">
                                     <input id="negative_stock_allowed" name="negative_stock_allowed" type="checkbox" value="1" {{ old('negative_stock_allowed', $settings['negative_stock_allowed'] ?? false) ? 'checked' : '' }} class="mt-1 mr-3 border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <div>
                                         <label for="negative_stock_allowed" class="text-sm font-medium text-gray-700 dark:text-gray-300">Allow Negative Stock Levels</label>
                                         <p class="text-sm text-gray-500">Permit sales when inventory shows negative quantities</p>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
 
@@ -92,7 +111,7 @@
                     <!-- Current Settings Preview -->
                     <div class="mt-8 bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Current Inventory Settings</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <div>
                                 <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Stock Thresholds</h4>
                                 <ul class="space-y-1 text-sm text-gray-600 dark:text-gray-400">
@@ -105,7 +124,21 @@
                                 <ul class="space-y-1 text-sm text-gray-600 dark:text-gray-400">
                                     <li><strong>Auto-Reorder:</strong> {{ ($settings['auto_reorder_enabled'] ?? false) ? 'Enabled' : 'Disabled' }}</li>
                                     <li><strong>Waste Tracking:</strong> {{ ($settings['waste_tracking_enabled'] ?? true) ? 'Enabled' : 'Disabled' }}</li>
-                                    <li><strong>Negative Stock:</strong> {{ ($settings['negative_stock_allowed'] ?? false) ? 'Allowed' : 'Not Allowed' }}</li>
+                                    {{-- <li><strong>Negative Stock:</strong> {{ ($settings['negative_stock_allowed'] ?? false) ? 'Allowed' : 'Not Allowed' }}</li> --}}
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-700 dark:text-gray-300 mb-2">Product Thresholds</h4>
+                                <ul class="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                                    @php
+                                        $productsWithThresholds = \App\Models\Product::whereNotNull('reorder_level')
+                                            ->orWhereNotNull('critical_level')
+                                            ->count();
+                                        $totalProducts = \App\Models\Product::count();
+                                    @endphp
+                                    <li><strong>Total Products:</strong> {{ $totalProducts }}</li>
+                                    <li><strong>With Thresholds:</strong> {{ $productsWithThresholds }}</li>
+                                    <li><strong>Without Thresholds:</strong> {{ $totalProducts - $productsWithThresholds }}</li>
                                 </ul>
                             </div>
                         </div>
@@ -114,4 +147,32 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const applyToAllCheckbox = document.getElementById('apply_to_all_products');
+            const form = applyToAllCheckbox.closest('form');
+            
+            form.addEventListener('submit', function(e) {
+                if (applyToAllCheckbox.checked) {
+                    const lowStockThreshold = document.getElementById('low_stock_threshold').value;
+                    const criticalStockLevel = document.getElementById('critical_stock_level').value;
+                    const productCount = {{ \App\Models\Product::count() }};
+                    
+                    const confirmed = confirm(
+                        `Are you sure you want to apply these thresholds to all ${productCount} products?\n\n` +
+                        `• Reorder Level: ${lowStockThreshold}\n` +
+                        `• Critical Level: ${criticalStockLevel}\n\n` +
+                        `This will override existing product-specific thresholds.`
+                    );
+                    
+                    if (!confirmed) {
+                        e.preventDefault();
+                    }
+                }
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>
