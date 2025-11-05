@@ -13,7 +13,7 @@
                         <div class="lg:col-span-2 space-y-6">
                             
                             <!-- Sales Activity Section -->
-                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                            {{-- <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                                 <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Sales Activity</h3>
                                 
                                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -90,7 +90,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <!-- Item Details Section -->
                             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
@@ -155,11 +155,11 @@
                                         Top Selling Items - <span id="topSellingPeriodLabel" class="text-blue-600 dark:text-blue-400">This Month</span>
                                     </h3>
                                     <select id="topSellingPeriod" class="appearance-none w-full sm:w-auto text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="today">Today</option>
+                                        <option value="today" selected>Today</option>
                                         <option value="yesterday">Yesterday</option>
                                         <option value="this_week">This Week</option>
                                         <option value="last_week">Last Week</option>
-                                        <option value="this_month" selected>This Month</option>
+                                        <option value="this_month">This Month</option>
                                         <option value="last_month">Last Month</option>
                                         <option value="this_year">This Year</option>
                                         <option value="all_time">All Time</option>

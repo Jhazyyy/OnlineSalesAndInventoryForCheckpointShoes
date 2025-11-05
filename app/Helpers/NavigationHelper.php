@@ -175,6 +175,18 @@ class NavigationHelper
                                                 d="M16 14c1.656 0 3 1.344 3 3v3H5v-3c0-1.656 1.344-3 3-3h8z" />
                                             <circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
                                         </svg>',
+                                        
+            'stock_adjustment' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <!-- Box / Inventory base -->
+                                    <rect x="3" y="7" width="18" height="13" rx="2" ry="2" stroke-width="2"/>
+                                    
+                                    <!-- Up arrow (Add stock) -->
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11l2-2 2 2M10 9v6" />
+                                    
+                                    <!-- Down arrow (Reduce stock) -->
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 13l2 2 2-2M16 9v6" />
+                                </svg>',
+
 
         ];
 

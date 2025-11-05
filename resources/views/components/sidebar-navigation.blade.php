@@ -66,10 +66,6 @@
                         <x-nav-item route="master_data.brands.index" route-pattern="master_data.brands.*"
                             :icon="App\Helpers\NavigationHelper::getIcon('brands', 'w-4 h-4 mr-3')" title="Brands" size="small" />
 
-                        <!-- Composite Products -->
-                        {{-- <x-nav-item href="#"
-                            :icon="App\Helpers\NavigationHelper::getIcon('composite-products', 'w-4 h-4 mr-3')"
-                            title="Composite Products" size="small" /> --}}
                     </x-nav-item>
 
 
@@ -83,14 +79,10 @@
                             :icon="App\Helpers\NavigationHelper::getIcon('inventory', 'w-4 h-4 mr-3')"
                             title="Inventory List" size="small" />
 
-                        <!-- Composite Products -->
-                        {{-- <x-nav-item href="#"
-                            :icon="App\Helpers\NavigationHelper::getIcon('composite-products', 'w-4 h-4 mr-3')"
-                            title="Composite Products" size="small" /> --}}
 
                         <!-- Stock Adjustment -->
                         <x-nav-item route="inventory.product_stock_adjustment.index"
-                            route-pattern="inventory.product_stock_adjustment.*" :icon="App\Helpers\NavigationHelper::getIcon('stock-adjustment', 'w-4 h-4 mr-3')"
+                            route-pattern="inventory.product_stock_adjustment.*" :icon="App\Helpers\NavigationHelper::getIcon('stock_adjustment', 'w-4 h-4 mr-3')"
                             title="Stock Adjustment" size="small" />
 
                         <!-- Product Movement (Fast/Slow/Non-Moving) -->
@@ -239,9 +231,11 @@
                     <!-- Integration -->
                     {{-- <x-nav-item href="#" :icon="App\Helpers\NavigationHelper::getIcon('integration')" title="Integration" /> --}}
 
-                    <!-- User Management -->
-                    <x-nav-item route="user-management.index" route-pattern="user-management.*" :icon="App\Helpers\NavigationHelper::getIcon('user_accounts_control', 'w-4 h-4 mr-3')"
-                        title="User Accounts Control" size="large" />
+                    <!-- User Management (Admin Only) -->
+                    @hasrole('admin')
+                        <x-nav-item route="user-management.index" route-pattern="user-management.*" :icon="App\Helpers\NavigationHelper::getIcon('user_accounts_control', 'w-4 h-4 mr-3')"
+                            title="User Accounts Control" size="large" />
+                    @endhasrole
 
                     <!-- Profile -->
                     {{-- <a href="{{ route('profile.edit') }}"

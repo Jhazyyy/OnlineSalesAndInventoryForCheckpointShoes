@@ -752,9 +752,8 @@
                 relatedDeliveries.forEach(delivery => {
                     const option = document.createElement('option');
                     option.value = delivery.id;
-                    const statusBadge = delivery.status === 'delivered' ? '✓' : '⏳';
                     option.textContent =
-                        `${statusBadge} ${delivery.delivery_number} - ${delivery.carrier || 'N/A'}${delivery.tracking_number ? ' (' + delivery.tracking_number + ')' : ''} [${delivery.status}]`;
+                        `${delivery.delivery_number} - ${delivery.carrier || 'N/A'}${delivery.tracking_number ? ' (' + delivery.tracking_number + ')' : ''} [${delivery.status}]`;
                     // Disable non-delivered options
                     if (delivery.status !== 'delivered') {
                         option.disabled = true;

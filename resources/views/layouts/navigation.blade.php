@@ -58,6 +58,19 @@
                     </svg>
                 </a>
 
+                <!-- Notifications Icon -->
+                <a href="{{ route('notifications.list') }}"
+                    class="relative flex items-center justify-center w-6 h-6 rounded-full text-black dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-1"
+                    title="Notifications">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                        </path>
+                    </svg>
+                    <!-- Notification Badge (optional - shows when there are unread notifications) -->
+                    {{-- <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-900"></span> --}}
+                </a>
+
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <!-- Profile Icon with Name -->
@@ -134,7 +147,7 @@
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
 
-                <x-responsive-nav-link :href="route('profile.edit')">
+                <x-responsive-nav-link :href="route('notifications.list')">
                     {{ __('Notifications') }}
                 </x-responsive-nav-link>
 

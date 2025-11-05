@@ -580,6 +580,12 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
+    // Notifications Routes
+    Route::get('/notifications-list', [\App\Http\Controllers\NotificationsController::class, 'index'])->name('notifications.list');
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationsController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/mark-all-read', [\App\Http\Controllers\NotificationsController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifications/{id}', [\App\Http\Controllers\NotificationsController::class, 'destroy'])->name('notifications.destroy');
+    
     // User Management Routes (Admin Only)
     Route::middleware(['role:admin'])->group(function () {
         Route::resource('user-management', UserManagementController::class);
