@@ -201,34 +201,77 @@
 
                                 <!-- Cart Summary -->
                                 <div class="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-3">
-                                    <div class="space-y-2 text-sm">
+                                    <!-- Customer Tax Dropdown -->
+                                    @if(isset($activeTaxes) && $activeTaxes->isNotEmpty())
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            <span class="flex items-center justify-between">
+                                                <span>Tax Rule</span>
+                                                <span x-show="selectedTaxRule" class="text-indigo-600 dark:text-indigo-400" x-text="'₱' + tax.toFixed(2)"></span>
+                                            </span>
+                                        </label>
+                                        <select x-model="selectedTaxRule" 
+                                            class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                            <option value="">-- No Tax --</option>
+                                            @foreach($activeTaxes as $tax)
+                                                <option value="{{ $tax->id }}" 
+                                                    data-rate="{{ $tax->rate }}"
+                                                    data-method="{{ $tax->calculation_method }}"
+                                                    data-fixed="{{ $tax->fixed_amount ?? 0 }}">
+                                                    {{ $tax->name }} - 
+                                                    @if($tax->calculation_method === 'percentage')
+                                                        {{ $tax->rate }}%
+                                                    @else
+                                                        ₱{{ number_format((float)$tax->fixed_amount, 2) }}
+                                                    @endif
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    @endif
+
+                                    <!-- Customer Discount Dropdown -->
+                                    @if(isset($activeDiscounts) && $activeDiscounts->isNotEmpty())
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            <span class="flex items-center justify-between">
+                                                <span>Discount Rule</span>
+                                                <span x-show="selectedDiscountRule" class="text-indigo-600 dark:text-indigo-400" x-text="'₱' + discount.toFixed(2)"></span>
+                                            </span>
+                                        </label>
+                                        <select x-model="selectedDiscountRule" 
+                                            class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                            <option value="">-- No Discount --</option>
+                                            @foreach($activeDiscounts as $discount)
+                                                <option value="{{ $discount->id }}" 
+                                                    data-rate="{{ $discount->rate }}"
+                                                    data-method="{{ $discount->calculation_method }}"
+                                                    data-fixed="{{ $discount->fixed_amount ?? 0 }}">
+                                                    {{ $discount->name }} - 
+                                                    @if($discount->calculation_method === 'percentage')
+                                                        {{ $discount->rate }}%
+                                                    @else
+                                                        ₱{{ number_format((float)$discount->fixed_amount, 2) }}
+                                                    @endif
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    @endif
+
+                                    <!-- Order Summary -->
+                                    <div class="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-2 text-sm">
                                         <div class="flex justify-between text-gray-700 dark:text-gray-300">
                                             <span>Subtotal</span>
                                             <span x-text="'₱' + subtotal.toFixed(2)"></span>
                                         </div>
-                                        <div class="flex justify-between text-gray-700 dark:text-gray-300">
-                                            <span>Tax (0%)</span>
-                                            <span x-text="'₱' + tax.toFixed(2)"></span>
+                                        <div class="flex justify-between text-gray-700 dark:text-gray-300" x-show="tax > 0">
+                                            <span>Tax</span>
+                                            <span class="text-indigo-600 dark:text-indigo-400" x-text="'₱' + tax.toFixed(2)"></span>
                                         </div>
-                                        <div class="flex justify-between text-gray-700 dark:text-gray-300">
+                                        <div class="flex justify-between text-gray-700 dark:text-gray-300" x-show="discount > 0">
                                             <span>Discount</span>
-                                            <span x-text="'₱' + discount.toFixed(2)"></span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Custom Discount -->
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Discount Type</label>
-                                            <select x-model="discountType" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-indigo-500 focus:border-indigo-500">
-                                                <option value="percentage">Percentage</option>
-                                                <option value="fixed">Fixed</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Amount</label>
-                                            <input type="number" x-model.number="customDiscount" step="0.01" min="0"
-                                                class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                            <span class="text-green-600 dark:text-green-400" x-text="'-₱' + discount.toFixed(2)"></span>
                                         </div>
                                     </div>
 
@@ -303,7 +346,9 @@
 
                                     <!-- Hidden Fields -->
                                     <input type="hidden" name="order_date" value="{{ date('Y-m-d') }}">
+                                    <input type="hidden" name="tax_rule_id" x-model="selectedTaxRule">
                                     <input type="hidden" name="tax_amount" x-model="tax">
+                                    <input type="hidden" name="discount_rule_id" x-model="selectedDiscountRule">
                                     <input type="hidden" name="discount_amount" x-model="discount">
                                     <input type="hidden" name="discount_type" x-model="discountType">
                                     <input type="hidden" name="custom_discount" x-model="customDiscount">
@@ -512,6 +557,9 @@
         function salesOrderCreate() {
             return {
                 cart: [],
+                selectedTaxRule: '',
+                customTax: 0,
+                selectedDiscountRule: '',
                 discountType: 'percentage',
                 customDiscount: 0,
                 alert: {
@@ -532,12 +580,35 @@
                     message: ''
                 },
                 
+                // Initialize watchers for real-time updates
+                init() {
+                    // Watch subtotal changes to recalculate tax and discount
+                    this.$watch('subtotal', () => {
+                        if (this.selectedTaxRule) {
+                            this.applyCustomerTax();
+                        }
+                        if (this.selectedDiscountRule) {
+                            this.applyCustomerDiscount();
+                        }
+                    });
+                    
+                    // Watch tax rule changes
+                    this.$watch('selectedTaxRule', () => {
+                        this.applyCustomerTax();
+                    });
+                    
+                    // Watch discount rule changes
+                    this.$watch('selectedDiscountRule', () => {
+                        this.applyCustomerDiscount();
+                    });
+                },
+                
                 get subtotal() {
                     return this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                 },
                 
                 get tax() {
-                    return this.subtotal * 0; // 0% tax
+                    return this.customTax || 0;
                 },
                 
                 get discount() {
@@ -547,8 +618,49 @@
                     return this.customDiscount;
                 },
                 
+                applyCustomerTax() {
+                    if (!this.selectedTaxRule) {
+                        this.customTax = 0;
+                        return;
+                    }
+                    
+                    const select = document.querySelector('select[x-model="selectedTaxRule"]');
+                    const selectedOption = select.options[select.selectedIndex];
+                    const method = selectedOption.getAttribute('data-method');
+                    const rate = parseFloat(selectedOption.getAttribute('data-rate')) || 0;
+                    const fixedAmount = parseFloat(selectedOption.getAttribute('data-fixed')) || 0;
+                    
+                    if (method === 'percentage') {
+                        this.customTax = (this.subtotal * rate) / 100;
+                    } else {
+                        this.customTax = fixedAmount;
+                    }
+                },
+                
                 get total() {
                     return this.subtotal + this.tax - this.discount;
+                },
+                
+                applyCustomerDiscount() {
+                    if (!this.selectedDiscountRule) {
+                        this.discountType = 'percentage';
+                        this.customDiscount = 0;
+                        return;
+                    }
+                    
+                    const select = document.querySelector('select[x-model="selectedDiscountRule"]');
+                    const selectedOption = select.options[select.selectedIndex];
+                    const method = selectedOption.getAttribute('data-method');
+                    const rate = parseFloat(selectedOption.getAttribute('data-rate')) || 0;
+                    const fixedAmount = parseFloat(selectedOption.getAttribute('data-fixed')) || 0;
+                    
+                    if (method === 'percentage') {
+                        this.discountType = 'percentage';
+                        this.customDiscount = rate;
+                    } else {
+                        this.discountType = 'fixed';
+                        this.customDiscount = fixedAmount;
+                    }
                 },
                 
                 showAlert(message, type = 'info', title = null) {

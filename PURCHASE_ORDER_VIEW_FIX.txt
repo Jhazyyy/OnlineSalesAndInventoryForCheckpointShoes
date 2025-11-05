@@ -1,0 +1,49 @@
+<!-- TEST: Purchase Order Discount Feature -->
+
+PURCHASE ORDER CREATE VIEW - FIXED AND CLEANED
+
+✅ WHAT WAS FIXED:
+1. Removed infinite recursion between updateOrderSummary() and applyDiscountRule()
+2. Removed duplicate discount amount field markup
+3. Removed leftover code from old auto-calculate implementation
+4. Cleaned up the view structure
+
+✅ CURRENT STRUCTURE:
+
+Order Summary Section:
+├── Supplier Discount (Dropdown)
+│   └── Lists only supplier-applicable discounts
+│   └── onChange calls applyDiscountRule()
+├── Tax Amount (Manual input)
+├── Shipping Amount (Manual input)
+└── Discount Amount (Read-only, calculated)
+
+JavaScript Functions:
+├── calculateLineTotal(row) - Calculates individual line totals
+├── updateOrderSummary() - Updates order totals display
+└── applyDiscountRule(selectElement) - Calculates discount based on selected rule
+
+✅ HOW IT WORKS:
+1. User adds items to order
+2. User selects supplier discount from dropdown
+3. applyDiscountRule() calculates discount based on:
+   - Percentage: (subtotal × rate) ÷ 100
+   - Fixed: uses fixed_amount
+4. Updates discount_amount field (read-only)
+5. Calls updateOrderSummary() to update totals
+6. No infinite loop - clean flow
+
+✅ KEY CHANGES:
+- Removed: Recursive call from updateOrderSummary() to applyDiscountRule()
+- Removed: Duplicate markup showing active discounts list
+- Removed: Old auto-calculate JavaScript functions
+- Kept: All essential functionality intact
+
+✅ TESTING CHECKLIST:
+□ Add items to purchase order
+□ Select supplier discount from dropdown
+□ Verify discount amount calculates correctly
+□ Verify order totals update properly
+□ Change items and verify discount recalculates
+□ Clear discount selection and verify it resets to 0
+□ Submit order and verify discount is saved

@@ -638,6 +638,24 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{brand}', [BrandController::class, 'destroy'])->name('destroy');
     });
 
+    //Master Data Tax & Discount Routes
+    Route::prefix('master_data/tax_discounts')->name('master_data.tax_discounts.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\TaxDiscountController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\TaxDiscountController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\TaxDiscountController::class, 'store'])->name('store');
+        Route::get('/{taxDiscount}', [\App\Http\Controllers\TaxDiscountController::class, 'show'])->name('show');
+        Route::get('/{taxDiscount}/edit', [\App\Http\Controllers\TaxDiscountController::class, 'edit'])->name('edit');
+        Route::put('/{taxDiscount}', [\App\Http\Controllers\TaxDiscountController::class, 'update'])->name('update');
+        Route::delete('/{taxDiscount}', [\App\Http\Controllers\TaxDiscountController::class, 'destroy'])->name('destroy');
+        
+        // Additional routes
+        Route::post('/{taxDiscount}/toggle-status', [\App\Http\Controllers\TaxDiscountController::class, 'toggleStatus'])->name('toggle-status');
+        Route::post('/profit-breakdown', [\App\Http\Controllers\TaxDiscountController::class, 'profitBreakdown'])->name('profit-breakdown');
+    });
+
+    // API route for tax/discount calculation
+    Route::post('/api/tax-discounts/calculate', [\App\Http\Controllers\TaxDiscountController::class, 'calculateForOrder'])->name('api.tax-discounts.calculate');
+
 
     //Master Data Product Routes
     Route::prefix('master_data/products')->name('master_data.products.')->group(function () {

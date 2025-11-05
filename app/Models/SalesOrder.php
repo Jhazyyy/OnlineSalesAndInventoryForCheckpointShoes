@@ -528,14 +528,51 @@ class SalesOrder extends Model
 
     /**
      * Calculate and update order totals based on items.
+     * Optionally apply automatic tax and discount calculations.
+     * 
+     * @param bool $applyAutoTaxDiscount Whether to automatically calculate taxes/discounts
      */
-    public function calculateTotals(): void
+    public function calculateTotals(bool $applyAutoTaxDiscount = true): void
     {
         $this->load('items');
         
-        $this->subtotal = $this->items->sum('line_total');
-        $this->total_amount = $this->subtotal + $this->tax_amount + $this->shipping_amount - $this->discount_amount;
+        // Calculate subtotal from items
+        $subtotal = 0.0;
+        foreach ($this->items as $item) {
+            $subtotal += (float) $item->line_total;
+        }
+        
+        $this->subtotal = $subtotal;
+        
+        // Apply automatic tax and discount calculation if enabled
+        if ($applyAutoTaxDiscount) {
+            $taxDiscountService = new \App\Services\TaxDiscountService();
+            $calculation = $taxDiscountService->calculateForOrder($subtotal, $this->items, 'sales');
+            
+            $this->tax_amount = $calculation['total_tax'];
+            $this->discount_amount = $calculation['total_discount'];
+        }
+        
+        // Calculate total
+        $taxAmount = (float) ($this->tax_amount ?? 0);
+        $shippingAmount = (float) ($this->shipping_amount ?? 0);
+        $discountAmount = (float) ($this->discount_amount ?? 0);
+        
+        $this->total_amount = $subtotal + $taxAmount + $shippingAmount - $discountAmount;
         $this->save();
+    }
+    
+    /**
+     * Get tax and discount breakdown for this order.
+     * 
+     * @return array
+     */
+    public function getTaxDiscountBreakdown(): array
+    {
+        $this->load('items');
+        $subtotal = (float) ($this->subtotal ?? 0);
+        $taxDiscountService = new \App\Services\TaxDiscountService();
+        return $taxDiscountService->calculateForOrder($subtotal, $this->items, 'sales');
     }
 
     /**

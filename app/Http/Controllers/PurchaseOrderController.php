@@ -40,9 +40,16 @@ class PurchaseOrderController extends Controller
     public function create()
     {
         $filterOptions = $this->orderService->getFilterOptions();
+        
+        // Get active supplier taxes and discounts
+        $activeTaxes = \App\Models\TaxDiscount::active()->taxes()->forSupplier()->orderBy('priority')->get();
+        $activeDiscounts = \App\Models\TaxDiscount::active()->discounts()->forSupplier()->orderBy('priority')->get();
+        
         return view('purchases.purchase-orders.create', [
             'suppliers' => $filterOptions['suppliers'],
             'products' => $filterOptions['products'],
+            'activeTaxes' => $activeTaxes,
+            'activeDiscounts' => $activeDiscounts,
         ]);
     }
 

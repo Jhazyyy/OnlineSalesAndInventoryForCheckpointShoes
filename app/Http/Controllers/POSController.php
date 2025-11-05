@@ -106,7 +106,11 @@ class POSController extends Controller
                               ];
                           });
 
-        return view('pos.create', compact('customers', 'products'));
+        // Get active customer taxes and discounts
+        $activeTaxes = \App\Models\TaxDiscount::active()->taxes()->forCustomer()->orderBy('priority')->get();
+        $activeDiscounts = \App\Models\TaxDiscount::active()->discounts()->forCustomer()->orderBy('priority')->get();
+
+        return view('pos.create', compact('customers', 'products', 'activeTaxes', 'activeDiscounts'));
     }
 
     /**

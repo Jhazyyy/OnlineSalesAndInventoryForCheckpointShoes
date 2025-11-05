@@ -206,11 +206,71 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-4">
+                                <!-- Supplier Tax -->
+                                @if(isset($activeTaxes) && $activeTaxes->isNotEmpty())
+                                <div>
+                                    <x-input-label for="tax_rule_id" :value="__('Supplier Tax')" />
+                                    <select id="tax_rule_id" name="tax_rule_id" onchange="applyTaxRule(this)"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                        <option value="">-- No Tax --</option>
+                                        @foreach($activeTaxes as $tax)
+                                            <option value="{{ $tax->id }}" 
+                                                data-rate="{{ $tax->rate }}"
+                                                data-method="{{ $tax->calculation_method }}"
+                                                data-fixed="{{ $tax->fixed_amount ?? 0 }}"
+                                                {{ old('tax_rule_id') == $tax->id ? 'selected' : '' }}>
+                                                {{ $tax->name }} - 
+                                                @if($tax->calculation_method === 'percentage')
+                                                    {{ $tax->rate }}%
+                                                @else
+                                                    ₱{{ number_format((float)$tax->fixed_amount, 2) }}
+                                                @endif
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        Select a supplier tax to apply automatically based on order subtotal
+                                    </p>
+                                </div>
+                                @endif
+
+                                <!-- Supplier Discount -->
+                                @if(isset($activeDiscounts) && $activeDiscounts->isNotEmpty())
+                                <div>
+                                    <x-input-label for="discount_rule_id" :value="__('Supplier Discount')" />
+                                    <select id="discount_rule_id" name="discount_rule_id" onchange="applyDiscountRule(this)"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                        <option value="">-- No Discount --</option>
+                                        @foreach($activeDiscounts as $discount)
+                                            <option value="{{ $discount->id }}" 
+                                                data-rate="{{ $discount->rate }}"
+                                                data-method="{{ $discount->calculation_method }}"
+                                                data-fixed="{{ $discount->fixed_amount ?? 0 }}"
+                                                {{ old('discount_rule_id') == $discount->id ? 'selected' : '' }}>
+                                                {{ $discount->name }} - 
+                                                @if($discount->calculation_method === 'percentage')
+                                                    {{ $discount->rate }}%
+                                                @else
+                                                    ₱{{ number_format((float)$discount->fixed_amount, 2) }}
+                                                @endif
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        Select a supplier discount to apply automatically based on order subtotal
+                                    </p>
+                                </div>
+                                @endif
+
                                 <!-- Tax Amount -->
                                 <div>
-                                    <x-input-label for="tax_amount" :value="__('Tax Amount')" />
+                                    <x-input-label for="tax_amount" :value="__('Tax Amount (Calculated)')" />
                                     <x-text-input id="tax_amount" name="tax_amount" type="number" step="0.01"
-                                        class="mt-1 block w-full" :value="old('tax_amount', '0.00')" />
+                                        class="mt-1 block w-full bg-gray-100 dark:bg-gray-600" 
+                                        :value="old('tax_amount', '0.00')" readonly />
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        This will be calculated automatically based on the selected tax rule
+                                    </p>
                                     <x-input-error :messages="$errors->get('tax_amount')" class="mt-2" />
                                 </div>
 
@@ -224,9 +284,13 @@
 
                                 <!-- Discount Amount -->
                                 <div>
-                                    <x-input-label for="discount_amount" :value="__('Order Discount')" />
+                                    <x-input-label for="discount_amount" :value="__('Discount Amount (Calculated)')" />
                                     <x-text-input id="discount_amount" name="discount_amount" type="number"
-                                        step="0.01" class="mt-1 block w-full" :value="old('discount_amount', '0.00')" />
+                                        step="0.01" class="mt-1 block w-full bg-gray-100 dark:bg-gray-600" 
+                                        :value="old('discount_amount', '0.00')" readonly />
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        This will be calculated automatically based on the selected discount rule
+                                    </p>
                                     <x-input-error :messages="$errors->get('discount_amount')" class="mt-2" />
                                 </div>
                             </div>
@@ -479,6 +543,46 @@
                         subtotal += (quantity * price) - discount;
                     });
 
+                    // Recalculate tax if a tax rule is selected, otherwise set to 0
+                    const taxSelect = document.getElementById('tax_rule_id');
+                    if (taxSelect && taxSelect.value) {
+                        const selectedOption = taxSelect.options[taxSelect.selectedIndex];
+                        const method = selectedOption.getAttribute('data-method');
+                        const rate = parseFloat(selectedOption.getAttribute('data-rate')) || 0;
+                        const fixedAmount = parseFloat(selectedOption.getAttribute('data-fixed')) || 0;
+                        
+                        let taxAmount = 0;
+                        if (method === 'percentage') {
+                            taxAmount = (subtotal * rate) / 100;
+                        } else {
+                            taxAmount = fixedAmount;
+                        }
+                        document.getElementById('tax_amount').value = taxAmount.toFixed(2);
+                    } else if (taxSelect) {
+                        // No tax rule selected, clear the amount
+                        document.getElementById('tax_amount').value = '0.00';
+                    }
+
+                    // Recalculate discount if a discount rule is selected, otherwise set to 0
+                    const discountSelect = document.getElementById('discount_rule_id');
+                    if (discountSelect && discountSelect.value) {
+                        const selectedOption = discountSelect.options[discountSelect.selectedIndex];
+                        const method = selectedOption.getAttribute('data-method');
+                        const rate = parseFloat(selectedOption.getAttribute('data-rate')) || 0;
+                        const fixedAmount = parseFloat(selectedOption.getAttribute('data-fixed')) || 0;
+                        
+                        let discountAmount = 0;
+                        if (method === 'percentage') {
+                            discountAmount = (subtotal * rate) / 100;
+                        } else {
+                            discountAmount = fixedAmount;
+                        }
+                        document.getElementById('discount_amount').value = discountAmount.toFixed(2);
+                    } else if (discountSelect) {
+                        // No discount rule selected, clear the amount
+                        document.getElementById('discount_amount').value = '0.00';
+                    }
+
                     const tax = parseFloat(document.getElementById('tax_amount').value) || 0;
                     const shipping = parseFloat(document.getElementById('shipping_amount').value) || 0;
                     const orderDiscount = parseFloat(document.getElementById('discount_amount').value) || 0;
@@ -490,6 +594,16 @@
                     document.getElementById('shipping-display').textContent = '₱' + shipping.toFixed(2);
                     document.getElementById('discount-display').textContent = '₱' + orderDiscount.toFixed(2);
                     document.getElementById('total-display').textContent = '₱' + total.toFixed(2);
+                }
+
+                // Apply selected tax rule to calculate tax amount
+                function applyTaxRule(selectElement) {
+                    updateOrderSummary();
+                }
+
+                // Apply selected discount rule to calculate discount amount
+                function applyDiscountRule(selectElement) {
+                    updateOrderSummary();
                 }
             });
         </script>

@@ -32,7 +32,7 @@
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Point of Sale</h2>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Create Sales Order</h2>
                             <p class="text-gray-600 dark:text-gray-400">Quick in-store purchase</p>
                         </div>
                         <div class="flex space-x-3 mt-4 sm:mt-0">
@@ -280,10 +280,80 @@
 
                                 <!-- Cart Summary -->
                                 <div class="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-3">
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600 dark:text-gray-400">Subtotal</span>
-                                        <span class="font-medium text-gray-900 dark:text-white" x-text="'₱' + total.toFixed(2)"></span>
+                                    <!-- Customer Tax Dropdown -->
+                                    @if(isset($activeTaxes) && $activeTaxes->isNotEmpty())
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            <span class="flex items-center justify-between">
+                                                <span>Tax Rule</span>
+                                                <span x-show="selectedTaxRule" class="text-indigo-600 dark:text-indigo-400" x-text="'₱' + taxAmount.toFixed(2)"></span>
+                                            </span>
+                                        </label>
+                                        <select x-model="selectedTaxRule" 
+                                            class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                            <option value="">-- No Tax --</option>
+                                            @foreach($activeTaxes as $tax)
+                                                <option value="{{ $tax->id }}" 
+                                                    data-rate="{{ $tax->rate }}"
+                                                    data-method="{{ $tax->calculation_method }}"
+                                                    data-fixed="{{ $tax->fixed_amount ?? 0 }}">
+                                                    {{ $tax->name }} - 
+                                                    @if($tax->calculation_method === 'percentage')
+                                                        {{ $tax->rate }}%
+                                                    @else
+                                                        ₱{{ number_format((float)$tax->fixed_amount, 2) }}
+                                                    @endif
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </div>
+                                    @endif
+
+                                    <!-- Customer Discount Dropdown -->
+                                    @if(isset($activeDiscounts) && $activeDiscounts->isNotEmpty())
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            <span class="flex items-center justify-between">
+                                                <span>Discount Rule</span>
+                                                <span x-show="selectedDiscountRule" class="text-green-600 dark:text-green-400" x-text="'₱' + discountAmount.toFixed(2)"></span>
+                                            </span>
+                                        </label>
+                                        <select x-model="selectedDiscountRule" 
+                                            class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                            <option value="">-- No Discount --</option>
+                                            @foreach($activeDiscounts as $discount)
+                                                <option value="{{ $discount->id }}" 
+                                                    data-rate="{{ $discount->rate }}"
+                                                    data-method="{{ $discount->calculation_method }}"
+                                                    data-fixed="{{ $discount->fixed_amount ?? 0 }}">
+                                                    {{ $discount->name }} - 
+                                                    @if($discount->calculation_method === 'percentage')
+                                                        {{ $discount->rate }}%
+                                                    @else
+                                                        ₱{{ number_format((float)$discount->fixed_amount, 2) }}
+                                                    @endif
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    @endif
+
+                                    <!-- Order Summary -->
+                                    <div class="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-2">
+                                        <div class="flex justify-between text-sm">
+                                            <span class="text-gray-600 dark:text-gray-400">Subtotal</span>
+                                            <span class="font-medium text-gray-900 dark:text-white" x-text="'₱' + subtotal.toFixed(2)"></span>
+                                        </div>
+                                        <div class="flex justify-between text-sm" x-show="taxAmount > 0">
+                                            <span class="text-gray-600 dark:text-gray-400">Tax</span>
+                                            <span class="font-medium text-indigo-600 dark:text-indigo-400" x-text="'₱' + taxAmount.toFixed(2)"></span>
+                                        </div>
+                                        <div class="flex justify-between text-sm" x-show="discountAmount > 0">
+                                            <span class="text-gray-600 dark:text-gray-400">Discount</span>
+                                            <span class="font-medium text-green-600 dark:text-green-400" x-text="'-₱' + discountAmount.toFixed(2)"></span>
+                                        </div>
+                                    </div>
+
                                     <div class="flex justify-between text-lg font-bold border-t pt-2">
                                         <span class="text-gray-900 dark:text-white">Total</span>
                                         <span class="text-gray-900 dark:text-white" x-text="'₱' + total.toFixed(2)"></span>
@@ -372,6 +442,8 @@
                 productSearch: '',
                 cart: [],
                 selectedCustomerId: '',
+                selectedTaxRule: '',
+                selectedDiscountRule: '',
                 showNewCustomerForm: false,
                 newCustomer: {
                     first_name: '',
@@ -384,8 +456,46 @@
                 amountReceived: 0,
 
                 // Computed
-                get total() {
+                get subtotal() {
                     return this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                },
+
+                get taxAmount() {
+                    if (!this.selectedTaxRule) return 0;
+                    
+                    const select = document.querySelector('select[x-model="selectedTaxRule"]');
+                    if (!select) return 0;
+                    
+                    const selectedOption = select.options[select.selectedIndex];
+                    const method = selectedOption.getAttribute('data-method');
+                    const rate = parseFloat(selectedOption.getAttribute('data-rate')) || 0;
+                    const fixedAmount = parseFloat(selectedOption.getAttribute('data-fixed')) || 0;
+                    
+                    if (method === 'percentage') {
+                        return (this.subtotal * rate) / 100;
+                    }
+                    return fixedAmount;
+                },
+
+                get discountAmount() {
+                    if (!this.selectedDiscountRule) return 0;
+                    
+                    const select = document.querySelector('select[x-model="selectedDiscountRule"]');
+                    if (!select) return 0;
+                    
+                    const selectedOption = select.options[select.selectedIndex];
+                    const method = selectedOption.getAttribute('data-method');
+                    const rate = parseFloat(selectedOption.getAttribute('data-rate')) || 0;
+                    const fixedAmount = parseFloat(selectedOption.getAttribute('data-fixed')) || 0;
+                    
+                    if (method === 'percentage') {
+                        return (this.subtotal * rate) / 100;
+                    }
+                    return fixedAmount;
+                },
+
+                get total() {
+                    return this.subtotal + this.taxAmount - this.discountAmount;
                 },
 
                 get change() {

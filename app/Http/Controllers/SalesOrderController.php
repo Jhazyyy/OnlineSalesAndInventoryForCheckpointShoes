@@ -52,10 +52,16 @@ class SalesOrderController extends Controller
             ->orderBy('name')
             ->get();
         
+        // Get active customer taxes and discounts
+        $activeTaxes = \App\Models\TaxDiscount::active()->taxes()->forCustomer()->orderBy('priority')->get();
+        $activeDiscounts = \App\Models\TaxDiscount::active()->discounts()->forCustomer()->orderBy('priority')->get();
+        
         return view('sales.orders.create', [
             'customers' => $filterOptions['customers'],
             'products' => $filterOptions['products'],
             'categories' => $categories,
+            'activeTaxes' => $activeTaxes,
+            'activeDiscounts' => $activeDiscounts,
         ]);
     }
 

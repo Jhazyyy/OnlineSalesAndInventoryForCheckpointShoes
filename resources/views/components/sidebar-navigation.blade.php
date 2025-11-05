@@ -47,7 +47,7 @@
 
                     <!-- Master Data Section -->
                     <x-nav-item
-                        route-pattern="master_data.products.*|master_data.categories.*|master_data.brands.*|master_data.suppliers.*"
+                        route-pattern="master_data.products.*|master_data.categories.*|master_data.brands.*|master_data.suppliers.*|master_data.tax_discounts.*"
                         :icon="App\Helpers\NavigationHelper::getIcon('master_data')" title="Master Data" :is-dropdown="true">
 
                         <!-- Products -->
@@ -65,6 +65,10 @@
                         <!-- Brands -->
                         <x-nav-item route="master_data.brands.index" route-pattern="master_data.brands.*"
                             :icon="App\Helpers\NavigationHelper::getIcon('brands', 'w-4 h-4 mr-3')" title="Brands" size="small" />
+
+                        <!-- Tax & Discount -->
+                        <x-nav-item route="master_data.tax_discounts.index" route-pattern="master_data.tax_discounts.*"
+                            :icon="App\Helpers\NavigationHelper::getIcon('settings', 'w-4 h-4 mr-3')" title="Tax & Discount" size="small" />
 
                     </x-nav-item>
 
