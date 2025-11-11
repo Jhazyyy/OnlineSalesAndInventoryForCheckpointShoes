@@ -41,15 +41,9 @@ class PurchaseOrderController extends Controller
     {
         $filterOptions = $this->orderService->getFilterOptions();
         
-        // Get active supplier taxes and discounts
-        $activeTaxes = \App\Models\TaxDiscount::active()->taxes()->forSupplier()->orderBy('priority')->get();
-        $activeDiscounts = \App\Models\TaxDiscount::active()->discounts()->forSupplier()->orderBy('priority')->get();
-        
         return view('purchases.purchase-orders.create', [
             'suppliers' => $filterOptions['suppliers'],
             'products' => $filterOptions['products'],
-            'activeTaxes' => $activeTaxes,
-            'activeDiscounts' => $activeDiscounts,
         ]);
     }
 
@@ -65,13 +59,12 @@ class PurchaseOrderController extends Controller
             'priority' => 'nullable|in:low,normal,high,urgent',
             'status' => 'nullable|in:pending,approved,ordered,partial_received,received,cancelled',
             'payment_status' => 'nullable|in:pending,partial,paid,refunded',
-            'payment_method' => 'nullable|in:cash,card,bank_transfer',
+            'payment_method' => 'nullable|in:cash,bank_transfer',
 
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,product_id',
             'items.*.quantity_ordered' => 'required|integer|min:1',
             'items.*.unit_price' => 'nullable|numeric|min:0',
-            'items.*.discount_amount' => 'nullable|numeric|min:0',
             'items.*.notes' => 'nullable|string|max:1000',
 
             'delivery_address' => 'nullable|string|max:2000',
@@ -131,13 +124,12 @@ class PurchaseOrderController extends Controller
             'priority' => 'nullable|in:low,normal,high,urgent',
             'status' => 'nullable|in:pending,approved,ordered,partial_received,received,cancelled',
             'payment_status' => 'nullable|in:pending,partial,paid,refunded',
-            'payment_method' => 'nullable|in:cash,card,bank_transfer',
+            'payment_method' => 'nullable|in:cash,bank_transfer',
 
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,product_id',
             'items.*.quantity_ordered' => 'required|integer|min:1',
             'items.*.unit_price' => 'nullable|numeric|min:0',
-            'items.*.discount_amount' => 'nullable|numeric|min:0',
             'items.*.notes' => 'nullable|string|max:1000',
 
             'delivery_address' => 'nullable|string|max:2000',

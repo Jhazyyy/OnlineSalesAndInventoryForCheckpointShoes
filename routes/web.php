@@ -89,7 +89,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 // Main Route
-Route::get('dashboard', function () {
+Route::get('dashboard', function() {
     // Debug: Check if user is authenticated
     if (!Auth::check()) {
         return redirect()->route('login')->with('error', 'You must be logged in to access the dashboard.');
@@ -102,7 +102,7 @@ Route::get('dashboard', function () {
         $inventoryStats = [
             'total_products' => \App\Models\Product::count(),
             'active_products' => \App\Models\Product::count(), 
-            'low_stock_products' => \App\Models\Product::where('quantity', '<=', 5)->count(), // Low stock threshold of 10
+            'low_stock_products' => \App\Models\Product::where('quantity', '<=', 10)->count(), // Low stock threshold of 10
             'out_of_stock_products' => \App\Models\Product::where('quantity', '<=', 0)->count(),
             'total_inventory_value' => \App\Models\Product::selectRaw('SUM(quantity * price) as total')->value('total') ?? 0,
         ];

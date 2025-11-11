@@ -107,18 +107,18 @@
                                     <option value="cash"
                                         {{ old('payment_method', $order->payment_method) == 'cash' ? 'selected' : '' }}>
                                         Cash</option>
-                                    <option value="card"
+                                    {{-- <option value="card"
                                         {{ old('payment_method', $order->payment_method) == 'card' ? 'selected' : '' }}>
-                                        Card</option>
+                                        Card</option> --}}
                                     <option value="bank_transfer"
                                         {{ old('payment_method', $order->payment_method) == 'bank_transfer' ? 'selected' : '' }}>
                                         Bank Transfer</option>
-                                    <option value="check"
+                                    {{-- <option value="check"
                                         {{ old('payment_method', $order->payment_method) == 'check' ? 'selected' : '' }}>
                                         Check</option>
                                     <option value="credit"
                                         {{ old('payment_method', $order->payment_method) == 'credit' ? 'selected' : '' }}>
-                                        Credit</option>
+                                        Credit</option> --}}
                                 </select>
                                 <x-input-error :messages="$errors->get('payment_method')" class="mt-2" />
                             </div>
@@ -154,7 +154,7 @@
                             @foreach ($order->items as $index => $item)
                                 <!-- Existing item row -->
                                 <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-4">
-                                    <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                                         <div class="md:col-span-2">
                                             <label
                                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
@@ -194,14 +194,6 @@
                                         </div>
                                         <div>
                                             <label
-                                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Discount</label>
-                                            <input type="number" name="items[{{ $index }}][discount_amount]"
-                                                step="0.01"
-                                                class="discount-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                value="{{ old("items.{$index}.discount_amount", $item->discount_amount) }}">
-                                        </div>
-                                        <div>
-                                            <label
                                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300">Line
                                                 Total</label>
                                             <input type="text"
@@ -237,28 +229,12 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-4">
-                                <!-- Tax Amount -->
-                                <div>
-                                    <x-input-label for="tax_amount" :value="__('Tax Amount')" />
-                                    <x-text-input id="tax_amount" name="tax_amount" type="number" step="0.01"
-                                        class="mt-1 block w-full" :value="old('tax_amount', $order->tax_amount)"/>
-                                    <x-input-error :messages="$errors->get('tax_amount')" class="mt-2" />
-                                </div>
-
                                 <!-- Shipping Amount -->
                                 <div>
                                     <x-input-label for="shipping_amount" :value="__('Shipping Amount')" />
                                     <x-text-input id="shipping_amount" name="shipping_amount" type="number"
                                         step="0.01" class="mt-1 block w-full" :value="old('shipping_amount', $order->shipping_amount)" />
                                     <x-input-error :messages="$errors->get('shipping_amount')" class="mt-2" />
-                                </div>
-
-                                <!-- Discount Amount -->
-                                <div>
-                                    <x-input-label for="discount_amount" :value="__('Order Discount')" />
-                                    <x-text-input id="discount_amount" name="discount_amount" type="number"
-                                        step="0.01" class="mt-1 block w-full" :value="old('discount_amount', $order->discount_amount)" />
-                                    <x-input-error :messages="$errors->get('discount_amount')" class="mt-2" />
                                 </div>
                             </div>
 
@@ -270,18 +246,9 @@
                                         <span id="subtotal-display">₱{{ number_format($order->subtotal, 2) }}</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span>Tax:</span>
-                                        <span id="tax-display">₱{{ number_format($order->tax_amount, 2) }}</span>
-                                    </div>
-                                    <div class="flex justify-between">
                                         <span>Shipping:</span>
                                         <span
                                             id="shipping-display">₱{{ number_format($order->shipping_amount, 2) }}</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>Discount:</span>
-                                        <span
-                                            id="discount-display">₱{{ number_format($order->discount_amount, 2) }}</span>
                                     </div>
                                     <hr class="my-2">
                                     <div class="flex justify-between font-bold text-lg">
@@ -393,7 +360,7 @@
 
                     return `
                     <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-4">
-                        <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
                                 <select name="items[${index}][product_id]"
@@ -413,12 +380,6 @@
                                 <input type="number" name="items[${index}][unit_price]" step="0.01"
                                     class="unit-price-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                     required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Discount</label>
-                                <input type="number" name="items[${index}][discount_amount]" step="0.01"
-                                    class="discount-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    value="0">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Line Total</label>
@@ -477,17 +438,14 @@
                     });
 
                     // Update summary on additional field changes
-                    document.querySelectorAll('#tax_amount, #shipping_amount, #discount_amount').forEach(input => {
-                        input.addEventListener('input', updateOrderSummary);
-                    });
+                    document.getElementById('shipping_amount').addEventListener('input', updateOrderSummary);
                 }
 
                 function calculateLineTotal(row) {
                     const quantity = parseFloat(row.querySelector('.quantity-input').value) || 0;
                     const price = parseFloat(row.querySelector('.unit-price-input').value) || 0;
-                    const discount = parseFloat(row.querySelector('.discount-input').value) || 0;
 
-                    const lineTotal = (quantity * price) - discount;
+                    const lineTotal = (quantity * price);
                     row.querySelector('.line-total').value = '₱' + lineTotal.toFixed(2);
 
                     updateOrderSummary();
@@ -499,20 +457,15 @@
                     document.querySelectorAll('.item-row').forEach(row => {
                         const quantity = parseFloat(row.querySelector('.quantity-input').value) || 0;
                         const price = parseFloat(row.querySelector('.unit-price-input').value) || 0;
-                        const discount = parseFloat(row.querySelector('.discount-input').value) || 0;
-                        subtotal += (quantity * price) - discount;
+                        subtotal += (quantity * price);
                     });
 
-                    const tax = parseFloat(document.getElementById('tax_amount').value) || 0;
                     const shipping = parseFloat(document.getElementById('shipping_amount').value) || 0;
-                    const orderDiscount = parseFloat(document.getElementById('discount_amount').value) || 0;
 
-                    const total = subtotal + tax + shipping - orderDiscount;
+                    const total = subtotal + shipping;
 
                     document.getElementById('subtotal-display').textContent = '₱' + subtotal.toFixed(2);
-                    document.getElementById('tax-display').textContent = '₱' + tax.toFixed(2);
                     document.getElementById('shipping-display').textContent = '₱' + shipping.toFixed(2);
-                    document.getElementById('discount-display').textContent = '₱' + orderDiscount.toFixed(2);
                     document.getElementById('total-display').textContent = '₱' + total.toFixed(2);
                 }
             });

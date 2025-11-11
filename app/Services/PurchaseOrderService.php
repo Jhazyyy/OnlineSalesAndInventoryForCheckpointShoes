@@ -213,7 +213,6 @@ class PurchaseOrderService
             // Use current product price if unit price not provided
             $unitPrice = $itemData['unit_price'] ?? $product->price;
             $quantity = $itemData['quantity_ordered'];
-            $discountAmount = $itemData['discount_amount'] ?? 0;
 
             PurchaseOrderItem::create([
                 'order_id' => $order->order_id,
@@ -221,8 +220,7 @@ class PurchaseOrderService
                 'quantity_ordered' => $quantity,
                 'quantity_received' => 0,
                 'unit_price' => $unitPrice,
-                'discount_amount' => $discountAmount,
-                'line_total' => ($quantity * $unitPrice) - $discountAmount,
+                'line_total' => ($quantity * $unitPrice),
                 'notes' => $itemData['notes'] ?? null,
             ]);
         }

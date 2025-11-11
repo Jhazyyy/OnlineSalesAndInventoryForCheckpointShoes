@@ -44,8 +44,6 @@ class PurchaseOrder extends Model
         'status',
         'priority',
         'subtotal',
-        'tax_amount',
-        'discount_amount',
         'shipping_amount',
         'total_amount',
         'paid_amount',
@@ -68,8 +66,6 @@ class PurchaseOrder extends Model
         'expected_date' => 'date',
         'received_date' => 'date',
         'subtotal' => 'decimal:2',
-        'tax_amount' => 'decimal:2',
-        'discount_amount' => 'decimal:2',
         'shipping_amount' => 'decimal:2',
         'total_amount' => 'decimal:2',
         'paid_amount' => 'decimal:2',
@@ -379,11 +375,8 @@ class PurchaseOrder extends Model
 
     /**
      * Calculate and update order totals based on items.
-     * Optionally apply automatic tax and discount calculations.
-     * 
-     * @param bool $applyAutoTaxDiscount Whether to automatically calculate taxes/discounts
      */
-    public function calculateTotals(bool $applyAutoTaxDiscount = true): void
+    public function calculateTotals(): void
     {
         $this->load('items');
         
@@ -395,35 +388,11 @@ class PurchaseOrder extends Model
         
         $this->subtotal = $subtotal;
         
-        // Apply automatic tax and discount calculation if enabled
-        if ($applyAutoTaxDiscount) {
-            $taxDiscountService = new \App\Services\TaxDiscountService();
-            $calculation = $taxDiscountService->calculateForOrder($subtotal, $this->items, 'purchase');
-            
-            $this->tax_amount = $calculation['total_tax'];
-            $this->discount_amount = $calculation['total_discount'];
-        }
-        
-        // Calculate total
-        $taxAmount = (float) ($this->tax_amount ?? 0);
+        // Calculate total (subtotal + shipping)
         $shippingAmount = (float) ($this->shipping_amount ?? 0);
-        $discountAmount = (float) ($this->discount_amount ?? 0);
         
-        $this->total_amount = $subtotal + $taxAmount + $shippingAmount - $discountAmount;
+        $this->total_amount = $subtotal + $shippingAmount;
         $this->save();
-    }
-    
-    /**
-     * Get tax and discount breakdown for this order.
-     * 
-     * @return array
-     */
-    public function getTaxDiscountBreakdown(): array
-    {
-        $this->load('items');
-        $subtotal = (float) ($this->subtotal ?? 0);
-        $taxDiscountService = new \App\Services\TaxDiscountService();
-        return $taxDiscountService->calculateForOrder($subtotal, $this->items, 'purchase');
     }
 
     /**
