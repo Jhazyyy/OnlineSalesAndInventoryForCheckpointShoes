@@ -390,12 +390,18 @@
                                                 x-text="'₱' + subtotal.toFixed(2)"></span>
                                         </div>
                                         <div class="flex justify-between text-sm" x-show="taxAmount > 0">
-                                            <span class="text-gray-600 dark:text-gray-400">Tax</span>
+                                            <div class="flex flex-col">
+                                                <span class="text-gray-600 dark:text-gray-400">Tax</span>
+                                                <span class="text-xs text-gray-500 dark:text-gray-500" x-show="selectedTaxRule" x-text="getTaxRuleName()"></span>
+                                            </div>
                                             <span class="font-medium text-indigo-600 dark:text-indigo-400"
                                                 x-text="'₱' + taxAmount.toFixed(2)"></span>
                                         </div>
                                         <div class="flex justify-between text-sm" x-show="discountAmount > 0">
-                                            <span class="text-gray-600 dark:text-gray-400">Discount</span>
+                                            <div class="flex flex-col">
+                                                <span class="text-gray-600 dark:text-gray-400">Discount</span>
+                                                <span class="text-xs text-gray-500 dark:text-gray-500" x-show="selectedDiscountRule" x-text="getDiscountRuleName()"></span>
+                                            </div>
                                             <span class="font-medium text-green-600 dark:text-green-400"
                                                 x-text="'-₱' + discountAmount.toFixed(2)"></span>
                                         </div>
@@ -458,13 +464,13 @@
                                 <!-- Hidden Fields -->
                                 <input type="hidden" name="order_date"
                                     :value="new Date().toISOString().split('T')[0]">
-                                <input type="hidden" name="tax_rule_id" :value="selectedTaxRule || ''">
-                                <input type="hidden" name="tax_amount" :value="selectedTaxRule ? taxAmount : 0">
-                                <input type="hidden" name="discount_rule_id" :value="selectedDiscountRule || ''">
+                                <input type="hidden" name="tax_rule_id" :value="selectedTaxRule ? selectedTaxRule : ''">
+                                <input type="hidden" name="tax_amount" :value="selectedTaxRule ? taxAmount.toFixed(2) : 0">
+                                <input type="hidden" name="discount_rule_id" :value="selectedDiscountRule ? selectedDiscountRule : ''">
                                 <input type="hidden" name="discount_amount"
-                                    :value="selectedDiscountRule ? discountAmount : 0">
-                                <input type="hidden" name="subtotal_amount" :value="subtotal">
-                                <input type="hidden" name="total_amount" :value="total">
+                                    :value="selectedDiscountRule ? discountAmount.toFixed(2) : 0">
+                                <input type="hidden" name="subtotal_amount" :value="subtotal.toFixed(2)">
+                                <input type="hidden" name="total_amount" :value="total.toFixed(2)">
 
                                 <!-- Action Buttons -->
                                 <div class="mt-6 space-y-2">
@@ -708,6 +714,22 @@
                         amountReceived: this.amountReceived,
                         total: this.total
                     });
+                },
+
+                getTaxRuleName() {
+                    if (!this.selectedTaxRule) return '';
+                    const select = document.querySelector('select[x-model="selectedTaxRule"]');
+                    if (!select) return '';
+                    const selectedOption = select.options[select.selectedIndex];
+                    return selectedOption ? selectedOption.text : '';
+                },
+
+                getDiscountRuleName() {
+                    if (!this.selectedDiscountRule) return '';
+                    const select = document.querySelector('select[x-model="selectedDiscountRule"]');
+                    if (!select) return '';
+                    const selectedOption = select.options[select.selectedIndex];
+                    return selectedOption ? selectedOption.text : '';
                 }
             }
         }

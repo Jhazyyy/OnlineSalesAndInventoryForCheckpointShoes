@@ -112,7 +112,7 @@ class SalesOrderController extends Controller
      */
     public function show(SalesOrder $order)
     {
-        $order->load(['customer', 'items.product.inventories', 'shipments']);
+        $order->load(['customer', 'items.product.inventories', 'shipments', 'taxRule', 'discountRule']);
         return view('sales.orders.show', compact('order'));
     }
 

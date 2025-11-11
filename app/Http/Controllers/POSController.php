@@ -278,7 +278,7 @@ class POSController extends Controller
      */
     public function show(SalesOrder $order)
     {
-        $order->load(['customer', 'items.product']);
+        $order->load(['customer', 'items.product', 'taxRule', 'discountRule']);
         
         // Use amount_received from database first, then fall back to session
         $amountReceived = $order->amount_received ?? session('amount_received');

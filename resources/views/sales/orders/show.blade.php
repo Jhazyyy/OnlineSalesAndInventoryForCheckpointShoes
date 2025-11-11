@@ -321,7 +321,12 @@
                                 </div>
                                 @if($order->tax_amount > 0)
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-500 dark:text-gray-400">Tax:</span>
+                                        <div class="flex flex-col">
+                                            <span class="text-gray-500 dark:text-gray-400">Tax:</span>
+                                            @if($order->taxRule)
+                                            <span class="text-xs text-gray-400 dark:text-gray-500">{{ $order->taxRule->name }}</span>
+                                            @endif
+                                        </div>
                                         <span class="text-gray-900 dark:text-white">₱{{ number_format($order->tax_amount, 2) }}</span>
                                     </div>
                                 @endif
@@ -333,7 +338,12 @@
                                 @endif
                                 @if($order->discount_amount > 0)
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-500 dark:text-gray-400">Discount:</span>
+                                        <div class="flex flex-col">
+                                            <span class="text-gray-500 dark:text-gray-400">Discount:</span>
+                                            @if($order->discountRule)
+                                            <span class="text-xs text-gray-400 dark:text-gray-500">{{ $order->discountRule->name }}</span>
+                                            @endif
+                                        </div>
                                         <span class="text-red-600">-₱{{ number_format($order->discount_amount, 2) }}</span>
                                     </div>
                                 @endif
