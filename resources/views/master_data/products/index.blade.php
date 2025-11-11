@@ -223,7 +223,7 @@
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a
                                                 href="{{ request()->fullUrlWithQuery(['sort' => 'price', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
-                                                Price
+                                                Base Price
                                                 @if (request('sort') === 'price')
                                                     <span
                                                         class="ml-1">{{ request('order') === 'asc' ? '↑' : '↓' }}</span>

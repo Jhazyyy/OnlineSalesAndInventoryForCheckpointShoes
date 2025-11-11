@@ -36,7 +36,8 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('master_data.tax_discounts.update', $taxDiscount) }}" class="space-y-6" id="taxDiscountForm">
+                    <form method="POST" action="{{ route('master_data.tax_discounts.update', $taxDiscount) }}"
+                        class="space-y-6" id="taxDiscountForm">
                         @csrf
                         @method('PUT')
 
@@ -48,11 +49,12 @@
                                 <!-- Code -->
                                 <div>
                                     <x-input-label for="code" :value="__('Code')" />
-                                    <x-text-input id="code" name="code" type="text"
-                                        class="mt-1 block w-full" :value="old('code', $taxDiscount->code)" required maxlength="20"
+                                    <x-text-input id="code" name="code" type="text" class="mt-1 block w-full"
+                                        :value="old('code', $taxDiscount->code)" required maxlength="20"
                                         placeholder="e.g., TAX-VAT or DISC-10" />
                                     <x-input-error class="mt-2" :messages="$errors->get('code')" />
-                                    <p class="mt-1 text-sm text-gray-500">Unique code. Use letters, numbers, dashes, or underscores.</p>
+                                    <p class="mt-1 text-sm text-gray-500">Unique code. Use letters, numbers, dashes, or
+                                        underscores.</p>
                                 </div>
 
                                 <!-- Name -->
@@ -69,8 +71,12 @@
                                     <select id="type" name="type" required
                                         class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
                                         <option value="">Select type</option>
-                                        <option value="tax" {{ old('type', $taxDiscount->type) === 'tax' ? 'selected' : '' }}>Tax</option>
-                                        <option value="discount" {{ old('type', $taxDiscount->type) === 'discount' ? 'selected' : '' }}>Discount</option>
+                                        <option value="tax"
+                                            {{ old('type', $taxDiscount->type) === 'tax' ? 'selected' : '' }}>Tax
+                                        </option>
+                                        <option value="discount"
+                                            {{ old('type', $taxDiscount->type) === 'discount' ? 'selected' : '' }}>
+                                            Discount</option>
                                     </select>
                                     <x-input-error class="mt-2" :messages="$errors->get('type')" />
                                 </div>
@@ -80,12 +86,19 @@
                                     <x-input-label for="applicable_for" :value="__('Applicable For')" />
                                     <select id="applicable_for" name="applicable_for" required
                                         class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                                        <option value="both" {{ old('applicable_for', $taxDiscount->applicable_for ?? 'both') === 'both' ? 'selected' : '' }}>Both (Supplier & Customer)</option>
-                                        <option value="supplier" {{ old('applicable_for', $taxDiscount->applicable_for) === 'supplier' ? 'selected' : '' }}>Supplier (Purchase Orders)</option>
-                                        <option value="customer" {{ old('applicable_for', $taxDiscount->applicable_for) === 'customer' ? 'selected' : '' }}>Customer (Sales Orders)</option>
+                                        <option value="both"
+                                            {{ old('applicable_for', $taxDiscount->applicable_for ?? 'both') === 'both' ? 'selected' : '' }}>
+                                            Both (Supplier & Customer)</option>
+                                        <option value="supplier"
+                                            {{ old('applicable_for', $taxDiscount->applicable_for) === 'supplier' ? 'selected' : '' }}>
+                                            Supplier (Purchase Orders)</option>
+                                        <option value="customer"
+                                            {{ old('applicable_for', $taxDiscount->applicable_for) === 'customer' ? 'selected' : '' }}>
+                                            Customer (Sales Orders)</option>
                                     </select>
                                     <x-input-error class="mt-2" :messages="$errors->get('applicable_for')" />
-                                    <p class="mt-1 text-sm text-gray-500">Choose whether this applies to suppliers, customers, or both</p>
+                                    <p class="mt-1 text-sm text-gray-500">Choose whether this applies to suppliers,
+                                        customers, or both</p>
                                 </div>
 
                                 <!-- Calculation Method -->
@@ -93,8 +106,12 @@
                                     <x-input-label for="calculation_method" :value="__('Calculation Method')" />
                                     <select id="calculation_method" name="calculation_method" required
                                         class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                                        <option value="percentage" {{ old('calculation_method', $taxDiscount->calculation_method) === 'percentage' ? 'selected' : '' }}>Percentage</option>
-                                        <option value="fixed" {{ old('calculation_method', $taxDiscount->calculation_method) === 'fixed' ? 'selected' : '' }}>Fixed Amount</option>
+                                        <option value="percentage"
+                                            {{ old('calculation_method', $taxDiscount->calculation_method) === 'percentage' ? 'selected' : '' }}>
+                                            Percentage</option>
+                                        <option value="fixed"
+                                            {{ old('calculation_method', $taxDiscount->calculation_method) === 'fixed' ? 'selected' : '' }}>
+                                            Fixed Amount</option>
                                     </select>
                                     <x-input-error class="mt-2" :messages="$errors->get('calculation_method')" />
                                 </div>
@@ -106,7 +123,8 @@
                                         class="mt-1 block w-full" :value="old('rate', $taxDiscount->rate)" min="0" max="100"
                                         placeholder="e.g., 12.5" />
                                     <x-input-error class="mt-2" :messages="$errors->get('rate')" />
-                                    <p class="mt-1 text-sm text-gray-500">Enter percentage value (e.g., 12.5 for 12.5%)</p>
+                                    <p class="mt-1 text-sm text-gray-500">Enter percentage value (e.g., 12.5 for 12.5%)
+                                    </p>
                                 </div>
 
                                 <!-- Fixed Amount -->
@@ -126,7 +144,8 @@
                                         class="mt-1 block w-full" :value="old('priority', $taxDiscount->priority)" required min="0"
                                         placeholder="0" />
                                     <x-input-error class="mt-2" :messages="$errors->get('priority')" />
-                                    <p class="mt-1 text-sm text-gray-500">Lower numbers are calculated first (0 is highest priority)</p>
+                                    <p class="mt-1 text-sm text-gray-500">Lower numbers are calculated first (0 is
+                                        highest priority)</p>
                                 </div>
                             </div>
                         </div>
@@ -148,8 +167,12 @@
                                     <x-input-label for="applies_to" :value="__('Applies To')" />
                                     <select id="applies_to" name="applies_to" required
                                         class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                                        <option value="all" {{ old('applies_to', $taxDiscount->applies_to) === 'all' ? 'selected' : '' }}>All Products</option>
-                                        <option value="specific" {{ old('applies_to', $taxDiscount->applies_to) === 'specific' ? 'selected' : '' }}>Specific Categories/Products</option>
+                                        <option value="all"
+                                            {{ old('applies_to', $taxDiscount->applies_to) === 'all' ? 'selected' : '' }}>
+                                            All Products</option>
+                                        <option value="specific"
+                                            {{ old('applies_to', $taxDiscount->applies_to) === 'specific' ? 'selected' : '' }}>
+                                            Specific Categories/Products</option>
                                     </select>
                                     <x-input-error class="mt-2" :messages="$errors->get('applies_to')" />
                                 </div>
@@ -159,10 +182,11 @@
                                         <!-- Categories -->
                                         <div>
                                             <x-input-label for="applicable_categories" :value="__('Applicable Categories')" />
-                                            <select id="applicable_categories" name="applicable_categories[]" multiple size="5"
+                                            <select id="applicable_categories" name="applicable_categories[]" multiple
+                                                size="5"
                                                 class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                                                @foreach($categories as $category)
-                                                    <option value="{{ $category->id }}" 
+                                                @foreach ($categories as $category)
+                                                    <option value="{{ $category->id }}"
                                                         {{ in_array($category->id, old('applicable_categories', $taxDiscount->applicable_categories ?? [])) ? 'selected' : '' }}>
                                                         {{ $category->name }}
                                                     </option>
@@ -174,9 +198,10 @@
                                         <!-- Products -->
                                         <div>
                                             <x-input-label for="applicable_products" :value="__('Applicable Products')" />
-                                            <select id="applicable_products" name="applicable_products[]" multiple size="5"
+                                            <select id="applicable_products" name="applicable_products[]" multiple
+                                                size="5"
                                                 class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                                                @foreach($products as $product)
+                                                @foreach ($products as $product)
                                                     <option value="{{ $product->id }}"
                                                         {{ in_array($product->id, old('applicable_products', $taxDiscount->applicable_products ?? [])) ? 'selected' : '' }}>
                                                         {{ $product->product_name }}
@@ -197,7 +222,10 @@
                                 <div>
                                     <x-input-label for="valid_from" :value="__('Valid From')" />
                                     <x-text-input id="valid_from" name="valid_from" type="date"
-                                        class="mt-1 block w-full" :value="old('valid_from', $taxDiscount->valid_from ? $taxDiscount->valid_from->format('Y-m-d') : '')" />
+                                        class="mt-1 block w-full" :value="old(
+                                            'valid_from',
+                                            $taxDiscount->valid_from ? $taxDiscount->valid_from->format('Y-m-d') : '',
+                                        )" />
                                     <x-input-error class="mt-2" :messages="$errors->get('valid_from')" />
                                     <p class="mt-1 text-sm text-gray-500">Leave blank for no start date</p>
                                 </div>
@@ -205,7 +233,10 @@
                                 <div>
                                     <x-input-label for="valid_to" :value="__('Valid To')" />
                                     <x-text-input id="valid_to" name="valid_to" type="date"
-                                        class="mt-1 block w-full" :value="old('valid_to', $taxDiscount->valid_to ? $taxDiscount->valid_to->format('Y-m-d') : '')" />
+                                        class="mt-1 block w-full" :value="old(
+                                            'valid_to',
+                                            $taxDiscount->valid_to ? $taxDiscount->valid_to->format('Y-m-d') : '',
+                                        )" />
                                     <x-input-error class="mt-2" :messages="$errors->get('valid_to')" />
                                     <p class="mt-1 text-sm text-gray-500">Leave blank for no end date</p>
                                 </div>
@@ -221,7 +252,8 @@
                                     <input type="checkbox" id="is_compound" name="is_compound" value="1"
                                         {{ old('is_compound', $taxDiscount->is_compound) ? 'checked' : '' }}
                                         class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600">
-                                    <label for="is_compound" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                    <label for="is_compound"
+                                        class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                                         Compound (Calculate on top of previous taxes/discounts)
                                     </label>
                                 </div>
@@ -231,7 +263,8 @@
                                     <input type="checkbox" id="is_active" name="is_active" value="1"
                                         {{ old('is_active', $taxDiscount->is_active) ? 'checked' : '' }}
                                         class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600">
-                                    <label for="is_active" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                    <label for="is_active"
+                                        class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                                         Active
                                     </label>
                                 </div>
@@ -249,7 +282,7 @@
                                 class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7" />
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                                 </svg>
                                 Update
                             </button>
@@ -268,7 +301,7 @@
             const fixedField = document.getElementById('fixed_amount_field');
             const rateInput = document.getElementById('rate');
             const fixedInput = document.getElementById('fixed_amount');
-            
+
             if (this.value === 'fixed') {
                 rateField.style.display = 'none';
                 fixedField.style.display = 'block';

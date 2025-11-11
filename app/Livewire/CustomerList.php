@@ -11,7 +11,7 @@ class CustomerList extends Component
     use WithPagination;
 
     public $search = '';
-    public $sortField = 'name';
+    public $sortField = 'first_name';
     public $sortDirection = 'asc';
     public $perPage = 10;
 
@@ -38,7 +38,9 @@ class CustomerList extends Component
     {
         $customers = Customer::query()
             ->when($this->search, function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%')
+                $query->where('first_name', 'like', '%' . $this->search . '%')
+                    ->orWhere('last_name', 'like', '%' . $this->search . '%')
+                    ->orWhere('company_name', 'like', '%' . $this->search . '%')
                     ->orWhere('email', 'like', '%' . $this->search . '%')
                     ->orWhere('phone', 'like', '%' . $this->search . '%');
             })

@@ -230,41 +230,55 @@ class ReportController extends Controller
      */
     public function bulkReorderProducts(Request $request)
     {
-        $data = $request->validate([
+        // Validate basic structure
+        $request->validate([
             'supplier_id' => 'required|exists:suppliers,supplier_id',
             'products' => 'required|array|min:1',
             'products.*' => 'required|exists:products,product_id',
-            'quantities' => 'required|array',
-            'quantities.*' => 'required|integer|min:1',
         ]);
 
-        $supplier = Supplier::findOrFail($data['supplier_id']);
-        $products = Product::whereIn('product_id', $data['products'])->get()->keyBy('product_id');
+        $supplier = Supplier::findOrFail($request->supplier_id);
+        $products = Product::whereIn('product_id', $request->products)->get()->keyBy('product_id');
+
+        // Validate quantities manually since they use product IDs as keys
+        $quantities = $request->input('quantities', []);
+        if (empty($quantities)) {
+            return back()->with('error', 'Quantities are required for all products.');
+        }
 
         // Validate all products have the same supplier
-        foreach ($data['products'] as $productId) {
+        foreach ($request->products as $productId) {
+            if (!isset($products[$productId])) {
+                return back()->with('error', 'Invalid product selected.');
+            }
+            
             $product = $products[$productId];
-            if ($product->preferred_supplier_id != $data['supplier_id']) {
+            if ($product->preferred_supplier_id != $request->supplier_id) {
                 return back()->with('error', 'All selected products must have the same preferred supplier.');
+            }
+
+            // Validate quantity for this product
+            if (!isset($quantities[$productId]) || $quantities[$productId] < 1) {
+                return back()->with('error', "Invalid quantity for product: {$product->product_name}");
             }
         }
 
         // Build items array for the purchase order
         $items = [];
-        foreach ($data['products'] as $productId) {
+        foreach ($request->products as $productId) {
             $product = $products[$productId];
-            $quantity = $data['quantities'][$productId] ?? 1;
+            $quantity = (int) $quantities[$productId];
             
             $items[] = [
                 'product_id' => $product->product_id,
-                'quantity_ordered' => (int) $quantity,
+                'quantity_ordered' => $quantity,
                 'unit_price' => $product->price,
             ];
         }
 
         // Create a single PO with all items
         $order = $this->purchaseOrderService->createOrder([
-            'supplier_id' => $data['supplier_id'],
+            'supplier_id' => $request->supplier_id,
             'order_date' => now()->toDateString(),
             'status' => 'pending',
             'items' => $items,

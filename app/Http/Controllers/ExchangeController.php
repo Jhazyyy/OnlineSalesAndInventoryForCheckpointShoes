@@ -42,7 +42,9 @@ class ExchangeController extends Controller
             $query->where(function ($q) use ($request) {
                 $q->where('exchange_number', 'like', '%' . $request->search . '%')
                   ->orWhereHas('customer', function ($customerQuery) use ($request) {
-                      $customerQuery->where('customer_name', 'like', '%' . $request->search . '%');
+                      $customerQuery->where('first_name', 'like', '%' . $request->search . '%')
+                                   ->orWhere('last_name', 'like', '%' . $request->search . '%')
+                                   ->orWhere('company_name', 'like', '%' . $request->search . '%');
                   });
             });
         }
@@ -79,10 +81,10 @@ class ExchangeController extends Controller
     public function create(Request $request)
     {
         $customers = Customer::where('status', 'active')
-                           ->orderBy('customer_name')
+                           ->orderBy('first_name')
                            ->get();
 
-        $products = Product::where('stock_quantity', '>', 0)
+        $products = Product::where('quantity', '>', 0)
                           ->orderBy('product_name')
                           ->get();
         
@@ -249,7 +251,7 @@ class ExchangeController extends Controller
         $exchange->load(['items.product', 'originalItems.product', 'newItems.product']);
 
         $customers = Customer::where('status', 'active')
-                           ->orderBy('customer_name')
+                           ->orderBy('first_name')
                            ->get();
 
         $products = Product::orderBy('product_name')->get();

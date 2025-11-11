@@ -16,15 +16,40 @@ return new class extends Migration
             $table->unsignedBigInteger('purchase_order_id')->nullable();
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('supplier_id');
-            $table->integer('quantity');
-            $table->decimal('price', 10, 2);
-            $table->decimal('total_amount', 10, 2);
+            $table->integer('quantity')->unsigned()->default(1);
+            $table->decimal('price', 10, 2)->unsigned();
+            $table->decimal('total_amount', 10, 2)->unsigned();
             $table->date('return_date');
             $table->enum('return_status', ['pending', 'approved', 'rejected', 'processed', 'refunded'])->default('pending');
             $table->text('reason')->nullable();
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->timestamps();
+            
+            // Foreign key constraints
+            $table->foreign('product_id')
+                  ->references('product_id')
+                  ->on('products')
+                  ->onDelete('cascade')
+                  ->onUpdate('cascade');
+                  
+            $table->foreign('supplier_id')
+                  ->references('id')
+                  ->on('suppliers')
+                  ->onDelete('cascade')
+                  ->onUpdate('cascade');
+                  
+            $table->foreign('purchase_order_id')
+                  ->references('id')
+                  ->on('purchase_orders')
+                  ->onDelete('set null')
+                  ->onUpdate('cascade');
+                  
+            $table->foreign('created_by')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('set null')
+                  ->onUpdate('cascade');
             
             // Indexes
             $table->index(['return_status', 'return_date']);

@@ -32,6 +32,25 @@ return new class extends Migration
             $table->timestamp('processed_at')->nullable();
             $table->timestamps();
             
+            // Foreign key constraints
+            $table->foreign('customer_id')
+                  ->references('customer_id')
+                  ->on('customers')
+                  ->onDelete('set null')
+                  ->onUpdate('cascade');
+                  
+            $table->foreign('sales_order_id')
+                  ->references('sales_order_id')
+                  ->on('sales_orders')
+                  ->onDelete('set null')
+                  ->onUpdate('cascade');
+                  
+            $table->foreign('processed_by')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('set null')
+                  ->onUpdate('cascade');
+            
             // Indexes for better performance
             $table->index(['status', 'exchange_date']);
             $table->index(['customer_id', 'exchange_date']);

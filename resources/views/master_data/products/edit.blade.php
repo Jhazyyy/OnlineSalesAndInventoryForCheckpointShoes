@@ -197,7 +197,7 @@
                             <div>
                                 <label for="price"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Price (Peso) <span class="text-red-500">*</span>
+                                    Base Price (Peso) <span class="text-red-500">*</span>
                                 </label>
                                 <div class="mt-1 relative rounded-md shadow-sm">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

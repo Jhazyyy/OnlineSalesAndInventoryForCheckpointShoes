@@ -33,6 +33,16 @@
                     {{ session('error') }}
                 </div>
             @endif
+            @if($errors->any())
+                <div class="mb-6 px-4 py-3 bg-red-100 border border-red-300 text-red-800 rounded-md">
+                    <p class="font-semibold">Please correct the following errors:</p>
+                    <ul class="list-disc list-inside mt-2">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <!-- Filter Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
@@ -70,7 +80,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 @php
                     $cards = [
-                        ['label' => 'Total Candidates', 'color' => 'from-blue-500 to-blue-600', 'value' => $report['summary']['total_candidates'] ?? 0, 'icon' => 'M3 12h18M9 18l-6-6 6-6'],
+                        ['label' => 'Total Products', 'color' => 'from-blue-500 to-blue-600', 'value' => $report['summary']['total_products'] ?? 0, 'icon' => 'M3 12h18M9 18l-6-6 6-6'],
                         ['label' => 'Out of Stock', 'color' => 'from-red-500 to-red-600', 'value' => $report['summary']['out_of_stock'] ?? 0, 'icon' => 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'],
                         ['label' => 'Critical', 'color' => 'from-yellow-500 to-yellow-600', 'value' => $report['summary']['critical'] ?? 0, 'icon' => 'M12 9v2m0 4h.01']
                     ];
@@ -135,7 +145,7 @@
                                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase w-12">
                                         <span class="sr-only">Select</span>
                                     </th>
-                                    @foreach(['SKU / Product', 'Category', 'Qty', 'Reorder Level', 'Suggested', 'Supplier', 'Action'] as $header)
+                                    @foreach(['SKU / Product', 'Category', 'Qty', 'Reorder Level', 'Suggested', 'Supplier', 'Reorder Action'] as $header)
                                         <th class="px-4 py-3 sm:px-6 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">{{ $header }}</th>
                                     @endforeach
                                 </tr>
@@ -168,11 +178,20 @@
                                         <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">{{ $product->reorder_level ?? '-' }}</td>
                                         <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">{{ $product->suggested_order_qty ?? 1 }}</td>
                                         <td class="px-4 py-3 sm:px-6">
+                                            <span class="text-sm text-gray-700 dark:text-gray-300">
+                                                {{ $product->preferredSupplier->supplier_name ?? 'No Supplier' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 sm:px-6">
                                             <form method="POST" action="{{ route('reports.reorder.create') }}" class="flex flex-wrap gap-2 items-center">
                                                 @csrf
                                                 <input type="hidden" name="product_id" value="{{ $product->product_id }}">
-                                                <input type="number" name="quantity" min="1" value="{{ max(1, (int)($product->suggested_order_qty ?? 1)) }}"
-                                                       class="w-20 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-1 focus:ring-indigo-500" />
+                                                <input type="number" 
+                                                       name="quantity" 
+                                                       min="1" 
+                                                       value="{{ max(1, (int)($product->suggested_order_qty ?? 1)) }}"
+                                                       class="quantity-input w-20 rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-1 focus:ring-indigo-500"
+                                                       data-product-id="{{ $product->product_id }}" />
                                                 <select name="supplier_id"
                                                         class="rounded border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-1 focus:ring-indigo-500">
                                                     <option value="">Select supplier</option>
@@ -182,8 +201,6 @@
                                                         </option>
                                                     @endforeach
                                                 </select>
-                                        </td>
-                                        <td class="px-4 py-3 sm:px-6 text-right">
                                                 <button type="submit"
                                                         class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded text-xs sm:text-sm transition">
                                                     Reorder
@@ -205,7 +222,7 @@
             </div>
 
             <!-- Bulk Reorder Form (hidden, submitted via JS) -->
-            <form id="bulkReorderForm" method="POST" action="{{ route('reports.reorder.bulk') }}" style="display: none;">
+            <form id="bulkReorderForm" method="POST" action="{{ route('reports.reorder.bulk') }}" class="hidden">
                 @csrf
                 <input type="hidden" name="supplier_id" id="bulkSupplierId">
                 <div id="bulkProductsContainer"></div>
@@ -228,20 +245,53 @@
                     checkbox.addEventListener('change', handleCheckboxChange);
                 });
 
+                // Update quantity in selected products when input changes
+                document.querySelectorAll('.quantity-input').forEach(input => {
+                    input.addEventListener('change', function() {
+                        const productId = this.dataset.productId;
+                        if (selectedProducts.has(productId)) {
+                            const data = selectedProducts.get(productId);
+                            data.quantity = this.value;
+                            selectedProducts.set(productId, data);
+                        }
+                    });
+                });
+
                 function handleCheckboxChange(e) {
                     const checkbox = e.target;
                     const productId = checkbox.dataset.productId;
                     const supplierId = checkbox.dataset.supplierId;
                     const row = checkbox.closest('tr');
                     
+                    console.log('Checkbox changed:', {
+                        productId,
+                        supplierId,
+                        checked: checkbox.checked
+                    });
+                    
                     if (checkbox.checked) {
+                        // Get the quantity from the input field
+                        const qtyInput = row.querySelector('.quantity-input');
+                        const quantity = qtyInput ? qtyInput.value : row.dataset.suggestedQty;
+                        
                         selectedProducts.set(productId, {
                             supplierId: supplierId,
                             supplierName: row.dataset.supplierName,
-                            suggestedQty: row.dataset.suggestedQty
+                            suggestedQty: row.dataset.suggestedQty,
+                            quantity: quantity
                         });
+                        
+                        // Highlight selected row
+                        row.classList.add('bg-blue-100', 'dark:bg-blue-900');
+                        
+                        console.log('Product added to selection:', selectedProducts.get(productId));
                     } else {
                         selectedProducts.delete(productId);
+                        
+                        // Remove highlight from row
+                        row.classList.remove('bg-blue-100', 'dark:bg-blue-900');
+                        
+                        console.log('Product removed from selection');
                     }
                     
                     updateBulkActionBar();
@@ -253,6 +303,8 @@
                     const selectedCountSpan = document.getElementById('selectedCount');
                     const bulkReorderBtn = document.getElementById('bulkReorderBtn');
                     const supplierWarning = document.getElementById('supplierWarning');
+                    
+                    console.log('Updating bulk action bar, selected count:', count);
                     
                     selectedCountSpan.textContent = count;
                     
@@ -268,30 +320,55 @@
                     const supplierIds = Array.from(selectedProducts.values()).map(p => p.supplierId);
                     const uniqueSuppliers = [...new Set(supplierIds)];
                     
+                    console.log('Supplier IDs:', supplierIds);
+                    console.log('Unique suppliers:', uniqueSuppliers);
+                    
                     if (uniqueSuppliers.length > 1 || uniqueSuppliers[0] === '') {
                         bulkReorderBtn.disabled = true;
                         supplierWarning.classList.remove('hidden');
+                        console.log('Multiple suppliers or no supplier - button disabled');
                     } else {
                         bulkReorderBtn.disabled = false;
                         supplierWarning.classList.add('hidden');
+                        console.log('Same supplier for all - button enabled');
                     }
                 }
 
                 function clearSelection() {
                     selectedProducts.clear();
-                    document.querySelectorAll('.product-checkbox').forEach(cb => cb.checked = false);
-                    document.getElementById('selectAll').checked = false;
+                    document.querySelectorAll('.product-checkbox').forEach(cb => {
+                        cb.checked = false;
+                        // Remove highlight from all rows
+                        const row = cb.closest('tr');
+                        if (row) {
+                            row.classList.remove('bg-blue-100', 'dark:bg-blue-900');
+                        }
+                    });
+                    const selectAllCheckbox = document.getElementById('selectAll');
+                    if (selectAllCheckbox) {
+                        selectAllCheckbox.checked = false;
+                    }
                     updateBulkActionBar();
                 }
 
                 // Bulk reorder button click
                 document.getElementById('bulkReorderBtn')?.addEventListener('click', function() {
-                    if (selectedProducts.size === 0) return;
+                    console.log('Bulk reorder button clicked');
+                    
+                    if (selectedProducts.size === 0) {
+                        console.log('No products selected');
+                        return;
+                    }
+                    
+                    console.log('Selected products:', selectedProducts);
                     
                     // Get supplier ID (all should be the same)
                     const firstProduct = Array.from(selectedProducts.values())[0];
                     const supplierId = firstProduct.supplierId;
                     const supplierName = firstProduct.supplierName;
+                    
+                    console.log('Supplier ID:', supplierId);
+                    console.log('Supplier Name:', supplierName);
                     
                     if (!supplierId) {
                         alert('Please ensure all selected products have a supplier assigned.');
@@ -301,8 +378,21 @@
                     // Confirm action
                     const productCount = selectedProducts.size;
                     if (!confirm(`Create a purchase order for ${productCount} product(s) from ${supplierName}?`)) {
+                        console.log('User cancelled');
                         return;
                     }
+                    
+                    // Update quantities from input fields before submitting
+                    selectedProducts.forEach((data, productId) => {
+                        const row = document.querySelector(`tr[data-product-id="${productId}"]`);
+                        if (row) {
+                            const qtyInput = row.querySelector('.quantity-input');
+                            if (qtyInput) {
+                                data.quantity = qtyInput.value;
+                                console.log(`Product ${productId} quantity: ${data.quantity}`);
+                            }
+                        }
+                    });
                     
                     // Populate form
                     document.getElementById('bulkSupplierId').value = supplierId;
@@ -320,9 +410,14 @@
                         const qtyInput = document.createElement('input');
                         qtyInput.type = 'hidden';
                         qtyInput.name = `quantities[${productId}]`;
-                        qtyInput.value = data.suggestedQty;
+                        qtyInput.value = data.quantity || data.suggestedQty;
                         container.appendChild(qtyInput);
+                        
+                        console.log(`Added to form - Product: ${productId}, Qty: ${qtyInput.value}`);
                     });
+                    
+                    console.log('Form data prepared, submitting...');
+                    console.log('Form HTML:', document.getElementById('bulkReorderForm').innerHTML);
                     
                     // Submit form
                     document.getElementById('bulkReorderForm').submit();

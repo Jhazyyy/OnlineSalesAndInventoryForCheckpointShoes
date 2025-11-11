@@ -55,7 +55,7 @@ class ReturnsController extends Controller
      */
     public function create()
     {
-        $products = Product::where('stock_quantity', '>', 0)
+        $products = Product::where('quantity', '>', 0)
                           ->orderBy('product_name')
                           ->get();
         

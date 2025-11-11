@@ -198,8 +198,21 @@ class Returns extends Model
         $saved = $this->save();
 
         if ($saved) {
-            // Add back to inventory
-            $this->product->increaseStock($this->quantity);
+            // Add back to inventory using StockMovement with proper return type
+            $currentQuantity = $this->product->quantity;
+            
+            \App\Models\StockMovement::recordMovement(
+                productId: $this->product_id,
+                quantityBefore: $currentQuantity,
+                quantityChange: $this->quantity,
+                quantityAfter: $currentQuantity + $this->quantity,
+                movementType: \App\Models\StockMovement::TYPE_RETURN,
+                userId: auth()->id() ?? null,
+                referenceType: 'return',
+                referenceId: $this->return_id,
+                unitCost: $this->price,
+                notes: 'Sales return approved and stock returned to inventory'
+            );
         }
 
         return $saved;

@@ -73,7 +73,7 @@
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Customer</label>
                                         <div class="mt-1">
                                             <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                                {{ $exchange->customer->customer_name ?? 'N/A' }}
+                                                {{ $exchange->customer->display_name ?? 'N/A' }}
                                             </div>
                                             @if($exchange->customer)
                                                 <div class="text-sm text-gray-500 dark:text-gray-400">

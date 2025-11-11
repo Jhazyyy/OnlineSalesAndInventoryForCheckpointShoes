@@ -374,7 +374,7 @@ class ReportService
             $customer = $customerOrders->first()->customer;
             return [
                 'customer_id' => $customer?->customer_id,
-                'customer_name' => $customer?->customer_name ?? trim(($customer->first_name ?? '') . ' ' . ($customer->last_name ?? '')),
+                'customer_name' => $customer?->display_name ?? 'N/A',
                 'order_count' => $customerOrders->count(),
                 'total_spent' => $customerOrders->sum('total_amount'),
             ];

@@ -57,7 +57,7 @@
                                     @foreach($customers as $customer)
                                         <option value="{{ $customer->customer_id }}" 
                                                 {{ old('customer_id', $salesOrder->customer_id ?? '') == $customer->customer_id ? 'selected' : '' }}>
-                                            {{ $customer->full_name }}
+                                            {{ $customer->display_name }} - {{ $customer->email ?? $customer->phone }}
                                         </option>
                                     @endforeach
                                 </select>

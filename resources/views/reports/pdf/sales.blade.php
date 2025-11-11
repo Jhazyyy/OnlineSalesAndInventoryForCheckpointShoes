@@ -55,7 +55,7 @@
         <tbody>
             @foreach(($report['product_sales'] ?? []) as $row)
                 <tr>
-                    <td>{{ $row->product_brand ?? ('SKU-' . ($row->product_id ?? '')) }}</td>
+                    <td>{{ $row->product_sku ?? ('SKU-' . ($row->product_id ?? '')) }}</td>
                     <td>{{ $row->product_name }}</td>
                     <td>{{ $row->product_brand }}</td>
                     <td>{{ $row->product_category }}</td>

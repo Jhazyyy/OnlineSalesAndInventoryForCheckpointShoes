@@ -35,7 +35,7 @@
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">SKU</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Category</th>
                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Stock</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Reserved</th>
+                                {{-- <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Reserved</th> --}}
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Available</th>
                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Reorder Level</th>
                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
@@ -84,9 +84,9 @@
                                     <td class="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-gray-100">
                                         {{ number_format($totalStock) }}
                                     </td>
-                                    <td class="px-6 py-4 text-center text-sm text-gray-600 dark:text-gray-400">
+                                    {{-- <td class="px-6 py-4 text-center text-sm text-gray-600 dark:text-gray-400">
                                         {{ number_format($reserved) }}
-                                    </td>
+                                    </td> --}}
                                     <td class="px-6 py-4">
                                         <div class="flex flex-col gap-1">
                                             <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">

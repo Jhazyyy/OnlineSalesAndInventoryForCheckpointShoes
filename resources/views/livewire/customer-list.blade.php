@@ -25,10 +25,10 @@
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-900">
                     <tr>
-                        <th wire:click="sortBy('name')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+                        <th wire:click="sortBy('first_name')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
                             <div class="flex items-center gap-1">
                                 Name
-                                @if($sortField === 'name')
+                                @if($sortField === 'first_name')
                                     <span>{{ $sortDirection === 'asc' ? '↑' : '↓' }}</span>
                                 @endif
                             </div>
@@ -56,7 +56,7 @@
                     @forelse($customers as $customer)
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                                {{ $customer->name ?? '—' }}
+                                {{ $customer->display_name ?? '—' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                 {{ $customer->email ?? '—' }}

@@ -115,7 +115,7 @@ class ReportExport implements FromCollection, WithHeadings, WithTitle, WithStyle
             return [
                 $order->order_id ?? $order->sales_order_id ?? 'N/A',
                 $order->order_date ? date('Y-m-d', strtotime($order->order_date)) : 'N/A',
-                $order->customer->customer_name ?? 'N/A',
+                $order->customer->display_name ?? 'N/A',
                 $order->status ?? $order->order_status ?? 'N/A',
                 number_format($order->total_amount ?? 0, 2),
                 $order->payment_status ?? 'N/A',
