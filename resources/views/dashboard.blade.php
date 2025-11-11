@@ -234,9 +234,57 @@
                                     <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
                                         QUANTITY TO BE RECEIVED
                                     </div>
-                                    <div class="text-5xl font-bold text-gray-800 dark:text-gray-100">
-                                        {{ $purchaseReceiveStats['in_transit_count'] ?? 0 }}
+                                    <div class="text-5xl font-bold text-blue-600 dark:text-blue-400">
+                                        {{ number_format($purchaseReceiveStats['pending_quantity'] ?? 0) }}
                                     </div>
+                                    
+                                    <!-- Breakdown of pending quantities -->
+                                    @if(($purchaseReceiveStats['pending_quantity'] ?? 0) > 0)
+                                        <div class="mt-4 space-y-2 text-xs">
+                                            @if(($purchaseReceiveStats['pending_from_orders'] ?? 0) > 0)
+                                                <div class="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
+                                                    <div class="flex items-center">
+                                                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                        </svg>
+                                                        <span class="text-gray-700 dark:text-gray-300">Purchase Orders</span>
+                                                    </div>
+                                                    <span class="font-semibold text-blue-600 dark:text-blue-400">
+                                                        {{ number_format($purchaseReceiveStats['pending_from_orders']) }}
+                                                    </span>
+                                                </div>
+                                            @endif
+                                            
+                                            @if(($purchaseReceiveStats['pending_from_deliveries'] ?? 0) > 0)
+                                                <div class="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-900/20 rounded">
+                                                    <div class="flex items-center">
+                                                        <svg class="w-4 h-4 text-orange-600 dark:text-orange-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path>
+                                                        </svg>
+                                                        <span class="text-gray-700 dark:text-gray-300">In Delivery</span>
+                                                    </div>
+                                                    <span class="font-semibold text-orange-600 dark:text-orange-400">
+                                                        {{ number_format($purchaseReceiveStats['pending_from_deliveries']) }}
+                                                    </span>
+                                                </div>
+                                            @endif
+                                            
+                                            @if(($purchaseReceiveStats['pending_from_receives'] ?? 0) > 0)
+                                                <div class="flex items-center justify-between p-2 bg-green-50 dark:bg-green-900/20 rounded">
+                                                    <div class="flex items-center">
+                                                        <svg class="w-4 h-4 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                                                        </svg>
+                                                        <span class="text-gray-700 dark:text-gray-300">Goods Receipt</span>
+                                                    </div>
+                                                    <span class="font-semibold text-green-600 dark:text-green-400">
+                                                        {{ number_format($purchaseReceiveStats['pending_from_receives']) }}
+                                                    </span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>

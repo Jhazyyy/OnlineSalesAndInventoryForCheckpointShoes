@@ -79,7 +79,7 @@
                         </div>
 
                         <!-- Product Properties Row -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Property Name -->
                             <div>
                                 <label for="property_name"
@@ -108,7 +108,7 @@
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Product Brand and Category Row -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

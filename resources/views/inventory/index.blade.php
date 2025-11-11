@@ -63,9 +63,9 @@
 
                                         $percentage = min(100, ($available / ($reorderLevel * 2)) * 100);
                                     } else {
-                                        $status = 'Good';
+                                        $status = 'Not Good';
                                         $statusClass = 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-                                        $percentage = 100;
+                                        $percentage = 0;
                                     }
                                 @endphp
 

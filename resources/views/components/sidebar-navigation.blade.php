@@ -68,7 +68,7 @@
 
                         <!-- Tax & Discount -->
                         <x-nav-item route="master_data.tax_discounts.index" route-pattern="master_data.tax_discounts.*"
-                            :icon="App\Helpers\NavigationHelper::getIcon('tax_and_discount', 'w-4 h-4 mr-3')" title="Tax & Discount" size="small" />
+                            :icon="App\Helpers\NavigationHelper::getIcon('tax_and_discount', 'w-5 h-5 mr-3')" title="Tax & Discount" size="small" />
 
                     </x-nav-item>
 
@@ -209,8 +209,8 @@
                             title="Critical Level Items" size="small" /> --}}
 
                         <!-- Financial Report (P&L) -->
-                        <x-nav-item route="reports.financial" route-pattern="reports.financial" :icon="App\Helpers\NavigationHelper::getIcon('financial_report', 'w-4 h-4 mr-3')"
-                            title="Financial Report (P&L)" size="small" />
+                        {{-- <x-nav-item route="reports.financial" route-pattern="reports.financial" :icon="App\Helpers\NavigationHelper::getIcon('financial_report', 'w-4 h-4 mr-3')"
+                            title="Financial Report (P&L)" size="small" /> --}}
 
                         <!-- Supplier Cost -->
                         {{-- <x-nav-item route="reports.financial" route-pattern="reports.financial" :icon="App\Helpers\NavigationHelper::getIcon('supplier_cost', 'w-4 h-4 mr-3')"

@@ -3,7 +3,8 @@
         <div class="w-full mx-auto sm:px-6 lg:px-8">
             <!-- Success/Error Messages -->
             @if (session('success'))
-                <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+                    role="alert">
                     <strong class="font-bold">Success!</strong>
                     <span class="block sm:inline">{{ session('success') }}</span>
                 </div>
@@ -17,7 +18,8 @@
             @endif
 
             @if ($errors->any())
-                <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                    role="alert">
                     <strong class="font-bold">Please fix the following errors:</strong>
                     <ul class="mt-2 list-disc list-inside">
                         @foreach ($errors->all() as $error)
@@ -39,7 +41,9 @@
                             <a href="{{ route('pos.index') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 transition">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                                    </path>
                                 </svg>
                                 Sales History
                             </a>
@@ -56,11 +60,9 @@
                         <!-- Product Search & Filter -->
                         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-4">
                             <div class="p-4">
-                                <input type="text" 
-                                       x-model="productSearch" 
-                                       @input="filterProducts"
-                                       placeholder="Search products by name or SKU..." 
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <input type="text" x-model="productSearch" @input="filterProducts"
+                                    placeholder="Search products by name or SKU..."
+                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
                         </div>
 
@@ -68,94 +70,121 @@
                         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                             <div class="p-6">
                                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Products</h3>
-                                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[600px] overflow-y-auto">
+                                <div
+                                    class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[600px] overflow-y-auto">
                                     <template x-for="product in filteredProducts" :key="product.id">
-                                        <div class="relative" 
-                                             x-data="{ showTooltip: false }"
-                                             @mouseenter="showTooltip = true" 
-                                             @mouseleave="showTooltip = false">
-                                            <div @click="addToCart(product.id, product.name, product.price, product.stock, product.image || '')" 
-                                                 class="bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all">
-                                                <div class="aspect-square bg-gray-100 dark:bg-gray-600 flex items-center justify-center">
+                                        <div class="relative" x-data="{ showTooltip: false }" @mouseenter="showTooltip = true"
+                                            @mouseleave="showTooltip = false">
+                                            <div @click="addToCart(product.id, product.name, product.price, product.stock, product.image || '')"
+                                                class="bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all">
+                                                <div
+                                                    class="aspect-square bg-gray-100 dark:bg-gray-600 flex items-center justify-center">
                                                     <template x-if="product.image">
-                                                        <img :src="product.image" :alt="product.name" class="w-full h-full object-cover">
+                                                        <img :src="product.image" :alt="product.name"
+                                                            class="w-full h-full object-cover">
                                                     </template>
                                                     <template x-if="!product.image">
-                                                        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                        <svg class="w-12 h-12 text-gray-400" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4">
+                                                            </path>
                                                         </svg>
                                                     </template>
                                                 </div>
                                                 <div class="p-3">
                                                     <div class="flex items-start justify-between mb-2">
-                                                        <span class="inline-block px-2 py-1 text-xs font-semibold rounded"
-                                                              :class="{
-                                                                  'text-green-700 bg-green-100 dark:bg-green-900 dark:text-green-300': product.stock > 10,
-                                                                  'text-yellow-700 bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-300': product.stock <= 10 && product.stock > 0,
-                                                                  'text-red-700 bg-red-100 dark:bg-red-900 dark:text-red-300': product.stock === 0
-                                                              }"
-                                                              x-text="product.stock + ' ' + product.unit"></span>
+                                                        <span
+                                                            class="inline-block px-2 py-1 text-xs font-semibold rounded"
+                                                            :class="{
+                                                                'text-green-700 bg-green-100 dark:bg-green-900 dark:text-green-300': product
+                                                                    .stock > 10,
+                                                                'text-yellow-700 bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-300': product
+                                                                    .stock <= 10 && product.stock > 0,
+                                                                'text-red-700 bg-red-100 dark:bg-red-900 dark:text-red-300': product
+                                                                    .stock === 0
+                                                            }"
+                                                            x-text="product.stock + ' ' + product.unit"></span>
                                                     </div>
-                                                    <h4 class="font-semibold text-sm text-gray-900 dark:text-white truncate mb-1" x-text="product.name" :title="product.name"></h4>
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2" x-text="product.sku"></p>
+                                                    <h4 class="font-semibold text-sm text-gray-900 dark:text-white truncate mb-1"
+                                                        x-text="product.name" :title="product.name"></h4>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2"
+                                                        x-text="product.sku"></p>
                                                     <div class="flex justify-between items-center">
-                                                        <span class="text-lg font-bold text-gray-900 dark:text-white" x-text="'₱' + parseFloat(product.price).toFixed(2)"></span>
+                                                        <span class="text-lg font-bold text-gray-900 dark:text-white"
+                                                            x-text="'₱' + parseFloat(product.price).toFixed(2)"></span>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <!-- Hover Tooltip -->
                                             <div x-show="showTooltip"
-                                                 x-transition:enter="transition ease-out duration-200"
-                                                 x-transition:enter-start="opacity-0 scale-95"
-                                                 x-transition:enter-end="opacity-100 scale-100"
-                                                 x-transition:leave="transition ease-in duration-150"
-                                                 x-transition:leave-start="opacity-100 scale-100"
-                                                 x-transition:leave-end="opacity-0 scale-95"
-                                                 class="absolute z-50 inset-0 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded-lg shadow-2xl p-3 overflow-y-auto cursor-pointer"
-                                                 style="display: none;"
-                                                 @click="addToCart(product.id, product.name, product.price, product.stock, product.image || ''); showTooltip = false">
+                                                x-transition:enter="transition ease-out duration-200"
+                                                x-transition:enter-start="opacity-0 scale-95"
+                                                x-transition:enter-end="opacity-100 scale-100"
+                                                x-transition:leave="transition ease-in duration-150"
+                                                x-transition:leave-start="opacity-100 scale-100"
+                                                x-transition:leave-end="opacity-0 scale-95"
+                                                class="absolute z-50 inset-0 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded-lg shadow-2xl p-3 overflow-y-auto cursor-pointer"
+                                                style="display: none;"
+                                                @click="addToCart(product.id, product.name, product.price, product.stock, product.image || ''); showTooltip = false">
                                                 <div class="space-y-2 h-full flex flex-col">
                                                     <!-- Product Image -->
                                                     <template x-if="product.image">
-                                                        <div class="w-full h-28 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
-                                                            <img :src="product.image" :alt="product.name" class="w-full h-full object-cover">
+                                                        <div
+                                                            class="w-full h-28 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
+                                                            <img :src="product.image" :alt="product.name"
+                                                                class="w-full h-full object-cover">
                                                         </div>
                                                     </template>
-                                                    
+
                                                     <!-- Product Name -->
                                                     <div class="flex-shrink-0">
-                                                        <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-0.5 line-clamp-2" x-text="product.name"></h4>
+                                                        <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-0.5 line-clamp-2"
+                                                            x-text="product.name"></h4>
                                                         <p class="text-xs text-gray-500 dark:text-gray-400">
                                                             SKU: <span x-text="product.sku"></span>
                                                         </p>
                                                     </div>
-                                                    
+
                                                     <!-- Product Details -->
-                                                    <div class="space-y-1.5 text-xs border-t border-gray-200 dark:border-gray-700 pt-2 flex-1">
+                                                    <div
+                                                        class="space-y-1.5 text-xs border-t border-gray-200 dark:border-gray-700 pt-2 flex-1">
                                                         <div class="flex justify-between">
-                                                            <span class="text-gray-600 dark:text-gray-400">Category:</span>
-                                                            <span class="font-medium text-gray-900 dark:text-white truncate ml-2" x-text="product.category"></span>
+                                                            <span
+                                                                class="text-gray-600 dark:text-gray-400">Category:</span>
+                                                            <span
+                                                                class="font-medium text-gray-900 dark:text-white truncate ml-2"
+                                                                x-text="product.category"></span>
                                                         </div>
                                                         <div class="flex justify-between">
-                                                            <span class="text-gray-600 dark:text-gray-400">Price:</span>
-                                                            <span class="font-bold text-base text-blue-600 dark:text-blue-400" x-text="'₱' + parseFloat(product.price).toFixed(2)"></span>
+                                                            <span
+                                                                class="text-gray-600 dark:text-gray-400">Price:</span>
+                                                            <span
+                                                                class="font-bold text-base text-blue-600 dark:text-blue-400"
+                                                                x-text="'₱' + parseFloat(product.price).toFixed(2)"></span>
                                                         </div>
                                                         <div class="flex justify-between">
-                                                            <span class="text-gray-600 dark:text-gray-400">Stock:</span>
-                                                            <span class="font-semibold" 
-                                                                  :class="{ 
-                                                                      'text-green-600 dark:text-green-400': product.stock > 10,
-                                                                      'text-yellow-600 dark:text-yellow-400': product.stock <= 10 && product.stock > 0,
-                                                                      'text-red-600 dark:text-red-400': product.stock === 0
-                                                                  }"
-                                                                  x-text="product.stock + ' ' + product.unit">
+                                                            <span
+                                                                class="text-gray-600 dark:text-gray-400">Stock:</span>
+                                                            <span class="font-semibold"
+                                                                :class="{
+                                                                    'text-green-600 dark:text-green-400': product
+                                                                        .stock > 10,
+                                                                    'text-yellow-600 dark:text-yellow-400': product
+                                                                        .stock <= 10 && product.stock > 0,
+                                                                    'text-red-600 dark:text-red-400': product.stock ===
+                                                                        0
+                                                                }"
+                                                                x-text="product.stock + ' ' + product.unit">
                                                             </span>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <!-- Click to Add Hint -->
-                                                    <div class="text-center pt-1.5 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+                                                    <div
+                                                        class="text-center pt-1.5 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
                                                         <p class="text-xs text-gray-500 dark:text-gray-400 italic">
                                                             Click to add to cart
                                                         </p>
@@ -176,20 +205,20 @@
                                 <!-- Customer Selection/Creation -->
                                 <div class="mb-6">
                                     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-3">Customer</h3>
-                                    
+
                                     <!-- Existing Customer -->
                                     <div x-show="!showNewCustomerForm">
-                                        <select x-model="selectedCustomerId" 
-                                                name="customer_id"
-                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white mb-2">
+                                        <select x-model="selectedCustomerId" name="customer_id"
+                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white mb-2">
                                             <option value="">Select existing customer...</option>
                                             <template x-for="customer in customers" :key="customer.id">
-                                                <option :value="customer.id" x-text="customer.name + ' (' + customer.phone + ')'"></option>
+                                                <option :value="customer.id"
+                                                    x-text="customer.name"></option>
                                             </template>
                                         </select>
-                                        <button type="button" 
-                                                @click="showNewCustomerForm = true; selectedCustomerId = ''"
-                                                class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400">
+                                        <button type="button"
+                                            @click="showNewCustomerForm = true; selectedCustomerId = ''"
+                                            class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400">
                                             + Add New Customer
                                         </button>
                                     </div>
@@ -197,37 +226,29 @@
                                     <!-- New Customer Form -->
                                     <div x-show="showNewCustomerForm" class="space-y-3">
                                         <div>
-                                            <input type="text" 
-                                                   name="new_customer_first_name"
-                                                   x-model="newCustomer.first_name"
-                                                   placeholder="First Name *" 
-                                                   :required="showNewCustomerForm"
-                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
+                                            <input type="text" name="new_customer_first_name"
+                                                x-model="newCustomer.first_name" placeholder="First Name *"
+                                                :required="showNewCustomerForm"
+                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
                                         </div>
                                         <div>
-                                            <input type="text" 
-                                                   name="new_customer_last_name"
-                                                   x-model="newCustomer.last_name"
-                                                   placeholder="Last Name" 
-                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
+                                            <input type="text" name="new_customer_last_name"
+                                                x-model="newCustomer.last_name" placeholder="Last Name"
+                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
                                         </div>
                                         <div>
-                                            <input type="tel" 
-                                                   name="new_customer_phone"
-                                                   x-model="newCustomer.phone"
-                                                   placeholder="Phone Number" 
-                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
+                                            <input type="tel" name="new_customer_phone"
+                                                x-model="newCustomer.phone" placeholder="Phone Number"
+                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
                                         </div>
                                         <div>
-                                            <input type="email" 
-                                                   name="new_customer_email"
-                                                   x-model="newCustomer.email"
-                                                   placeholder="Email (Optional)" 
-                                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
+                                            <input type="email" name="new_customer_email"
+                                                x-model="newCustomer.email" placeholder="Email (Optional)"
+                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
                                         </div>
-                                        <button type="button" 
-                                                @click="showNewCustomerForm = false; clearNewCustomer()"
-                                                class="text-sm text-gray-600 hover:text-gray-700 dark:text-gray-400">
+                                        <button type="button"
+                                            @click="showNewCustomerForm = false; clearNewCustomer()"
+                                            class="text-sm text-gray-600 hover:text-gray-700 dark:text-gray-400">
                                             ← Use Existing Customer
                                         </button>
                                     </div>
@@ -237,42 +258,59 @@
                                 <div class="mb-4">
                                     <div class="flex justify-between items-center mb-3">
                                         <h3 class="text-lg font-medium text-gray-900 dark:text-white">Cart</h3>
-                                        <button type="button" 
-                                                @click="clearCart()" 
-                                                :disabled="cart.length === 0"
-                                                class="text-sm text-red-600 hover:text-red-700 dark:text-red-400 disabled:opacity-50">
+                                        <button type="button" @click="clearCart()" :disabled="cart.length === 0"
+                                            class="text-sm text-red-600 hover:text-red-700 dark:text-red-400 disabled:opacity-50">
                                             Clear
                                         </button>
                                     </div>
 
                                     <div class="space-y-2 max-h-[300px] overflow-y-auto mb-4 scrollbar-thin">
-                                        <p x-show="cart.length === 0" class="text-center text-gray-500 py-8 text-sm">Cart is empty</p>
-                                        
+                                        <p x-show="cart.length === 0" class="text-center text-gray-500 py-8 text-sm">
+                                            Cart is empty</p>
+
                                         <template x-for="(item, index) in cart" :key="index">
-                                            <div class="flex items-center space-x-2 p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                                            <div
+                                                class="flex items-center space-x-2 p-2 bg-gray-50 dark:bg-gray-700 rounded">
                                                 <div class="flex-1 min-w-0">
-                                                    <p class="text-sm font-medium text-gray-900 dark:text-white truncate" x-text="item.name"></p>
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400" x-text="'₱' + parseFloat(item.price).toFixed(2)"></p>
+                                                    <p class="text-sm font-medium text-gray-900 dark:text-white truncate"
+                                                        x-text="item.name"></p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400"
+                                                        x-text="'₱' + parseFloat(item.price).toFixed(2)"></p>
                                                 </div>
                                                 <div class="flex items-center space-x-1">
-                                                    <button type="button" @click="updateQuantity(index, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-200 dark:bg-gray-600 rounded hover:bg-gray-300">
+                                                    <button type="button" @click="updateQuantity(index, -1)"
+                                                        class="w-7 h-7 flex items-center justify-center bg-gray-200 dark:bg-gray-600 rounded hover:bg-gray-300">
                                                         <span class="text-sm">-</span>
                                                     </button>
-                                                    <span class="w-8 text-center text-sm font-medium" x-text="item.quantity"></span>
-                                                    <button type="button" @click="updateQuantity(index, 1)" class="w-7 h-7 flex items-center justify-center bg-blue-100 dark:bg-blue-900 rounded hover:bg-blue-200">
-                                                        <span class="text-sm">+</span>
-                                                    </button>
+                                                    <input type="number" 
+                                                        :value="item.quantity"
+                                                        @input="setQuantity(index, $event.target.value)"
+                                                        @focus="$event.target.select()"
+                                                        min="1"
+                                                        :max="item.stock"
+                                                        class="w-20 text-center text-sm font-medium border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 py-1">
+                                                        <button type="button" @click="updateQuantity(index, 1)"
+                                                            class="w-7 h-7 flex items-center justify-center bg-blue-100 dark:bg-blue-900 rounded hover:bg-blue-200">
+                                                            <span class="text-sm">+</span>
+                                                        </button>
                                                 </div>
-                                                <button type="button" @click="removeFromCart(index)" class="text-red-600 hover:text-red-700">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                <button type="button" @click="removeFromCart(index)"
+                                                    class="text-red-600 hover:text-red-700">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                                     </svg>
                                                 </button>
                                                 <!-- Hidden inputs for form submission -->
-                                                <input type="hidden" :name="'items[' + index + '][product_id]'" :value="item.id">
-                                                <input type="hidden" :name="'items[' + index + '][quantity]'" :value="item.quantity">
-                                                <input type="hidden" :name="'items[' + index + '][unit_price]'" :value="item.price">
-                                                <input type="hidden" :name="'items[' + index + '][discount_amount]'" value="0">
+                                                <input type="hidden" :name="'items[' + index + '][product_id]'"
+                                                    :value="item.id">
+                                                <input type="hidden" :name="'items[' + index + '][quantity]'"
+                                                    :value="item.quantity">
+                                                <input type="hidden" :name="'items[' + index + '][unit_price]'"
+                                                    :value="item.price">
+                                                <input type="hidden" :name="'items[' + index + '][discount_amount]'"
+                                                    value="0">
                                             </div>
                                         </template>
                                     </div>
@@ -281,152 +319,168 @@
                                 <!-- Cart Summary -->
                                 <div class="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-3">
                                     <!-- Customer Tax Dropdown -->
-                                    @if(isset($activeTaxes) && $activeTaxes->isNotEmpty())
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            <span class="flex items-center justify-between">
-                                                <span>Tax Rule</span>
-                                                <span x-show="selectedTaxRule" class="text-indigo-600 dark:text-indigo-400" x-text="'₱' + taxAmount.toFixed(2)"></span>
-                                            </span>
-                                        </label>
-                                        <select x-model="selectedTaxRule" 
-                                            class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-indigo-500 focus:border-indigo-500">
-                                            <option value="">-- No Tax --</option>
-                                            @foreach($activeTaxes as $tax)
-                                                <option value="{{ $tax->id }}" 
-                                                    data-rate="{{ $tax->rate }}"
-                                                    data-method="{{ $tax->calculation_method }}"
-                                                    data-fixed="{{ $tax->fixed_amount ?? 0 }}">
-                                                    {{ $tax->name }} - 
-                                                    @if($tax->calculation_method === 'percentage')
-                                                        {{ $tax->rate }}%
-                                                    @else
-                                                        ₱{{ number_format((float)$tax->fixed_amount, 2) }}
-                                                    @endif
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+                                    @if (isset($activeTaxes) && $activeTaxes->isNotEmpty())
+                                        <div>
+                                            <label
+                                                class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                <span class="flex items-center justify-between">
+                                                    <span>Tax Rule</span>
+                                                    <span x-show="selectedTaxRule"
+                                                        class="text-indigo-600 dark:text-indigo-400"
+                                                        x-text="'₱' + taxAmount.toFixed(2)"></span>
+                                                </span>
+                                            </label>
+                                            <select x-model="selectedTaxRule"
+                                                class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                                <option value="">-- No Tax --</option>
+                                                @foreach ($activeTaxes as $tax)
+                                                    <option value="{{ $tax->id }}"
+                                                        data-rate="{{ $tax->rate }}"
+                                                        data-method="{{ $tax->calculation_method }}"
+                                                        data-fixed="{{ $tax->fixed_amount ?? 0 }}">
+                                                        {{ $tax->name }} -
+                                                        @if ($tax->calculation_method === 'percentage')
+                                                            {{ $tax->rate }}%
+                                                        @else
+                                                            ₱{{ number_format((float) $tax->fixed_amount, 2) }}
+                                                        @endif
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     @endif
 
                                     <!-- Customer Discount Dropdown -->
-                                    @if(isset($activeDiscounts) && $activeDiscounts->isNotEmpty())
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            <span class="flex items-center justify-between">
-                                                <span>Discount Rule</span>
-                                                <span x-show="selectedDiscountRule" class="text-green-600 dark:text-green-400" x-text="'₱' + discountAmount.toFixed(2)"></span>
-                                            </span>
-                                        </label>
-                                        <select x-model="selectedDiscountRule" 
-                                            class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-indigo-500 focus:border-indigo-500">
-                                            <option value="">-- No Discount --</option>
-                                            @foreach($activeDiscounts as $discount)
-                                                <option value="{{ $discount->id }}" 
-                                                    data-rate="{{ $discount->rate }}"
-                                                    data-method="{{ $discount->calculation_method }}"
-                                                    data-fixed="{{ $discount->fixed_amount ?? 0 }}">
-                                                    {{ $discount->name }} - 
-                                                    @if($discount->calculation_method === 'percentage')
-                                                        {{ $discount->rate }}%
-                                                    @else
-                                                        ₱{{ number_format((float)$discount->fixed_amount, 2) }}
-                                                    @endif
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+                                    @if (isset($activeDiscounts) && $activeDiscounts->isNotEmpty())
+                                        <div>
+                                            <label
+                                                class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                <span class="flex items-center justify-between">
+                                                    <span>Discount Rule</span>
+                                                    <span x-show="selectedDiscountRule"
+                                                        class="text-green-600 dark:text-green-400"
+                                                        x-text="'₱' + discountAmount.toFixed(2)"></span>
+                                                </span>
+                                            </label>
+                                            <select x-model="selectedDiscountRule"
+                                                class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+                                                <option value="">-- No Discount --</option>
+                                                @foreach ($activeDiscounts as $discount)
+                                                    <option value="{{ $discount->id }}"
+                                                        data-rate="{{ $discount->rate }}"
+                                                        data-method="{{ $discount->calculation_method }}"
+                                                        data-fixed="{{ $discount->fixed_amount ?? 0 }}">
+                                                        {{ $discount->name }} -
+                                                        @if ($discount->calculation_method === 'percentage')
+                                                            {{ $discount->rate }}%
+                                                        @else
+                                                            ₱{{ number_format((float) $discount->fixed_amount, 2) }}
+                                                        @endif
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     @endif
 
                                     <!-- Order Summary -->
                                     <div class="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-2">
                                         <div class="flex justify-between text-sm">
                                             <span class="text-gray-600 dark:text-gray-400">Subtotal</span>
-                                            <span class="font-medium text-gray-900 dark:text-white" x-text="'₱' + subtotal.toFixed(2)"></span>
+                                            <span class="font-medium text-gray-900 dark:text-white"
+                                                x-text="'₱' + subtotal.toFixed(2)"></span>
                                         </div>
                                         <div class="flex justify-between text-sm" x-show="taxAmount > 0">
                                             <span class="text-gray-600 dark:text-gray-400">Tax</span>
-                                            <span class="font-medium text-indigo-600 dark:text-indigo-400" x-text="'₱' + taxAmount.toFixed(2)"></span>
+                                            <span class="font-medium text-indigo-600 dark:text-indigo-400"
+                                                x-text="'₱' + taxAmount.toFixed(2)"></span>
                                         </div>
                                         <div class="flex justify-between text-sm" x-show="discountAmount > 0">
                                             <span class="text-gray-600 dark:text-gray-400">Discount</span>
-                                            <span class="font-medium text-green-600 dark:text-green-400" x-text="'-₱' + discountAmount.toFixed(2)"></span>
+                                            <span class="font-medium text-green-600 dark:text-green-400"
+                                                x-text="'-₱' + discountAmount.toFixed(2)"></span>
                                         </div>
                                     </div>
 
                                     <div class="flex justify-between text-lg font-bold border-t pt-2">
                                         <span class="text-gray-900 dark:text-white">Total</span>
-                                        <span class="text-gray-900 dark:text-white" x-text="'₱' + total.toFixed(2)"></span>
+                                        <span class="text-gray-900 dark:text-white"
+                                            x-text="'₱' + total.toFixed(2)"></span>
                                     </div>
                                 </div>
 
                                 <!-- Payment Method -->
                                 <div class="mt-4">
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Method</label>
-                                    <select x-model="paymentMethod" 
-                                            name="payment_method" 
-                                            required
-                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <label
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment
+                                        Method</label>
+                                    <select x-model="paymentMethod" name="payment_method" required
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                         <option value="cash">Cash</option>
-                                        <option value="card">Card</option>
                                         <option value="bank_transfer">Bank Transfer</option>
-                                        <option value="other">Other</option>
+                                        <option value="other">Gcash</option>
                                     </select>
                                 </div>
 
                                 <!-- Payment Status -->
                                 <div class="mt-4">
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment Status</label>
-                                    <select x-model="paymentStatus" 
-                                            name="payment_status" 
-                                            required
-                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <label
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Payment
+                                        Status</label>
+                                    <select x-model="paymentStatus" name="payment_status" required
+                                        :disabled="isPaymentInsufficient"
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white disabled:opacity-60 disabled:cursor-not-allowed">
                                         <option value="paid">Paid</option>
                                         <option value="pending">Pending</option>
                                     </select>
+                                    <p x-show="isPaymentInsufficient" class="mt-1 text-xs text-yellow-600 dark:text-yellow-400">
+                                        Status locked to 'Pending' - insufficient payment amount
+                                    </p>
                                 </div>
 
                                 <!-- Amount Received (for cash) -->
-                                <div class="mt-4" x-show="paymentMethod === 'cash' && paymentStatus === 'paid'">
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount Received</label>
-                                    <input type="number" 
-                                           x-model.number="amountReceived" 
-                                           name="amount_received"
-                                           step="0.01" 
-                                           min="0"
-                                           :placeholder="'₱' + total.toFixed(2)"
-                                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <p x-show="change > 0" class="mt-1 text-sm text-green-600 dark:text-green-400">
+                                <div class="mt-4" x-show="paymentMethod === 'cash'">
+                                    <label
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount
+                                        Received</label>
+                                    <input type="number" x-model.number="amountReceived" name="amount_received"
+                                        @input="checkPaymentAmount"
+                                        step="0.01" min="0" :placeholder="'₱' + total.toFixed(2)"
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <p x-show="change >= 0 && amountReceived > 0" class="mt-1 text-sm text-green-600 dark:text-green-400">
                                         Change: <span class="font-bold" x-text="'₱' + change.toFixed(2)"></span>
                                     </p>
-                                    <p x-show="amountReceived > 0 && change < 0" class="mt-1 text-sm text-red-600 dark:text-red-400">
-                                        Insufficient amount
+                                    <p x-show="amountReceived > 0 && change < 0"
+                                        class="mt-1 text-sm text-red-600 dark:text-red-400">
+                                        <strong>Insufficient amount!</strong> Short by <span class="font-bold" x-text="'₱' + Math.abs(change).toFixed(2)"></span>. Status set to Pending.
                                     </p>
                                 </div>
 
                                 <!-- Hidden Fields -->
-                                <input type="hidden" name="order_date" :value="new Date().toISOString().split('T')[0]">
+                                <input type="hidden" name="order_date"
+                                    :value="new Date().toISOString().split('T')[0]">
                                 <input type="hidden" name="tax_rule_id" :value="selectedTaxRule || ''">
                                 <input type="hidden" name="tax_amount" :value="selectedTaxRule ? taxAmount : 0">
                                 <input type="hidden" name="discount_rule_id" :value="selectedDiscountRule || ''">
-                                <input type="hidden" name="discount_amount" :value="selectedDiscountRule ? discountAmount : 0">
+                                <input type="hidden" name="discount_amount"
+                                    :value="selectedDiscountRule ? discountAmount : 0">
                                 <input type="hidden" name="subtotal_amount" :value="subtotal">
                                 <input type="hidden" name="total_amount" :value="total">
 
                                 <!-- Action Buttons -->
                                 <div class="mt-6 space-y-2">
-                                    <button type="submit" 
-                                            :disabled="cart.length === 0 || (!selectedCustomerId && !newCustomer.first_name)"
-                                            @click="console.log('Submitting POS form', { cart: cart, customerId: selectedCustomerId, newCustomer: newCustomer })"
-                                            class="w-full inline-flex items-center justify-center px-4 py-3 bg-green-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
-                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    <button type="submit"
+                                        :disabled="cart.length === 0 || (!selectedCustomerId && !newCustomer.first_name) || (paymentMethod === 'cash' && paymentStatus === 'paid' && amountReceived > 0 && amountReceived < total)"
+                                        @click="validatePayment($event)"
+                                        class="w-full inline-flex items-center justify-center px-4 py-3 bg-green-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                         Confirm
                                     </button>
-                                    <button type="button" 
-                                            @click="clearAll()"
-                                            class="w-full inline-flex items-center justify-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-gray-700 transition">
+                                    <button type="button" @click="clearAll()"
+                                        class="w-full inline-flex items-center justify-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-gray-700 transition">
                                         Cancel
                                     </button>
                                 </div>
@@ -468,15 +522,15 @@
 
                 get taxAmount() {
                     if (!this.selectedTaxRule) return 0;
-                    
+
                     const select = document.querySelector('select[x-model="selectedTaxRule"]');
                     if (!select) return 0;
-                    
+
                     const selectedOption = select.options[select.selectedIndex];
                     const method = selectedOption.getAttribute('data-method');
                     const rate = parseFloat(selectedOption.getAttribute('data-rate')) || 0;
                     const fixedAmount = parseFloat(selectedOption.getAttribute('data-fixed')) || 0;
-                    
+
                     if (method === 'percentage') {
                         return (this.subtotal * rate) / 100;
                     }
@@ -485,15 +539,15 @@
 
                 get discountAmount() {
                     if (!this.selectedDiscountRule) return 0;
-                    
+
                     const select = document.querySelector('select[x-model="selectedDiscountRule"]');
                     if (!select) return 0;
-                    
+
                     const selectedOption = select.options[select.selectedIndex];
                     const method = selectedOption.getAttribute('data-method');
                     const rate = parseFloat(selectedOption.getAttribute('data-rate')) || 0;
                     const fixedAmount = parseFloat(selectedOption.getAttribute('data-fixed')) || 0;
-                    
+
                     if (method === 'percentage') {
                         return (this.subtotal * rate) / 100;
                     }
@@ -508,9 +562,21 @@
                     return this.amountReceived - this.total;
                 },
 
+                get isPaymentInsufficient() {
+                    // For cash payments, check if amount received is less than total
+                    if (this.paymentMethod === 'cash' && this.amountReceived > 0 && this.amountReceived < this.total) {
+                        return true;
+                    }
+                    return false;
+                },
+
                 // Methods
                 init() {
                     this.filteredProducts = this.products;
+                    // Watch for payment amount changes
+                    this.$watch('amountReceived', () => this.checkPaymentAmount());
+                    this.$watch('total', () => this.checkPaymentAmount());
+                    this.$watch('paymentMethod', () => this.checkPaymentAmount());
                 },
 
                 filterProducts() {
@@ -519,10 +585,22 @@
                         this.filteredProducts = this.products;
                         return;
                     }
-                    this.filteredProducts = this.products.filter(product => 
+                    this.filteredProducts = this.products.filter(product =>
                         product.name.toLowerCase().includes(search) ||
                         product.sku.toLowerCase().includes(search)
                     );
+                },
+
+                checkPaymentAmount() {
+                    // Automatically set payment status to pending if amount is insufficient
+                    if (this.paymentMethod === 'cash' && this.amountReceived > 0 && this.amountReceived < this.total) {
+                        this.paymentStatus = 'pending';
+                    } else if (this.paymentMethod === 'cash' && this.amountReceived >= this.total) {
+                        // Only set to paid if amount is sufficient and currently pending
+                        if (this.paymentStatus === 'pending') {
+                            this.paymentStatus = 'paid';
+                        }
+                    }
                 },
 
                 addToCart(id, name, price, stock, image = '') {
@@ -552,17 +630,35 @@
                 updateQuantity(index, change) {
                     const item = this.cart[index];
                     const newQuantity = item.quantity + change;
-                    
+
                     if (newQuantity <= 0) {
                         this.removeFromCart(index);
                         return;
                     }
-                    
+
                     if (newQuantity > item.stock) {
                         alert('Cannot exceed available stock');
                         return;
                     }
-                    
+
+                    item.quantity = newQuantity;
+                },
+
+                setQuantity(index, value) {
+                    const item = this.cart[index];
+                    const newQuantity = parseInt(value) || 0;
+
+                    if (newQuantity <= 0) {
+                        this.removeFromCart(index);
+                        return;
+                    }
+
+                    if (newQuantity > item.stock) {
+                        alert('Cannot exceed available stock of ' + item.stock);
+                        item.quantity = item.stock;
+                        return;
+                    }
+
                     item.quantity = newQuantity;
                 },
 
@@ -593,52 +689,73 @@
                         this.clearNewCustomer();
                         this.amountReceived = 0;
                     }
+                },
+
+                validatePayment(event) {
+                    // Prevent form submission if payment is insufficient but marked as paid
+                    if (this.paymentMethod === 'cash' && this.paymentStatus === 'paid' && this.amountReceived > 0 && this.amountReceived < this.total) {
+                        event.preventDefault();
+                        alert('Cannot complete as PAID with insufficient payment amount. Please enter the full amount or mark as PENDING.');
+                        return false;
+                    }
+                    
+                    // Confirm submission
+                    console.log('Submitting POS form', { 
+                        cart: this.cart, 
+                        customerId: this.selectedCustomerId, 
+                        newCustomer: this.newCustomer,
+                        paymentStatus: this.paymentStatus,
+                        amountReceived: this.amountReceived,
+                        total: this.total
+                    });
                 }
             }
         }
     </script>
 
     <style>
-        [x-cloak] { display: none !important; }
-        
+        [x-cloak] {
+            display: none !important;
+        }
+
         /* Enhanced scrollbar for cart items */
         .scrollbar-thin {
             scrollbar-width: thin;
             scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar {
             width: 8px;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar-track {
             background: rgba(229, 231, 235, 0.3);
             border-radius: 4px;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar-thumb {
             background-color: rgba(156, 163, 175, 0.6);
             border-radius: 4px;
             border: 2px solid transparent;
             background-clip: content-box;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar-thumb:hover {
             background-color: rgba(156, 163, 175, 0.9);
         }
-        
+
         .dark .scrollbar-thin {
             scrollbar-color: rgba(75, 85, 99, 0.5) transparent;
         }
-        
+
         .dark .scrollbar-thin::-webkit-scrollbar-track {
             background: rgba(55, 65, 81, 0.3);
         }
-        
+
         .dark .scrollbar-thin::-webkit-scrollbar-thumb {
             background-color: rgba(75, 85, 99, 0.6);
         }
-        
+
         .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
             background-color: rgba(75, 85, 99, 0.9);
         }

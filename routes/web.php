@@ -380,6 +380,35 @@ Route::get('dashboard', function () {
             'this_month_receives' => \App\Models\PurchaseReceive::whereMonth('receive_date', now()->month)
                                         ->whereYear('receive_date', now()->year)->count(),
         ];
+        
+        // Calculate comprehensive "Quantity to be Received" from multiple sources
+        // 1. From Purchase Orders - pending items (ordered but not received)
+        $pendingFromPurchaseOrders = \App\Models\PurchaseOrderItem::whereHas('order', function($query) {
+            $query->whereIn('status', ['ordered', 'partial_received', 'approved']);
+        })
+        ->selectRaw('SUM(quantity_ordered - quantity_received) as pending_qty')
+        ->value('pending_qty') ?? 0;
+        
+        // 2. From Purchase Deliveries - items in transit or scheduled
+        $pendingFromDeliveries = \App\Models\PurchaseDeliveryItem::whereHas('delivery', function($query) {
+            $query->whereIn('status', ['scheduled', 'in_transit', 'picked_up']);
+        })
+        ->selectRaw('SUM(quantity_expected - quantity_delivered) as pending_qty')
+        ->value('pending_qty') ?? 0;
+        
+        // 3. From Purchase Receives - items expected but not yet received
+        $pendingFromReceives = \App\Models\PurchaseReceiveItem::whereHas('purchaseReceive', function($query) {
+            $query->whereIn('status', ['in_transit', 'pending']);
+        })
+        ->selectRaw('SUM(quantity_expected - quantity_received) as pending_qty')
+        ->value('pending_qty') ?? 0;
+        
+        // Add comprehensive pending quantity to stats
+        $purchaseReceiveStats['pending_quantity'] = max(0, $pendingFromPurchaseOrders + $pendingFromDeliveries + $pendingFromReceives);
+        $purchaseReceiveStats['pending_from_orders'] = max(0, $pendingFromPurchaseOrders);
+        $purchaseReceiveStats['pending_from_deliveries'] = max(0, $pendingFromDeliveries);
+        $purchaseReceiveStats['pending_from_receives'] = max(0, $pendingFromReceives);
+        
     } catch (\Exception $e) {
         $purchaseReceiveStats = [
             'total_receives' => 0,
@@ -387,6 +416,10 @@ Route::get('dashboard', function () {
             'in_transit_count' => 0,
             'total_value_received' => 0,
             'this_month_receives' => 0,
+            'pending_quantity' => 0,
+            'pending_from_orders' => 0,
+            'pending_from_deliveries' => 0,
+            'pending_from_receives' => 0,
         ];
     }
 
@@ -458,7 +491,7 @@ Route::get('dashboard', function () {
     $salesActivity = $salesActivity ?? ['total_invoices' => 0, 'paid_invoices' => 0, 'draft_invoices' => 0, 'past_due' => 0];
     $stockStatus = $stockStatus ?? ['in_stock' => 0, 'low_stock' => 0, 'out_of_stock' => 0];
     $purchaseOrderStatus = $purchaseOrderStatus ?? ['pending' => 0, 'approved' => 0, 'ordered' => 0, 'partial_received' => 0, 'received' => 0, 'cancelled' => 0];
-    $purchaseReceiveStats = $purchaseReceiveStats ?? ['total_receives' => 0, 'received_count' => 0, 'in_transit_count' => 0, 'total_value_received' => 0, 'this_month_receives' => 0];
+    $purchaseReceiveStats = $purchaseReceiveStats ?? ['total_receives' => 0, 'received_count' => 0, 'in_transit_count' => 0, 'total_value_received' => 0, 'this_month_receives' => 0, 'pending_quantity' => 0, 'pending_from_orders' => 0, 'pending_from_deliveries' => 0, 'pending_from_receives' => 0];
     $purchaseDeliveryStats = $purchaseDeliveryStats ?? ['total_deliveries' => 0, 'scheduled' => 0, 'in_transit' => 0, 'delivered' => 0, 'delayed' => 0, 'this_week_deliveries' => 0];
     $purchasePaymentStats = $purchasePaymentStats ?? ['total_payments' => 0, 'total_paid' => 0, 'pending_payments' => 0, 'partial_paid' => 0, 'fully_paid' => 0, 'this_month_payments' => 0];
     $last7Days = $last7Days ?? collect();
