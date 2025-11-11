@@ -26,10 +26,13 @@ class Returns extends Model
      */
     protected $fillable = [
         'product_id',
+        'customer_id',
+        'sales_order_id',
         'quantity',
         'return_status',
         'price',
         'return_date',
+        'reason',
     ];
 
     /**
@@ -74,6 +77,22 @@ class Returns extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id', 'product_id');
+    }
+
+    /**
+     * Get the customer that owns the return.
+     */
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class, 'customer_id', 'customer_id');
+    }
+
+    /**
+     * Get the sales order associated with the return.
+     */
+    public function salesOrder(): BelongsTo
+    {
+        return $this->belongsTo(SalesOrder::class, 'sales_order_id', 'order_id');
     }
 
     /**
@@ -198,20 +217,16 @@ class Returns extends Model
         $saved = $this->save();
 
         if ($saved) {
-            // Add back to inventory using StockMovement with proper return type
-            $currentQuantity = $this->product->quantity;
-            
-            \App\Models\StockMovement::recordMovement(
+            // Add back to inventory using InventoryService which properly updates both 
+            // the Inventory table and Product quantity
+            \App\Services\InventoryService::adjust(
                 productId: $this->product_id,
-                quantityBefore: $currentQuantity,
                 quantityChange: $this->quantity,
-                quantityAfter: $currentQuantity + $this->quantity,
-                movementType: \App\Models\StockMovement::TYPE_RETURN,
-                userId: auth()->id() ?? null,
-                referenceType: 'return',
-                referenceId: $this->return_id,
                 unitCost: $this->price,
-                notes: 'Sales return approved and stock returned to inventory'
+                movementType: \App\Models\StockMovement::TYPE_RETURN,
+                referenceType: 'sales_return',
+                referenceId: $this->return_id,
+                syncProductQuantity: true
             );
         }
 

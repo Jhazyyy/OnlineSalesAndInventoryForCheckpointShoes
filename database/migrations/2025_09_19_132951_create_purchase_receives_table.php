@@ -23,6 +23,10 @@ return new class extends Migration
 
             $table->date('receive_date');
             $table->enum('status', ['in_transit', 'received', 'partially_received', 'damaged', 'cancelled'])->default('in_transit');
+            $table->boolean('is_short_closed')->default(false);
+            $table->text('short_close_reason')->nullable();
+            $table->timestamp('short_closed_at')->nullable();
+            $table->unsignedBigInteger('short_closed_by')->nullable();
             $table->integer('total_quantity_expected')->default(0);
             $table->integer('total_quantity_received')->default(0);
             $table->decimal('total_amount_expected', 12, 2)->default(0);
@@ -37,6 +41,7 @@ return new class extends Migration
             $table->index(['purchase_order_id', 'receive_date']);
             $table->index(['supplier_id', 'receive_date']);
             $table->index(['delivery_id', 'receive_date']);
+            $table->index('is_short_closed');
         });
     }
 

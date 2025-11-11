@@ -23,10 +23,14 @@ return new class extends Migration
             $table->decimal('subtotal', 10, 2)->default(0);
             $table->decimal('tax_amount', 10, 2)->default(0);
             $table->decimal('discount_amount', 10, 2)->default(0);
+            $table->unsignedBigInteger('tax_rule_id')->nullable();
+            $table->unsignedBigInteger('discount_rule_id')->nullable();
             $table->decimal('shipping_amount', 10, 2)->default(0);
             $table->decimal('total_amount', 10, 2)->default(0);
             $table->string('payment_status')->default('pending'); // pending, partial, paid, refunded
             $table->string('payment_method')->nullable(); // cash, card, bank_transfer, check
+            $table->decimal('amount_received', 10, 2)->nullable();
+            $table->enum('purchase_type', ['in_store', 'online'])->default('in_store');
             $table->text('shipping_address')->nullable();
             $table->text('billing_address')->nullable();
             $table->text('notes')->nullable();
@@ -38,6 +42,10 @@ return new class extends Migration
             $table->index(['customer_id', 'status']);
             $table->index(['order_date']);
             $table->index(['status']);
+            
+            // Foreign key constraints
+            $table->foreign('tax_rule_id')->references('id')->on('tax_discounts')->onDelete('set null');
+            $table->foreign('discount_rule_id')->references('id')->on('tax_discounts')->onDelete('set null');
         });
     }
 

@@ -166,6 +166,20 @@
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
 
+                            <!-- Shipping Cost -->
+                            <div>
+                                <label for="shipping_cost"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Shipping
+                                    Cost</label>
+                                <input type="number" id="shipping_cost" name="shipping_cost" step="0.01" min="0"
+                                    value="{{ old('shipping_cost', $delivery->shipping_cost ?? 0) }}"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    placeholder="0.00">
+                                @error('shipping_cost')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             <!-- Delivery Address -->
                             <div class="md:col-span-2">
                                 <label for="delivery_address"

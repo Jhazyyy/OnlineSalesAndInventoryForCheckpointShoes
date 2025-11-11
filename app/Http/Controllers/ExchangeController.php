@@ -108,7 +108,7 @@ class ExchangeController extends Controller
     {
         $validated = $request->validate([
             'customer_id' => 'required|exists:customers,customer_id',
-            'sales_order_id' => 'nullable|exists:sales_orders,sales_order_id',
+            'sales_order_id' => 'nullable|exists:sales_orders,order_id',
             'exchange_type' => 'required|in:' . implode(',', Exchange::getTypes()),
             'status' => 'required|in:' . implode(',', Exchange::getStatuses()),
             'reason' => 'nullable|string|max:500',
@@ -274,7 +274,7 @@ class ExchangeController extends Controller
 
         $validated = $request->validate([
             'customer_id' => 'required|exists:customers,customer_id',
-            'sales_order_id' => 'nullable|exists:sales_orders,sales_order_id',
+            'sales_order_id' => 'nullable|exists:sales_orders,order_id',
             'exchange_type' => 'required|in:' . implode(',', Exchange::getTypes()),
             'status' => 'required|in:' . implode(',', Exchange::getStatuses()),
             'reason' => 'nullable|string|max:500',
@@ -527,5 +527,45 @@ class ExchangeController extends Controller
             
             return back()->with('error', 'Failed to generate analytics. Please try again.');
         }
+    }
+
+    /**
+     * Search sales orders for exchange creation
+     */
+    public function searchSalesOrders(Request $request)
+    {
+        $search = $request->get('search', '');
+        
+        $salesOrders = SalesOrder::with(['customer', 'items.product'])
+            ->when($search, function ($query) use ($search) {
+                $query->where('order_id', 'LIKE', "%{$search}%")
+                    ->orWhere('tracking_number', 'LIKE', "%{$search}%")
+                    ->orWhereHas('customer', function ($q) use ($search) {
+                        $q->where('customer_name', 'LIKE', "%{$search}%")
+                          ->orWhere('customer_contact', 'LIKE', "%{$search}%");
+                    });
+            })
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+
+        return response()->json($salesOrders->map(function ($order) {
+            return [
+                'order_id' => $order->order_id,
+                'tracking_number' => $order->tracking_number,
+                'customer_name' => $order->customer->customer_name ?? 'N/A',
+                'customer_id' => $order->customer_id,
+                'total_amount' => $order->total_amount,
+                'created_at' => $order->created_at->format('M d, Y'),
+                'items' => $order->items->map(function ($item) {
+                    return [
+                        'product_id' => $item->product_id,
+                        'product_name' => $item->product->product_name ?? 'Unknown',
+                        'quantity' => $item->quantity,
+                        'price' => $item->price,
+                    ];
+                }),
+            ];
+        }));
     }
 }

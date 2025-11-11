@@ -34,12 +34,91 @@
                 </div>
             @endif
 
+            <!-- Sales Order Information (if linked) -->
+            @if($return->salesOrder)
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                    <div class="p-6">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Linked Sales Order
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Order Number</label>
+                                <div class="mt-1 text-sm text-gray-900 dark:text-white">
+                                    <a href="{{ $return->salesOrder->purchase_type === 'in_store' ? route('pos.show', $return->salesOrder) : route('sales.orders.show', $return->salesOrder) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">
+                                        {{ $return->salesOrder->order_number }}
+                                    </a>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Order Date</label>
+                                <div class="mt-1 text-sm text-gray-900 dark:text-white">
+                                    {{ $return->salesOrder->order_date ? $return->salesOrder->order_date->format('M d, Y') : 'N/A' }}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Order Status</label>
+                                <div class="mt-1">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                        @if($return->salesOrder->status === 'delivered') bg-green-100 text-green-800
+                                        @elseif($return->salesOrder->status === 'cancelled') bg-red-100 text-red-800
+                                        @else bg-blue-100 text-blue-800 @endif">
+                                        {{ ucfirst($return->salesOrder->status) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            <!-- Customer Information (if linked) -->
+            @if($return->customer)
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                    <div class="p-6">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            Customer Information
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+                                <div class="mt-1 text-sm text-gray-900 dark:text-white">
+                                    {{ $return->customer->display_name }}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                                <div class="mt-1 text-sm text-gray-900 dark:text-white">
+                                    {{ $return->customer->email ?? 'N/A' }}
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone</label>
+                                <div class="mt-1 text-sm text-gray-900 dark:text-white">
+                                    {{ $return->customer->phone ?? 'N/A' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- Return Form -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <form method="POST" action="{{ route('sales.returns.update', $return) }}" class="space-y-6">
                         @csrf
                         @method('PUT')
+
+                        <!-- Hidden fields for sales_order_id and customer_id -->
+                        <input type="hidden" name="sales_order_id" value="{{ old('sales_order_id', $return->sales_order_id) }}">
+                        <input type="hidden" name="customer_id" value="{{ old('customer_id', $return->customer_id) }}">
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Product Selection -->
@@ -55,7 +134,7 @@
                                                 data-price="{{ $product->selling_price }}"
                                                 data-stock="{{ $product->stock_quantity }}"
                                                 {{ old('product_id', $return->product_id) == $product->product_id ? 'selected' : '' }}>
-                                            {{ $product->product_name }} (SKU: {{ $product->sku }}) - Stock: {{ $product->stock_quantity }}
+                                            {{ $product->product_name }} (SKU: {{ $product->sku }})
                                         </option>
                                     @endforeach
                                 </select>
@@ -140,6 +219,19 @@
                                     </span>
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- Reason -->
+                        <div>
+                            <label for="reason" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Return Reason
+                            </label>
+                            <textarea id="reason" name="reason" rows="3" 
+                                      placeholder="Enter the reason for this return..."
+                                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">{{ old('reason', $return->reason) }}</textarea>
+                            @error('reason')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <!-- Current Status Information -->

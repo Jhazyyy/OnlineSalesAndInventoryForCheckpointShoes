@@ -122,7 +122,7 @@ class Exchange extends Model
      */
     public function salesOrder(): BelongsTo
     {
-        return $this->belongsTo(SalesOrder::class, 'sales_order_id', 'sales_order_id');
+        return $this->belongsTo(SalesOrder::class, 'sales_order_id', 'order_id');
     }
 
     /**

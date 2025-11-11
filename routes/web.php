@@ -958,6 +958,9 @@ Route::middleware(['auth'])->group(function () {
 
         // Analytics
         Route::get('/analytics', [ReturnsController::class, 'analytics'])->name('analytics');
+        
+        // AJAX endpoints
+        Route::get('/search/sales-orders', [ReturnsController::class, 'searchSalesOrders'])->name('search.sales-orders');
     });
 
     // Payment Management Routes
@@ -993,6 +996,9 @@ Route::middleware(['auth'])->group(function () {
 
         // Analytics
         Route::get('/analytics', [ExchangeController::class, 'analytics'])->name('analytics');
+        
+        // AJAX endpoint for sales order search
+        Route::get('/search/sales-orders', [ExchangeController::class, 'searchSalesOrders'])->name('search.sales-orders');
     });
 
     // Package Management Routes
@@ -1049,11 +1055,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/template/download', [\App\Http\Controllers\ShipmentController::class, 'downloadTemplate'])->name('template');
         Route::get('/export', [\App\Http\Controllers\ShipmentController::class, 'export'])->name('export');
     });
-
-    // Invoice Management Routes - REMOVED (Invoices handled by e-commerce application)
-    // Route::prefix('sales/invoices')->name('sales.invoices.')->group(function () {
-    //     Invoices are now managed by the e-commerce application
-    // });
 
     // Inventory Threshold Management Routes
     Route::prefix('inventory/thresholds')->name('inventory.thresholds.')->group(function () {

@@ -47,7 +47,129 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Return Details -->
-                <div class="lg:col-span-2">
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Sales Order Information (if linked) -->
+                    @if($return->salesOrder)
+                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                            <div class="p-6">
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    Linked Sales Order
+                                </h3>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Order Number</label>
+                                        <div class="mt-1 text-sm">
+                                            <a href="{{ $return->salesOrder->purchase_type === 'in_store' ? route('pos.show', $return->salesOrder) : route('sales.orders.show', $return->salesOrder) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-medium">
+                                                {{ $return->salesOrder->order_number }}
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Order Date</label>
+                                        <div class="mt-1 text-sm text-gray-900 dark:text-white">
+                                            {{ $return->salesOrder->order_date ? $return->salesOrder->order_date->format('M d, Y') : 'N/A' }}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Order Status</label>
+                                        <div class="mt-1">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                @if($return->salesOrder->status === 'delivered') bg-green-100 text-green-800
+                                                @elseif($return->salesOrder->status === 'cancelled') bg-red-100 text-red-800
+                                                @else bg-blue-100 text-blue-800 @endif">
+                                                {{ ucfirst($return->salesOrder->status) }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Order Total</label>
+                                        <div class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
+                                            ₱{{ number_format($return->salesOrder->total_amount, 2) }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Order Items -->
+                                @if($return->salesOrder->items && $return->salesOrder->items->count() > 0)
+                                    <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Order Items</h4>
+                                        <div class="space-y-2">
+                                            @foreach($return->salesOrder->items as $item)
+                                                <div class="flex justify-between items-center p-2 rounded {{ $item->product_id == $return->product_id ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' : 'bg-gray-50 dark:bg-gray-700' }}">
+                                                    <div class="flex-1">
+                                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                            {{ $item->product->product_name ?? 'Unknown Product' }}
+                                                            @if($item->product_id == $return->product_id)
+                                                                <span class="ml-2 text-xs text-blue-600 dark:text-blue-400">(Returned Item)</span>
+                                                            @endif
+                                                        </div>
+                                                        <div class="text-xs text-gray-600 dark:text-gray-400">
+                                                            Qty: {{ $item->quantity }} × ₱{{ number_format($item->unit_price, 2) }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                        ₱{{ number_format($item->total_price, 2) }}
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Customer Information (if linked) -->
+                    @if($return->customer)
+                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                            <div class="p-6">
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                    Customer Information
+                                </h3>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+                                        <div class="mt-1 text-sm text-gray-900 dark:text-white">
+                                            {{ $return->customer->display_name }}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                                        <div class="mt-1 text-sm text-gray-900 dark:text-white">
+                                            {{ $return->customer->email ?? 'N/A' }}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone</label>
+                                        <div class="mt-1 text-sm text-gray-900 dark:text-white">
+                                            {{ $return->customer->phone ?? 'N/A' }}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Customer Type</label>
+                                        <div class="mt-1 text-sm text-gray-900 dark:text-white">
+                                            {{ ucfirst($return->customer->customer_type ?? 'individual') }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Return Information</h3>
@@ -155,6 +277,16 @@
                                     @endif
                                 </div>
                             </div>
+
+                            <!-- Return Reason -->
+                            @if($return->reason)
+                                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Return Reason</label>
+                                    <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-md">
+                                        <p class="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">{{ $return->reason }}</p>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -267,7 +399,7 @@
                                         @method('DELETE')
                                         <button type="submit" 
                                                 onclick="return confirm('Are you sure you want to delete this return? This action cannot be undone.')"
-                                                class="w-full inline-flex items-center justify-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                                class="w-full inline-flex items-center justify-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                             </svg>

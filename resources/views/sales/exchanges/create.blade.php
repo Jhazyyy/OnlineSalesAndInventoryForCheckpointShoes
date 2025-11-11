@@ -45,6 +45,43 @@
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Exchange Information</h3>
                         
+                        <!-- Sales Order Search Section -->
+                        <div class="mb-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border-2 border-blue-200 dark:border-blue-700">
+                            <div class="flex items-center mb-4">
+                                <svg class="w-6 h-6 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                                <h4 class="text-lg font-semibold text-blue-900 dark:text-blue-100">Link to Sales Order</h4>
+                            </div>
+                            <p class="text-sm text-blue-700 dark:text-blue-300 mb-4">Search for the sales order that contains the item to exchange (Optional but recommended)</p>
+                            
+                            <div class="relative">
+                                <input type="text" 
+                                       id="salesOrderSearch" 
+                                       placeholder="Search by order number, tracking number, or customer name..."
+                                       class="w-full px-4 py-3 border-2 border-blue-300 dark:border-blue-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-base"
+                                       autocomplete="off">
+                                <div id="salesOrderResults" class="hidden absolute z-10 w-full mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border-2 border-blue-200 dark:border-blue-700 max-h-96 overflow-y-auto"></div>
+                            </div>
+                            
+                            <input type="hidden" id="sales_order_id" name="sales_order_id" value="{{ old('sales_order_id', $salesOrder->order_id ?? '') }}">
+                            
+                            <div id="selectedOrderInfo" class="hidden mt-4 p-4 bg-white dark:bg-gray-700 rounded-lg border-2 border-green-400 dark:border-green-600">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">Selected Order:</p>
+                                        <p class="text-lg font-bold text-gray-900 dark:text-white" id="selectedOrderNumber"></p>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400" id="selectedOrderCustomer"></p>
+                                    </div>
+                                    <button type="button" onclick="clearSelectedOrder()" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <!-- Customer Selection -->
                             <div>
@@ -64,19 +101,6 @@
                                 @error('customer_id')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
-                            </div>
-
-                            <!-- Sales Order (Optional) -->
-                            <div>
-                                <label for="sales_order_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Related Sales Order (Optional)
-                                </label>
-                                <input type="text" id="sales_order_display" 
-                                       value="{{ $salesOrder->order_number ?? '' }}" 
-                                       readonly placeholder="No sales order linked"
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white">
-                                <input type="hidden" id="sales_order_id" name="sales_order_id" 
-                                       value="{{ old('sales_order_id', $salesOrder->sales_order_id ?? '') }}">
                             </div>
 
                             <!-- Exchange Type -->
@@ -494,6 +518,101 @@
 
             // Add initial items
             addOriginalItem();
+            
+            // Sales Order Search Functionality
+            const salesOrderSearch = document.getElementById('salesOrderSearch');
+            const salesOrderResults = document.getElementById('salesOrderResults');
+            const salesOrderIdInput = document.getElementById('sales_order_id');
+            const selectedOrderInfo = document.getElementById('selectedOrderInfo');
+            const customerSelect = document.getElementById('customer_id');
+            let searchTimeout;
+
+            salesOrderSearch.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const searchTerm = this.value.trim();
+
+                if (searchTerm.length < 2) {
+                    salesOrderResults.classList.add('hidden');
+                    return;
+                }
+
+                searchTimeout = setTimeout(() => {
+                    fetch(`{{ route('sales.exchanges.search.sales-orders') }}?search=${encodeURIComponent(searchTerm)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.length === 0) {
+                                salesOrderResults.innerHTML = '<div class="p-4 text-gray-500 dark:text-gray-400">No sales orders found</div>';
+                            } else {
+                                salesOrderResults.innerHTML = data.map(order => `
+                                    <div class="p-4 hover:bg-blue-50 dark:hover:bg-blue-900/30 cursor-pointer border-b dark:border-gray-700 last:border-b-0"
+                                         onclick="selectSalesOrder(${order.order_id}, '${order.tracking_number}', '${order.customer_name}', ${order.customer_id}, ${JSON.stringify(order.items).replace(/"/g, '&quot;')})">
+                                        <div class="flex justify-between items-start">
+                                            <div class="flex-1">
+                                                <p class="font-semibold text-gray-900 dark:text-white">${order.tracking_number}</p>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400">${order.customer_name}</p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">Order Date: ${order.created_at}</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="font-semibold text-blue-600 dark:text-blue-400">₱${parseFloat(order.total_amount).toFixed(2)}</p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-500">${order.items.length} item(s)</p>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2 space-y-1">
+                                            ${order.items.map(item => `
+                                                <div class="text-xs text-gray-600 dark:text-gray-400 flex justify-between">
+                                                    <span>• ${item.product_name}</span>
+                                                    <span>Qty: ${item.quantity} @ ₱${parseFloat(item.price).toFixed(2)}</span>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                `).join('');
+                            }
+                            salesOrderResults.classList.remove('hidden');
+                        })
+                        .catch(error => {
+                            console.error('Error fetching sales orders:', error);
+                            salesOrderResults.innerHTML = '<div class="p-4 text-red-500">Error loading sales orders</div>';
+                            salesOrderResults.classList.remove('hidden');
+                        });
+                }, 300);
+            });
+
+            // Global function to select a sales order
+            window.selectSalesOrder = function(orderId, trackingNumber, customerName, customerId, items) {
+                salesOrderIdInput.value = orderId;
+                salesOrderSearch.value = '';
+                salesOrderResults.classList.add('hidden');
+                
+                // Update selected order display
+                document.getElementById('selectedOrderNumber').textContent = trackingNumber;
+                document.getElementById('selectedOrderCustomer').textContent = customerName;
+                selectedOrderInfo.classList.remove('hidden');
+                
+                // Auto-select customer
+                customerSelect.value = customerId;
+            };
+
+            // Global function to clear selected order
+            window.clearSelectedOrder = function() {
+                salesOrderIdInput.value = '';
+                selectedOrderInfo.classList.add('hidden');
+                salesOrderSearch.value = '';
+            };
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!salesOrderSearch.contains(event.target) && !salesOrderResults.contains(event.target)) {
+                    salesOrderResults.classList.add('hidden');
+                }
+            });
+            
+            // If there's a pre-selected sales order (from URL parameter), show the info
+            @if(isset($salesOrder))
+                document.getElementById('selectedOrderNumber').textContent = '{{ $salesOrder->tracking_number }}';
+                document.getElementById('selectedOrderCustomer').textContent = '{{ $salesOrder->customer->customer_name ?? "N/A" }}';
+                selectedOrderInfo.classList.remove('hidden');
+            @endif
         });
     </script>
 </x-app-layout>

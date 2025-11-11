@@ -40,7 +40,74 @@
                     <form method="POST" action="{{ route('sales.returns.store') }}" class="space-y-6">
                         @csrf
 
+                        <!-- Sales Order Selection Section -->
+                        <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                            <h3 class="text-lg font-medium text-blue-900 dark:text-blue-100 mb-4">
+                                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                Link to Sales Order (Optional)
+                            </h3>
+                            <p class="text-sm text-blue-700 dark:text-blue-300 mb-4">
+                                Select a sales order to automatically populate customer and product details
+                            </p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Sales Order Search -->
+                                <div>
+                                    <label for="sales_order_search" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Search Sales Order
+                                    </label>
+                                    <input type="text" id="sales_order_search" 
+                                           placeholder="Search by order number or customer..."
+                                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                           autocomplete="off">
+                                    <!-- Dropdown for search results -->
+                                    <div id="sales_order_results" class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg hidden max-h-60 overflow-y-auto"></div>
+                                </div>
+
+                                <!-- Selected Sales Order Display -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Selected Order
+                                    </label>
+                                    <input type="text" id="sales_order_display" 
+                                           value="{{ $salesOrder->order_number ?? 'No sales order linked' }}" 
+                                           readonly placeholder="No sales order selected"
+                                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white">
+                                    <input type="hidden" id="sales_order_id" name="sales_order_id" 
+                                           value="{{ old('sales_order_id', $salesOrder->order_id ?? '') }}">
+                                </div>
+                            </div>
+
+                            <!-- Display sales order items if selected -->
+                            <div id="sales_order_items" class="mt-4 hidden">
+                                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Order Items:</h4>
+                                <div id="items_list" class="space-y-2"></div>
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Customer Selection (Auto-populated from sales order) -->
+                            <div>
+                                <label for="customer_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Customer
+                                </label>
+                                <select id="customer_id" name="customer_id"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">Select a customer...</option>
+                                    @foreach($customers as $customer)
+                                        <option value="{{ $customer->customer_id }}" 
+                                                {{ old('customer_id', $salesOrder->customer_id ?? '') == $customer->customer_id ? 'selected' : '' }}>
+                                            {{ $customer->display_name }} - {{ $customer->email ?? $customer->phone }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('customer_id')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             <!-- Product Selection -->
                             <div>
                                 <label for="product_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -172,7 +239,7 @@
         </div>
     </div>
 
-    <!-- JavaScript for dynamic calculations -->
+    <!-- JavaScript for dynamic calculations and sales order search -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const productSelect = document.getElementById('product_id');
@@ -180,6 +247,130 @@
             const quantityInput = document.getElementById('quantity');
             const totalAmountSpan = document.getElementById('total-amount');
             const stockInfo = document.getElementById('stock-info');
+            const salesOrderSearch = document.getElementById('sales_order_search');
+            const salesOrderResults = document.getElementById('sales_order_results');
+            const salesOrderDisplay = document.getElementById('sales_order_display');
+            const salesOrderIdInput = document.getElementById('sales_order_id');
+            const salesOrderItemsDiv = document.getElementById('sales_order_items');
+            const itemsList = document.getElementById('items_list');
+            const customerSelect = document.getElementById('customer_id');
+
+            let searchTimeout;
+            let selectedSalesOrder = null;
+
+            // Sales Order Search
+            salesOrderSearch.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const searchTerm = this.value.trim();
+
+                if (searchTerm.length < 2) {
+                    salesOrderResults.classList.add('hidden');
+                    return;
+                }
+
+                searchTimeout = setTimeout(function() {
+                    fetch(`{{ route('sales.returns.search.sales-orders') }}?search=${encodeURIComponent(searchTerm)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success && data.sales_orders.length > 0) {
+                                displaySalesOrderResults(data.sales_orders);
+                            } else {
+                                salesOrderResults.innerHTML = '<div class="p-3 text-sm text-gray-500 dark:text-gray-400">No sales orders found</div>';
+                                salesOrderResults.classList.remove('hidden');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error searching sales orders:', error);
+                            salesOrderResults.classList.add('hidden');
+                        });
+                }, 300);
+            });
+
+            function displaySalesOrderResults(salesOrders) {
+                salesOrderResults.innerHTML = '';
+                salesOrders.forEach(order => {
+                    const orderItem = document.createElement('div');
+                    orderItem.className = 'p-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer border-b border-gray-200 dark:border-gray-600';
+                    orderItem.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="font-medium text-gray-900 dark:text-white">${order.order_number}</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">${order.customer_name}</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-500">${order.order_date} • Status: ${order.status}</div>
+                            </div>
+                            <div class="text-sm font-semibold text-gray-700 dark:text-gray-300">₱${parseFloat(order.total_amount).toFixed(2)}</div>
+                        </div>
+                    `;
+                    orderItem.addEventListener('click', function() {
+                        selectSalesOrder(order);
+                    });
+                    salesOrderResults.appendChild(orderItem);
+                });
+                salesOrderResults.classList.remove('hidden');
+            }
+
+            function selectSalesOrder(order) {
+                selectedSalesOrder = order;
+                salesOrderIdInput.value = order.sales_order_id;
+                salesOrderDisplay.value = order.order_number;
+                salesOrderSearch.value = order.order_number;
+                salesOrderResults.classList.add('hidden');
+
+                // Auto-populate customer
+                if (order.customer_id) {
+                    customerSelect.value = order.customer_id;
+                }
+
+                // Display order items
+                displayOrderItems(order.items);
+            }
+
+            function displayOrderItems(items) {
+                if (!items || items.length === 0) {
+                    salesOrderItemsDiv.classList.add('hidden');
+                    return;
+                }
+
+                itemsList.innerHTML = '';
+                items.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer';
+                    itemDiv.innerHTML = `
+                        <div class="flex-1">
+                            <div class="font-medium text-gray-900 dark:text-white">${item.product_name}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">Qty: ${item.quantity} • Price: ₱${parseFloat(item.unit_price).toFixed(2)}</div>
+                        </div>
+                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300">₱${parseFloat(item.total_price).toFixed(2)}</div>
+                        <button type="button" class="ml-3 px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600">
+                            Select
+                        </button>
+                    `;
+
+                    // When item is clicked, populate the return form
+                    itemDiv.querySelector('button').addEventListener('click', function() {
+                        productSelect.value = item.product_id;
+                        priceInput.value = parseFloat(item.unit_price).toFixed(2);
+                        quantityInput.value = 1; // Default to 1, user can change
+                        quantityInput.max = item.quantity; // Max is what was ordered
+                        updateStockInfo();
+                        calculateTotal();
+
+                        // Scroll to the product selection
+                        productSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    });
+
+                    itemsList.appendChild(itemDiv);
+                });
+
+                salesOrderItemsDiv.classList.remove('hidden');
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!salesOrderSearch.contains(event.target) && !salesOrderResults.contains(event.target)) {
+                    salesOrderResults.classList.add('hidden');
+                }
+            });
 
             function updatePrice() {
                 const selectedOption = productSelect.options[productSelect.selectedIndex];
@@ -198,10 +389,11 @@
                 if (selectedOption && selectedOption.dataset.stock) {
                     const stock = selectedOption.dataset.stock;
                     stockInfo.textContent = `Available stock: ${stock} units`;
-                    quantityInput.max = stock;
+                    if (!quantityInput.max) {
+                        quantityInput.max = stock;
+                    }
                 } else {
                     stockInfo.textContent = '';
-                    quantityInput.removeAttribute('max');
                 }
             }
 
@@ -221,6 +413,28 @@
             if (productSelect.value) {
                 updatePrice();
             }
+
+            // Load sales order data if provided via URL
+            @if($salesOrder)
+                selectSalesOrder({
+                    sales_order_id: {{ $salesOrder->order_id }},
+                    order_number: '{{ $salesOrder->order_number }}',
+                    customer_id: {{ $salesOrder->customer_id ?? 'null' }},
+                    customer_name: '{{ $salesOrder->customer->display_name ?? 'N/A' }}',
+                    order_date: '{{ $salesOrder->order_date?->format('M d, Y') ?? '' }}',
+                    status: '{{ $salesOrder->status }}',
+                    total_amount: {{ $salesOrder->total_amount }},
+                    items: {!! json_encode($salesOrder->items->map(function($item) {
+                        return [
+                            'product_id' => $item->product_id,
+                            'product_name' => $item->product->product_name ?? 'Unknown',
+                            'quantity' => $item->quantity,
+                            'unit_price' => $item->unit_price,
+                            'total_price' => $item->total_price,
+                        ];
+                    })) !!}
+                });
+            @endif
         });
     </script>
 </x-app-layout>

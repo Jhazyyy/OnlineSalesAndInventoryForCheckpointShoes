@@ -79,7 +79,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('inventory.product_stock_adjustment.analytics') }}"
+                    {{-- <a href="{{ route('inventory.product_stock_adjustment.analytics') }}"
                         class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border dark:border-gray-700">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-yellow-100 dark:bg-yellow-900">
@@ -95,7 +95,7 @@
                                 <p class="text-xs text-gray-500 dark:text-gray-400">Movement insights</p>
                             </div>
                         </div>
-                    </a>
+                    </a> --}}
 
                     <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border dark:border-gray-700">
                         <div class="flex items-center">
@@ -229,7 +229,7 @@
                                         Date</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Product</th>
+                                        Product/SKU</th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Type</th>
@@ -263,9 +263,11 @@
                                             {{ $movement->movement_date ? $movement->movement_date->format('M d, Y H:i') : 'N/A' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900 dark:text-white">
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white">
                                                 {{ $movement->product->product_name ?? 'N/A' }}</div>
                                             <div class="text-sm text-gray-500 dark:text-gray-400">
+                                                SKU: {{ $movement->product->sku ?? 'N/A' }}</div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">
                                                 {{ $movement->product->product_brand ?? '' }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">

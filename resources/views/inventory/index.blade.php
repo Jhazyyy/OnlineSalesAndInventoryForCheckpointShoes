@@ -51,7 +51,7 @@
 
                                     if ($reorderLevel > 0) {
                                         if ($available <= $reorderLevel / 2) {
-                                            $status = 'Critical';
+                                            $status = 'Out of Stock';
                                             $statusClass = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
                                         } elseif ($available <= $reorderLevel) {
                                             $status = 'Low';

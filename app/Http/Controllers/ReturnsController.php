@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Returns;
 use App\Models\Product;
+use App\Models\Customer;
+use App\Models\SalesOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +17,7 @@ class ReturnsController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Returns::with('product');
+        $query = Returns::with(['product', 'customer', 'salesOrder']);
 
         // Filter by status if provided
         if ($request->filled('status')) {
@@ -27,10 +29,20 @@ class ReturnsController extends Controller
             $query->whereBetween('return_date', [$request->start_date, $request->end_date]);
         }
 
-        // Search by product name
+        // Search by product name, customer, or sales order number
         if ($request->filled('search')) {
-            $query->whereHas('product', function ($q) use ($request) {
-                $q->where('product_name', 'like', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->whereHas('product', function ($productQuery) use ($request) {
+                    $productQuery->where('product_name', 'like', '%' . $request->search . '%');
+                })
+                ->orWhereHas('customer', function ($customerQuery) use ($request) {
+                    $customerQuery->where('first_name', 'like', '%' . $request->search . '%')
+                                ->orWhere('last_name', 'like', '%' . $request->search . '%')
+                                ->orWhere('company_name', 'like', '%' . $request->search . '%');
+                })
+                ->orWhereHas('salesOrder', function ($orderQuery) use ($request) {
+                    $orderQuery->where('order_number', 'like', '%' . $request->search . '%');
+                });
             });
         }
 
@@ -53,15 +65,26 @@ class ReturnsController extends Controller
     /**
      * Show the form for creating a new return.
      */
-    public function create()
+    public function create(Request $request)
     {
         $products = Product::where('quantity', '>', 0)
                           ->orderBy('product_name')
                           ->get();
         
+        $customers = Customer::where('status', 'active')
+                           ->orderBy('first_name')
+                           ->get();
+        
         $statuses = Returns::getStatuses();
 
-        return view('sales.returns.create', compact('products', 'statuses'));
+        // If creating from a sales order
+        $salesOrder = null;
+        if ($request->filled('sales_order_id')) {
+            $salesOrder = SalesOrder::with(['items.product', 'customer'])
+                                   ->find($request->sales_order_id);
+        }
+
+        return view('sales.returns.create', compact('products', 'customers', 'statuses', 'salesOrder'));
     }
 
     /**
@@ -71,6 +94,8 @@ class ReturnsController extends Controller
     {
         $validated = $request->validate([
             'product_id' => 'required|exists:products,product_id',
+            'customer_id' => 'nullable|exists:customers,customer_id',
+            'sales_order_id' => 'nullable|exists:sales_orders,order_id',
             'quantity' => 'required|integer|min:1',
             'price' => 'required|numeric|min:0',
             'return_status' => 'required|in:' . implode(',', Returns::getStatuses()),
@@ -81,13 +106,16 @@ class ReturnsController extends Controller
         try {
             DB::beginTransaction();
 
-            $return = Returns::processReturn(
-                $validated['product_id'],
-                $validated['quantity'],
-                $validated['price'],
-                $validated['return_status'],
-                $validated['return_date']
-            );
+            $return = Returns::create([
+                'product_id' => $validated['product_id'],
+                'customer_id' => $validated['customer_id'] ?? null,
+                'sales_order_id' => $validated['sales_order_id'] ?? null,
+                'quantity' => $validated['quantity'],
+                'return_status' => $validated['return_status'],
+                'price' => $validated['price'],
+                'return_date' => $validated['return_date'],
+                'reason' => $validated['reason'] ?? null,
+            ]);
 
             if (!$return) {
                 DB::rollBack();
@@ -113,7 +141,7 @@ class ReturnsController extends Controller
      */
     public function show(Returns $return)
     {
-        $return->load('product');
+        $return->load(['product', 'customer', 'salesOrder.items.product']);
         
         return view('sales.returns.show', compact('return'));
     }
@@ -130,9 +158,14 @@ class ReturnsController extends Controller
         }
 
         $products = Product::orderBy('product_name')->get();
+        $customers = Customer::where('status', 'active')
+                           ->orderBy('first_name')
+                           ->get();
         $statuses = Returns::getStatuses();
+        
+        $return->load(['customer', 'salesOrder']);
 
-        return view('sales.returns.edit', compact('return', 'products', 'statuses'));
+        return view('sales.returns.edit', compact('return', 'products', 'customers', 'statuses'));
     }
 
     /**
@@ -148,19 +181,53 @@ class ReturnsController extends Controller
 
         $validated = $request->validate([
             'product_id' => 'required|exists:products,product_id',
+            'customer_id' => 'nullable|exists:customers,customer_id',
+            'sales_order_id' => 'nullable|exists:sales_orders,order_id',
             'quantity' => 'required|integer|min:1',
             'price' => 'required|numeric|min:0',
             'return_status' => 'required|in:' . implode(',', Returns::getStatuses()),
             'return_date' => 'required|date|before_or_equal:today',
+            'reason' => 'nullable|string|max:500',
         ]);
 
         try {
+            // If the status is being changed to approved, use the approve() method
+            // to ensure inventory is updated properly
+            if (isset($validated['return_status']) && 
+                $validated['return_status'] === Returns::STATUS_APPROVED && 
+                $return->return_status !== Returns::STATUS_APPROVED) {
+                
+                DB::beginTransaction();
+                
+                // Update other fields first
+                $updateData = $validated;
+                unset($updateData['return_status']); // Remove status from update
+                $return->update($updateData);
+                
+                // Now approve which will update inventory
+                if (!$return->approve()) {
+                    DB::rollBack();
+                    return back()->with('error', 'Failed to approve return.');
+                }
+                
+                DB::commit();
+                return redirect()->route('sales.returns.show', $return)
+                               ->with('success', 'Return updated and approved successfully. Inventory has been updated.');
+            }
+
+            // For other status changes or normal updates, just update normally
+            // but keep the status as pending to prevent bypassing inventory logic
+            if (isset($validated['return_status']) && $validated['return_status'] !== Returns::STATUS_PENDING) {
+                $validated['return_status'] = Returns::STATUS_PENDING;
+            }
+            
             $return->update($validated);
 
             return redirect()->route('sales.returns.show', $return)
                            ->with('success', 'Return updated successfully.');
 
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Error updating return: ' . $e->getMessage());
             
             return back()->withErrors(['error' => 'Failed to update return. Please try again.'])
@@ -370,4 +437,51 @@ class ReturnsController extends Controller
             return back()->with('error', 'Failed to bulk reject returns. Please try again.');
         }
     }
+
+    /**
+     * Search for sales orders (AJAX endpoint)
+     */
+    public function searchSalesOrders(Request $request)
+    {
+        $search = $request->get('search', '');
+        
+        $salesOrders = SalesOrder::with(['customer', 'items.product'])
+            ->where(function ($query) use ($search) {
+                $query->where('order_number', 'like', '%' . $search . '%')
+                      ->orWhereHas('customer', function ($customerQuery) use ($search) {
+                          $customerQuery->where('first_name', 'like', '%' . $search . '%')
+                                      ->orWhere('last_name', 'like', '%' . $search . '%')
+                                      ->orWhere('company_name', 'like', '%' . $search . '%');
+                      });
+            })
+            ->where('status', '!=', 'cancelled')
+            ->orderBy('order_date', 'desc')
+            ->limit(10)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'sales_orders' => $salesOrders->map(function ($order) {
+                return [
+                    'sales_order_id' => $order->order_id,  // Use order_id from the model
+                    'order_number' => $order->order_number,
+                    'order_date' => $order->order_date ? $order->order_date->format('M d, Y') : '',
+                    'customer_id' => $order->customer_id,
+                    'customer_name' => $order->customer?->display_name ?? 'N/A',
+                    'total_amount' => $order->total_amount,
+                    'status' => $order->status,
+                    'items' => $order->items->map(function ($item) {
+                        return [
+                            'product_id' => $item->product_id,
+                            'product_name' => $item->product?->product_name ?? 'Unknown',
+                            'quantity' => $item->quantity,
+                            'unit_price' => $item->unit_price,
+                            'total_price' => $item->total_price,
+                        ];
+                    }),
+                ];
+            }),
+        ]);
+    }
 }
+

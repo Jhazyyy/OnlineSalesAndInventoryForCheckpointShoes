@@ -294,7 +294,7 @@
                     document.getElementById('impact-product').textContent = `${name} - ${brand}`;
                     document.getElementById('impact-quantity').textContent = `${quantity.toLocaleString()} units`;
                     document.getElementById('impact-value').textContent = financialImpact > 0 ?
-                        `$${financialImpact.toFixed(2)}` : 'Not calculated';
+                        `₱${financialImpact.toFixed(2)}` : 'Not calculated';
                     document.getElementById('impact-before').textContent = `${currentStock.toLocaleString()} units`;
                     document.getElementById('impact-after').textContent = `${newStock.toLocaleString()} units`;
 

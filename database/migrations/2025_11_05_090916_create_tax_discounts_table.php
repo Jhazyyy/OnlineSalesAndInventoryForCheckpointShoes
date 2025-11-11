@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('code', 20)->unique()->comment('Unique code for tax/discount');
             $table->string('name', 100)->comment('Name of the tax or discount');
             $table->enum('type', ['tax', 'discount'])->comment('Type: tax or discount');
+            $table->enum('applicable_for', ['supplier', 'customer', 'both'])->default('both');
             $table->decimal('rate', 8, 4)->comment('Rate percentage (e.g., 12.5000 for 12.5%)');
             $table->enum('calculation_method', ['percentage', 'fixed'])->default('percentage')->comment('How the value is calculated');
             $table->decimal('fixed_amount', 15, 2)->nullable()->comment('Fixed amount if calculation_method is fixed');
