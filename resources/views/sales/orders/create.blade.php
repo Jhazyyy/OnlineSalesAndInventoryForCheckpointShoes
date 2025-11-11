@@ -557,7 +557,7 @@
         function salesOrderCreate() {
             return {
                 cart: [],
-                selectedTaxRule: '',
+                selectedTaxRule: '{{ $defaultTax ? $defaultTax->id : "" }}',
                 customTax: 0,
                 selectedDiscountRule: '',
                 discountType: 'percentage',

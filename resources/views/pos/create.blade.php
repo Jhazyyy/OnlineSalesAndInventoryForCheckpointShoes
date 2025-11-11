@@ -508,7 +508,7 @@
                 productSearch: '',
                 cart: [],
                 selectedCustomerId: '',
-                selectedTaxRule: '',
+                selectedTaxRule: '{{ $defaultTax ? $defaultTax->id : "" }}',
                 selectedDiscountRule: '',
                 showNewCustomerForm: false,
                 newCustomer: {

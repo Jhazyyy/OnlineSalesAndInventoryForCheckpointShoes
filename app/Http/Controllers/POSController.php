@@ -110,7 +110,16 @@ class POSController extends Controller
         $activeTaxes = \App\Models\TaxDiscount::active()->taxes()->forCustomer()->orderBy('priority')->get();
         $activeDiscounts = \App\Models\TaxDiscount::active()->discounts()->forCustomer()->orderBy('priority')->get();
 
-        return view('pos.create', compact('customers', 'products', 'activeTaxes', 'activeDiscounts'));
+        // Get VAT-12 as default tax (find by name or code)
+        $defaultTax = \App\Models\TaxDiscount::active()
+            ->taxes()
+            ->where(function($query) {
+                $query->where('name', 'VAT-12')
+                      ->orWhere('code', 'VAT-12');
+            })
+            ->first();
+
+        return view('pos.create', compact('customers', 'products', 'activeTaxes', 'activeDiscounts', 'defaultTax'));
     }
 
     /**

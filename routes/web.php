@@ -306,12 +306,15 @@ Route::get('dashboard', function () {
         ];
     }
 
-    // Top Selling Items - From Sales Orders
+    // Top Selling Items - From Sales Orders (Default: Today)
     try {
         $topSellingItems = \App\Models\SalesOrderItem::select('product_id')
             ->selectRaw('SUM(quantity) as total_quantity')
             ->selectRaw('SUM(quantity * unit_price) as total_revenue')
             ->whereNotNull('product_id')
+            ->whereHas('order', function ($q) {
+                $q->whereDate('order_date', today());
+            })
             ->with('product')
             ->groupBy('product_id')
             ->orderByDesc('total_quantity')

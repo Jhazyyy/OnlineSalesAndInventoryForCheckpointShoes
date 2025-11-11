@@ -8,10 +8,10 @@
 
                     <!-- Main Dashboard Grid -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        
+
                         <!-- Left Column: Sales Activity & Item Details -->
                         <div class="lg:col-span-2 space-y-6">
-                            
+
                             <!-- Sales Activity Section -->
                             {{-- <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                                 <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Sales Activity</h3>
@@ -93,13 +93,16 @@
                             </div> --}}
 
                             <!-- Item Details Section -->
-                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                                <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Product Details</h3>
-                                
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                                <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Product Details
+                                </h3>
+
                                 <div class="grid grid-cols-3 gap-6">
                                     <!-- Low Stock Items -->
                                     <div class="text-left">
-                                        <div class="text-sm text-red-600 dark:text-red-400 font-medium mb-2">Low Stock Items</div>
+                                        <div class="text-sm text-red-600 dark:text-red-400 font-medium mb-2">Low Stock
+                                            Items</div>
                                         <div class="text-4xl font-bold text-gray-800 dark:text-gray-100">
                                             {{ $inventoryStats['low_stock_products'] ?? 0 }}
                                         </div>
@@ -107,7 +110,8 @@
 
                                     <!-- All Item Groups -->
                                     <div class="text-left">
-                                        <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">All Item Groups</div>
+                                        <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">All Item
+                                            Groups</div>
                                         <div class="text-4xl font-bold text-gray-800 dark:text-gray-100">
                                             {{ \App\Models\Product::distinct('product_category')->count('category') }}
                                         </div>
@@ -115,7 +119,8 @@
 
                                     <!-- All Items -->
                                     <div class="text-left">
-                                        <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">All Items</div>
+                                        <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">All Items
+                                        </div>
                                         <div class="text-4xl font-bold text-gray-800 dark:text-gray-100">
                                             {{ $inventoryStats['total_products'] ?? 0 }}
                                         </div>
@@ -136,7 +141,8 @@
                                             </div>
                                         </div>
                                         <div class="ml-6">
-                                            <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Active Items</div>
+                                            <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Active Items
+                                            </div>
                                             <div class="text-2xl font-bold text-green-600 dark:text-green-400">
                                                 {{ $inventoryStats['active_products'] ?? 0 }}
                                             </div>
@@ -149,12 +155,15 @@
                             </div>
 
                             <!-- Top Selling Items Section -->
-                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                                <div
+                                    class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                                     <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                                        Top Selling Items - <span id="topSellingPeriodLabel" class="text-blue-600 dark:text-blue-400">This Month</span>
+                                        Top Selling Items
                                     </h3>
-                                    <select id="topSellingPeriod" class="appearance-none w-full sm:w-auto text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <select id="topSellingPeriod"
+                                        class="appearance-none w-full sm:w-auto text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                         <option value="today" selected>Today</option>
                                         <option value="yesterday">Yesterday</option>
                                         <option value="this_week">This Week</option>
@@ -168,46 +177,56 @@
 
                                 <div id="topSellingItemsContainer" class="space-y-4">
                                     @forelse($topSellingItems->take(10) ?? [] as $item)
-                                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                                        <div class="flex items-center space-x-4 flex-1">
-                                            <!-- Product Image -->
-                                            <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
-                                                @if(!empty($item['image']))
-                                                    <img src="{{ asset('storage/' . $item['image']) }}" 
-                                                         alt="{{ $item['name'] ?? 'Product' }}" 
-                                                         class="w-full h-full object-cover"
-                                                         onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\'w-8 h-8 text-white\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\'></path></svg>';">
-                                                @else
-                                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                                    </svg>
-                                                @endif
+                                        <div
+                                            class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                            <div class="flex items-center space-x-4 flex-1">
+                                                <!-- Product Image -->
+                                                <div
+                                                    class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
+                                                    @if (!empty($item['image']))
+                                                        <img src="{{ asset('storage/' . $item['image']) }}"
+                                                            alt="{{ $item['name'] ?? 'Product' }}"
+                                                            class="w-full h-full object-cover"
+                                                            onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\'w-8 h-8 text-white\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\'></path></svg>';">
+                                                    @else
+                                                        <svg class="w-8 h-8 text-white" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4">
+                                                            </path>
+                                                        </svg>
+                                                    @endif
+                                                </div>
+
+                                                <div class="flex-1 min-w-0">
+                                                    <div
+                                                        class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
+                                                        {{ $item['name'] ?? 'Unknown Product' }}
+                                                    </div>
+                                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                        Sold: {{ number_format($item['quantity'] ?? 0) }} units
+                                                    </div>
+                                                </div>
                                             </div>
-                                            
-                                            <div class="flex-1 min-w-0">
-                                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
-                                                    {{ $item['name'] ?? 'Unknown Product' }}
+
+                                            <div class="text-right ml-4">
+                                                <div class="text-lg font-bold text-gray-800 dark:text-gray-100">
+                                                    {{ number_format($item['quantity'] ?? 0) }}
                                                 </div>
-                                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                    Sold: {{ number_format($item['quantity'] ?? 0) }} units
-                                                </div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">PCS</div>
                                             </div>
                                         </div>
-                                        
-                                        <div class="text-right ml-4">
-                                            <div class="text-lg font-bold text-gray-800 dark:text-gray-100">
-                                                {{ number_format($item['quantity'] ?? 0) }}
-                                            </div>
-                                            <div class="text-xs text-gray-500 dark:text-gray-400">PCS</div>
-                                        </div>
-                                    </div>
                                     @empty
-                                    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                                        <svg class="w-12 h-12 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                                        </svg>
-                                        <p class="text-sm">No sales data available</p>
-                                    </div>
+                                        <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                                            <svg class="w-12 h-12 mx-auto mb-2 opacity-50" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+                                                </path>
+                                            </svg>
+                                            <p class="text-sm">No sales data available</p>
+                                        </div>
                                     @endforelse
                                 </div>
                             </div>
@@ -216,9 +235,11 @@
 
                         <!-- Right Column: Inventory Summary -->
                         <div class="lg:col-span-1">
-                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-6">
-                                <h3 class="text-lg font-semibold mb-6 text-gray-800 dark:text-gray-100">Inventory Summary</h3>
-                                
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-6">
+                                <h3 class="text-lg font-semibold mb-6 text-gray-800 dark:text-gray-100">Inventory
+                                    Summary</h3>
+
                                 <!-- Quantity in Hand -->
                                 <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
                                     <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
@@ -237,46 +258,66 @@
                                     <div class="text-5xl font-bold text-blue-600 dark:text-blue-400">
                                         {{ number_format($purchaseReceiveStats['pending_quantity'] ?? 0) }}
                                     </div>
-                                    
+
                                     <!-- Breakdown of pending quantities -->
-                                    @if(($purchaseReceiveStats['pending_quantity'] ?? 0) > 0)
+                                    @if (($purchaseReceiveStats['pending_quantity'] ?? 0) > 0)
                                         <div class="mt-4 space-y-2 text-xs">
-                                            @if(($purchaseReceiveStats['pending_from_orders'] ?? 0) > 0)
-                                                <div class="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
+                                            @if (($purchaseReceiveStats['pending_from_orders'] ?? 0) > 0)
+                                                <div
+                                                    class="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
                                                     <div class="flex items-center">
-                                                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2"
+                                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                                            </path>
                                                         </svg>
-                                                        <span class="text-gray-700 dark:text-gray-300">Purchase Orders</span>
+                                                        <span class="text-gray-700 dark:text-gray-300">Purchase
+                                                            Orders</span>
                                                     </div>
                                                     <span class="font-semibold text-blue-600 dark:text-blue-400">
                                                         {{ number_format($purchaseReceiveStats['pending_from_orders']) }}
                                                     </span>
                                                 </div>
                                             @endif
-                                            
-                                            @if(($purchaseReceiveStats['pending_from_deliveries'] ?? 0) > 0)
-                                                <div class="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-900/20 rounded">
+
+                                            @if (($purchaseReceiveStats['pending_from_deliveries'] ?? 0) > 0)
+                                                <div
+                                                    class="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-900/20 rounded">
                                                     <div class="flex items-center">
-                                                        <svg class="w-4 h-4 text-orange-600 dark:text-orange-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path>
+                                                        <svg class="w-4 h-4 text-orange-600 dark:text-orange-400 mr-2"
+                                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path
+                                                                d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z">
+                                                            </path>
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0">
+                                                            </path>
                                                         </svg>
-                                                        <span class="text-gray-700 dark:text-gray-300">In Delivery</span>
+                                                        <span class="text-gray-700 dark:text-gray-300">In
+                                                            Delivery</span>
                                                     </div>
                                                     <span class="font-semibold text-orange-600 dark:text-orange-400">
                                                         {{ number_format($purchaseReceiveStats['pending_from_deliveries']) }}
                                                     </span>
                                                 </div>
                                             @endif
-                                            
-                                            @if(($purchaseReceiveStats['pending_from_receives'] ?? 0) > 0)
-                                                <div class="flex items-center justify-between p-2 bg-green-50 dark:bg-green-900/20 rounded">
+
+                                            @if (($purchaseReceiveStats['pending_from_receives'] ?? 0) > 0)
+                                                <div
+                                                    class="flex items-center justify-between p-2 bg-green-50 dark:bg-green-900/20 rounded">
                                                     <div class="flex items-center">
-                                                        <svg class="w-4 h-4 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                                                        <svg class="w-4 h-4 text-green-600 dark:text-green-400 mr-2"
+                                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+                                                            </path>
                                                         </svg>
-                                                        <span class="text-gray-700 dark:text-gray-300">Goods Receipt</span>
+                                                        <span class="text-gray-700 dark:text-gray-300">Goods
+                                                            Receipt</span>
                                                     </div>
                                                     <span class="font-semibold text-green-600 dark:text-green-400">
                                                         {{ number_format($purchaseReceiveStats['pending_from_receives']) }}
@@ -294,7 +335,8 @@
                     <!-- Additional Quick Stats (Optional Secondary Row) -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
                         <!-- Purchases Card -->
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                             <div class="flex items-center">
                                 <div class="p-2 bg-yellow-500 rounded-lg">
                                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
@@ -318,7 +360,8 @@
                         </div>
 
                         <!-- Suppliers Card -->
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                             <div class="flex items-center">
                                 <div class="p-2 bg-indigo-500 rounded-lg">
                                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
@@ -342,7 +385,8 @@
                         </div>
 
                         <!-- Customers Card -->
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                             <div class="flex items-center">
                                 <div class="p-2 bg-purple-500 rounded-lg">
                                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
@@ -366,7 +410,8 @@
                         </div>
 
                         <!-- Revenue Card -->
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                             <div class="flex items-center">
                                 <div class="p-2 bg-green-500 rounded-lg">
                                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
@@ -415,7 +460,8 @@
                             </div>
 
                             <!-- Quick Links -->
-                            <div class="hidden md:flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+                            <div
+                                class="hidden md:flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
                                 <a href="#"
                                     class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</a>
                                 <a href="#"
@@ -468,7 +514,8 @@
                     <!-- Mobile Quick Links -->
                     <div class="md:hidden mt-4 pt-4 border-t border-gray-400 dark:border-gray-700">
                         <div class="flex justify-center space-x-6 text-xs text-gray-500 dark:text-gray-400">
-                            <a href="#" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</a>
+                            <a href="#"
+                                class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</a>
                             <a href="#"
                                 class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Support</a>
                             {{-- <a href="#"
@@ -493,7 +540,7 @@
                 const activeProducts = {{ $inventoryStats['active_products'] ?? 0 }};
                 const totalProducts = {{ $inventoryStats['total_products'] ?? 1 }};
                 const inactiveProducts = totalProducts - activeProducts;
-                
+
                 new Chart(activeItemsCtx, {
                     type: 'doughnut',
                     data: {
@@ -501,11 +548,11 @@
                         datasets: [{
                             data: [activeProducts, inactiveProducts],
                             backgroundColor: [
-                                'rgb(34, 197, 94)',  // green for active
-                                'rgb(229, 231, 235)'  // light gray for inactive
+                                'rgb(34, 197, 94)', // green for active
+                                'rgb(229, 231, 235)' // light gray for inactive
                             ],
                             borderWidth: 0,
-                            cutout: '75%'  // Makes it a donut
+                            cutout: '75%' // Makes it a donut
                         }]
                     },
                     options: {
@@ -525,24 +572,20 @@
 
             // Top Selling Items Period Filter
             const topSellingPeriodSelect = document.getElementById('topSellingPeriod');
-            const topSellingPeriodLabel = document.getElementById('topSellingPeriodLabel');
-            
-            if (topSellingPeriodSelect && topSellingPeriodLabel) {
+
+            if (topSellingPeriodSelect) {
                 topSellingPeriodSelect.addEventListener('change', function() {
                     const period = this.value;
                     const selectedText = this.options[this.selectedIndex].text;
                     const container = document.getElementById('topSellingItemsContainer');
-                    
-                    // Update the label text
-                    topSellingPeriodLabel.textContent = selectedText;
-                    
+
                     // Show loading state
                     container.innerHTML = `
                         <div class="flex justify-center items-center py-8">
                             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                         </div>
                     `;
-                    
+
                     // Fetch new data
                     fetch('/dashboard/top-selling-items?period=' + period)
                         .then(response => response.json())
@@ -554,12 +597,12 @@
                                             <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
                                                 ${item.image 
                                                     ? `<img src="/storage/${item.image}" 
-                                                           alt="${item.name}" 
-                                                           class="w-full h-full object-cover"
-                                                           onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-8 h-8 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
+                                                               alt="${item.name}" 
+                                                               class="w-full h-full object-cover"
+                                                               onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-8 h-8 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
                                                     : `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                                       </svg>`
+                                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                           </svg>`
                                                 }
                                             </div>
                                             <div class="flex-1 min-w-0">
