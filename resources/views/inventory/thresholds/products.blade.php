@@ -104,8 +104,8 @@
                                         <input type="checkbox" name="product_ids[]" value="{{ $product->product_id }}" class="product-checkbox rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $product->product_name }}</div>
-                                        <div class="text-sm text-gray-500">SKU: {{ $product->sku ?? 'N/A' }}</div>
+                                        <div class="text-sm font-bold text-gray-900 dark:text-white">{{ $product->sku ?? 'N/A' }}</div>
+                                        <div class="text-sm text-gray-700 dark:text-gray-300">{{ $product->product_name }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm text-gray-900 dark:text-white">{{ $product->quantity }}</div>

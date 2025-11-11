@@ -160,7 +160,10 @@
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                     @foreach($reorderProducts as $product)
                                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                        <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $product->product_name }}</td>
+                                        <td class="px-3 py-2 whitespace-nowrap">
+                                            <div class="text-sm font-bold text-gray-900 dark:text-white">{{ $product->sku }}</div>
+                                            <div class="text-xs text-gray-600 dark:text-gray-400">{{ $product->product_name }}</div>
+                                        </td>
                                         <td class="px-3 py-2 whitespace-nowrap">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $product->quantity <= ($product->critical_level ?? 0) ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800' }}">
                                                 {{ $product->quantity }}

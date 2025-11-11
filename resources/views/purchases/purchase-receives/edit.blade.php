@@ -323,9 +323,13 @@
         </div>
     </div>
 
+    @php
+        $availableProductsList = \App\Models\Product::select('product_id', 'product_name', 'product_brand', 'price')->get();
+    @endphp
+
     <script>
         // Preload datasets via Blade JSON in a safe, isolated block (avoid verbatim here)
-        window.availableProducts = @json(\App\Models\Product::all(['product_id', 'product_name', 'product_brand', 'price']));
+        window.availableProducts = @json($availableProductsList);
         window.existingItems = @json($receive->items->load('product')->toArray());
     </script>
 
@@ -444,8 +448,7 @@
                 row.querySelector('select[name$="[product_id]"]').value = poItem.product_id;
                 row.querySelector('input[name$="[purchase_order_item_id]"]').value = poItem.item_id;
                 row.querySelector('input[name$="[quantity_expected]"]').value = poItem.quantity_pending;
-                row.querySelector('input[name$="[quantity_received]"]').value = poItem
-                .quantity_pending; // Default to full quantity
+                row.querySelector('input[name$="[quantity_received]"]').value = poItem.quantity_pending; // Default to full quantity
                 row.querySelector('input[name$="[unit_price]"]').value = poItem.unit_price;
                 row.querySelector('.ordered-qty').textContent = poItem.quantity_ordered;
                 row.querySelector('.received-qty').textContent = poItem.quantity_received;

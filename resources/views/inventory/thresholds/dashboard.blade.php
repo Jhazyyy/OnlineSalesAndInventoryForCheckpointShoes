@@ -154,7 +154,10 @@
                                 <tbody>
                                     @foreach($reorderProducts as $product)
                                     <tr>
-                                        <td>{{ $product->product_name }}</td>
+                                        <td>
+                                            <div class="font-weight-bold">{{ $product->sku }}</div>
+                                            <small class="text-muted">{{ $product->product_name }}</small>
+                                        </td>
                                         <td>
                                             <span class="badge badge-{{ $product->quantity <= ($product->critical_level ?? 0) ? 'danger' : 'warning' }}">
                                                 {{ $product->quantity }}

@@ -257,15 +257,13 @@ class ReportService
             
             // Get last purchase date
             $lastPurchase = $p->purchases()
-                ->join('purchase_orders', 'purchases.purchase_order_id', '=', 'purchase_orders.purchase_order_id')
-                ->orderBy('purchase_orders.order_date', 'desc')
+                ->orderBy('purchase_date', 'desc')
                 ->first();
-            $p->last_purchase_date = $lastPurchase ? $lastPurchase->order_date : null;
+            $p->last_purchase_date = $lastPurchase ? $lastPurchase->purchase_date : null;
             
             // Calculate average daily sales (last 30 days)
             $salesData = $p->sales()
-                ->join('pos_orders', 'sales.pos_order_id', '=', 'pos_orders.pos_order_id')
-                ->where('pos_orders.created_at', '>=', now()->subDays(30))
+                ->where('date', '>=', now()->subDays(30))
                 ->selectRaw('SUM(sales.quantity) as total_sold')
                 ->first();
             

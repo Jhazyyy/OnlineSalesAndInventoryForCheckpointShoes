@@ -226,6 +226,57 @@ class ReportController extends Controller
     }
 
     /**
+     * Create a bulk purchase order for multiple products (bulk reorder action)
+     */
+    public function bulkReorderProducts(Request $request)
+    {
+        $data = $request->validate([
+            'supplier_id' => 'required|exists:suppliers,supplier_id',
+            'products' => 'required|array|min:1',
+            'products.*' => 'required|exists:products,product_id',
+            'quantities' => 'required|array',
+            'quantities.*' => 'required|integer|min:1',
+        ]);
+
+        $supplier = Supplier::findOrFail($data['supplier_id']);
+        $products = Product::whereIn('product_id', $data['products'])->get()->keyBy('product_id');
+
+        // Validate all products have the same supplier
+        foreach ($data['products'] as $productId) {
+            $product = $products[$productId];
+            if ($product->preferred_supplier_id != $data['supplier_id']) {
+                return back()->with('error', 'All selected products must have the same preferred supplier.');
+            }
+        }
+
+        // Build items array for the purchase order
+        $items = [];
+        foreach ($data['products'] as $productId) {
+            $product = $products[$productId];
+            $quantity = $data['quantities'][$productId] ?? 1;
+            
+            $items[] = [
+                'product_id' => $product->product_id,
+                'quantity_ordered' => (int) $quantity,
+                'unit_price' => $product->price,
+            ];
+        }
+
+        // Create a single PO with all items
+        $order = $this->purchaseOrderService->createOrder([
+            'supplier_id' => $data['supplier_id'],
+            'order_date' => now()->toDateString(),
+            'status' => 'pending',
+            'items' => $items,
+        ]);
+
+        $productCount = count($items);
+        return redirect()
+            ->route('purchases.purchase-orders.show', $order->order_id)
+            ->with('success', "Bulk purchase order created with {$productCount} product(s) from {$supplier->supplier_name}");
+    }
+
+    /**
      * Preview report PDF in browser
      */
     public function previewPdf(Request $request, string $reportType)

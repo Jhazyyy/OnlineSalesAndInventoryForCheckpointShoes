@@ -1088,6 +1088,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/blocked', [\App\Http\Controllers\ReportController::class, 'blocked'])->name('blocked');
     Route::get('/reorder', [\App\Http\Controllers\ReportController::class, 'reorder'])->name('reorder');
     Route::post('/reorder', [\App\Http\Controllers\ReportController::class, 'reorderProduct'])->name('reorder.create');
+    Route::post('/reorder/bulk', [\App\Http\Controllers\ReportController::class, 'bulkReorderProducts'])->name('reorder.bulk');
         Route::get('/critical', [\App\Http\Controllers\ReportController::class, 'critical'])->name('critical');
         
         // Export routes

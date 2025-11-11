@@ -274,7 +274,7 @@
                                     <p class="mt-1 text-sm text-gray-500">Select a purchase order to load items.</p>
                                 </div>
 
-                                <div class="mt-4">
+                                {{-- <div class="mt-4">
                                     <button type="button" onclick="addItemRow()"
                                         class="inline-flex items-center px-3 py-1.5 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
@@ -284,7 +284,7 @@
                                         </svg>
                                         Add Item Manually
                                     </button>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>
@@ -506,13 +506,13 @@
                     <input type="hidden" name="items[${index}][purchase_order_item_id]" value="">
                     <input type="hidden" name="items[${index}][condition]" value="good">
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
                     <span class="ordered-qty">-</span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
                     <span class="received-qty">-</span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
                     <span class="pending-qty">-</span>
                 </td>
                 <td class="px-6 py-4">
@@ -530,7 +530,7 @@
                         oninput="updateLineTotal(this.closest('tr'))"
                         class="block w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
                     <span class="line-total">₱0.00</span>
                 </td>
                 <td class="px-6 py-4">

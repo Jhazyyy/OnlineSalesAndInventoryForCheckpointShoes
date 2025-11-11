@@ -91,25 +91,72 @@
                 @endforeach
             </div>
 
+            <!-- Bulk Reorder Action Bar -->
+            <div id="bulkActionBar" class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-4 hidden">
+                <div class="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <span id="selectedCount">0</span> item(s) selected
+                        </span>
+                        <span id="supplierWarning" class="ml-4 text-xs text-red-600 dark:text-red-400 hidden">
+                            ⚠️ All selected items must have the same supplier
+                        </span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="clearSelection()" 
+                                class="px-4 py-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-white rounded text-sm transition">
+                            Clear Selection
+                        </button>
+                        <button type="button" id="bulkReorderBtn" disabled
+                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition disabled:opacity-50 disabled:cursor-not-allowed">
+                            Bulk Reorder Selected Items
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Reorder Table -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-4 sm:p-6">
-                    <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Products Needing Reorder</h3>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Products Needing Reorder</h3>
+                        @if(count($report['products'] ?? []) > 0)
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" id="selectAll" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2">
+                                <span class="text-sm text-gray-700 dark:text-gray-300">Select All</span>
+                            </label>
+                        @endif
+                    </div>
 
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm sm:text-base">
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
-                                    @foreach(['Product', 'Category', 'Qty', 'Reorder Level', 'Suggested', 'Supplier', 'Action'] as $header)
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase w-12">
+                                        <span class="sr-only">Select</span>
+                                    </th>
+                                    @foreach(['SKU / Product', 'Category', 'Qty', 'Reorder Level', 'Suggested', 'Supplier', 'Action'] as $header)
                                         <th class="px-4 py-3 sm:px-6 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">{{ $header }}</th>
                                     @endforeach
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                                 @forelse(($report['products'] ?? []) as $product)
-                                    <tr class="hover:bg-blue-50 dark:hover:bg-gray-700 transition">
+                                    <tr class="hover:bg-blue-50 dark:hover:bg-gray-700 transition" 
+                                        data-product-id="{{ $product->product_id }}"
+                                        data-supplier-id="{{ $product->preferred_supplier_id ?? '' }}"
+                                        data-supplier-name="{{ $product->preferredSupplier->supplier_name ?? 'No Supplier' }}"
+                                        data-suggested-qty="{{ $product->suggested_order_qty ?? 1 }}">
+                                        <td class="px-4 py-3">
+                                            <input type="checkbox" 
+                                                   class="product-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500" 
+                                                   data-product-id="{{ $product->product_id }}"
+                                                   data-supplier-id="{{ $product->preferred_supplier_id ?? '' }}"
+                                                   {{ empty($product->preferred_supplier_id) ? 'disabled title="No supplier assigned"' : '' }}>
+                                        </td>
                                         <td class="px-4 py-3 sm:px-6">
-                                            <div class="font-medium text-gray-900 dark:text-white">{{ $product->product_name }}</div>
+                                            <div class="font-bold text-base text-gray-900 dark:text-white">{{ $product->sku }}</div>
+                                            <div class="text-sm text-gray-700 dark:text-gray-300">{{ $product->product_name }}</div>
                                             <div class="text-xs text-gray-500 dark:text-gray-400">{{ $product->product_brand }}</div>
                                         </td>
                                         <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">{{ $product->product_category }}</td>
@@ -146,7 +193,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                                        <td colspan="8" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                                             No products found that need reordering.
                                         </td>
                                     </tr>
@@ -156,6 +203,131 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Bulk Reorder Form (hidden, submitted via JS) -->
+            <form id="bulkReorderForm" method="POST" action="{{ route('reports.reorder.bulk') }}" style="display: none;">
+                @csrf
+                <input type="hidden" name="supplier_id" id="bulkSupplierId">
+                <div id="bulkProductsContainer"></div>
+            </form>
+
+            <script>
+                let selectedProducts = new Map();
+
+                // Select All functionality
+                document.getElementById('selectAll')?.addEventListener('change', function(e) {
+                    const checkboxes = document.querySelectorAll('.product-checkbox:not([disabled])');
+                    checkboxes.forEach(cb => {
+                        cb.checked = e.target.checked;
+                        handleCheckboxChange({target: cb});
+                    });
+                });
+
+                // Handle individual checkbox changes
+                document.querySelectorAll('.product-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', handleCheckboxChange);
+                });
+
+                function handleCheckboxChange(e) {
+                    const checkbox = e.target;
+                    const productId = checkbox.dataset.productId;
+                    const supplierId = checkbox.dataset.supplierId;
+                    const row = checkbox.closest('tr');
+                    
+                    if (checkbox.checked) {
+                        selectedProducts.set(productId, {
+                            supplierId: supplierId,
+                            supplierName: row.dataset.supplierName,
+                            suggestedQty: row.dataset.suggestedQty
+                        });
+                    } else {
+                        selectedProducts.delete(productId);
+                    }
+                    
+                    updateBulkActionBar();
+                }
+
+                function updateBulkActionBar() {
+                    const count = selectedProducts.size;
+                    const bulkActionBar = document.getElementById('bulkActionBar');
+                    const selectedCountSpan = document.getElementById('selectedCount');
+                    const bulkReorderBtn = document.getElementById('bulkReorderBtn');
+                    const supplierWarning = document.getElementById('supplierWarning');
+                    
+                    selectedCountSpan.textContent = count;
+                    
+                    if (count === 0) {
+                        bulkActionBar.classList.add('hidden');
+                        bulkReorderBtn.disabled = true;
+                        return;
+                    }
+                    
+                    bulkActionBar.classList.remove('hidden');
+                    
+                    // Check if all selected products have the same supplier
+                    const supplierIds = Array.from(selectedProducts.values()).map(p => p.supplierId);
+                    const uniqueSuppliers = [...new Set(supplierIds)];
+                    
+                    if (uniqueSuppliers.length > 1 || uniqueSuppliers[0] === '') {
+                        bulkReorderBtn.disabled = true;
+                        supplierWarning.classList.remove('hidden');
+                    } else {
+                        bulkReorderBtn.disabled = false;
+                        supplierWarning.classList.add('hidden');
+                    }
+                }
+
+                function clearSelection() {
+                    selectedProducts.clear();
+                    document.querySelectorAll('.product-checkbox').forEach(cb => cb.checked = false);
+                    document.getElementById('selectAll').checked = false;
+                    updateBulkActionBar();
+                }
+
+                // Bulk reorder button click
+                document.getElementById('bulkReorderBtn')?.addEventListener('click', function() {
+                    if (selectedProducts.size === 0) return;
+                    
+                    // Get supplier ID (all should be the same)
+                    const firstProduct = Array.from(selectedProducts.values())[0];
+                    const supplierId = firstProduct.supplierId;
+                    const supplierName = firstProduct.supplierName;
+                    
+                    if (!supplierId) {
+                        alert('Please ensure all selected products have a supplier assigned.');
+                        return;
+                    }
+                    
+                    // Confirm action
+                    const productCount = selectedProducts.size;
+                    if (!confirm(`Create a purchase order for ${productCount} product(s) from ${supplierName}?`)) {
+                        return;
+                    }
+                    
+                    // Populate form
+                    document.getElementById('bulkSupplierId').value = supplierId;
+                    
+                    const container = document.getElementById('bulkProductsContainer');
+                    container.innerHTML = '';
+                    
+                    selectedProducts.forEach((data, productId) => {
+                        const productInput = document.createElement('input');
+                        productInput.type = 'hidden';
+                        productInput.name = 'products[]';
+                        productInput.value = productId;
+                        container.appendChild(productInput);
+                        
+                        const qtyInput = document.createElement('input');
+                        qtyInput.type = 'hidden';
+                        qtyInput.name = `quantities[${productId}]`;
+                        qtyInput.value = data.suggestedQty;
+                        container.appendChild(qtyInput);
+                    });
+                    
+                    // Submit form
+                    document.getElementById('bulkReorderForm').submit();
+                });
+            </script>
 
         </div>
     </div>
