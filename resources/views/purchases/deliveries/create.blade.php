@@ -506,13 +506,13 @@
                     <input type="hidden" name="items[${index}][purchase_order_item_id]" value="">
                     <input type="hidden" name="items[${index}][condition]" value="good">
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     <span class="ordered-qty">-</span>
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     <span class="received-qty">-</span>
                 </td>
-                <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     <span class="pending-qty">-</span>
                 </td>
                 <td class="px-6 py-4">
@@ -530,7 +530,7 @@
                         oninput="updateLineTotal(this.closest('tr'))"
                         class="block w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
                 </td>
-                <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                     <span class="line-total">₱0.00</span>
                 </td>
                 <td class="px-6 py-4">

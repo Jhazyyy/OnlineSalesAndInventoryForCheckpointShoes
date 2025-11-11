@@ -61,7 +61,7 @@
                             <div>
                                 <x-input-label for="expected_date" :value="__('Expected Delivery Date')" />
                                 <x-text-input id="expected_date" name="expected_date" type="date"
-                                    class="mt-1 block w-full" :value="old('expected_date')" />
+                                    class="mt-1 block w-full" :value="old('expected_date')"  required />
                                 <x-input-error :messages="$errors->get('expected_date')" class="mt-2" />
                             </div>
 
@@ -90,16 +90,14 @@
                                     <option value="">Select Payment Method</option>
                                     <option value="cash" {{ old('payment_method') == 'cash' ? 'selected' : '' }}>Cash
                                     </option>
-                                    <option value="card" {{ old('payment_method') == 'card' ? 'selected' : '' }}>Card
-                                    </option>
                                     <option value="bank_transfer"
                                         {{ old('payment_method') == 'bank_transfer' ? 'selected' : '' }}>Bank Transfer
                                     </option>
-                                    <option value="check" {{ old('payment_method') == 'check' ? 'selected' : '' }}>
+                                    {{-- <option value="check" {{ old('payment_method') == 'check' ? 'selected' : '' }}>
                                         Check
                                     </option>
                                     <option value="credit" {{ old('payment_method') == 'credit' ? 'selected' : '' }}>
-                                        Credit</option>
+                                        Credit</option> --}}
                                 </select>
                                 <x-input-error :messages="$errors->get('payment_method')" class="mt-2" />
                             </div>
@@ -117,7 +115,7 @@
                 </div>
 
                 <!-- Order Items -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white">Order Items</h3>
@@ -134,7 +132,7 @@
                         <div id="orderItems">
                             <!-- Initial item row -->
                             <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-4">
-                                <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+                                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                                     <div class="md:col-span-2">
                                         <label
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
@@ -164,7 +162,7 @@
                                         <input type="number" name="items[0][unit_price]" step="0.01"
                                             class="unit-price-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     </div>
-                                    <div>
+                                    <div class="hidden">
                                         <label
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300">Discount</label>
                                         <input type="number" name="items[0][discount_amount]" step="0.01"
@@ -200,7 +198,7 @@
                 </div>
 
                 <!-- Order Summary -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Order Summary</h3>
 
@@ -264,7 +262,7 @@
 
                                 <!-- Tax Amount -->
                                 <div>
-                                    <x-input-label for="tax_amount" :value="__('Tax Amount (Calculated)')" />
+                                    <x-input-label for="tax_amount" :value="__('Tax Amount (Optional)')" />
                                     <x-text-input id="tax_amount" name="tax_amount" type="number" step="0.01"
                                         class="mt-1 block w-full bg-gray-100 dark:bg-gray-600" 
                                         :value="old('tax_amount', '0.00')" readonly />
@@ -284,7 +282,7 @@
 
                                 <!-- Discount Amount -->
                                 <div>
-                                    <x-input-label for="discount_amount" :value="__('Discount Amount (Calculated)')" />
+                                    <x-input-label for="discount_amount" :value="__('Discount Amount (Optional)')" />
                                     <x-text-input id="discount_amount" name="discount_amount" type="number"
                                         step="0.01" class="mt-1 block w-full bg-gray-100 dark:bg-gray-600" 
                                         :value="old('discount_amount', '0.00')" readonly />
@@ -371,7 +369,7 @@
                 </div>
 
                 <!-- Form Actions -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
                     <div class="p-6">
                         <div class="flex items-center justify-end space-x-3">
                             <a href="{{ route('purchases.purchase-orders.index') }}"

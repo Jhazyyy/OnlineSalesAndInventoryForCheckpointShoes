@@ -65,7 +65,7 @@ class PurchaseOrderController extends Controller
             'priority' => 'nullable|in:low,normal,high,urgent',
             'status' => 'nullable|in:pending,approved,ordered,partial_received,received,cancelled',
             'payment_status' => 'nullable|in:pending,partial,paid,refunded',
-            'payment_method' => 'nullable|in:cash,card,bank_transfer,check,credit',
+            'payment_method' => 'nullable|in:cash,card,bank_transfer',
 
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,product_id',
@@ -131,7 +131,7 @@ class PurchaseOrderController extends Controller
             'priority' => 'nullable|in:low,normal,high,urgent',
             'status' => 'nullable|in:pending,approved,ordered,partial_received,received,cancelled',
             'payment_status' => 'nullable|in:pending,partial,paid,refunded',
-            'payment_method' => 'nullable|in:cash,card,bank_transfer,check,credit',
+            'payment_method' => 'nullable|in:cash,card,bank_transfer',
 
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,product_id',

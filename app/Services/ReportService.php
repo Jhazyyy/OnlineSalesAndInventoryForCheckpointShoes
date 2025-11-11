@@ -215,6 +215,103 @@ class ReportService
             'products' => $products,
         ];
     }
+
+    /**
+     * Generate critical items report (products at or below critical level)
+     *
+     * @param array $filters
+     * @return array
+     */
+    public function generateCriticalItemsReport(array $filters = []): array
+    {
+        $query = Product::query();
+
+        // Search by product name/brand/category
+        if (!empty($filters['q'])) {
+            $search = $filters['q'];
+            $query->where(function ($q) use ($search) {
+                $q->where('product_name', 'LIKE', "%{$search}%")
+                  ->orWhere('product_brand', 'LIKE', "%{$search}%")
+                  ->orWhere('product_category', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Filter by category if provided
+        if (!empty($filters['category'])) {
+            $query->where('product_category', $filters['category']);
+        }
+
+        // Only include products that have a critical level defined and are at/below it
+        $query->whereNotNull('critical_level')
+              ->whereColumn('quantity', '<=', 'critical_level');
+
+        $products = $query->with(['preferredSupplier', 'purchases'])
+            ->orderBy('quantity', 'asc')
+            ->orderBy('product_name')
+            ->get();
+
+        // Calculate additional metrics for each product
+        $products = $products->map(function ($p) {
+            // Calculate shortage (difference from reorder level)
+            $p->shortage = ($p->reorder_level ?? $p->critical_level) - $p->quantity;
+            
+            // Get last purchase date
+            $lastPurchase = $p->purchases()
+                ->join('purchase_orders', 'purchases.purchase_order_id', '=', 'purchase_orders.purchase_order_id')
+                ->orderBy('purchase_orders.order_date', 'desc')
+                ->first();
+            $p->last_purchase_date = $lastPurchase ? $lastPurchase->order_date : null;
+            
+            // Calculate average daily sales (last 30 days)
+            $salesData = $p->sales()
+                ->join('pos_orders', 'sales.pos_order_id', '=', 'pos_orders.pos_order_id')
+                ->where('pos_orders.created_at', '>=', now()->subDays(30))
+                ->selectRaw('SUM(sales.quantity) as total_sold')
+                ->first();
+            
+            $totalSold = $salesData->total_sold ?? 0;
+            $p->avg_daily_sales = $totalSold / 30;
+            $p->avg_monthly_sales = $totalSold;
+            
+            // Determine priority level
+            if ($p->quantity <= 0) {
+                $p->priority_level = 'urgent';
+                $p->priority_label = '🔴 Urgent';
+            } elseif ($p->quantity <= ($p->critical_level * 0.5)) {
+                $p->priority_level = 'critical';
+                $p->priority_label = '🟠 Critical';
+            } else {
+                $p->priority_level = 'warning';
+                $p->priority_label = '🟡 Warning';
+            }
+            
+            // Suggested action
+            if ($p->quantity <= 0) {
+                $p->action_needed = 'Create PO immediately - Out of stock';
+            } elseif ($p->avg_daily_sales > 0 && ($p->quantity / $p->avg_daily_sales) < 7) {
+                $p->action_needed = 'Urgent reorder - Less than 7 days stock';
+            } else {
+                $p->action_needed = 'Schedule reorder soon';
+            }
+            
+            return $p;
+        });
+
+        $totalItems = $products->count();
+        $urgentItems = $products->where('priority_level', 'urgent')->count();
+        $criticalItems = $products->where('priority_level', 'critical')->count();
+
+        return [
+            'summary' => [
+                'total_items' => $totalItems,
+                'urgent' => $urgentItems,
+                'critical' => $criticalItems,
+            ],
+            'filters' => $filters,
+            'products' => $products,
+        ];
+    }
+
     /**
      * Generate sales report
      * 

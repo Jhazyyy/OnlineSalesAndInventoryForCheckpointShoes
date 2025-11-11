@@ -241,7 +241,7 @@
                                 <div>
                                     <x-input-label for="tax_amount" :value="__('Tax Amount')" />
                                     <x-text-input id="tax_amount" name="tax_amount" type="number" step="0.01"
-                                        class="mt-1 block w-full" :value="old('tax_amount', $order->tax_amount)" />
+                                        class="mt-1 block w-full" :value="old('tax_amount', $order->tax_amount)"/>
                                     <x-input-error :messages="$errors->get('tax_amount')" class="mt-2" />
                                 </div>
 

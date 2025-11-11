@@ -126,6 +126,25 @@
                             </div>
                         </div>
 
+                        <!-- Critical Level Items Report Card -->
+                        <div class="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900 dark:to-orange-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-orange-500 rounded-lg">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-semibold text-orange-600 dark:text-orange-300 bg-orange-200 dark:bg-orange-700 px-2 py-1 rounded">New</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-orange-900 dark:text-orange-100 mb-2">Critical Level Items</h3>
+                            <p class="text-sm text-orange-700 dark:text-orange-300 mb-4">Items at critical stock levels requiring immediate attention</p>
+                            <div class="flex gap-2">
+                                <a href="{{ route('reports.critical') }}" class="flex-1 bg-orange-600 hover:bg-orange-700 text-white text-center px-4 py-2 rounded font-medium">
+                                    View Critical Items
+                                </a>
+                            </div>
+                        </div>
+
                         <!-- Blocked Items Report Card -->
                         <div class="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition">
                             <div class="flex items-center justify-between mb-4">

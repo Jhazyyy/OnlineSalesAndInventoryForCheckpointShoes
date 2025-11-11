@@ -48,7 +48,7 @@
                     </div>
 
                     <!-- Settings Categories Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                         <!-- General Settings -->
                         <a href="{{ route('settings.general') }}" class="block group">
                             <div class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-xl border border-blue-200 dark:border-blue-700 hover:shadow-lg transition-all duration-200 group-hover:scale-105">
@@ -73,7 +73,7 @@
                         </a>
 
                         <!-- Financial Settings -->
-                        <a href="{{ route('settings.financial') }}" class="block group">
+                        {{-- <a href="{{ route('settings.financial') }}" class="block group">
                             <div class="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 p-6 rounded-xl border border-green-200 dark:border-green-700 hover:shadow-lg transition-all duration-200 group-hover:scale-105">
                                 <div class="flex items-start justify-between mb-4">
                                     <div class="p-3 bg-green-500 rounded-lg">
@@ -81,9 +81,9 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                     </div>
-                                    {{-- <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200">
                                         {{ count($currentSettings['financial'] ?? []) }} items
-                                    </span> --}}
+                                    </span>
                                 </div>
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Financial Settings</h3>
                                 <p class="text-gray-600 dark:text-gray-300 text-sm">Currency, tax rates, decimal precision, and financial display preferences</p>
@@ -93,7 +93,7 @@
                                     </svg>
                                 </div>
                             </div>
-                        </a>
+                        </a> --}}
 
                         <!-- Inventory Settings -->
                         <a href="{{ route('settings.inventory') }}" class="block group">
@@ -152,7 +152,7 @@
                         </a>
 
                         <!-- Sales Settings -->
-                        <a href="{{ route('settings.sales') }}" class="block group">
+                        {{-- <a href="{{ route('settings.sales') }}" class="block group">
                             <div class="bg-gradient-to-br from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 p-6 rounded-xl border border-purple-200 dark:border-purple-700 hover:shadow-lg transition-all duration-200 group-hover:scale-105">
                                 <div class="flex items-start justify-between mb-4">
                                     <div class="p-3 bg-purple-500 rounded-lg">
@@ -160,9 +160,9 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
                                         </svg>
                                     </div>
-                                    {{-- <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-200">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-200">
                                         {{ count($currentSettings['sales'] ?? []) }} items
-                                    </span> --}}
+                                    </span>
                                 </div>
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Sales Settings</h3>
                                 <p class="text-gray-600 dark:text-gray-300 text-sm">Order prefixes, return policies, exchange rules, and sales preferences</p>
@@ -172,7 +172,7 @@
                                     </svg>
                                 </div>
                             </div>
-                        </a>
+                        </a> --}}
 
                         <!-- Notification Settings -->
                         <a href="{{ route('settings.notifications') }}" class="block group">

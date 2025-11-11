@@ -198,22 +198,100 @@
                         <div class="mt-8">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Delivery Items</h3>
 
-                            @foreach ($delivery->items as $index => $item)
-                                <input type="hidden" name="items[{{ $index }}][product_id]"
-                                    value="{{ $item->product_id }}">
-                                <input type="hidden" name="items[{{ $index }}][quantity_expected]"
-                                    value="{{ $item->quantity_expected }}">
-                                <input type="hidden" name="items[{{ $index }}][quantity_delivered]"
-                                    value="{{ $item->quantity_delivered }}">
-                                <input type="hidden" name="items[{{ $index }}][quantity_damaged]"
-                                    value="{{ $item->quantity_damaged }}">
-                                <input type="hidden" name="items[{{ $index }}][unit_price]"
-                                    value="{{ $item->unit_price }}">
-                                <input type="hidden" name="items[{{ $index }}][condition]"
-                                    value="{{ $item->condition }}">
-                            @endforeach
-
-                            @if ($delivery->items->isEmpty())
+                            @if ($delivery->items->count() > 0)
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                        <thead class="bg-gray-50 dark:bg-gray-700">
+                                            <tr>
+                                                <th
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Product</th>
+                                                <th
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Expected</th>
+                                                <th
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Delivered</th>
+                                                <th
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Damaged</th>
+                                                <th
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Unit Price</th>
+                                                <th
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Condition</th>
+                                                <th
+                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody
+                                            class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                            @foreach ($delivery->items as $index => $item)
+                                                <tr>
+                                                    <td class="px-6 py-4">
+                                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                            {{ $item->product->product_name ?? 'N/A' }}
+                                                        </div>
+                                                        @if ($item->product && $item->product->sku)
+                                                            <div class="text-xs text-gray-500 dark:text-gray-400">SKU:
+                                                                {{ $item->product->sku }}</div>
+                                                        @endif
+                                                        <input type="hidden" name="items[{{ $index }}][product_id]"
+                                                            value="{{ $item->product_id }}">
+                                                        <input type="hidden" name="items[{{ $index }}][condition]"
+                                                            value="{{ $item->condition }}">
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <input type="number" name="items[{{ $index }}][quantity_expected]" min="0"
+                                                            value="{{ old('items.' . $index . '.quantity_expected', $item->quantity_expected) }}"
+                                                            class="block w-20 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <input type="number" name="items[{{ $index }}][quantity_delivered]" min="0"
+                                                            value="{{ old('items.' . $index . '.quantity_delivered', $item->quantity_delivered) }}"
+                                                            class="block w-20 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <input type="number" name="items[{{ $index }}][quantity_damaged]" min="0"
+                                                            value="{{ old('items.' . $index . '.quantity_damaged', $item->quantity_damaged ?? 0) }}"
+                                                            class="block w-20 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        <input type="number" name="items[{{ $index }}][unit_price]" min="0" step="0.01"
+                                                            value="{{ old('items.' . $index . '.unit_price', $item->unit_price) }}"
+                                                            class="block w-24 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
+                                                    </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                        <span
+                                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $item->condition_badge_class }}">
+                                                            {{ ucwords($item->condition) }}
+                                                        </span>
+                                                    </td>
+                                                    <td
+                                                        class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                                        ₱{{ number_format($item->line_total, 2) }}
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                        <tfoot class="bg-gray-50 dark:bg-gray-700">
+                                            <tr>
+                                                <td colspan="6"
+                                                    class="px-6 py-4 text-right text-sm font-medium text-gray-900 dark:text-white">
+                                                    Total:
+                                                </td>
+                                                <td
+                                                    class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-white">
+                                                    ₱{{ number_format($delivery->total_amount_delivered, 2) }}
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            @else
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">No items in this delivery.</p>
                                 <input type="hidden" name="items[0][product_id]" value="1">
                                 <input type="hidden" name="items[0][quantity_expected]" value="0">
                                 <input type="hidden" name="items[0][quantity_delivered]" value="0">

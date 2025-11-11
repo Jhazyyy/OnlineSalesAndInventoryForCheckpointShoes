@@ -170,6 +170,26 @@ class ReportController extends Controller
     }
 
     /**
+     * Display critical items report (products at or below critical level)
+     */
+    public function critical(Request $request): View
+    {
+        $filters = $request->only(['q', 'category']);
+        $report = $this->reportService->generateCriticalItemsReport($filters);
+
+        // Supplier options for creating POs
+        $suppliers = Supplier::where('status', 'active')
+            ->orderBy('supplier_name')
+            ->get(['supplier_id', 'supplier_name']);
+
+        return view('reports.critical', [
+            'report' => $report,
+            'filters' => $filters,
+            'suppliers' => $suppliers,
+        ]);
+    }
+
+    /**
      * Create a purchase order for a specific product (reorder action)
      */
     public function reorderProduct(Request $request)

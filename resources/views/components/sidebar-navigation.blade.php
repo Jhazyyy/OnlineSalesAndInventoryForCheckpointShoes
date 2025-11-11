@@ -205,8 +205,8 @@
                             title="Reorder Items" size="small" />
 
                         <!-- Critical Level Items -->
-                        {{-- <x-nav-item route="reports.critical" route-pattern="reports.critical" :icon="App\Helpers\NavigationHelper::getIcon('critical_level_items', 'w-4 h-4 mr-3')"
-                            title="Critical Level Items" size="small" /> --}}
+                        <x-nav-item route="reports.critical" route-pattern="reports.critical" :icon="App\Helpers\NavigationHelper::getIcon('critical_level_items', 'w-4 h-4 mr-3')"
+                            title="Critical Level Items" size="small" />
 
                         <!-- Financial Report (P&L) -->
                         {{-- <x-nav-item route="reports.financial" route-pattern="reports.financial" :icon="App\Helpers\NavigationHelper::getIcon('financial_report', 'w-4 h-4 mr-3')"
