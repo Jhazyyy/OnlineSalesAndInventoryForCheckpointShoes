@@ -14,6 +14,7 @@ class Inventory extends Model
 
     protected $fillable = [
         'product_id',
+        'variant_id',
         'property_id',
         'sku',
         'location',
@@ -21,6 +22,16 @@ class Inventory extends Model
         'quantity_reserved',
         'unit_cost',
         'last_movement_at',
+    ];
+
+    /**
+     * Foreign key attributes for validation.
+     *
+     * @var array<string, array>
+     */
+    protected $foreignKeys = [
+        'product_id' => ['table' => 'products', 'column' => 'product_id'],
+        'variant_id' => ['table' => 'product_variants', 'column' => 'variant_id', 'nullable' => true],
     ];
 
     protected $casts = [
@@ -35,6 +46,36 @@ class Inventory extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id', 'product_id');
+    }
+
+    /**
+     * Get the variant that belongs to the inventory.
+     */
+    public function variant(): BelongsTo
+    {
+        return $this->belongsTo(ProductVariant::class, 'variant_id', 'variant_id');
+    }
+
+    /**
+     * Get the display name (variant or product).
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        if ($this->variant_id && $this->variant) {
+            return $this->variant->display_name;
+        }
+        return $this->product->product_name ?? 'Unknown Product';
+    }
+
+    /**
+     * Get the SKU (variant or product).
+     */
+    public function getItemSkuAttribute(): ?string
+    {
+        if ($this->variant_id && $this->variant) {
+            return $this->variant->variant_sku;
+        }
+        return $this->sku ?? $this->product->sku ?? null;
     }
 
     /**

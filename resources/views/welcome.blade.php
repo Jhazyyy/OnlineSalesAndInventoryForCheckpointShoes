@@ -102,7 +102,7 @@
                         Facebook.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                        <a href="{{ route('register') }}"
+                        <a href="{{ route('login') }}"
                             class="btn btn-lg bg-white text-blue-800 hover:bg-gray-100 border-none font-semibold">
                             Get Started
                         </a>

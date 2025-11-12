@@ -703,6 +703,17 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{product}', [ProductController::class, 'update'])->name('update');
         Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
 
+        // Product Variants Routes
+        Route::prefix('{product}/variants')->name('variants.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\ProductVariantController::class, 'index'])->name('index');
+            Route::get('/create', [\App\Http\Controllers\ProductVariantController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\ProductVariantController::class, 'store'])->name('store');
+            Route::get('/{variant}/edit', [\App\Http\Controllers\ProductVariantController::class, 'edit'])->name('edit');
+            Route::put('/{variant}', [\App\Http\Controllers\ProductVariantController::class, 'update'])->name('update');
+            Route::delete('/{variant}', [\App\Http\Controllers\ProductVariantController::class, 'destroy'])->name('destroy');
+            Route::post('/{variant}/toggle-status', [\App\Http\Controllers\ProductVariantController::class, 'toggleStatus'])->name('toggle-status');
+        });
+
         // Import routes
         // Route::get('/import/form', [ProductController::class, 'showImportForm'])->name('import');
         // Route::post('/import', [ProductController::class, 'import'])->name('import');

@@ -26,6 +26,7 @@ class StockMovement extends Model
      */
     protected $fillable = [
         'product_id',
+        'variant_id',
         'user_id',
         'movement_type',
         'quantity_before',
@@ -41,6 +42,17 @@ class StockMovement extends Model
         'reason',
         'status',
         'movement_date',
+    ];
+
+    /**
+     * Foreign key attributes for validation.
+     *
+     * @var array<string, array>
+     */
+    protected $foreignKeys = [
+        'product_id' => ['table' => 'products', 'column' => 'product_id'],
+        'variant_id' => ['table' => 'product_variants', 'column' => 'variant_id', 'nullable' => true],
+        'user_id' => ['table' => 'users', 'column' => 'id'],
     ];
 
     /**
@@ -85,11 +97,41 @@ class StockMovement extends Model
     }
 
     /**
+     * Get the variant that this movement belongs to.
+     */
+    public function variant(): BelongsTo
+    {
+        return $this->belongsTo(ProductVariant::class, 'variant_id', 'variant_id');
+    }
+
+    /**
      * Get the user who performed this movement.
      */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Get the display name (variant or product).
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        if ($this->variant_id && $this->variant) {
+            return $this->variant->display_name;
+        }
+        return $this->product->product_name ?? 'Unknown Product';
+    }
+
+    /**
+     * Get the SKU (variant or product).
+     */
+    public function getItemSkuAttribute(): ?string
+    {
+        if ($this->variant_id && $this->variant) {
+            return $this->variant->variant_sku;
+        }
+        return $this->product->sku ?? null;
     }
 
     /**
@@ -232,12 +274,14 @@ class StockMovement extends Model
         ?string $notes = null,
         ?string $reason = null,
         string $status = self::STATUS_CONFIRMED,
-        ?Carbon $movementDate = null
+        ?Carbon $movementDate = null,
+        ?int $variantId = null
     ): self {
         $totalValue = $unitCost ? ($unitCost * abs($quantityChange)) : null;
         
         return self::create([
             'product_id' => $productId,
+            'variant_id' => $variantId,
             'user_id' => $userId ?? auth()->id(),
             'movement_type' => $movementType,
             'quantity_before' => $quantityBefore,

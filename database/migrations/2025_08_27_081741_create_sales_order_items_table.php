@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('item_id');
             $table->foreignId('order_id');
             $table->foreignId('product_id');
+            $table->unsignedBigInteger('variant_id')->nullable()->comment('References product_variants.variant_id if item is a variant');
             $table->integer('quantity');
             $table->decimal('unit_price', 10, 2);
             $table->decimal('discount_amount', 10, 2)->default(0);
@@ -24,7 +25,9 @@ return new class extends Migration
             
             $table->index(['order_id']);
             $table->index(['product_id']);
-            $table->unique(['order_id', 'product_id']);
+            $table->index(['variant_id']);
+            // Remove unique constraint to allow same product with different variants
+            // $table->unique(['order_id', 'product_id']);
         });
     }
 

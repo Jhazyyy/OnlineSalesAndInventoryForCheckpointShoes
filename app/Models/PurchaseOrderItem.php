@@ -25,12 +25,24 @@ class PurchaseOrderItem extends Model
     protected $fillable = [
         'order_id',
         'product_id',
+        'variant_id',
         'quantity_ordered',
         'quantity_received',
         'unit_price',
         'discount_amount',
         'line_total',
         'notes',
+    ];
+
+    /**
+     * Foreign key attributes for validation.
+     *
+     * @var array<string, array>
+     */
+    protected $foreignKeys = [
+        'order_id' => ['table' => 'purchase_orders', 'column' => 'order_id'],
+        'product_id' => ['table' => 'products', 'column' => 'product_id'],
+        'variant_id' => ['table' => 'product_variants', 'column' => 'variant_id', 'nullable' => true],
     ];
 
     /**
@@ -62,6 +74,36 @@ class PurchaseOrderItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id', 'product_id');
+    }
+
+    /**
+     * Get the variant that belongs to the item.
+     */
+    public function variant(): BelongsTo
+    {
+        return $this->belongsTo(ProductVariant::class, 'variant_id', 'variant_id');
+    }
+
+    /**
+     * Get the display name (variant or product).
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        if ($this->variant_id && $this->variant) {
+            return $this->variant->display_name;
+        }
+        return $this->product->product_name ?? 'Unknown Product';
+    }
+
+    /**
+     * Get the SKU (variant or product).
+     */
+    public function getItemSkuAttribute(): ?string
+    {
+        if ($this->variant_id && $this->variant) {
+            return $this->variant->variant_sku;
+        }
+        return $this->product->sku ?? null;
     }
 
     /**

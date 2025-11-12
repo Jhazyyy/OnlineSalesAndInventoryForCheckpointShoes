@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('item_id');
             $table->foreignId('order_id');
             $table->foreignId('product_id');
+            $table->unsignedBigInteger('variant_id')->nullable()->comment('References product_variants.variant_id if item is a variant');
             $table->integer('quantity_ordered');
             $table->integer('quantity_received')->default(0);
             $table->decimal('unit_price', 10, 2);
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->timestamps();
             
             $table->index(['order_id', 'product_id']);
+            $table->index(['variant_id']);
         });
     }
 

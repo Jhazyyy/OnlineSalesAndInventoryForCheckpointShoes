@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('inventories', function (Blueprint $table) {
             $table->id('inventory_id');
             $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('variant_id')->nullable()->comment('References product_variants.variant_id if inventory is for a variant');
             $table->unsignedBigInteger('property_id')->nullable();
             $table->string('sku')->nullable();
             $table->string('location')->nullable();
@@ -24,6 +25,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['product_id', 'property_id']);
+            $table->index(['product_id', 'variant_id']);
+            $table->index(['variant_id']);
             $table->index(['sku']);
             $table->index(['location']);
         });

@@ -34,6 +34,8 @@ class Product extends Model
         'price', 
         'image',
         'description',
+        'is_parent',
+        'has_variants',
     ];
 
     /**
@@ -236,6 +238,22 @@ class Product extends Model
     }
 
     /**
+     * Get the variants for this product (if it's a parent product).
+     */
+    public function variants(): HasMany
+    {
+        return $this->hasMany(ProductVariant::class, 'parent_product_id', 'product_id');
+    }
+
+    /**
+     * Get only active variants.
+     */
+    public function activeVariants(): HasMany
+    {
+        return $this->variants()->where('is_active', true);
+    }
+
+    /**
      * Get the preferred supplier for the product.
      */
     public function preferredSupplier()
@@ -257,6 +275,59 @@ class Product extends Model
     public function hasProperties(): bool
     {
         return !empty($this->property_name) && !empty($this->property_value);
+    }
+
+    /**
+     * Check if this product has variants.
+     */
+    public function hasVariants(): bool
+    {
+        return $this->has_variants && $this->variants()->exists();
+    }
+
+    /**
+     * Get total quantity across all variants (for parent products).
+     */
+    public function getTotalVariantQuantityAttribute(): int
+    {
+        if (!$this->has_variants) {
+            return $this->quantity;
+        }
+        
+        return $this->variants()->sum('quantity');
+    }
+
+    /**
+     * Create a new variant for this product.
+     */
+    public function createVariant(array $data): ProductVariant
+    {
+        // Mark this product as having variants
+        if (!$this->has_variants) {
+            $this->update(['has_variants' => true, 'is_parent' => true]);
+        }
+        
+        $data['parent_product_id'] = $this->product_id;
+        
+        return ProductVariant::create($data);
+    }
+
+    /**
+     * Get available variant options (colors, sizes, materials).
+     */
+    public function getVariantOptionsAttribute(): array
+    {
+        if (!$this->has_variants) {
+            return [];
+        }
+        
+        $variants = $this->variants;
+        
+        return [
+            'colors' => $variants->pluck('color')->filter()->unique()->values()->toArray(),
+            'sizes' => $variants->pluck('size')->filter()->unique()->values()->toArray(),
+            'materials' => $variants->pluck('material')->filter()->unique()->values()->toArray(),
+        ];
     }
 
 

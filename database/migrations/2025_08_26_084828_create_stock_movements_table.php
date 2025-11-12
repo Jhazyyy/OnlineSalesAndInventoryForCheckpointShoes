@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('stock_movements', function (Blueprint $table) {
             $table->id('movement_id');
             $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('variant_id')->nullable()->comment('References product_variants.variant_id if movement is for a variant');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->enum('movement_type', ['sale', 'purchase', 'return', 'adjustment', 'transfer_in', 'transfer_out', 'audit', 'waste', 'production', 'initial_stock']);
             $table->integer('quantity_before');
@@ -33,6 +34,7 @@ return new class extends Migration
             
             // Indexes for better performance
             $table->index(['product_id', 'movement_date']);
+            $table->index(['variant_id', 'movement_date']);
             $table->index(['movement_type', 'movement_date']);
             $table->index(['reference_type', 'reference_id']);
             $table->index('movement_date');

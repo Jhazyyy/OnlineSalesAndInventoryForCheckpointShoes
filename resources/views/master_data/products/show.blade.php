@@ -10,7 +10,21 @@
                                     {{ $product->product_name }}</h2>
                                 <p class="text-gray-600 dark:text-gray-400">{{ $product->product_brand }}</p>
                             </div>
-                        <div class="flex space-x-3 mt-4 sm:mt-0">
+                        <div class="flex flex-wrap gap-2 mt-4 sm:mt-0">
+                            <a href="{{ route('master_data.products.variants.index', $product) }}"
+                                class="inline-flex items-center px-4 py-2 bg-purple-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700 focus:bg-purple-700 active:bg-purple-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
+                                    </path>
+                                </svg>
+                                Manage Variants
+                                @if($product->has_variants)
+                                    <span class="ml-1 px-2 py-0.5 text-xs bg-purple-800 rounded-full">
+                                        {{ $product->variants->count() }}
+                                    </span>
+                                @endif
+                            </a>
                             <a href="{{ route('master_data.products.edit', $product) }}"
                                 class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:bg-yellow-700 active:bg-yellow-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

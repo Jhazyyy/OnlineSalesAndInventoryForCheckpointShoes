@@ -28,6 +28,7 @@ class SalesOrderItem extends Model
     protected array $foreignKeys = [
         'order_id' => ['table' => 'sales_orders', 'column' => 'order_id'],
         'product_id' => ['table' => 'products', 'column' => 'product_id'],
+        'variant_id' => ['table' => 'product_variants', 'column' => 'variant_id', 'nullable' => true],
     ];
 
     /**
@@ -38,6 +39,7 @@ class SalesOrderItem extends Model
     protected $fillable = [
         'order_id',
         'product_id',
+        'variant_id',
         'quantity',
         'unit_price',
         'discount_amount',
@@ -73,6 +75,38 @@ class SalesOrderItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id', 'product_id');
+    }
+
+    /**
+     * Get the product variant that this item references (if applicable).
+     */
+    public function variant(): BelongsTo
+    {
+        return $this->belongsTo(ProductVariant::class, 'variant_id', 'variant_id');
+    }
+
+    /**
+     * Get the display name for this item (product or variant).
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        if ($this->variant_id && $this->variant) {
+            return $this->variant->display_name;
+        }
+        
+        return $this->product ? $this->product->product_name : 'Unknown Product';
+    }
+
+    /**
+     * Get the SKU for this item (variant or product).
+     */
+    public function getItemSkuAttribute(): string
+    {
+        if ($this->variant_id && $this->variant) {
+            return $this->variant->variant_sku;
+        }
+        
+        return $this->product ? $this->product->sku : 'N/A';
     }
 
     /**
