@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('user_terms_acceptances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('terms_id'); // ->constrained() commented out - add FK in separate migration->onDelete('cascade')
+            $table->foreignId('terms_id');
             $table->string('version_accepted', 20);
             $table->timestamp('accepted_at');
             $table->string('ip_address', 45)->nullable();
             $table->string('user_agent')->nullable();
-            $table->json('acceptance_metadata')->nullable(); // Store additional data like device info, location, etc.
+            $table->json('acceptance_metadata')->nullable();
             $table->timestamps();
             
             $table->index('user_id');

@@ -25,22 +25,15 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->timestamps();
-            
-            // Foreign key constraints
-            $table->foreign('product_id')
-                  ->references('product_id')
-                  ->on('products')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
                   
             $table->foreign('supplier_id')
-                  ->references('id')
+                  ->references('supplier_id')
                   ->on('suppliers')
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
                   
             $table->foreign('purchase_order_id')
-                  ->references('id')
+                  ->references('order_id')
                   ->on('purchase_orders')
                   ->onDelete('set null')
                   ->onUpdate('cascade');
@@ -51,7 +44,6 @@ return new class extends Migration
                   ->onDelete('set null')
                   ->onUpdate('cascade');
             
-            // Indexes
             $table->index(['return_status', 'return_date']);
             $table->index(['supplier_id', 'return_date']);
             $table->index(['product_id', 'return_date']);

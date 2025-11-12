@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('purchase_orders', function (Blueprint $table) {
             $table->id('order_id');
             $table->string('order_number', 50)->unique();
-            $table->foreignId('supplier_id'); // ->constrained() commented out - add FK in separate migration
+            $table->foreignId('supplier_id');
             $table->date('order_date');
             $table->date('expected_date')->nullable();
             $table->date('received_date')->nullable();

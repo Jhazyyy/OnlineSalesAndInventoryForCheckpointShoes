@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\ValidatesForeignKeys;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ExchangeItem extends Model
 {
-    use HasFactory;
+    use HasFactory, ValidatesForeignKeys;
 
     /**
      * The primary key for the model.
@@ -16,6 +17,17 @@ class ExchangeItem extends Model
      * @var string
      */
     protected $primaryKey = 'exchange_item_id';
+
+    /**
+     * Foreign key validation configuration.
+     * Replaces database-level foreign key constraints.
+     *
+     * @var array
+     */
+    protected array $foreignKeys = [
+        'exchange_id' => ['table' => 'exchanges', 'column' => 'exchange_id'],
+        'product_id' => ['table' => 'products', 'column' => 'product_id'],
+    ];
 
     /**
      * The attributes that are mass assignable.

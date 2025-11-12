@@ -22,26 +22,6 @@ return new class extends Migration {
             $table->decimal('price', 10, 2)->unsigned();
             $table->timestamps();
 
-            // Add foreign key constraints
-            $table->foreign('product_id')
-                  ->references('product_id')
-                  ->on('products')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
-                  
-            $table->foreign('customer_id')
-                  ->references('customer_id')
-                  ->on('customers')
-                  ->onDelete('set null')
-                  ->onUpdate('cascade');
-                  
-            $table->foreign('sales_order_id')
-                  ->references('order_id')
-                  ->on('sales_orders')
-                  ->onDelete('set null')
-                  ->onUpdate('cascade');
-
-            // Add indexes for better query performance
             $table->index('return_status');
             $table->index('return_date');
             $table->index(['product_id', 'return_status']);

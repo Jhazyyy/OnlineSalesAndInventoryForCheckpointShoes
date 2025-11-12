@@ -202,6 +202,19 @@ class PurchaseDeliveryService
         $totalAmountDelivered = 0;
 
         foreach ($items as $itemData) {
+            // Auto-determine condition if not explicitly set or set to 'good'
+            if (!isset($itemData['condition']) || $itemData['condition'] === 'good') {
+                $quantityExpected = $itemData['quantity_expected'] ?? 0;
+                $quantityDelivered = $itemData['quantity_delivered'] ?? 0;
+                
+                // If quantities don't match, set condition to partial
+                if ($quantityDelivered != $quantityExpected) {
+                    $itemData['condition'] = 'partial';
+                } else {
+                    $itemData['condition'] = 'good';
+                }
+            }
+            
             $item = new PurchaseDeliveryItem($itemData);
             $item->delivery_id = $delivery->delivery_id;
             $item->save();

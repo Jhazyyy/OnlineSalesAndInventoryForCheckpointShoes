@@ -248,10 +248,19 @@ class PurchaseReceive extends Model
 
     /**
      * Check if receive can be edited.
+     * Cannot edit if any items have partial condition (mismatched quantities).
      */
     public function canBeEdited(): bool
     {
-        return in_array($this->status, ['in_transit', 'partially_received']);
+        // First check if status allows editing
+        if (!in_array($this->status, ['in_transit', 'partially_received'])) {
+            return false;
+        }
+        
+        // Check if any items have partial condition
+        $hasPartialItems = $this->items()->where('condition', 'partial')->exists();
+        
+        return !$hasPartialItems;
     }
 
     /**

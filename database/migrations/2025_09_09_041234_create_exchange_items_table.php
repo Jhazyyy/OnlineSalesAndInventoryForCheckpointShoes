@@ -23,20 +23,12 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->timestamps();
             
-            // Foreign key constraints
             $table->foreign('exchange_id')
                   ->references('exchange_id')
                   ->on('exchanges')
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
-                  
-            $table->foreign('product_id')
-                  ->references('product_id')
-                  ->on('products')
-                  ->onDelete('restrict')
-                  ->onUpdate('cascade');
             
-            // Indexes
             $table->index(['exchange_id', 'item_type']);
             $table->index(['product_id']);
         });

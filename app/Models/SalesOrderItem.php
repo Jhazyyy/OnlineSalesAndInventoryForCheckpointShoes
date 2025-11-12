@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\ValidatesForeignKeys;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class SalesOrderItem extends Model
 {
-    use HasFactory;
+    use HasFactory, ValidatesForeignKeys;
 
     /**
      * The primary key for the model.
@@ -17,6 +18,17 @@ class SalesOrderItem extends Model
      * @var string
      */
     protected $primaryKey = 'item_id';
+
+    /**
+     * Foreign key validation configuration.
+     * Replaces database-level foreign key constraints.
+     *
+     * @var array
+     */
+    protected array $foreignKeys = [
+        'order_id' => ['table' => 'sales_orders', 'column' => 'order_id'],
+        'product_id' => ['table' => 'products', 'column' => 'product_id'],
+    ];
 
     /**
      * The attributes that are mass assignable.

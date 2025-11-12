@@ -223,6 +223,17 @@ class PurchaseReceiveService
             $unitPrice = $itemData['unit_price'] ?? 0;
             $updateProductPrice = $itemData['update_product_price'] ?? false;
 
+            // Auto-determine condition if not explicitly set or set to 'good'
+            $condition = $itemData['condition'] ?? 'good';
+            if ($condition === 'good') {
+                // If quantities don't match, set condition to partial
+                if ($quantityReceived != $quantityExpected) {
+                    $condition = 'partial';
+                } else {
+                    $condition = 'good';
+                }
+            }
+
             $item = PurchaseReceiveItem::create([
                 'receive_id' => $receive->receive_id,
                 'product_id' => $product->product_id,
@@ -233,7 +244,7 @@ class PurchaseReceiveService
                 'unit_price' => $unitPrice,
                 'update_product_price' => $updateProductPrice,
                 'total_amount' => $quantityReceived * $unitPrice,
-                'condition' => $itemData['condition'] ?? 'good',
+                'condition' => $condition,
                 'item_notes' => $itemData['item_notes'] ?? null,
             ]);
 

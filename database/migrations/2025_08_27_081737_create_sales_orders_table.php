@@ -42,10 +42,6 @@ return new class extends Migration
             $table->index(['customer_id', 'status']);
             $table->index(['order_date']);
             $table->index(['status']);
-            
-            // Foreign key constraints
-            $table->foreign('tax_rule_id')->references('id')->on('tax_discounts')->onDelete('set null');
-            $table->foreign('discount_rule_id')->references('id')->on('tax_discounts')->onDelete('set null');
         });
     }
 

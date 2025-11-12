@@ -40,7 +40,7 @@ return new class extends Migration
                   ->onUpdate('cascade');
                   
             $table->foreign('sales_order_id')
-                  ->references('sales_order_id')
+                  ->references('order_id')
                   ->on('sales_orders')
                   ->onDelete('set null')
                   ->onUpdate('cascade');

@@ -13,18 +13,18 @@ return new class extends Migration
     {
         Schema::create('sales_order_items', function (Blueprint $table) {
             $table->id('item_id');
-            $table->foreignId('order_id'); // ->constrained() commented out - add FK in separate migration->onDelete('cascade')
-            $table->foreignId('product_id'); // ->constrained() commented out - add FK in separate migration->onDelete('cascade')
+            $table->foreignId('order_id');
+            $table->foreignId('product_id');
             $table->integer('quantity');
             $table->decimal('unit_price', 10, 2);
             $table->decimal('discount_amount', 10, 2)->default(0);
-            $table->decimal('line_total', 10, 2); // (quantity * unit_price) - discount_amount
+            $table->decimal('line_total', 10, 2);
             $table->text('notes')->nullable();
             $table->timestamps();
             
             $table->index(['order_id']);
             $table->index(['product_id']);
-            $table->unique(['order_id', 'product_id']); // Prevent duplicate products in same order
+            $table->unique(['order_id', 'product_id']);
         });
     }
 

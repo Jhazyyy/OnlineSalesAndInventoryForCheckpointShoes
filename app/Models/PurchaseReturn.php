@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\ValidatesForeignKeys;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,7 +11,7 @@ use Carbon\Carbon;
 
 class PurchaseReturn extends Model
 {
-    use HasFactory;
+    use HasFactory, ValidatesForeignKeys;
 
     /**
      * The primary key for the model.
@@ -18,6 +19,19 @@ class PurchaseReturn extends Model
      * @var string
      */
     protected $primaryKey = 'return_id';
+
+    /**
+     * Foreign key validation configuration.
+     * Replaces database-level foreign key constraints.
+     *
+     * @var array
+     */
+    protected array $foreignKeys = [
+        'product_id' => ['table' => 'products', 'column' => 'product_id'],
+        'supplier_id' => ['table' => 'suppliers', 'column' => 'supplier_id'],
+        'purchase_order_id' => ['table' => 'purchase_orders', 'column' => 'order_id', 'nullable' => true],
+        'created_by' => ['table' => 'users', 'column' => 'id', 'nullable' => true],
+    ];
 
     /**
      * The attributes that are mass assignable.
