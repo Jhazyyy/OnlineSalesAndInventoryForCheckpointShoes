@@ -58,6 +58,32 @@ class Returns extends Model
     const STATUS_REFUNDED = 'refunded';
 
     /**
+     * Boot the model and add validation for duplicate returns.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Prevent creating duplicate returns for the same sales order and product
+        static::creating(function ($return) {
+            if ($return->sales_order_id && $return->product_id) {
+                $existingReturn = self::where('sales_order_id', $return->sales_order_id)
+                    ->where('product_id', $return->product_id)
+                    ->whereIn('return_status', [self::STATUS_APPROVED, self::STATUS_PROCESSED])
+                    ->first();
+
+                if ($existingReturn) {
+                    throw new \Exception(
+                        'A return has already been processed for this product in sales order #' . 
+                        $return->sales_order_id . '. Return #' . $existingReturn->return_id . 
+                        ' is already ' . $existingReturn->return_status . '.'
+                    );
+                }
+            }
+        });
+    }
+
+    /**
      * Get all available return statuses.
      */
     public static function getStatuses(): array
@@ -251,7 +277,13 @@ class Returns extends Model
      */
     public function markAsProcessed(): bool
     {
+        // Only approved returns can be marked as processed
         if (!$this->isApproved()) {
+            return false;
+        }
+
+        // Prevent processing already processed returns
+        if ($this->isProcessed()) {
             return false;
         }
 

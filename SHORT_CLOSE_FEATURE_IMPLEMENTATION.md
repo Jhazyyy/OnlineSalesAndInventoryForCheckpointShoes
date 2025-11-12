@@ -70,8 +70,15 @@ Added the following columns:
    - Sets status to 'received' (complete)
    - Sets received_date to now
    - Updates PO items by setting quantity_ordered to match quantity_received (closes the gap)
-6. Logs activity to SupplierActivityLog
-7. Returns refreshed receive with relationships
+6. **Completes all pending deliveries** for the purchase order:
+   - Finds all deliveries that are not yet 'delivered', 'cancelled', or 'failed'
+   - Marks them as 'delivered' with current timestamp
+   - Updates delivery_notes with short close information
+   - Adds tracking history entry indicating auto-completion due to short close
+   - Prevents remaining deliveries from being expected
+7. Logs activity to SupplierActivityLog
+8. Creates notification for the short close action
+9. Returns refreshed receive with relationships
 
 **Error Handling:**
 - Throws exception if receive cannot be short closed
@@ -151,7 +158,10 @@ Route::post('/{receive}/short-close', [PurchaseReceiveController::class, 'shortC
    - All items with shortfall are marked as short closed
    - Related purchase order status changes to 'received'
    - PO items are adjusted to match actual received quantities
+   - **All pending deliveries are automatically completed**
+   - **Delivery tracking history is updated with short close information**
    - Activity is logged to supplier activity log
+   - Notification is created
 7. Transaction commits or rolls back on error
 8. User sees success message and updated status
 
@@ -171,6 +181,11 @@ Route::post('/{receive}/short-close', [PurchaseReceiveController::class, 'shortC
 2. Inventory movements remain intact
 3. No impact on existing receives
 4. No impact on other purchase components
+5. **Deliveries are automatically completed (NEW)**
+6. **No remaining pending deliveries after short close (NEW)**
+7. Delivery tracking history preserved with short close notes
+8. Backward compatible with existing data
+9. Activity logs maintained for audit trail
 5. Backward compatible with existing data
 6. Activity logs maintained for audit trail
 

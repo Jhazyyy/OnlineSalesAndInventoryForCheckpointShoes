@@ -107,6 +107,23 @@ class ReturnsController extends Controller
         try {
             DB::beginTransaction();
 
+            // Check if a return already exists for this sales order and product
+            // that has been approved or processed (not rejected or pending)
+            if ($validated['sales_order_id']) {
+                $existingReturn = Returns::where('sales_order_id', $validated['sales_order_id'])
+                    ->where('product_id', $validated['product_id'])
+                    ->whereIn('return_status', [Returns::STATUS_APPROVED, Returns::STATUS_PROCESSED])
+                    ->first();
+
+                if ($existingReturn) {
+                    DB::rollBack();
+                    return back()->withErrors([
+                        'sales_order_id' => 'A return has already been processed for this product in this sales order. ' .
+                                          'Return #' . $existingReturn->return_id . ' is already ' . $existingReturn->return_status . '.'
+                    ])->withInput();
+                }
+            }
+
             $return = Returns::create([
                 'product_id' => $validated['product_id'],
                 'customer_id' => $validated['customer_id'] ?? null,
@@ -315,6 +332,12 @@ class ReturnsController extends Controller
      */
     public function markAsProcessed(Returns $return)
     {
+        // Check if already processed
+        if ($return->isProcessed()) {
+            return back()->with('warning', 'This return has already been processed.');
+        }
+
+        // Check if approved
         if (!$return->isApproved()) {
             return back()->with('error', 'Only approved returns can be marked as processed.');
         }

@@ -387,6 +387,12 @@ class PurchaseReceiveService
 
     /**
      * Delete a purchase receive.
+     * 
+     * This method reverses all changes made when the receive was created:
+     * 1. Reverses inventory changes
+     * 2. Reverses PO item quantity_received
+     * 3. Updates PO status
+     * 4. Does NOT auto-cancel deliveries (deliveries remain for future receives)
      */
     public function deleteReceive(PurchaseReceive $receive): bool
     {
@@ -395,10 +401,76 @@ class PurchaseReceiveService
             throw new \Exception('Cannot delete receive that is already fully processed.');
         }
 
-        // Reverse inventory changes
-        $this->deleteReceiveItems($receive);
+        // Begin transaction to ensure all updates happen together
+        DB::beginTransaction();
 
-        return $receive->delete();
+        try {
+            // Step 1: Reverse PO item quantities before deleting receive items
+            if ($receive->purchase_order_id) {
+                foreach ($receive->items as $item) {
+                    if ($item->purchase_order_item_id && $item->quantity_received > 0) {
+                        $poItem = \App\Models\PurchaseOrderItem::find($item->purchase_order_item_id);
+                        if ($poItem) {
+                            // Subtract the received quantity
+                            $poItem->quantity_received = max(0, $poItem->quantity_received - $item->quantity_received);
+                            $poItem->save();
+                        }
+                    }
+                }
+
+                // Step 2: Update Purchase Order status
+                $purchaseOrder = PurchaseOrder::with('items')->find($receive->purchase_order_id);
+                if ($purchaseOrder) {
+                    // Check if all items are now back to 0 received
+                    $allItemsUnreceived = $purchaseOrder->items->every(function ($item) {
+                        return $item->quantity_received == 0;
+                    });
+
+                    // Check if any items are partially received
+                    $anyPartiallyReceived = $purchaseOrder->items->some(function ($item) {
+                        return $item->quantity_received > 0 && $item->quantity_received < $item->quantity_ordered;
+                    });
+
+                    // Check if all items are fully received
+                    $allFullyReceived = $purchaseOrder->items->every(function ($item) {
+                        return $item->quantity_received >= $item->quantity_ordered;
+                    });
+
+                    // Update PO status based on receive state
+                    if ($allItemsUnreceived) {
+                        // Back to ordered status (no items received)
+                        if ($purchaseOrder->status !== 'ordered') {
+                            $purchaseOrder->update([
+                                'status' => 'ordered',
+                                'received_date' => null,
+                            ]);
+                        }
+                    } elseif ($anyPartiallyReceived || (!$allFullyReceived && $purchaseOrder->status === 'received')) {
+                        // Back to partial received status
+                        $purchaseOrder->update([
+                            'status' => 'partial_received',
+                            'received_date' => null,
+                        ]);
+                    }
+                    // Note: We do NOT cancel or close deliveries here.
+                    // Deliveries remain available for future receives.
+                }
+            }
+
+            // Step 3: Reverse inventory changes and delete items
+            $this->deleteReceiveItems($receive);
+
+            // Step 4: Delete the receive record
+            $result = $receive->delete();
+
+            DB::commit();
+
+            return $result;
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new \Exception("Failed to delete purchase receive: " . $e->getMessage());
+        }
     }
 
     /**
@@ -529,7 +601,7 @@ class PurchaseReceiveService
 
             // Update the related Purchase Order
             if ($receive->purchase_order_id) {
-                $purchaseOrder = PurchaseOrder::with('items')->find($receive->purchase_order_id);
+                $purchaseOrder = PurchaseOrder::with(['items', 'deliveries'])->find($receive->purchase_order_id);
                 
                 if ($purchaseOrder) {
                     // Mark the PO as received (closed)
@@ -552,6 +624,36 @@ class PurchaseReceiveService
                             $poItem->update([
                                 'quantity_ordered' => $poItem->quantity_received,
                             ]);
+                        }
+                    }
+
+                    // Complete all pending deliveries for this purchase order
+                    // When a PO is short-closed, any pending deliveries should also be marked as complete
+                    if ($purchaseOrder->deliveries && $purchaseOrder->deliveries->count() > 0) {
+                        foreach ($purchaseOrder->deliveries as $delivery) {
+                            // Only update deliveries that are not yet delivered or cancelled
+                            if (!in_array($delivery->status, ['delivered', 'cancelled', 'failed'])) {
+                                $oldStatus = $delivery->status;
+                                
+                                // Mark delivery as delivered since PO is short-closed
+                                $delivery->update([
+                                    'status' => 'delivered',
+                                    'actual_delivery_date' => now()->toDateString(),
+                                    'delivered_at' => now(),
+                                    'delivery_notes' => ($delivery->delivery_notes ? $delivery->delivery_notes . "\n\n" : '') . 
+                                        "Auto-completed due to purchase order short close. Original status: {$oldStatus}. " .
+                                        "Reason: {$reason}",
+                                ]);
+
+                                // Add tracking update to delivery history
+                                $delivery->addTrackingUpdate([
+                                    'status' => 'delivered',
+                                    'previous_status' => $oldStatus,
+                                    'notes' => "Delivery automatically completed due to purchase order short close. Reason: {$reason}",
+                                    'timestamp' => now(),
+                                    'short_closed' => true,
+                                ]);
+                            }
                         }
                     }
                 }
