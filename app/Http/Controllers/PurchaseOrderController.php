@@ -122,7 +122,7 @@ class PurchaseOrderController extends Controller
             'order_date' => 'required|date',
             'expected_date' => 'nullable|date|after_or_equal:order_date',
             'priority' => 'nullable|in:low,normal,high,urgent',
-            'status' => 'nullable|in:pending,approved,ordered,partial_received,received,cancelled',
+            'status' => 'nullable|in:pending,approved,ordered,partial_received,cancelled',
             'payment_status' => 'nullable|in:pending,partial,paid,refunded',
             'payment_method' => 'nullable|in:cash,bank_transfer',
 
@@ -173,7 +173,7 @@ class PurchaseOrderController extends Controller
     public function changeStatus(Request $request, PurchaseOrder $order)
     {
         $validator = Validator::make($request->all(), [
-            'status' => 'required|in:pending,approved,ordered,partial_received,received,cancelled',
+            'status' => 'required|in:pending,approved,ordered,partial_received,cancelled',
         ]);
 
         if ($validator->fails()) {

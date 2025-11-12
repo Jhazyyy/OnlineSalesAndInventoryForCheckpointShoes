@@ -10,20 +10,20 @@
                             <p class="text-gray-600 dark:text-gray-400">Manage product reorder levels and stock alerts</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
-                            <a href="{{ route('inventory.thresholds.alerts') }}" 
+                            {{-- <a href="{{ route('inventory.thresholds.alerts') }}" 
                                class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:bg-yellow-700 active:bg-yellow-800 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L5.732 15.5c-.77.833.192 2.5 1.732 2.5z"></path>
                                 </svg>
                                 View Alerts ({{ $stats['active_alerts'] }})
-                            </a>
-                            <a href="{{ route('inventory.thresholds.export') }}" 
+                            </a> --}}
+                            {{-- <a href="{{ route('inventory.thresholds.export') }}" 
                                class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
                                 </svg>
                                 Export Data
-                            </a>
+                            </a> --}}
                         </div>
                     </div>
                 </div>

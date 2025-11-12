@@ -70,7 +70,7 @@
                         </div>
 
                         <!-- Financial Report Card -->
-                        <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900 dark:to-yellow-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition">
+                        {{-- <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900 dark:to-yellow-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition">
                             <div class="flex items-center justify-between mb-4">
                                 <div class="p-3 bg-yellow-500 rounded-lg">
                                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -86,7 +86,7 @@
                                     View Report
                                 </a>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Stock Movement Report Card -->
                         <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900 dark:to-indigo-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition">

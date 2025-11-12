@@ -207,7 +207,7 @@ class ReportService
 
         return [
             'summary' => [
-                'total_candidates' => $totalCandidates,
+                'total_products' => $totalCandidates,
                 'out_of_stock' => $outOfStock,
                 'critical' => $critical,
             ],
@@ -254,6 +254,9 @@ class ReportService
         $products = $products->map(function ($p) {
             // Calculate shortage (difference from reorder level)
             $p->shortage = ($p->reorder_level ?? $p->critical_level) - $p->quantity;
+            
+            // Get suggested order quantity
+            $p->suggested_order_qty = $p->getSuggestedOrderQuantity();
             
             // Get last purchase date
             $lastPurchase = $p->purchases()

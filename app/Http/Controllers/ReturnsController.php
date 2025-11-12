@@ -67,8 +67,9 @@ class ReturnsController extends Controller
      */
     public function create(Request $request)
     {
-        $products = Product::where('quantity', '>', 0)
-                          ->orderBy('product_name')
+        // Show ALL products for returns - even out of stock ones
+        // Returns add inventory back, so out-of-stock items can be returned
+        $products = Product::orderBy('product_name')
                           ->get();
         
         $customers = Customer::where('status', 'active')
