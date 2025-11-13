@@ -138,6 +138,14 @@ class SalesOrder extends Model
     }
 
     /**
+     * Get the GCash payments for the sales order.
+     */
+    public function gcashPayments(): HasMany
+    {
+        return $this->hasMany(GcashPayment::class, 'sales_order_id', 'order_id');
+    }
+
+    /**
      * Generate unique order number.
      */
     public static function generateOrderNumber(): string

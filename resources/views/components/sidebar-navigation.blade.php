@@ -154,8 +154,8 @@
                             title="Sales Return" size="small" />
 
                         <!-- Exchange -->
-                        <x-nav-item route="sales.exchanges.index" route-pattern="sales.exchanges.*" :icon="App\Helpers\NavigationHelper::getIcon('exchange', 'w-4 h-4 mr-3')"
-                            title="Exchange" size="small" />
+                        {{-- <x-nav-item route="sales.exchanges.index" route-pattern="sales.exchanges.*" :icon="App\Helpers\NavigationHelper::getIcon('exchange', 'w-4 h-4 mr-3')"
+                            title="Exchange" size="small" /> --}}
                     </x-nav-item>
 
                     <!-- Purchases Section-->

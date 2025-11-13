@@ -186,11 +186,13 @@
             </div>
 
             <!-- Delete Account Section -->
+            @if (!auth()->user()->hasRole('admin'))
             <div class="mt-6 bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-8">
                     @include('profile.partials.delete-user-form')
                 </div>
             </div>
+            @endif
         </div>
     </div>
 </x-app-layout>

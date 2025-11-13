@@ -467,8 +467,8 @@
                                     <select x-model="paymentMethod" name="payment_method" required
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                         <option value="cash">Cash</option>
+                                        <option value="gcash">GCash</option>
                                         <option value="bank_transfer">Bank Transfer</option>
-                                        <option value="other">Gcash</option>
                                     </select>
                                 </div>
 
@@ -569,6 +569,34 @@
                                     </div>
                                 </div>
 
+                                <!-- GCash Scan-to-Pay -->
+                                <div x-show="paymentMethod === 'gcash'" class="mt-4">
+                                    <button type="button" @click="showGcashModal = true"
+                                        class="w-full inline-flex items-center justify-center px-4 py-3 bg-blue-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-blue-700 transition">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                                        </svg>
+                                        Show GCash QR Code
+                                    </button>
+                                    
+                                    <!-- Show reference number if entered -->
+                                    <div x-show="gcashReferenceNo" class="mt-3 p-3 bg-green-50 dark:bg-green-900 rounded-md border border-green-200 dark:border-green-700">
+                                        <div class="flex items-center">
+                                            <svg class="w-5 h-5 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            <div>
+                                                <p class="text-sm font-medium text-green-800 dark:text-green-200">GCash Reference Number Entered</p>
+                                                <p class="text-xs text-green-600 dark:text-green-400" x-text="gcashReferenceNo"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Hidden input for GCash reference -->
+                                <input type="hidden" name="gcash_reference_no" :value="gcashReferenceNo">
+
+
                                 <!-- Hidden Fields -->
                                 <input type="hidden" name="order_date"
                                     :value="new Date().toISOString().split('T')[0]">
@@ -598,6 +626,124 @@
                                         Cancel
                                     </button>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GCash Scan-to-Pay Modal -->
+                <div x-show="showGcashModal" 
+                     x-cloak
+                     class="fixed inset-0 z-50 overflow-y-auto" 
+                     aria-labelledby="modal-title" 
+                     role="dialog" 
+                     aria-modal="true"
+                     @keydown.escape.window="showGcashModal = false">
+                    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                        <!-- Background overlay -->
+                        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
+                             @click="showGcashModal = false"
+                             aria-hidden="true"></div>
+
+                        <!-- Modal panel -->
+                        <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                            <!-- Header -->
+                            <div class="bg-blue-600 px-6 py-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <svg class="w-8 h-8 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                                        </svg>
+                                        <h3 class="text-xl font-bold text-white" id="modal-title">
+                                            GCash Scan-to-Pay
+                                        </h3>
+                                    </div>
+                                    <button type="button" @click="showGcashModal = false" class="text-white hover:text-gray-200">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Body -->
+                            <div class="bg-white dark:bg-gray-800 px-6 py-6">
+                                <!-- Instructions -->
+                                <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg border border-blue-200 dark:border-blue-700">
+                                    <h4 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">How to Pay:</h4>
+                                    <ol class="text-sm text-blue-700 dark:text-blue-300 space-y-1 list-decimal list-inside">
+                                        <li>Open your GCash app</li>
+                                        <li>Tap "Scan QR" on your app</li>
+                                        <li>Scan the QR code below</li>
+                                        <li>Confirm payment of <strong x-text="'₱' + total.toFixed(2)"></strong></li>
+                                        <li>Enter the reference number from your GCash app below</li>
+                                    </ol>
+                                </div>
+
+                                <!-- Amount Display -->
+                                <div class="mb-6 text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Amount to Pay</p>
+                                    <p class="text-3xl font-bold text-gray-900 dark:text-white" x-text="'₱' + total.toFixed(2)"></p>
+                                </div>
+
+                                <!-- QR Code Display -->
+                                <div class="mb-6 flex justify-center">
+                                    <div class="p-4 bg-white dark:bg-gray-900 rounded-lg shadow-inner border-2 border-dashed border-gray-300 dark:border-gray-600">
+                                        <!-- Replace this with your actual QR code image -->
+                                        <img src="{{ asset('storage/gcash_qr.png') }}" 
+                                             alt="GCash QR Code" 
+                                             class="w-64 h-64 object-contain"
+                                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'256\' height=\'256\' viewBox=\'0 0 256 256\'%3E%3Crect width=\'256\' height=\'256\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'monospace\' font-size=\'16\' fill=\'%236b7280\'%3EGCASH QR%3C/text%3E%3C/svg%3E'">
+                                        <p class="text-center text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                            Scan with GCash app
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Reference Number Input -->
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        GCash Reference Number <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           x-model="gcashReferenceNo" 
+                                           placeholder="Enter 13-digit reference number"
+                                           maxlength="20"
+                                           class="w-full px-4 py-3 text-lg font-mono border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        You can find this in your GCash app after completing the payment
+                                    </p>
+                                </div>
+
+                                <!-- Payment Verification Notice -->
+                                <div class="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900 rounded-md border border-yellow-200 dark:border-yellow-700">
+                                    <div class="flex items-start">
+                                        <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <p class="text-xs text-yellow-700 dark:text-yellow-300">
+                                            The sale will be marked as "Paid via GCash" once you confirm. Please ensure the reference number is correct.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex space-x-3">
+                                <button type="button" 
+                                        @click="showGcashModal = false"
+                                        class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-gray-700 transition">
+                                    Cancel
+                                </button>
+                                <button type="button" 
+                                        @click="confirmGcashPayment()"
+                                        :disabled="!gcashReferenceNo || gcashReferenceNo.length < 10"
+                                        class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Confirm Payment
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -635,6 +781,10 @@
                 bankName: '',
                 referenceNo: '',
                 proofFileName: '',
+
+                // GCash fields
+                showGcashModal: false,
+                gcashReferenceNo: '',
 
                 // Computed
                 get subtotal() {
@@ -836,6 +986,15 @@
                             return false;
                         }
                     }
+
+                    // Validate GCash reference number
+                    if (this.paymentMethod === 'gcash') {
+                        if (!this.gcashReferenceNo || this.gcashReferenceNo.length < 10) {
+                            event.preventDefault();
+                            alert('Please click "Show GCash QR Code" and enter the reference number after payment.');
+                            return false;
+                        }
+                    }
                     
                     // Confirm submission
                     console.log('Submitting POS form', { 
@@ -847,8 +1006,25 @@
                         amountReceived: this.amountReceived,
                         bankName: this.bankName,
                         referenceNo: this.referenceNo,
+                        gcashReferenceNo: this.gcashReferenceNo,
                         total: this.total
                     });
+                },
+
+                confirmGcashPayment() {
+                    if (!this.gcashReferenceNo || this.gcashReferenceNo.length < 10) {
+                        alert('Please enter a valid GCash reference number (at least 10 characters)');
+                        return;
+                    }
+                    
+                    // Set payment status to paid for GCash
+                    this.paymentStatus = 'paid';
+                    
+                    // Close the modal
+                    this.showGcashModal = false;
+                    
+                    // Show success message
+                    alert('GCash payment confirmed! Reference: ' + this.gcashReferenceNo);
                 },
 
                 handleProofUpload(event) {

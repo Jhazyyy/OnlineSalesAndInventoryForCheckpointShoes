@@ -232,6 +232,55 @@
                                 </div>
                             @endif
                         @endif
+
+                        <!-- GCash Payment Info -->
+                        @if($order->payment_method === 'gcash')
+                            @php
+                                $gcashPayment = $order->gcashPayments()->latest()->first();
+                            @endphp
+                            
+                            @if($gcashPayment)
+                                <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900 rounded-md border border-blue-200 dark:border-blue-700">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div class="flex items-center">
+                                            <svg class="w-6 h-6 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                                            </svg>
+                                            <h4 class="text-sm font-semibold text-blue-900 dark:text-blue-200">
+                                                GCash Payment
+                                            </h4>
+                                        </div>
+                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                                            {{ $gcashPayment->status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : '' }}
+                                            {{ $gcashPayment->status === 'verified' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : '' }}
+                                            {{ $gcashPayment->status === 'failed' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' : '' }}">
+                                            {{ ucfirst($gcashPayment->status) }}
+                                        </span>
+                                    </div>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="text-blue-700 dark:text-blue-300">Reference Number:</span>
+                                            <span class="font-medium text-blue-900 dark:text-blue-200 font-mono">{{ $gcashPayment->reference_number }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-blue-700 dark:text-blue-300">Amount:</span>
+                                            <span class="font-medium text-blue-900 dark:text-blue-200">₱{{ number_format($gcashPayment->amount, 2) }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-blue-700 dark:text-blue-300">Payment Date:</span>
+                                            <span class="font-medium text-blue-900 dark:text-blue-200">{{ $gcashPayment->payment_date?->format('M d, Y h:i A') ?? 'N/A' }}</span>
+                                        </div>
+                                        @if($gcashPayment->status === 'verified' && $gcashPayment->verified_at)
+                                        <div class="mt-2 pt-2 border-t border-blue-200 dark:border-blue-700">
+                                            <p class="text-xs text-green-700 dark:text-green-300">
+                                                ✓ Payment verified on {{ $gcashPayment->verified_at->format('M d, Y h:i A') }}
+                                            </p>
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
+                        @endif
                     </div>
 
                     <!-- Payment Update Form (for partial/pending payments) -->
@@ -275,6 +324,7 @@
                                             class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                         <option value="">Keep current ({{ ucfirst(str_replace('_', ' ', $order->payment_method)) }})</option>
                                         <option value="cash">Cash</option>
+                                        <option value="gcash">GCash</option>
                                         <option value="card">Card</option>
                                         <option value="bank_transfer">Bank Transfer</option>
                                         <option value="check">Check</option>

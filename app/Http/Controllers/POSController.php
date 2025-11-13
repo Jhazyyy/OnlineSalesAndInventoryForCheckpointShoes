@@ -140,7 +140,7 @@ class POSController extends Controller
             
             // Order data
             'order_date' => 'required|date',
-            'payment_method' => 'required|in:cash,card,bank_transfer,check,online,other',
+            'payment_method' => 'required|in:cash,bank_transfer,gcash',
             'payment_status' => 'required|in:pending,paid',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,product_id',
@@ -160,9 +160,12 @@ class POSController extends Controller
             'amount_received' => 'nullable|numeric|min:0',
             
             // Bank transfer fields (required if payment method is bank_transfer)
-            'bank_name' => 'required_if:payment_method,bank_transfer|string|max:255',
-            'reference_no' => 'required_if:payment_method,bank_transfer|string|max:255',
-            'payment_proof' => 'required_if:payment_method,bank_transfer|file|mimes:jpeg,jpg,png,pdf|max:5120',
+            'bank_name' => 'nullable|required_if:payment_method,bank_transfer|string|max:255',
+            'reference_no' => 'nullable|required_if:payment_method,bank_transfer|string|max:255',
+            'payment_proof' => 'nullable|required_if:payment_method,bank_transfer|file|mimes:jpeg,jpg,png,pdf|max:5120',
+            
+            // GCash fields (required if payment method is gcash)
+            'gcash_reference_no' => 'nullable|required_if:payment_method,gcash|string|min:10|max:50',
         ]);
 
         if ($validator->fails()) {
@@ -294,6 +297,27 @@ class POSController extends Controller
                     'payment_id' => $bankPayment->id,
                     'order_id' => $order->order_id,
                     'reference_no' => $bankPayment->reference_no,
+                ]);
+            }
+
+            // If payment method is gcash, create gcash payment record
+            if ($request->payment_method === 'gcash' && $request->filled('gcash_reference_no')) {
+                // Create GCash payment record
+                $gcashPayment = \App\Models\GcashPayment::create([
+                    'sales_order_id' => $order->order_id,
+                    'reference_number' => $request->gcash_reference_no,
+                    'amount' => $totalAmount,
+                    'status' => 'verified', // Automatically verified for POS transactions
+                    'payment_date' => now(),
+                    'verified_by' => auth()->id(),
+                    'verified_at' => now(),
+                    'notes' => 'POS walk-in customer payment via GCash QR scan',
+                ]);
+
+                Log::info('GCash payment created:', [
+                    'payment_id' => $gcashPayment->id,
+                    'order_id' => $order->order_id,
+                    'reference_number' => $gcashPayment->reference_number,
                 ]);
             }
 
