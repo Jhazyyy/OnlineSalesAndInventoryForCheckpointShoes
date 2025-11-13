@@ -1060,23 +1060,25 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('inventory/thresholds')->name('inventory.thresholds.')->group(function () {
         // Main threshold management (products with thresholds)
         Route::get('/', [\App\Http\Controllers\InventoryThresholdController::class, 'index'])->name('index');
-        Route::get('/{product}', [\App\Http\Controllers\InventoryThresholdController::class, 'show'])->name('show');
-        Route::get('/{product}/edit', [\App\Http\Controllers\InventoryThresholdController::class, 'edit'])->name('edit');
-        Route::put('/{product}', [\App\Http\Controllers\InventoryThresholdController::class, 'update'])->name('update');
         
-        // Bulk operations
-        Route::post('/bulk-update', [\App\Http\Controllers\InventoryThresholdController::class, 'bulkUpdate'])->name('bulk-update');
-        
-        // Alert management
+        // Alert management - must come before /{product} routes to avoid conflicts
         Route::get('/alerts', [\App\Http\Controllers\InventoryThresholdController::class, 'alerts'])->name('alerts');
         Route::get('/alerts/{alert}', [\App\Http\Controllers\InventoryThresholdController::class, 'showAlert'])->name('alerts.show');
         Route::patch('/alerts/{alert}/resolve', [\App\Http\Controllers\InventoryThresholdController::class, 'resolveAlert'])->name('alerts.resolve');
         Route::post('/alerts/bulk-resolve', [\App\Http\Controllers\InventoryThresholdController::class, 'bulkResolveAlerts'])->name('alerts.bulk-resolve');
         
-        // Utility routes
+        // Utility routes - must come before /{product} routes
         Route::post('/run-check', [\App\Http\Controllers\InventoryThresholdController::class, 'runThresholdCheck'])->name('run-check');
         Route::get('/analytics', [\App\Http\Controllers\InventoryThresholdController::class, 'analytics'])->name('analytics');
         Route::get('/export', [\App\Http\Controllers\InventoryThresholdController::class, 'export'])->name('export');
+        
+        // Bulk operations
+        Route::post('/bulk-update', [\App\Http\Controllers\InventoryThresholdController::class, 'bulkUpdate'])->name('bulk-update');
+        
+        // Product-specific routes - must come last to avoid route conflicts
+        Route::get('/{product}', [\App\Http\Controllers\InventoryThresholdController::class, 'show'])->name('show');
+        Route::get('/{product}/edit', [\App\Http\Controllers\InventoryThresholdController::class, 'edit'])->name('edit');
+        Route::put('/{product}', [\App\Http\Controllers\InventoryThresholdController::class, 'update'])->name('update');
     });
 
     // Reports Management Routes

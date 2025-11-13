@@ -36,7 +36,7 @@ class InventoryAlert extends Model
     // Relationships
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'product_id', 'product_id');
     }
 
     public function acknowledgedBy(): BelongsTo
