@@ -76,7 +76,7 @@ class PurchaseReceiveService
      * Get filter options for purchase receive listing.
      * 
      * WORKFLOW NOTE: Receives can ONLY be created for:
-     * 1. Orders that are 'ordered' or 'partial_received' (still expecting goods)
+     * 1. Orders that are 'ordered' (still expecting goods)
      * 2. A delivery MUST exist for the order (delivery is mandatory)
      * 3. At least one delivery must be in 'delivered' status
      * 4. The receive is linked to a delivered delivery (auto-assigned if not specified)
@@ -94,7 +94,7 @@ class PurchaseReceiveService
                     ];
                 }),
             'purchase_orders' => PurchaseOrder::with(['supplier', 'deliveries'])
-                ->whereIn('status', ['ordered', 'partial_received'])
+                ->where('status', 'ordered')
                 ->orderBy('order_number')
                 ->get()
                 ->filter(function ($order) {
@@ -296,21 +296,8 @@ class PurchaseReceiveService
         // Update status based on completion
         $this->updateReceiveStatus($receive);
 
-        // Also update related Purchase Order status if exists
-        if ($receive->purchase_order_id) {
-            $order = PurchaseOrder::with('items')->find($receive->purchase_order_id);
-            if ($order) {
-                $allReceived = $order->items->every(fn($i) => $i->isFullyReceived());
-                $newStatus = $allReceived ? 'received' : 'partial_received';
-                // Only move forward in the flow
-                if (in_array($order->status, ['ordered','partial_received']) && $order->status !== $newStatus) {
-                    $order->update([
-                        'status' => $newStatus,
-                        'received_date' => $allReceived ? now() : $order->received_date,
-                    ]);
-                }
-            }
-        }
+        // Note: Purchase Order status is no longer updated here.
+        // POs remain in 'ordered' status. Receiving is tracked separately via PurchaseReceive records.
     }
 
     /**
@@ -421,38 +408,8 @@ class PurchaseReceiveService
                 // Step 2: Update Purchase Order status
                 $purchaseOrder = PurchaseOrder::with('items')->find($receive->purchase_order_id);
                 if ($purchaseOrder) {
-                    // Check if all items are now back to 0 received
-                    $allItemsUnreceived = $purchaseOrder->items->every(function ($item) {
-                        return $item->quantity_received == 0;
-                    });
-
-                    // Check if any items are partially received
-                    $anyPartiallyReceived = $purchaseOrder->items->some(function ($item) {
-                        return $item->quantity_received > 0 && $item->quantity_received < $item->quantity_ordered;
-                    });
-
-                    // Check if all items are fully received
-                    $allFullyReceived = $purchaseOrder->items->every(function ($item) {
-                        return $item->quantity_received >= $item->quantity_ordered;
-                    });
-
-                    // Update PO status based on receive state
-                    if ($allItemsUnreceived) {
-                        // Back to ordered status (no items received)
-                        if ($purchaseOrder->status !== 'ordered') {
-                            $purchaseOrder->update([
-                                'status' => 'ordered',
-                                'received_date' => null,
-                            ]);
-                        }
-                    } elseif ($anyPartiallyReceived || (!$allFullyReceived && $purchaseOrder->status === 'received')) {
-                        // Back to partial received status
-                        $purchaseOrder->update([
-                            'status' => 'partial_received',
-                            'received_date' => null,
-                        ]);
-                    }
-                    // Note: We do NOT cancel or close deliveries here.
+                    // Note: Purchase Order status is no longer updated during receive deletion
+                    // POs remain in their current status. Receiving is tracked separately.
                     // Deliveries remain available for future receives.
                 }
             }
@@ -604,11 +561,8 @@ class PurchaseReceiveService
                 $purchaseOrder = PurchaseOrder::with(['items', 'deliveries'])->find($receive->purchase_order_id);
                 
                 if ($purchaseOrder) {
-                    // Mark the PO as received (closed)
-                    $purchaseOrder->update([
-                        'status' => 'received',
-                        'received_date' => now(),
-                    ]);
+                    // Note: Purchase Order status remains 'ordered'
+                    // We only mark the receive as short-closed and complete the deliveries
 
                     // Update PO items - mark them as fully received with the actual quantities
                     // This ensures no more receipts can be created for this PO

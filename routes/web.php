@@ -358,8 +358,6 @@ Route::get('dashboard', function() {
             'pending' => \App\Models\PurchaseOrder::where('status', 'pending')->count(),
             'approved' => \App\Models\PurchaseOrder::where('status', 'approved')->count(),
             'ordered' => \App\Models\PurchaseOrder::where('status', 'ordered')->count(),
-            'partial_received' => \App\Models\PurchaseOrder::where('status', 'partial_received')->count(),
-            'received' => \App\Models\PurchaseOrder::where('status', 'received')->count(),
             'cancelled' => \App\Models\PurchaseOrder::where('status', 'cancelled')->count(),
         ];
     } catch (\Exception $e) {

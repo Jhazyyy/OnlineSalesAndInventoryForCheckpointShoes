@@ -51,8 +51,6 @@
                                     <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
                                     <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
                                     <option value="ordered" {{ request('status') == 'ordered' ? 'selected' : '' }}>Ordered</option>
-                                    <option value="partial_received" {{ request('status') == 'partial_received' ? 'selected' : '' }}>Partially Received</option>
-                                    <option value="received" {{ request('status') == 'received' ? 'selected' : '' }}>Received</option>
                                     <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                                 </select>
                             </div>

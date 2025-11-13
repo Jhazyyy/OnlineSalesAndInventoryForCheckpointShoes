@@ -106,6 +106,14 @@ class PurchaseOrder extends Model
     }
 
     /**
+     * Get the receives for the purchase order.
+     */
+    public function receives(): HasMany
+    {
+        return $this->hasMany(PurchaseReceive::class, 'purchase_order_id', 'order_id');
+    }
+
+    /**
      * Generate unique order number.
      */
     public static function generateOrderNumber(): string
@@ -171,22 +179,6 @@ class PurchaseOrder extends Model
     public function scopeOrdered(Builder $query): Builder
     {
         return $query->where('status', 'ordered');
-    }
-
-    /**
-     * Scope a query to only include partially received orders.
-     */
-    public function scopePartialReceived(Builder $query): Builder
-    {
-        return $query->where('status', 'partial_received');
-    }
-
-    /**
-     * Scope a query to only include received orders.
-     */
-    public function scopeReceived(Builder $query): Builder
-    {
-        return $query->where('status', 'received');
     }
 
     /**
@@ -291,11 +283,11 @@ class PurchaseOrder extends Model
     }
 
     /**
-     * Check if the order is overdue (expected date has passed and not received).
+     * Check if the order is overdue (expected date has passed and not cancelled).
      */
     public function getIsOverdueAttribute(): bool
     {
-        if (!$this->expected_date || in_array($this->status, ['received', 'cancelled'])) {
+        if (!$this->expected_date || $this->status === 'cancelled') {
             return false;
         }
         
@@ -319,7 +311,7 @@ class PurchaseOrder extends Model
      */
     public function canBeCancelled(): bool
     {
-        return !in_array($this->status, ['received', 'cancelled']);
+        return !in_array($this->status, ['cancelled']);
     }
 
     /**
@@ -350,14 +342,20 @@ class PurchaseOrder extends Model
      * Check if items can be received.
      * 
      * Items can only be received if:
-     * 1. The order status is 'ordered' or 'partial_received'
+     * 1. The order status is 'ordered'
      * 2. A delivery MUST exist for this order (delivery is mandatory)
      * 3. At least one delivery must be in 'delivered' status
+     * 4. The order doesn't have any short-closed receives
      */
     public function canReceiveItems(): bool
     {
         // Check if order status allows receiving
-        if (!in_array($this->status, ['ordered', 'partial_received'])) {
+        if ($this->status !== 'ordered') {
+            return false;
+        }
+
+        // Check if order has been short-closed
+        if ($this->hasShortClosedReceive()) {
             return false;
         }
 
@@ -371,6 +369,36 @@ class PurchaseOrder extends Model
 
         // At least one delivery must be in 'delivered' status
         return $deliveries->where('status', 'delivered')->count() > 0;
+    }
+
+    /**
+     * Check if deliveries can be created for this order.
+     * 
+     * Deliveries can only be created if:
+     * 1. The order status is 'approved' or 'ordered'
+     * 2. The order doesn't have any short-closed receives
+     */
+    public function canCreateDelivery(): bool
+    {
+        // Check if order status allows delivery creation
+        if (!in_array($this->status, ['approved', 'ordered'])) {
+            return false;
+        }
+
+        // Check if order has been short-closed
+        if ($this->hasShortClosedReceive()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if this order has any short-closed receives.
+     */
+    public function hasShortClosedReceive(): bool
+    {
+        return $this->receives()->where('is_short_closed', true)->exists();
     }
 
     /**
@@ -404,8 +432,6 @@ class PurchaseOrder extends Model
             'pending' => 'bg-yellow-100 text-yellow-800',
             'approved' => 'bg-blue-100 text-blue-800',
             'ordered' => 'bg-indigo-100 text-indigo-800',
-            'partial_received' => 'bg-orange-100 text-orange-800',
-            'received' => 'bg-green-100 text-green-800',
             'cancelled' => 'bg-red-100 text-red-800',
             default => 'bg-gray-100 text-gray-800',
         };
@@ -458,7 +484,7 @@ class PurchaseOrder extends Model
         return static::with(['supplier'])
                      ->whereNotNull('expected_date')
                      ->where('expected_date', '<', Carbon::today())
-                     ->whereNotIn('status', ['received', 'cancelled'])
+                     ->where('status', '!=', 'cancelled')
                      ->get();
     }
 
@@ -473,7 +499,7 @@ class PurchaseOrder extends Model
                                ->orWhere(function ($q) {
                                    $q->whereNotNull('expected_date')
                                      ->where('expected_date', '<', Carbon::today())
-                                     ->whereNotIn('status', ['received', 'cancelled']);
+                                     ->where('status', '!=', 'cancelled');
                                });
                      })
                      ->get();

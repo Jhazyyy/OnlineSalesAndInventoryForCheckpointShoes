@@ -59,24 +59,71 @@
                     <div class="lg:col-span-2">
                         <!-- Product Search & Filter -->
                         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-4">
-                            <div class="p-4">
+                            <div class="p-4 space-y-3">
+                                <!-- Search Input -->
                                 <input type="text" x-model="productSearch" @input="filterProducts"
                                     placeholder="Search products by name or SKU..."
                                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                
+                                <!-- Category Filter -->
+                                <div class="flex items-center gap-2">
+                                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                                        Category:
+                                    </label>
+                                    <select x-model="selectedCategory" @change="filterProducts"
+                                        class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
+                                        <option value="">All Categories</option>
+                                        <template x-for="category in categories" :key="category">
+                                            <option :value="category" x-text="category"></option>
+                                        </template>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Products Grid -->
                         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                            <div class="p-6">
-                                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Products</h3>
-                                <div
-                                    class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 max-h-[600px] overflow-y-auto">
+                            <div class="p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Products</h3>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400" x-text="filteredProducts.length + ' items'"></span>
+                                </div>
+                                
+                                <!-- No Products Message -->
+                                <div x-show="filteredProducts.length === 0" 
+                                     class="flex flex-col items-center justify-center py-16 text-center">
+                                    <svg class="w-20 h-20 text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                              d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+                                        </path>
+                                    </svg>
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Products Found</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 mb-4 max-w-md">
+                                        <template x-if="productSearch || selectedCategory">
+                                            <span>No products match your current filters. Try adjusting your search or category selection.</span>
+                                        </template>
+                                        <template x-if="!productSearch && !selectedCategory">
+                                            <span>There are no products available in the inventory at the moment.</span>
+                                        </template>
+                                    </p>
+                                    <button type="button" 
+                                            x-show="productSearch || selectedCategory"
+                                            @click="productSearch = ''; selectedCategory = ''; filterProducts();"
+                                            class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 transition">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                        </svg>
+                                        Clear All Filters
+                                    </button>
+                                </div>
+                                
+                                <div x-show="filteredProducts.length > 0"
+                                    class="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 max-h-[600px] overflow-y-auto">
                                     <template x-for="product in filteredProducts" :key="product.id">
                                         <div class="relative" x-data="{ showTooltip: false }" @mouseenter="showTooltip = true"
                                             @mouseleave="showTooltip = false">
                                             <div @click="addToCart(product.id, product.name, product.price, product.stock, product.image || '')"
-                                                class="bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all">
+                                                class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all">
                                                 <div
                                                     class="aspect-square bg-gray-100 dark:bg-gray-600 flex items-center justify-center">
                                                     <template x-if="product.image">
@@ -84,7 +131,7 @@
                                                             class="w-full h-full object-cover">
                                                     </template>
                                                     <template x-if="!product.image">
-                                                        <svg class="w-12 h-12 text-gray-400" fill="none"
+                                                        <svg class="w-8 h-8 text-gray-400" fill="none"
                                                             stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2"
@@ -93,10 +140,10 @@
                                                         </svg>
                                                     </template>
                                                 </div>
-                                                <div class="p-3">
-                                                    <div class="flex items-start justify-between mb-2">
+                                                <div class="p-2">
+                                                    <div class="flex items-start justify-between mb-1">
                                                         <span
-                                                            class="inline-block px-2 py-1 text-xs font-semibold rounded"
+                                                            class="inline-block px-1.5 py-0.5 text-xs font-semibold rounded"
                                                             :class="{
                                                                 'text-green-700 bg-green-100 dark:bg-green-900 dark:text-green-300': product
                                                                     .stock > 10,
@@ -105,14 +152,12 @@
                                                                 'text-red-700 bg-red-100 dark:bg-red-900 dark:text-red-300': product
                                                                     .stock === 0
                                                             }"
-                                                            x-text="product.stock + ' ' + product.unit"></span>
+                                                            x-text="product.stock"></span>
                                                     </div>
-                                                    <h4 class="font-semibold text-sm text-gray-900 dark:text-white truncate mb-1"
+                                                    <h4 class="font-semibold text-xs text-gray-900 dark:text-white line-clamp-2 mb-1 min-h-[2rem]"
                                                         x-text="product.name" :title="product.name"></h4>
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2"
-                                                        x-text="product.sku"></p>
                                                     <div class="flex justify-between items-center">
-                                                        <span class="text-lg font-bold text-gray-900 dark:text-white"
+                                                        <span class="text-sm font-bold text-gray-900 dark:text-white"
                                                             x-text="'₱' + parseFloat(product.price).toFixed(2)"></span>
                                                     </div>
                                                 </div>
@@ -126,14 +171,14 @@
                                                 x-transition:leave="transition ease-in duration-150"
                                                 x-transition:leave-start="opacity-100 scale-100"
                                                 x-transition:leave-end="opacity-0 scale-95"
-                                                class="absolute z-50 inset-0 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded-lg shadow-2xl p-3 overflow-y-auto cursor-pointer"
+                                                class="absolute z-50 inset-0 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded-lg shadow-2xl p-2 overflow-y-auto cursor-pointer"
                                                 style="display: none;"
                                                 @click="addToCart(product.id, product.name, product.price, product.stock, product.image || ''); showTooltip = false">
-                                                <div class="space-y-2 h-full flex flex-col">
+                                                <div class="space-y-1.5 h-full flex flex-col">
                                                     <!-- Product Image -->
                                                     <template x-if="product.image">
                                                         <div
-                                                            class="w-full h-28 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
+                                                            class="w-full h-20 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
                                                             <img :src="product.image" :alt="product.name"
                                                                 class="w-full h-full object-cover">
                                                         </div>
@@ -141,16 +186,16 @@
 
                                                     <!-- Product Name -->
                                                     <div class="flex-shrink-0">
-                                                        <h4 class="font-bold text-sm text-gray-900 dark:text-white mb-0.5 line-clamp-2"
+                                                        <h4 class="font-bold text-xs text-gray-900 dark:text-white mb-0.5 line-clamp-2"
                                                             x-text="product.name"></h4>
                                                         <p class="text-xs text-gray-500 dark:text-gray-400">
-                                                            SKU: <span x-text="product.sku"></span>
+                                                            <span x-text="product.sku"></span>
                                                         </p>
                                                     </div>
 
                                                     <!-- Product Details -->
                                                     <div
-                                                        class="space-y-1.5 text-xs border-t border-gray-200 dark:border-gray-700 pt-2 flex-1">
+                                                        class="space-y-1 text-xs border-t border-gray-200 dark:border-gray-700 pt-1.5 flex-1">
                                                         <div class="flex justify-between">
                                                             <span
                                                                 class="text-gray-600 dark:text-gray-400">Category:</span>
@@ -162,7 +207,7 @@
                                                             <span
                                                                 class="text-gray-600 dark:text-gray-400">Price:</span>
                                                             <span
-                                                                class="font-bold text-base text-blue-600 dark:text-blue-400"
+                                                                class="font-bold text-sm text-blue-600 dark:text-blue-400"
                                                                 x-text="'₱' + parseFloat(product.price).toFixed(2)"></span>
                                                         </div>
                                                         <div class="flex justify-between">
@@ -184,7 +229,7 @@
 
                                                     <!-- Click to Add Hint -->
                                                     <div
-                                                        class="text-center pt-1.5 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+                                                        class="text-center pt-1 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
                                                         <p class="text-xs text-gray-500 dark:text-gray-400 italic">
                                                             Click to add to cart
                                                         </p>
@@ -506,6 +551,8 @@
                 customers: @json($customers),
                 filteredProducts: [],
                 productSearch: '',
+                selectedCategory: '',
+                categories: [],
                 cart: [],
                 selectedCustomerId: '',
                 selectedTaxRule: '{{ $defaultTax ? $defaultTax->id : "" }}',
@@ -578,6 +625,9 @@
 
                 // Methods
                 init() {
+                    // Extract unique categories from products
+                    this.categories = [...new Set(this.products.map(p => p.category))].sort();
+                    
                     this.filteredProducts = this.products;
                     // Watch for payment amount changes
                     this.$watch('amountReceived', () => this.checkPaymentAmount());
@@ -587,14 +637,19 @@
 
                 filterProducts() {
                     const search = this.productSearch.toLowerCase();
-                    if (!search) {
-                        this.filteredProducts = this.products;
-                        return;
-                    }
-                    this.filteredProducts = this.products.filter(product =>
-                        product.name.toLowerCase().includes(search) ||
-                        product.sku.toLowerCase().includes(search)
-                    );
+                    
+                    this.filteredProducts = this.products.filter(product => {
+                        // Filter by search term
+                        const matchesSearch = !search || 
+                            product.name.toLowerCase().includes(search) ||
+                            product.sku.toLowerCase().includes(search);
+                        
+                        // Filter by category
+                        const matchesCategory = !this.selectedCategory || 
+                            product.category === this.selectedCategory;
+                        
+                        return matchesSearch && matchesCategory;
+                    });
                 },
 
                 checkPaymentAmount() {

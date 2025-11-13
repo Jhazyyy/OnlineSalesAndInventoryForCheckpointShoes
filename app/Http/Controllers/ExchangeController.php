@@ -84,8 +84,9 @@ class ExchangeController extends Controller
                            ->orderBy('first_name')
                            ->get();
 
-        $products = Product::where('quantity', '>', 0)
-                          ->orderBy('product_name')
+        // Show ALL products for exchanges - no quantity restriction
+        // Customers can return out-of-stock items and exchange for any item
+        $products = Product::orderBy('product_name')
                           ->get();
         
         $statuses = Exchange::getStatuses();
@@ -112,12 +113,12 @@ class ExchangeController extends Controller
             'exchange_type' => 'required|in:' . implode(',', Exchange::getTypes()),
             'status' => 'required|in:' . implode(',', Exchange::getStatuses()),
             'reason' => 'nullable|string|max:500',
-            'exchange_date' => 'required|date|before_or_equal:today',
-            'requested_completion_date' => 'nullable|date|after_or_equal:exchange_date',
+            'exchange_date' => 'required|date',
+            'requested_completion_date' => 'nullable|date',
             'notes' => 'nullable|string|max:1000',
             'internal_notes' => 'nullable|string|max:1000',
             
-            // Original items (being returned)
+            // Original items (being returned) - removed constraints
             'original_items' => 'required|array|min:1',
             'original_items.*.product_id' => 'required|exists:products,product_id',
             'original_items.*.quantity' => 'required|integer|min:1',
@@ -125,7 +126,7 @@ class ExchangeController extends Controller
             'original_items.*.condition' => 'nullable|string|max:50',
             'original_items.*.notes' => 'nullable|string|max:255',
             
-            // New items (being given)
+            // New items (being given) - removed constraints
             'new_items' => 'nullable|array',
             'new_items.*.product_id' => 'required|exists:products,product_id',
             'new_items.*.quantity' => 'required|integer|min:1',
@@ -242,10 +243,10 @@ class ExchangeController extends Controller
      */
     public function edit(Exchange $exchange)
     {
-        // Only allow editing of pending or approved exchanges
-        if (!in_array($exchange->status, [Exchange::STATUS_PENDING, Exchange::STATUS_APPROVED])) {
+        // Allow editing of any exchange except completed ones
+        if ($exchange->status === Exchange::STATUS_COMPLETED) {
             return redirect()->route('sales.exchanges.show', $exchange)
-                           ->with('error', 'Only pending or approved exchanges can be edited.');
+                           ->with('error', 'Completed exchanges cannot be edited.');
         }
 
         $exchange->load(['items.product', 'originalItems.product', 'newItems.product']);
@@ -254,6 +255,7 @@ class ExchangeController extends Controller
                            ->orderBy('first_name')
                            ->get();
 
+        // Show ALL products - no quantity restriction
         $products = Product::orderBy('product_name')->get();
         $statuses = Exchange::getStatuses();
         $types = Exchange::getTypes();
@@ -266,10 +268,10 @@ class ExchangeController extends Controller
      */
     public function update(Request $request, Exchange $exchange)
     {
-        // Only allow updating of pending or approved exchanges
-        if (!in_array($exchange->status, [Exchange::STATUS_PENDING, Exchange::STATUS_APPROVED])) {
+        // Allow updating of any exchange except completed ones
+        if ($exchange->status === Exchange::STATUS_COMPLETED) {
             return redirect()->route('sales.exchanges.show', $exchange)
-                           ->with('error', 'Only pending or approved exchanges can be updated.');
+                           ->with('error', 'Completed exchanges cannot be updated.');
         }
 
         $validated = $request->validate([
@@ -278,8 +280,8 @@ class ExchangeController extends Controller
             'exchange_type' => 'required|in:' . implode(',', Exchange::getTypes()),
             'status' => 'required|in:' . implode(',', Exchange::getStatuses()),
             'reason' => 'nullable|string|max:500',
-            'exchange_date' => 'required|date|before_or_equal:today',
-            'requested_completion_date' => 'nullable|date|after_or_equal:exchange_date',
+            'exchange_date' => 'required|date',
+            'requested_completion_date' => 'nullable|date',
             'notes' => 'nullable|string|max:1000',
             'internal_notes' => 'nullable|string|max:1000',
         ]);
@@ -303,9 +305,9 @@ class ExchangeController extends Controller
      */
     public function destroy(Exchange $exchange)
     {
-        // Only allow deletion of pending or cancelled exchanges
-        if (!in_array($exchange->status, [Exchange::STATUS_PENDING, Exchange::STATUS_CANCELLED])) {
-            return back()->with('error', 'Cannot delete processed exchanges.');
+        // Allow deletion of any exchange except completed ones
+        if ($exchange->status === Exchange::STATUS_COMPLETED) {
+            return back()->with('error', 'Cannot delete completed exchanges.');
         }
 
         try {
@@ -326,8 +328,9 @@ class ExchangeController extends Controller
      */
     public function approve(Exchange $exchange)
     {
-        if (!$exchange->isPending()) {
-            return back()->with('error', 'Only pending exchanges can be approved.');
+        // Allow approval from pending or processing status
+        if (!in_array($exchange->status, [Exchange::STATUS_PENDING, Exchange::STATUS_PROCESSING])) {
+            return back()->with('error', 'This exchange cannot be approved in its current status.');
         }
 
         try {
@@ -350,8 +353,9 @@ class ExchangeController extends Controller
      */
     public function startProcessing(Exchange $exchange)
     {
-        if (!$exchange->isApproved()) {
-            return back()->with('error', 'Only approved exchanges can be processed.');
+        // Allow processing from approved or pending status
+        if (!in_array($exchange->status, [Exchange::STATUS_APPROVED, Exchange::STATUS_PENDING])) {
+            return back()->with('error', 'This exchange cannot be processed in its current status.');
         }
 
         try {
@@ -374,8 +378,9 @@ class ExchangeController extends Controller
      */
     public function complete(Exchange $exchange)
     {
-        if (!$exchange->isProcessing()) {
-            return back()->with('error', 'Only processing exchanges can be completed.');
+        // Allow completion from processing, approved, or pending status
+        if (in_array($exchange->status, [Exchange::STATUS_COMPLETED, Exchange::STATUS_CANCELLED])) {
+            return back()->with('error', 'This exchange is already completed or cancelled.');
         }
 
         try {
@@ -534,38 +539,48 @@ class ExchangeController extends Controller
      */
     public function searchSalesOrders(Request $request)
     {
-        $search = $request->get('search', '');
-        
-        $salesOrders = SalesOrder::with(['customer', 'items.product'])
-            ->when($search, function ($query) use ($search) {
-                $query->where('order_id', 'LIKE', "%{$search}%")
-                    ->orWhere('tracking_number', 'LIKE', "%{$search}%")
-                    ->orWhereHas('customer', function ($q) use ($search) {
-                        $q->where('customer_name', 'LIKE', "%{$search}%")
-                          ->orWhere('customer_contact', 'LIKE', "%{$search}%");
-                    });
-            })
-            ->orderBy('created_at', 'desc')
-            ->limit(10)
-            ->get();
+        try {
+            $search = $request->get('search', '');
+            
+            $salesOrders = SalesOrder::with(['customer', 'items.product'])
+                ->when($search, function ($query) use ($search) {
+                    $query->where('order_id', 'LIKE', "%{$search}%")
+                        ->orWhere('order_number', 'LIKE', "%{$search}%")
+                        ->orWhere('tracking_number', 'LIKE', "%{$search}%")
+                        ->orWhereHas('customer', function ($q) use ($search) {
+                            $q->where('first_name', 'LIKE', "%{$search}%")
+                              ->orWhere('last_name', 'LIKE', "%{$search}%")
+                              ->orWhere('company_name', 'LIKE', "%{$search}%")
+                              ->orWhere('email', 'LIKE', "%{$search}%")
+                              ->orWhere('phone', 'LIKE', "%{$search}%");
+                        });
+                })
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get();
 
-        return response()->json($salesOrders->map(function ($order) {
-            return [
-                'order_id' => $order->order_id,
-                'tracking_number' => $order->tracking_number,
-                'customer_name' => $order->customer->customer_name ?? 'N/A',
-                'customer_id' => $order->customer_id,
-                'total_amount' => $order->total_amount,
-                'created_at' => $order->created_at->format('M d, Y'),
-                'items' => $order->items->map(function ($item) {
-                    return [
-                        'product_id' => $item->product_id,
-                        'product_name' => $item->product->product_name ?? 'Unknown',
-                        'quantity' => $item->quantity,
-                        'price' => $item->price,
-                    ];
-                }),
-            ];
-        }));
+            return response()->json($salesOrders->map(function ($order) {
+                return [
+                    'order_id' => $order->order_id,
+                    'order_number' => $order->order_number ?? 'N/A',
+                    'tracking_number' => $order->tracking_number ?? 'No tracking',
+                    'customer_name' => $order->customer ? $order->customer->display_name : 'N/A',
+                    'customer_id' => $order->customer_id,
+                    'total_amount' => $order->total_amount,
+                    'created_at' => $order->created_at->format('M d, Y'),
+                    'items' => $order->items->map(function ($item) {
+                        return [
+                            'product_id' => $item->product_id,
+                            'product_name' => $item->product->product_name ?? 'Unknown',
+                            'quantity' => $item->quantity,
+                            'price' => $item->price,
+                        ];
+                    }),
+                ];
+            }));
+        } catch (\Exception $e) {
+            Log::error('Error searching sales orders: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to search sales orders'], 500);
+        }
     }
 }

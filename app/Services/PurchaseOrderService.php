@@ -271,11 +271,6 @@ class PurchaseOrderService
         $oldStatus = $order->status;
         $order->update(['status' => $status]);
 
-        // Update received date when status changes to received
-        if ($status === 'received' && !$order->received_date) {
-            $order->update(['received_date' => Carbon::now()]);
-        }
-
         // Log activity based on status change
         $activityType = match($status) {
             'approved' => 'purchase_order_approved',
@@ -301,7 +296,6 @@ class PurchaseOrderService
         // Create notification for status change
         $level = match($status) {
             'approved' => 'success',
-            'received' => 'success',
             'cancelled' => 'warning',
             'ordered' => 'info',
             default => 'info',
@@ -326,9 +320,7 @@ class PurchaseOrderService
         return match($currentStatus) {
             'pending' => ['approved', 'cancelled'],
             'approved' => ['ordered', 'cancelled'],
-            'ordered' => ['partial_received', 'received', 'cancelled'],
-            'partial_received' => ['received', 'cancelled'],
-            'received' => [],
+            'ordered' => ['cancelled'],
             'cancelled' => [],
             default => [],
         };
@@ -361,8 +353,6 @@ class PurchaseOrderService
         $pendingOrders = PurchaseOrder::pending()->count();
         $approvedOrders = PurchaseOrder::approved()->count();
         $orderedOrders = PurchaseOrder::ordered()->count();
-        $partialReceivedOrders = PurchaseOrder::partialReceived()->count();
-        $receivedOrders = PurchaseOrder::received()->count();
         $cancelledOrders = PurchaseOrder::cancelled()->count();
 
         // Recent orders (last 30 days)
@@ -371,12 +361,12 @@ class PurchaseOrderService
         // Overdue orders
         $overdueOrders = PurchaseOrder::overdue();
 
-        // Purchase analytics
-        $totalPurchaseValue = PurchaseOrder::whereIn('status', ['received', 'partial_received'])->sum('total_amount');
-        $monthlyPurchaseValue = PurchaseOrder::whereIn('status', ['received', 'partial_received'])
+        // Purchase analytics - count all ordered orders
+        $totalPurchaseValue = PurchaseOrder::where('status', 'ordered')->sum('total_amount');
+        $monthlyPurchaseValue = PurchaseOrder::where('status', 'ordered')
                                           ->thisMonth()
                                           ->sum('total_amount');
-        $todayPurchaseValue = PurchaseOrder::whereIn('status', ['received', 'partial_received'])
+        $todayPurchaseValue = PurchaseOrder::where('status', 'ordered')
                                          ->today()
                                          ->sum('total_amount');
 
@@ -389,7 +379,7 @@ class PurchaseOrderService
                               ->count();
             $value = PurchaseOrder::whereYear('created_at', $date->year)
                                 ->whereMonth('created_at', $date->month)
-                                ->whereIn('status', ['received', 'partial_received'])
+                                ->where('status', 'ordered')
                                 ->sum('total_amount');
             
             $orderTrend->push([
@@ -402,14 +392,14 @@ class PurchaseOrderService
         // Top suppliers by order value
         $topSuppliers = PurchaseOrder::with(['supplier'])
                                  ->selectRaw('supplier_id, COUNT(*) as order_count, SUM(total_amount) as total_spent')
-                                 ->whereIn('status', ['received', 'partial_received'])
+                                 ->where('status', 'ordered')
                                  ->groupBy('supplier_id')
                                  ->orderByDesc('total_spent')
                                  ->limit(10)
                                  ->get();
 
         // Average order value
-        $avgOrderValue = PurchaseOrder::whereIn('status', ['received', 'partial_received'])
+        $avgOrderValue = PurchaseOrder::where('status', 'ordered')
                                   ->avg('total_amount') ?? 0;
 
         return [
@@ -418,8 +408,6 @@ class PurchaseOrderService
                 'pending_orders' => $pendingOrders,
                 'approved_orders' => $approvedOrders,
                 'ordered_orders' => $orderedOrders,
-                'partial_received_orders' => $partialReceivedOrders,
-                'received_orders' => $receivedOrders,
                 'cancelled_orders' => $cancelledOrders,
                 'recent_orders' => $recentOrders,
                 'overdue_orders' => $overdueOrders->count(),
@@ -484,15 +472,17 @@ class PurchaseOrderService
      */
     public function getReceivingReport(array $filters = []): array
     {
+        // Note: Purchase Orders no longer track receiving status
+        // Use PurchaseReceiveService for receiving reports instead
         $query = PurchaseOrder::with(['supplier', 'items.product'])
-                             ->whereIn('status', ['partial_received', 'received']);
+                             ->where('status', 'ordered');
         
-        // Apply date filters if provided
+        // Apply date filters if provided (based on order_date)
         if (!empty($filters['start_date'])) {
-            $query->whereDate('received_date', '>=', $filters['start_date']);
+            $query->whereDate('order_date', '>=', $filters['start_date']);
         }
         if (!empty($filters['end_date'])) {
-            $query->whereDate('received_date', '<=', $filters['end_date']);
+            $query->whereDate('order_date', '<=', $filters['end_date']);
         }
         
         // Apply supplier filter if provided
@@ -500,30 +490,25 @@ class PurchaseOrderService
             $query->where('supplier_id', $filters['supplier_id']);
         }
         
-        $orders = $query->latest('received_date')->get();
+        $orders = $query->latest('order_date')->get();
         
         $summary = [
-            'total_orders_received' => $orders->count(),
-            'fully_received_orders' => $orders->where('status', 'received')->count(),
-            'partially_received_orders' => $orders->where('status', 'partial_received')->count(),
-            'total_value_received' => 0,
-            'total_items_received' => 0,
-            'unique_products_received' => collect(),
+            'total_orders' => $orders->count(),
+            'total_value' => 0,
+            'total_items_ordered' => 0,
+            'unique_products' => collect(),
         ];
         
         foreach ($orders as $order) {
+            $summary['total_value'] += $order->total_amount;
             foreach ($order->items as $item) {
-                if ($item->quantity_received > 0) {
-                    $receivedValue = $item->quantity_received * $item->unit_price;
-                    $summary['total_value_received'] += $receivedValue;
-                    $summary['total_items_received'] += $item->quantity_received;
-                    $summary['unique_products_received']->put($item->product_id, $item->product->product_name);
-                }
+                $summary['total_items_ordered'] += $item->quantity_ordered;
+                $summary['unique_products']->put($item->product_id, $item->product->product_name);
             }
         }
         
-        $summary['unique_products_count'] = $summary['unique_products_received']->count();
-        unset($summary['unique_products_received']);
+        $summary['unique_products_count'] = $summary['unique_products']->count();
+        unset($summary['unique_products']);
         
         return [
             'orders' => $orders,
@@ -534,44 +519,25 @@ class PurchaseOrderService
     
     /**
      * Get receiving statistics for dashboard.
+     * Note: Purchase Orders no longer track receiving. Use PurchaseReceiveService instead.
      */
     public function getReceivingStats(): array
     {
-        $today = Carbon::today();
-        $thisWeek = [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()];
-        $thisMonth = [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()];
-        
         return [
             'today' => [
-                'orders_received' => PurchaseOrder::whereDate('received_date', $today)->count(),
-                'items_received' => PurchaseOrder::whereDate('received_date', $today)
-                    ->with('items')
-                    ->get()
-                    ->sum(function($order) { return $order->items->sum('quantity_received'); }),
-                'value_received' => PurchaseOrder::whereDate('received_date', $today)
-                    ->with('items')
-                    ->get()
-                    ->sum(function($order) { 
-                        return $order->items->sum(function($item) {
-                            return $item->quantity_received * $item->unit_price;
-                        });
-                    }),
+                'orders' => 0,
+                'items' => 0,
+                'value' => 0,
             ],
             'this_week' => [
-                'orders_received' => PurchaseOrder::whereBetween('received_date', $thisWeek)->count(),
-                'items_received' => PurchaseOrder::whereBetween('received_date', $thisWeek)
-                    ->with('items')
-                    ->get()
-                    ->sum(function($order) { return $order->items->sum('quantity_received'); }),
+                'orders' => 0,
+                'items' => 0,
             ],
             'this_month' => [
-                'orders_received' => PurchaseOrder::whereBetween('received_date', $thisMonth)->count(),
-                'items_received' => PurchaseOrder::whereBetween('received_date', $thisMonth)
-                    ->with('items')
-                    ->get()
-                    ->sum(function($order) { return $order->items->sum('quantity_received'); }),
+                'orders' => 0,
+                'items' => 0,
             ],
-            'pending_orders' => PurchaseOrder::whereIn('status', ['ordered', 'partial_received'])->count(),
+            'pending_orders' => PurchaseOrder::where('status', 'ordered')->count(),
             'overdue_orders' => PurchaseOrder::overdue()->count(),
         ];
     }

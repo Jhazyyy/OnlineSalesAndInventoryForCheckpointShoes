@@ -129,7 +129,6 @@
                                 </label>
                                 <input type="date" id="exchange_date" name="exchange_date" 
                                        value="{{ old('exchange_date', now()->toDateString()) }}" required
-                                       max="{{ now()->toDateString() }}"
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 @error('exchange_date')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -143,7 +142,6 @@
                                 </label>
                                 <input type="date" id="requested_completion_date" name="requested_completion_date" 
                                        value="{{ old('requested_completion_date') }}"
-                                       min="{{ now()->toDateString() }}"
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 @error('requested_completion_date')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -545,10 +543,10 @@
                             } else {
                                 salesOrderResults.innerHTML = data.map(order => `
                                     <div class="p-4 hover:bg-blue-50 dark:hover:bg-blue-900/30 cursor-pointer border-b dark:border-gray-700 last:border-b-0"
-                                         onclick="selectSalesOrder(${order.order_id}, '${order.tracking_number}', '${order.customer_name}', ${order.customer_id}, ${JSON.stringify(order.items).replace(/"/g, '&quot;')})">
+                                         onclick="selectSalesOrder(${order.order_id}, '${order.order_number}', '${order.customer_name}', ${order.customer_id}, ${JSON.stringify(order.items).replace(/"/g, '&quot;')})">
                                         <div class="flex justify-between items-start">
                                             <div class="flex-1">
-                                                <p class="font-semibold text-gray-900 dark:text-white">${order.tracking_number}</p>
+                                                <p class="font-semibold text-gray-900 dark:text-white">${order.order_number}</p>
                                                 <p class="text-sm text-gray-600 dark:text-gray-400">${order.customer_name}</p>
                                                 <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">Order Date: ${order.created_at}</p>
                                             </div>
@@ -572,20 +570,20 @@
                         })
                         .catch(error => {
                             console.error('Error fetching sales orders:', error);
-                            salesOrderResults.innerHTML = '<div class="p-4 text-red-500">Error loading sales orders</div>';
+                            salesOrderResults.innerHTML = '<div class="p-4 text-red-500">Error loading sales orders. Please try again.</div>';
                             salesOrderResults.classList.remove('hidden');
                         });
                 }, 300);
             });
 
             // Global function to select a sales order
-            window.selectSalesOrder = function(orderId, trackingNumber, customerName, customerId, items) {
+            window.selectSalesOrder = function(orderId, orderNumber, customerName, customerId, items) {
                 salesOrderIdInput.value = orderId;
                 salesOrderSearch.value = '';
                 salesOrderResults.classList.add('hidden');
                 
                 // Update selected order display
-                document.getElementById('selectedOrderNumber').textContent = trackingNumber;
+                document.getElementById('selectedOrderNumber').textContent = orderNumber;
                 document.getElementById('selectedOrderCustomer').textContent = customerName;
                 selectedOrderInfo.classList.remove('hidden');
                 
@@ -609,8 +607,8 @@
             
             // If there's a pre-selected sales order (from URL parameter), show the info
             @if(isset($salesOrder))
-                document.getElementById('selectedOrderNumber').textContent = '{{ $salesOrder->tracking_number }}';
-                document.getElementById('selectedOrderCustomer').textContent = '{{ $salesOrder->customer->customer_name ?? "N/A" }}';
+                document.getElementById('selectedOrderNumber').textContent = '{{ $salesOrder->order_number ?? $salesOrder->tracking_number ?? "N/A" }}';
+                document.getElementById('selectedOrderCustomer').textContent = '{{ $salesOrder->customer->display_name ?? "N/A" }}';
                 selectedOrderInfo.classList.remove('hidden');
             @endif
         });

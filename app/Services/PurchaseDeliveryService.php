@@ -84,7 +84,7 @@ class PurchaseDeliveryService
      * Get filter options for purchase delivery listing.
      * 
      * WORKFLOW NOTE: Deliveries should only be created for orders that are approved/ordered
-     * but NOT yet received. Once goods are received, no new deliveries should be created.
+     * but NOT yet short-closed. Once goods are short-closed, no new deliveries should be created.
      */
     public function getFilterOptions(): array
     {
@@ -98,11 +98,15 @@ class PurchaseDeliveryService
                         'name' => $supplier->supplier_name ?? $supplier->name,
                     ];
                 }),
-            // Only show orders that haven't been fully received yet
+            // Only show orders that can have deliveries created
             'purchase_orders' => PurchaseOrder::with('supplier')
-                ->whereIn('status', ['approved', 'ordered', 'partial_received'])
+                ->whereIn('status', ['approved', 'ordered'])
                 ->orderBy('order_number')
                 ->get()
+                ->filter(function ($order) {
+                    // Exclude orders with short-closed receives
+                    return $order->canCreateDelivery();
+                })
                 ->map(function ($order) {
                     return [
                         'id' => $order->order_id,
@@ -110,7 +114,8 @@ class PurchaseDeliveryService
                         'supplier_name' => $order->supplier->supplier_name ?? $order->supplier->name,
                         'supplier_id' => $order->supplier_id,
                     ];
-                }),
+                })
+                ->values(), // Re-index array after filter
             'carriers' => $this->getCarriers(),
         ];
     }
@@ -140,6 +145,7 @@ class PurchaseDeliveryService
      * 3. Does NOT update inventory (that happens in Purchase Receive)
      * 4. When delivered, a Purchase Receive should be created to update inventory
      * 5. Links to PO and auto-fills supplier info
+     * 6. Cannot be created if PO has short-closed receives
      */
     public function createDelivery(array $data): PurchaseDelivery
     {
@@ -153,6 +159,11 @@ class PurchaseDeliveryService
             if (isset($data['purchase_order_id'])) {
                 $purchaseOrder = PurchaseOrder::find($data['purchase_order_id']);
                 if ($purchaseOrder) {
+                    // Check if deliveries can be created for this order
+                    if (!$purchaseOrder->canCreateDelivery()) {
+                        throw new \Exception('Cannot create delivery for this purchase order. The order may have been short-closed or is not in a valid status.');
+                    }
+
                     $data['supplier_id'] = $purchaseOrder->supplier_id;
                     if (empty($data['delivery_address']) && isset($purchaseOrder->delivery_address)) {
                         $data['delivery_address'] = $purchaseOrder->delivery_address;

@@ -111,7 +111,6 @@
                                     </label>
                                     <input type="date" id="exchange_date" name="exchange_date" 
                                            value="{{ old('exchange_date', $exchange->exchange_date->format('Y-m-d')) }}" required
-                                           max="{{ now()->toDateString() }}"
                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     @error('exchange_date')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -125,7 +124,6 @@
                                     </label>
                                     <input type="date" id="requested_completion_date" name="requested_completion_date" 
                                            value="{{ old('requested_completion_date', $exchange->requested_completion_date?->format('Y-m-d')) }}"
-                                           min="{{ now()->toDateString() }}"
                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     @error('requested_completion_date')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
