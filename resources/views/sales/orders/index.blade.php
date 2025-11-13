@@ -38,6 +38,20 @@
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
 
+                            <!-- Purchase Type -->
+                            <div>
+                                <label for="purchase_type"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Order Type</label>
+                                <select id="purchase_type" name="purchase_type"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">All Types</option>
+                                    <option value="in_store" {{ request('purchase_type') == 'in_store' ? 'selected' : '' }}>
+                                        In-Store (POS)</option>
+                                    <option value="online" {{ request('purchase_type') == 'online' ? 'selected' : '' }}>
+                                        Online</option>
+                                </select>
+                            </div>
+
                             <!-- Status -->
                             <div>
                                 <label for="status"
@@ -56,6 +70,26 @@
                                 </select>
                             </div>
 
+                            <!-- Payment Status -->
+                            <div>
+                                <label for="payment_status"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Status</label>
+                                <select id="payment_status" name="payment_status"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">All Payment Status</option>
+                                    <option value="paid" {{ request('payment_status') == 'paid' ? 'selected' : '' }}>
+                                        Paid</option>
+                                    <option value="pending" {{ request('payment_status') == 'pending' ? 'selected' : '' }}>
+                                        Pending</option>
+                                    <option value="partial" {{ request('payment_status') == 'partial' ? 'selected' : '' }}>
+                                        Partial</option>
+                                    <option value="failed" {{ request('payment_status') == 'failed' ? 'selected' : '' }}>
+                                        Failed</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <!-- Start Date -->
                             <div>
                                 <label for="start_date"
@@ -120,6 +154,9 @@
                                             Order ID</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Type</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             Date</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -135,7 +172,7 @@
                                             Status</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Delivery</th>
+                                            Payment</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             Actions</th>
@@ -148,6 +185,16 @@
                                                 <div class="text-sm font-medium text-gray-900 dark:text-white">
                                                     {{ $order->order_number }}
                                                 </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                @php
+                                                    $typeClass = $order->purchase_type === 'in_store' 
+                                                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                                                        : 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
+                                                @endphp
+                                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $typeClass }}">
+                                                    {{ $order->purchase_type === 'in_store' ? 'POS' : 'Online' }}
+                                                </span>
                                             </td>
                                             <td
                                                 class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
@@ -181,22 +228,17 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 @php
-                                                    $deliveryClass = match ($order->status) {
-                                                        'delivered' => 'bg-blue-100 text-blue-800',
-                                                        'shipped', 'processing' => 'bg-yellow-100 text-yellow-800',
-                                                        'failed', 'cancelled' => 'bg-red-100 text-red-800',
-                                                        default => 'bg-gray-100 text-gray-800',
-                                                    };
-                                                    $deliveryText = match ($order->status) {
-                                                        'delivered' => 'Delivered',
-                                                        'shipped', 'processing' => 'In Transit',
-                                                        'failed', 'cancelled' => 'Failed',
-                                                        default => 'Pending',
+                                                    $paymentClass = match ($order->payment_status) {
+                                                        'paid' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                                                        'partial' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                                                        'pending' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+                                                        'failed' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+                                                        default => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
                                                     };
                                                 @endphp
                                                 <span
-                                                    class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $deliveryClass }}">
-                                                    {{ $deliveryText }}
+                                                    class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $paymentClass }}">
+                                                    {{ ucfirst($order->payment_status ?? 'Pending') }}
                                                 </span>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">

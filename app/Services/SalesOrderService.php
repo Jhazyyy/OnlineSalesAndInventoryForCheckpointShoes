@@ -68,6 +68,11 @@ class SalesOrderService
             $query->where('customer_id', $customerId);
         }
 
+        // Purchase type filter (in_store vs online)
+        if ($purchaseType = $request->get('purchase_type')) {
+            $query->where('purchase_type', $purchaseType);
+        }
+
         // Date range filters
         if ($startDate = $request->get('start_date')) {
             $query->where('order_date', '>=', $startDate);
