@@ -52,7 +52,7 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('pos.store') }}" id="posForm">
+            <form method="POST" action="{{ route('pos.store') }}" id="posForm" enctype="multipart/form-data">
                 @csrf
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Products Section (Left - 2 columns) -->
@@ -506,6 +506,69 @@
                                     </p>
                                 </div>
 
+                                <!-- Bank Transfer Fields -->
+                                <div x-show="paymentMethod === 'bank_transfer'" class="mt-4 space-y-4 p-4 bg-blue-50 dark:bg-blue-900 rounded-md border border-blue-200 dark:border-blue-700">
+                                    <div class="flex items-start">
+                                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <p class="text-xs text-blue-700 dark:text-blue-300">
+                                            Customer will need to upload bank transfer proof after order creation. Order will be marked as pending until proof is submitted and confirmed by admin.
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- Bank Name -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Bank Name <span class="text-red-500">*</span>
+                                        </label>
+                                        <select x-model="bankName" name="bank_name" 
+                                                :required="paymentMethod === 'bank_transfer'"
+                                                class="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                            <option value="">Select Bank</option>
+                                            <option value="BDO">BDO (Banco de Oro)</option>
+                                            <option value="BPI">BPI (Bank of the Philippine Islands)</option>
+                                            <option value="Metrobank">Metrobank</option>
+                                            <option value="UnionBank">UnionBank</option>
+                                            <option value="PNB">PNB (Philippine National Bank)</option>
+                                            <option value="Landbank">Landbank</option>
+                                            <option value="Security Bank">Security Bank</option>
+                                            <option value="RCBC">RCBC</option>
+                                            <option value="Chinabank">Chinabank</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Reference Number -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Reference Number <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" x-model="referenceNo" name="reference_no"
+                                               :required="paymentMethod === 'bank_transfer'"
+                                               placeholder="Enter transaction reference"
+                                               class="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    </div>
+
+                                    <!-- Proof Upload -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Proof of Payment <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="file" name="payment_proof" 
+                                               :required="paymentMethod === 'bank_transfer'"
+                                               accept="image/*,.pdf"
+                                               @change="handleProofUpload($event)"
+                                               class="w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400">
+                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                            Upload bank transfer receipt (JPG, PNG, PDF, max 5MB)
+                                        </p>
+                                        <div x-show="proofFileName" class="mt-2 text-xs text-green-600 dark:text-green-400">
+                                            ✓ File selected: <span x-text="proofFileName"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Hidden Fields -->
                                 <input type="hidden" name="order_date"
                                     :value="new Date().toISOString().split('T')[0]">
@@ -567,6 +630,11 @@
                 paymentMethod: 'cash',
                 paymentStatus: 'paid',
                 amountReceived: 0,
+                
+                // Bank Transfer fields
+                bankName: '',
+                referenceNo: '',
+                proofFileName: '',
 
                 // Computed
                 get subtotal() {
@@ -760,15 +828,53 @@
                         return false;
                     }
                     
+                    // Validate bank transfer fields
+                    if (this.paymentMethod === 'bank_transfer') {
+                        if (!this.bankName || !this.referenceNo || !this.proofFileName) {
+                            event.preventDefault();
+                            alert('Please fill in all bank transfer details: Bank Name, Reference Number, and upload Proof of Payment.');
+                            return false;
+                        }
+                    }
+                    
                     // Confirm submission
                     console.log('Submitting POS form', { 
                         cart: this.cart, 
                         customerId: this.selectedCustomerId, 
                         newCustomer: this.newCustomer,
                         paymentStatus: this.paymentStatus,
+                        paymentMethod: this.paymentMethod,
                         amountReceived: this.amountReceived,
+                        bankName: this.bankName,
+                        referenceNo: this.referenceNo,
                         total: this.total
                     });
+                },
+
+                handleProofUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        // Validate file size (5MB max)
+                        if (file.size > 5 * 1024 * 1024) {
+                            alert('File size must be less than 5MB');
+                            event.target.value = '';
+                            this.proofFileName = '';
+                            return;
+                        }
+                        
+                        // Validate file type
+                        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+                        if (!allowedTypes.includes(file.type)) {
+                            alert('Only JPG, PNG, and PDF files are allowed');
+                            event.target.value = '';
+                            this.proofFileName = '';
+                            return;
+                        }
+                        
+                        this.proofFileName = file.name;
+                    } else {
+                        this.proofFileName = '';
+                    }
                 },
 
                 getTaxRuleName() {

@@ -130,6 +130,14 @@ class SalesOrder extends Model
     }
 
     /**
+     * Get the bank transfer payments for the sales order.
+     */
+    public function bankTransferPayments(): HasMany
+    {
+        return $this->hasMany(BankTransferPayment::class, 'order_id', 'order_id');
+    }
+
+    /**
      * Generate unique order number.
      */
     public static function generateOrderNumber(): string

@@ -17,6 +17,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\BankTransferPaymentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Contracts\Auth as ContractsAuth;
 use Illuminate\Support\Facades\Auth;
@@ -1153,5 +1154,26 @@ Route::get('/sales/shipments/tracking', [\App\Http\Controllers\ShipmentControlle
 
 // Public Terms and Conditions Route (no authentication required)
 Route::get('/terms/{slug}', [\App\Http\Controllers\TermsAndConditionsController::class, 'showPublic'])->name('terms.public');
+
+// Bank Transfer Payment Routes
+Route::middleware(['auth'])->group(function () {
+    // Customer routes - submit bank transfer payment proof
+    Route::get('/bank-transfer-payments/create', [\App\Http\Controllers\BankTransferPaymentController::class, 'create'])
+        ->name('bank-transfer-payments.create');
+    Route::post('/bank-transfer-payments', [\App\Http\Controllers\BankTransferPaymentController::class, 'store'])
+        ->name('bank-transfer-payments.store');
+    
+    // Admin routes - review and manage bank transfer payments
+    Route::prefix('admin/bank-transfer-payments')->name('admin.bank-transfer-payments.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\BankTransferPaymentController::class, 'index'])
+            ->name('index');
+        Route::post('/{id}/confirm', [\App\Http\Controllers\BankTransferPaymentController::class, 'confirm'])
+            ->name('confirm');
+        Route::post('/{id}/cancel', [\App\Http\Controllers\BankTransferPaymentController::class, 'cancel'])
+            ->name('cancel');
+        Route::get('/{id}/proof', [\App\Http\Controllers\BankTransferPaymentController::class, 'showProof'])
+            ->name('proof');
+    });
+});
 
 require __DIR__ . '/auth.php';

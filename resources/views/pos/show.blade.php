@@ -175,6 +175,63 @@
                             @endif
                             @endif
                         </div>
+                        
+                        <!-- Bank Transfer Payment Info -->
+                        @if($order->payment_method === 'bank_transfer')
+                            @php
+                                $bankPayment = $order->bankTransferPayments()->latest()->first();
+                            @endphp
+                            
+                            @if($bankPayment)
+                                <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900 rounded-md border border-blue-200 dark:border-blue-700">
+                                    <h4 class="text-sm font-semibold text-blue-900 dark:text-blue-200 mb-2">
+                                        Bank Transfer Details
+                                    </h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="text-blue-700 dark:text-blue-300">Bank:</span>
+                                            <span class="font-medium text-blue-900 dark:text-blue-200">{{ $bankPayment->bank_name }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-blue-700 dark:text-blue-300">Reference Number:</span>
+                                            <span class="font-medium text-blue-900 dark:text-blue-200 font-mono">{{ $bankPayment->reference_no }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-blue-700 dark:text-blue-300">Proof Status:</span>
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                                                {{ $bankPayment->status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : '' }}
+                                                {{ $bankPayment->status === 'confirmed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : '' }}
+                                                {{ $bankPayment->status === 'cancelled' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300' : '' }}">
+                                                {{ ucfirst($bankPayment->status) }}
+                                            </span>
+                                        </div>
+                                        @if($bankPayment->proof)
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-blue-700 dark:text-blue-300">Payment Proof:</span>
+                                            <a href="{{ route('admin.bank-transfer-payments.proof', $bankPayment->id) }}" 
+                                               target="_blank"
+                                               class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline text-xs">
+                                                View Receipt
+                                            </a>
+                                        </div>
+                                        @endif
+                                        @if($bankPayment->status === 'pending')
+                                        <div class="mt-2 pt-2 border-t border-blue-200 dark:border-blue-700">
+                                            <p class="text-xs text-blue-700 dark:text-blue-300">
+                                                ⏳ Payment proof is pending admin confirmation. Order will be processed once confirmed.
+                                            </p>
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @else
+                                <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900 rounded-md border border-yellow-200 dark:border-yellow-700">
+                                    <p class="text-sm text-yellow-800 dark:text-yellow-200">
+                                        ℹ️ Awaiting bank transfer proof submission.
+                                    </p>
+                                </div>
+                            @endif
+                        @endif
                     </div>
 
                     <!-- Payment Update Form (for partial/pending payments) -->

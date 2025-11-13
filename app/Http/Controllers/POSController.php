@@ -158,6 +158,11 @@ class POSController extends Controller
             
             'notes' => 'nullable|string|max:2000',
             'amount_received' => 'nullable|numeric|min:0',
+            
+            // Bank transfer fields (required if payment method is bank_transfer)
+            'bank_name' => 'required_if:payment_method,bank_transfer|string|max:255',
+            'reference_no' => 'required_if:payment_method,bank_transfer|string|max:255',
+            'payment_proof' => 'required_if:payment_method,bank_transfer|file|mimes:jpeg,jpg,png,pdf|max:5120',
         ]);
 
         if ($validator->fails()) {
@@ -232,8 +237,12 @@ class POSController extends Controller
             $amountReceived = (float) ($request->amount_received ?? 0);
             $paymentStatus = $request->payment_status;
             
+            // For bank transfer, always set to pending until admin confirms
+            if ($request->payment_method === 'bank_transfer') {
+                $paymentStatus = 'pending';
+            } 
             // If amount received is less than total, set to pending/partial
-            if ($amountReceived > 0 && $amountReceived < $totalAmount) {
+            elseif ($amountReceived > 0 && $amountReceived < $totalAmount) {
                 $paymentStatus = 'partial';
             } elseif ($amountReceived >= $totalAmount && $request->payment_status === 'paid') {
                 $paymentStatus = 'paid';
@@ -262,6 +271,31 @@ class POSController extends Controller
             $order = $this->orderService->createOrder($orderData);
 
             Log::info('Order created successfully:', ['order_id' => $order->order_id, 'order_number' => $order->order_number]);
+
+            // If payment method is bank_transfer, create bank transfer payment record
+            if ($request->payment_method === 'bank_transfer' && $request->hasFile('payment_proof')) {
+                // Handle proof file upload
+                $file = $request->file('payment_proof');
+                $filename = 'pos_payment_proof_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $proofPath = $file->storeAs('payment_proofs', $filename, 'public');
+
+                // Create bank transfer payment record
+                $bankPayment = \App\Models\BankTransferPayment::create([
+                    'order_id' => $order->order_id,
+                    'payment_method' => 'bank_transfer',
+                    'bank_name' => $request->bank_name,
+                    'reference_no' => $request->reference_no,
+                    'amount' => $totalAmount,
+                    'proof' => $proofPath,
+                    'status' => 'pending', // Pending until admin confirms
+                ]);
+
+                Log::info('Bank transfer payment created:', [
+                    'payment_id' => $bankPayment->id,
+                    'order_id' => $order->order_id,
+                    'reference_no' => $bankPayment->reference_no,
+                ]);
+            }
 
             DB::commit();
 
