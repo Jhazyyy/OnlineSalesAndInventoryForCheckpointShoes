@@ -7,6 +7,7 @@ use App\Models\PurchaseOrder;
 use App\Models\PurchaseDelivery;
 use App\Models\PurchaseDeliveryItem;
 use App\Models\Supplier;
+use App\Models\Notification;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -179,8 +180,28 @@ class PurchaseDeliveryService
                 $this->addItemsToDelivery($delivery, $data['items']);
             }
 
+            // Create notification for new delivery
+            $this->createDeliveryCreatedNotification($delivery);
+
             return $delivery->fresh(['supplier', 'purchaseOrder', 'items.product']);
         });
+    }
+
+    /**
+     * Create notification when a new delivery is created.
+     */
+    protected function createDeliveryCreatedNotification(PurchaseDelivery $delivery): void
+    {
+        $supplier = $delivery->supplier ? ($delivery->supplier->supplier_name ?? $delivery->supplier->name) : 'Supplier';
+        $purchaseOrder = $delivery->purchaseOrder ? $delivery->purchaseOrder->order_number : 'N/A';
+
+        Notification::create([
+            'title' => 'New Purchase Delivery Created',
+            'message' => "Delivery {$delivery->delivery_number} has been created for PO {$purchaseOrder} from {$supplier}",
+            'level' => 'info',
+            'type' => 'delivery.created',
+            'link' => route('purchases.deliveries.show', $delivery->delivery_id),
+        ]);
     }
 
     /**
@@ -306,7 +327,82 @@ class PurchaseDeliveryService
             'timestamp' => now(),
         ]);
 
+        // Create notification for status change
+        $this->createDeliveryStatusNotification($delivery, $oldStatus, $newStatus);
+
         return $delivery->fresh();
+    }
+
+    /**
+     * Create notification when delivery status changes.
+     */
+    protected function createDeliveryStatusNotification(PurchaseDelivery $delivery, string $oldStatus, string $newStatus): void
+    {
+        $notificationData = [
+            'type' => 'delivery.status_changed',
+            'link' => route('purchases.deliveries.show', $delivery->delivery_id),
+        ];
+
+        $supplier = $delivery->supplier ? ($delivery->supplier->supplier_name ?? $delivery->supplier->name) : 'Supplier';
+        
+        // Determine notification based on new status
+        switch ($newStatus) {
+            case 'delivered':
+                $notificationData['title'] = 'Purchase Delivery Completed';
+                $notificationData['message'] = "Delivery {$delivery->delivery_number} from {$supplier} has been successfully delivered";
+                $notificationData['level'] = 'success';
+                $notificationData['type'] = 'delivery.delivered';
+                break;
+
+            case 'in_transit':
+                $notificationData['title'] = 'Delivery In Transit';
+                $notificationData['message'] = "Delivery {$delivery->delivery_number} from {$supplier} is now in transit";
+                $notificationData['level'] = 'info';
+                $notificationData['type'] = 'delivery.in_transit';
+                break;
+
+            case 'out_for_delivery':
+                $notificationData['title'] = 'Out for Delivery';
+                $notificationData['message'] = "Delivery {$delivery->delivery_number} from {$supplier} is out for delivery";
+                $notificationData['level'] = 'info';
+                $notificationData['type'] = 'delivery.out_for_delivery';
+                break;
+
+            case 'delayed':
+                $notificationData['title'] = 'Delivery Delayed';
+                $notificationData['message'] = "Delivery {$delivery->delivery_number} from {$supplier} has been delayed";
+                $notificationData['level'] = 'warning';
+                $notificationData['type'] = 'delivery.delayed';
+                break;
+
+            case 'failed':
+                $notificationData['title'] = 'Delivery Failed';
+                $notificationData['message'] = "Delivery {$delivery->delivery_number} from {$supplier} has failed";
+                $notificationData['level'] = 'danger';
+                $notificationData['type'] = 'delivery.failed';
+                break;
+
+            case 'cancelled':
+                $notificationData['title'] = 'Delivery Cancelled';
+                $notificationData['message'] = "Delivery {$delivery->delivery_number} from {$supplier} has been cancelled";
+                $notificationData['level'] = 'warning';
+                $notificationData['type'] = 'delivery.cancelled';
+                break;
+
+            case 'scheduled':
+                $scheduledDate = $delivery->scheduled_delivery_date ? Carbon::parse($delivery->scheduled_delivery_date)->format('M d, Y') : 'soon';
+                $notificationData['title'] = 'Delivery Scheduled';
+                $notificationData['message'] = "Delivery {$delivery->delivery_number} from {$supplier} has been scheduled for {$scheduledDate}";
+                $notificationData['level'] = 'info';
+                $notificationData['type'] = 'delivery.scheduled';
+                break;
+
+            default:
+                return; // Don't create notification for other status changes
+        }
+
+        // Create system notification
+        Notification::create($notificationData);
     }
 
     /**

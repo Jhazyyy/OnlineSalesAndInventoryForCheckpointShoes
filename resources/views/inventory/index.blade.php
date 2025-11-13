@@ -41,7 +41,7 @@
                                 <th
                                     class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Total Stock</th>
-                                {{-- <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Reserved</th> --}}
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Reserved</th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Available</th>
@@ -62,23 +62,28 @@
                                     $reorderLevel = (int) ($row->reorder_level ?? 0);
 
                                     if ($reorderLevel > 0) {
-                                        if ($available <= $reorderLevel / 2 && $available > 0) {
+                                        if ($available <= $reorderLevel / 2 && $available == 0) {
                                             $status = 'Out of Stock';
                                             $statusClass = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
                                         } elseif ($available <= $reorderLevel) {
                                             $status = 'Low';
                                             $statusClass =
                                                 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-                                        } else {
-                                            $status = 'Good';
+                                        } elseif ($available == 0) {
+                                            $status = 'Out of Stock';
+                                            $statusClass =
+                                                'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+                                        } 
+                                        else {
+                                            $status = 'With Stock';
                                             $statusClass =
                                                 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
                                         }
 
                                         $percentage = min(100, ($available / ($reorderLevel * 2)) * 100);
                                     } else {
-                                        $status = 'Good';
-                                        $statusClass = 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+                                        $status = 'Out of Stock';
+                                        $statusClass = 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
                                         $percentage = 100;
                                     }
                                 @endphp
@@ -99,9 +104,9 @@
                                         class="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-gray-100">
                                         {{ number_format($totalStock) }}
                                     </td>
-                                    {{-- <td class="px-6 py-4 text-center text-sm text-gray-600 dark:text-gray-400">
+                                    <td class="px-6 py-4 text-center text-sm text-gray-600 dark:text-gray-400">
                                         {{ number_format($reserved) }}
-                                    </td> --}}
+                                    </td>
                                     <td class="px-6 py-4">
                                         <div class="flex flex-col gap-1">
                                             <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">

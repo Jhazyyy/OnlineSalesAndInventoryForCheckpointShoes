@@ -543,10 +543,15 @@ class ReportService
         
         // Stock status breakdown
         $outOfStock = Product::where('quantity', '<=', 0)->count();
+        // Low stock: items with stock > 0 but <= reorder_level (excludes out of stock)
         $lowStock = Product::whereColumn('quantity', '<=', 'reorder_level')
-            ->whereNotNull('reorder_level')->count();
+            ->whereNotNull('reorder_level')
+            ->where('quantity', '>', 0)
+            ->count();
         $critical = Product::whereColumn('quantity', '<=', 'critical_level')
-            ->whereNotNull('critical_level')->count();
+            ->whereNotNull('critical_level')
+            ->where('quantity', '>', 0)
+            ->count();
         $overstocked = Product::whereColumn('quantity', '>', 'ceiling_level')
             ->whereNotNull('ceiling_level')->count();
         

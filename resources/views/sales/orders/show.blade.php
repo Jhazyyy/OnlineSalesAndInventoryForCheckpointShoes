@@ -7,10 +7,10 @@
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Sales Order {{ $order->order_number }}</h2>
-                            <p class="text-gray-600 dark:text-gray-400">Order received from e-commerce application</p>
+                            <p class="text-gray-600 dark:text-gray-400">In-Store Order</p>
                         </div>
                         <div class="flex space-x-3 mt-4 sm:mt-0">
-                            <a href="{{ route('sales.orders.index') }}" 
+                            <a href="{{ route('pos.index') }}" 
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -36,7 +36,7 @@
             @endif
 
             <!-- Delivery Status Tracking -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Delivery Tracking</h3>
                     <div class="flex flex-wrap gap-3">
@@ -78,7 +78,7 @@
                         Order updates are received from the e-commerce application
                     </p>
                 </div>
-            </div>
+            </div> --}}
 
             <!-- Order Status Actions - REMOVED -->
             {{-- Order actions are managed by the e-commerce application --}}
@@ -130,7 +130,7 @@
                                     </p>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Shipped Date</label>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Completed Date</label>
                                     <p class="text-sm text-gray-900 dark:text-white">
                                         {{ $order->shipped_date ? $order->shipped_date->format('M d, Y') : 'Not shipped' }}
                                     </p>
@@ -159,14 +159,14 @@
                                         {{ ucfirst(str_replace('_', ' ', $order->payment_status)) }}
                                     </span>
                                 </div>
-                                <div>
+                                {{-- <div>
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Tracking Number</label>
                                     <p class="text-sm text-gray-900 dark:text-white">{{ $order->tracking_number ?: 'Not available' }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Shipping Carrier</label>
                                     <p class="text-sm text-gray-900 dark:text-white">{{ $order->shipping_carrier ?: 'Not specified' }}</p>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>
@@ -183,7 +183,7 @@
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Product</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Quantity</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Unit Price</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Discount</th>
+                                            {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Discount</th> --}}
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Line Total</th>
                                         </tr>
                                     </thead>
@@ -203,12 +203,12 @@
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                     ₱{{ number_format($item->unit_price, 2) }}
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                {{-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                     ₱{{ number_format($item->discount_amount, 2) }}
                                                     @if($item->discount_percentage > 0)
                                                         <span class="text-gray-500">({{ number_format($item->discount_percentage, 1) }}%)</span>
                                                     @endif
-                                                </td>
+                                                </td> --}}
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                                                     ₱{{ number_format($item->line_total, 2) }}
                                                 </td>
@@ -285,9 +285,10 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Customer</label>
                                     <p class="text-sm text-gray-900 dark:text-white">
-                                        <a href="{{ route('sales.customers.show', $order->customer->customer_id) }}" class="text-blue-600 hover:text-blue-900 hover:underline">
+                                        {{-- <a href="{{ route('sales.customers.show', $order->customer->customer_id) }}" class="text-blue-600 hover:text-blue-900 hover:underline">
                                             {{ $order->customer->display_name }}
-                                        </a>
+                                        </a> --}}
+                                        {{ $order->customer->display_name}}
                                     </p>
                                 </div>
                                 <div>

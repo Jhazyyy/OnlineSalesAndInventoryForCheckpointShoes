@@ -41,7 +41,7 @@
                                     <div>
                                         <label for="supplier_id"
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Vendor Name <span class="text-red-500">*</span>
+                                            Supplier/Vendor Name <span class="text-red-500">*</span>
                                         </label>
                                         <select id="supplier_id" name="supplier_id"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
@@ -98,10 +98,13 @@
                                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                         @enderror
                                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="deliveryHelpText">
-                                            All purchase orders require delivery confirmation before receiving items. The most recent delivered shipment will be auto-assigned.
+                                            All purchase orders require delivery confirmation before receiving items.
+                                            The most recent delivered shipment will be auto-assigned.
                                         </p>
-                                        <p class="mt-1 text-xs text-orange-600 dark:text-orange-400" id="deliveryWarning" style="display:none;">
-                                            ⚠️ This PO has no delivered shipments yet. Please create and mark a delivery as delivered first.
+                                        <p class="mt-1 text-xs text-orange-600 dark:text-orange-400"
+                                            id="deliveryWarning" style="display:none;">
+                                            ⚠️ This PO has no delivered shipments yet. Please create and mark a delivery
+                                            as delivered first.
                                         </p>
                                     </div>
                                 </div>
@@ -153,11 +156,11 @@
                                             </div>
                                             <button type="button" onclick="loadPurchaseOrderItems()" id="loadItemsBtn"
                                                 class="inline-flex items-center px-3 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">
-                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
                                                     viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                         stroke-width="2"
-                                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4">
+                                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
                                                     </path>
                                                 </svg>
                                                 Load Items
@@ -174,7 +177,7 @@
                                 <div class="flex items-center justify-between mb-4">
                                     <h3 class="text-lg font-medium text-gray-900 dark:text-white">Items and Description
                                     </h3>
-                                    <button type="button" onclick="addItemRow()"
+                                    {{-- <button type="button" onclick="addItemRow()"
                                         class="inline-flex items-center px-3 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
@@ -182,7 +185,7 @@
                                                 d="M12 4v16m8-8H4"></path>
                                         </svg>
                                         Add Item
-                                    </button>
+                                    </button> --}}
                                 </div>
 
                                 <div class="overflow-x-auto -mx-6 sm:mx-0">
@@ -478,7 +481,7 @@
                 row.querySelector('input[name$="[purchase_order_item_id]"]').value = poItem.item_id;
                 row.querySelector('input[name$="[quantity_expected]"]').value = poItem.quantity_pending;
                 row.querySelector('input[name$="[quantity_received]"]').value = poItem
-                .quantity_pending; // Default to full quantity
+                    .quantity_pending; // Default to full quantity
                 row.querySelector('input[name$="[unit_price]"]').value = poItem.unit_price;
                 row.querySelector('.ordered-qty').textContent = poItem.quantity_ordered;
                 row.querySelector('.received-qty').textContent = poItem.quantity_received;
@@ -501,13 +504,13 @@
                 }
 
                 document.getElementById('itemsTableBody').appendChild(row);
-                
+
                 // Check for price difference after adding the row
                 const priceInput = row.querySelector('input[name$="[unit_price]"]');
                 if (priceInput) {
                     checkPriceDifference(priceInput, itemRowCount);
                 }
-                
+
                 itemRowCount++;
             }
 
@@ -576,11 +579,13 @@
                     '<div class="mt-2">' +
                     '<label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Unit Price</label>' +
                     '<input type="number" name="items[' + index +
-                    '][unit_price]" min="0" step="0.01" value="0" required class="unit-price-input block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" placeholder="0.00" onchange="updateSummary(); checkPriceDifference(this, ' + index + ')" data-product-select="items[' + index + '][product_id]">' +
+                    '][unit_price]" min="0" step="0.01" value="0" required class="unit-price-input block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" placeholder="0.00" onchange="updateSummary(); checkPriceDifference(this, ' +
+                    index + ')" data-product-select="items[' + index + '][product_id]">' +
                     '</div>' +
                     '<div class="mt-2 price-update-section" id="priceUpdateSection_' + index + '" style="display:none;">' +
                     '<label class="flex items-center text-xs">' +
-                    '<input type="checkbox" name="items[' + index + '][update_product_price]" value="1" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 mr-2">' +
+                    '<input type="checkbox" name="items[' + index +
+                    '][update_product_price]" value="1" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 mr-2">' +
                     '<span class="text-gray-700 dark:text-gray-300">Update product master price</span>' +
                     '</label>' +
                     '<div class="text-xs text-gray-500 dark:text-gray-400 mt-1" id="priceDifferenceInfo_' + index + '"></div>' +
@@ -647,7 +652,7 @@
                 const productSelect = row.querySelector('select[name$="[product_id]"]');
                 const priceUpdateSection = document.getElementById('priceUpdateSection_' + rowIndex);
                 const priceDifferenceInfo = document.getElementById('priceDifferenceInfo_' + rowIndex);
-                
+
                 if (!productSelect || !productSelect.value || !priceInput.value) {
                     if (priceUpdateSection) priceUpdateSection.style.display = 'none';
                     return;
@@ -655,10 +660,10 @@
 
                 const productId = productSelect.value;
                 const unitPrice = parseFloat(priceInput.value);
-                
+
                 // Find the product in availableProducts
                 const product = availableProducts.find(p => p.product_id == productId);
-                
+
                 if (!product) {
                     if (priceUpdateSection) priceUpdateSection.style.display = 'none';
                     return;
@@ -666,23 +671,23 @@
 
                 const currentPrice = parseFloat(product.price);
                 const lastPurchasePrice = product.last_purchase_price ? parseFloat(product.last_purchase_price) : null;
-                
+
                 // Check if there's a price difference (more than 1 cent tolerance)
                 const hasDifference = Math.abs(unitPrice - currentPrice) > 0.01;
-                
+
                 if (hasDifference && priceUpdateSection) {
                     const difference = unitPrice - currentPrice;
                     const percentChange = ((difference / currentPrice) * 100).toFixed(2);
                     const direction = difference > 0 ? 'higher' : 'lower';
                     const directionClass = difference > 0 ? 'text-green-600' : 'text-red-600';
-                    
+
                     let infoText = `Current: ₱${currentPrice.toFixed(2)} → New: ₱${unitPrice.toFixed(2)}`;
                     infoText += ` <span class="${directionClass}">(${Math.abs(percentChange)}% ${direction})</span>`;
-                    
+
                     if (lastPurchasePrice && Math.abs(unitPrice - lastPurchasePrice) > 0.01) {
                         infoText += `<br>Last purchase: ₱${lastPurchasePrice.toFixed(2)}`;
                     }
-                    
+
                     priceDifferenceInfo.innerHTML = infoText;
                     priceUpdateSection.style.display = 'block';
                 } else {
@@ -696,7 +701,7 @@
                     const row = e.target.closest('tr');
                     const priceInput = row.querySelector('input[name$="[unit_price]"]');
                     const rowIndex = Array.from(row.parentNode.children).indexOf(row);
-                    
+
                     // Auto-fill price from product data if available
                     const productId = e.target.value;
                     if (productId) {
@@ -718,7 +723,7 @@
 
                 // Clear existing options and show default
                 deliverySelect.innerHTML = '<option value="">Select a delivery...</option>';
-                
+
                 // Always show warning by default when no PO selected
                 if (deliveryWarning) deliveryWarning.style.display = 'none';
 
@@ -733,22 +738,24 @@
                 if (relatedDeliveries.length === 0) {
                     if (deliveryWarning) {
                         deliveryWarning.style.display = 'block';
-                        deliveryWarning.innerHTML = '⚠️ This PO has no deliveries. Please create a delivery first before receiving items.';
+                        deliveryWarning.innerHTML =
+                            '⚠️ This PO has no deliveries. Please create a delivery first before receiving items.';
                     }
                     return;
                 }
 
                 // Find delivered deliveries
                 const deliveredDeliveries = relatedDeliveries.filter(d => d.status === 'delivered');
-                
+
                 // Show warning if there are deliveries but none are delivered
                 if (deliveredDeliveries.length === 0) {
                     if (deliveryWarning) {
                         deliveryWarning.style.display = 'block';
-                        deliveryWarning.innerHTML = '⚠️ This PO has no delivered shipments yet. Please mark a delivery as delivered first.';
+                        deliveryWarning.innerHTML =
+                            '⚠️ This PO has no delivered shipments yet. Please mark a delivery as delivered first.';
                     }
                 }
-                
+
                 relatedDeliveries.forEach(delivery => {
                     const option = document.createElement('option');
                     option.value = delivery.id;
@@ -761,7 +768,7 @@
                     }
                     deliverySelect.appendChild(option);
                 });
-                
+
                 // Auto-select the most recent delivered delivery
                 if (deliveredDeliveries.length > 0) {
                     // Sort by actual_delivery_date or delivery_date, most recent first
@@ -770,9 +777,9 @@
                         const dateB = new Date(b.actual_delivery_date || b.delivery_date);
                         return dateB - dateA;
                     });
-                    
+
                     deliverySelect.value = deliveredDeliveries[0].id;
-                    
+
                     // Hide warning if we have a delivered delivery
                     if (deliveryWarning) deliveryWarning.style.display = 'none';
                 }

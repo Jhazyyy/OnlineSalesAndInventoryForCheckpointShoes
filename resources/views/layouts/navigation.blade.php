@@ -67,8 +67,12 @@
                             d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
                         </path>
                     </svg>
-                    <!-- Notification Badge (optional - shows when there are unread notifications) -->
-                    {{-- <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-900"></span> --}}
+                    <!-- Notification Badge - shows count when there are unread notifications -->
+                    @if(isset($unreadNotificationCount) && $unreadNotificationCount > 0)
+                        <span class="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-opacity-100 text-xs font-bold text-white bg-red-500 rounded-md ring-white dark:ring-gray-900">
+                            {{ $unreadNotificationCount > 99 ? '99+' : $unreadNotificationCount }}
+                        </span>
+                    @endif
                 </a>
 
                 <x-dropdown align="right" width="48">
@@ -147,8 +151,13 @@
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
 
-                <x-responsive-nav-link :href="route('notifications.list')">
-                    {{ __('Notifications') }}
+                <x-responsive-nav-link :href="route('notifications.list')" class="flex items-center justify-between">
+                    <span>{{ __('Notifications') }}</span>
+                    @if(isset($unreadNotificationCount) && $unreadNotificationCount > 0)
+                        <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                            {{ $unreadNotificationCount > 99 ? '99+' : $unreadNotificationCount }}
+                        </span>
+                    @endif
                 </x-responsive-nav-link>
 
                 @hasrole('admin')

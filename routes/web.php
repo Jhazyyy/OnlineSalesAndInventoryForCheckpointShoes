@@ -100,10 +100,17 @@ Route::get('dashboard', function() {
 
     // Inventory Statistics
     try {
+        // Get the low stock threshold from settings (default: 10)
+        $lowStockThreshold = lowStockThreshold();
+        
         $inventoryStats = [
             'total_products' => \App\Models\Product::count(),
-            'active_products' => \App\Models\Product::count(), 
-            'low_stock_products' => \App\Models\Product::where('quantity', '<=', 10)->count(), // Low stock threshold of 10
+            'active_products' => \App\Models\Product::where('quantity', '>', 0)->count(), 
+            // Low stock: items with stock > 0 but <= threshold (excludes out of stock items)
+            'low_stock_products' => \App\Models\Product::where('quantity', '>', 0)
+                                                       ->where('quantity', '<=', $lowStockThreshold)
+                                                       ->count(),
+            // Out of stock: items with 0 or negative quantity
             'out_of_stock_products' => \App\Models\Product::where('quantity', '<=', 0)->count(),
             'total_inventory_value' => \App\Models\Product::selectRaw('SUM(quantity * price) as total')->value('total') ?? 0,
         ];
@@ -617,6 +624,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Notifications Routes
     Route::get('/notifications-list', [\App\Http\Controllers\NotificationsController::class, 'index'])->name('notifications.list');
+    Route::get('/notifications/latest', [\App\Http\Controllers\NotificationsController::class, 'getLatest'])->name('notifications.latest');
     Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationsController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/mark-all-read', [\App\Http\Controllers\NotificationsController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     Route::delete('/notifications/{id}', [\App\Http\Controllers\NotificationsController::class, 'destroy'])->name('notifications.destroy');

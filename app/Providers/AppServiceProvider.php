@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Product;
 use App\Observers\ProductObserver;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -52,5 +53,8 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('activeClass', function ($expression) {
             return "<?php echo App\Helpers\NavigationHelper::getActiveClass($expression); ?>";
         });
+
+        // Register view composer for notification count
+        View::composer('layouts.navigation', \App\View\Composers\NotificationComposer::class);
     }
 }

@@ -165,7 +165,7 @@ class POSController extends Controller
             'payment_proof' => 'nullable|required_if:payment_method,bank_transfer|file|mimes:jpeg,jpg,png,pdf|max:5120',
             
             // GCash fields (required if payment method is gcash)
-            'gcash_reference_no' => 'nullable|required_if:payment_method,gcash|string|min:10|max:50',
+            'gcash_reference_no' => 'nullable|required_if:payment_method,gcash|string|size:13|regex:/^[0-9]{13}$/',
         ]);
 
         if ($validator->fails()) {

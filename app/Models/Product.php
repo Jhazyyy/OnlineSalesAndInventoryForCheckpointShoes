@@ -279,18 +279,13 @@ class Product extends Model
 
     /**
      * Scope a query to only include low stock products.
+     * Excludes out of stock items (quantity must be > 0).
      */
     public function scopeLowStock(Builder $query, int $threshold = 10): Builder
     {
-        // This will need to be handled differently - using subquery to get latest stock from movements
-        return $query->whereHas('stockMovements', function($q) use ($threshold) {
-            $q->whereRaw('quantity_after <= ?', [$threshold])
-              ->whereIn('movement_id', function($subQ) {
-                  $subQ->selectRaw('MAX(movement_id)')
-                       ->from('stock_movements')
-                       ->groupBy('product_id');
-              });
-        });
+        // Low stock: quantity > 0 AND quantity <= threshold
+        return $query->where('quantity', '>', 0)
+                     ->where('quantity', '<=', $threshold);
     }
 
     /**
@@ -354,11 +349,13 @@ class Product extends Model
 
     /**
      * Check if the product is low in stock.
+     * Returns true only if product has stock but is below threshold (excludes out of stock).
      */
     public function isLowStock(int $threshold = null): bool
     {
         $threshold = $threshold ?? $this->reorder_level ?? lowStockThreshold();
-        return $this->quantity <= $threshold;
+        // Low stock means: has some stock (> 0) but below or equal to threshold
+        return $this->quantity > 0 && $this->quantity <= $threshold;
     }
 
     /**
