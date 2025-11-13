@@ -119,6 +119,9 @@
                                     <input id="company_logo" name="company_logo" type="file" accept="image/*"
                                         class="hidden" onchange="previewLogo(event)" />
 
+                                    <!-- Hidden field to signal logo removal -->
+                                    <input type="hidden" id="remove_logo" name="remove_logo" value="0" />
+
                                     <!-- File Info -->
                                     <div id="logoFileInfo" class="mt-2 text-xs text-gray-600 dark:text-gray-400 hidden">
                                         <span id="logoFileName"></span>
@@ -221,19 +224,20 @@
                                 the week</p>
 
                             @php
-                                $businessHours = old(
-                                    'business_hours',
-                                    $settings['business_hours'] ??
-                                        ($defaults['business_hours']['value'] ?? [
-                                            'monday' => ['open' => '09:00', 'close' => '17:00'],
-                                            'tuesday' => ['open' => '09:00', 'close' => '17:00'],
-                                            'wednesday' => ['open' => '09:00', 'close' => '17:00'],
-                                            'thursday' => ['open' => '09:00', 'close' => '17:00'],
-                                            'friday' => ['open' => '09:00', 'close' => '17:00'],
-                                            'saturday' => ['open' => '09:00', 'close' => '17:00'],
-                                            'sunday' => ['open' => '10:00', 'close' => '17:00'],
-                                        ]),
-                                );
+                                // Get business hours from settings or use defaults
+                                $savedBusinessHours = $settings['business_hours'] ?? null;
+                                $defaultBusinessHours = $defaults['business_hours']['value'] ?? [
+                                    'monday' => ['open' => '08:00', 'close' => '18:00'],
+                                    'tuesday' => ['open' => '08:00', 'close' => '18:00'],
+                                    'wednesday' => ['open' => '08:00', 'close' => '18:00'],
+                                    'thursday' => ['open' => '08:00', 'close' => '18:00'],
+                                    'friday' => ['open' => '08:00', 'close' => '18:00'],
+                                    'saturday' => ['open' => '09:00', 'close' => '14:00'],
+                                ];
+                                
+                                // Use old() first (for validation errors), then saved settings, then defaults
+                                $businessHours = old('business_hours', $savedBusinessHours ?? $defaultBusinessHours);
+                                
                                 $days = [
                                     'monday' => 'Monday',
                                     'tuesday' => 'Tuesday',
@@ -241,7 +245,6 @@
                                     'thursday' => 'Thursday',
                                     'friday' => 'Friday',
                                     'saturday' => 'Saturday',
-                                    'sunday' => 'Sunday',
                                 ];
                             @endphp
 
@@ -377,6 +380,9 @@
                     const fileName = document.getElementById('logoFileName');
                     fileName.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
                     fileInfo.classList.remove('hidden');
+                    
+                    // Reset remove flag since we're uploading a new image
+                    document.getElementById('remove_logo').value = '0';
                 };
                 reader.readAsDataURL(file);
             }
@@ -388,11 +394,15 @@
                 const preview = document.getElementById('logoPreview');
                 const input = document.getElementById('company_logo');
                 const fileInfo = document.getElementById('logoFileInfo');
+                const removeFlag = document.getElementById('remove_logo');
 
                 // Reset to default logo
                 preview.src = "{{ asset('welcome.png') }}";
                 input.value = '';
                 fileInfo.classList.add('hidden');
+                
+                // Set flag to tell backend to remove logo
+                removeFlag.value = '1';
             }
         }
 
@@ -413,36 +423,32 @@
                 document.getElementById('logoFileInfo').classList.add('hidden');
 
                 // Reset business hours
-                const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
                 const defaultHours = {
                     'monday': {
-                        open: '09:00',
+                        open: '08:00',
                         close: '17:00'
                     },
                     'tuesday': {
-                        open: '09:00',
+                        open: '08:00',
                         close: '17:00'
                     },
                     'wednesday': {
-                        open: '09:00',
+                        open: '08:00',
                         close: '17:00'
                     },
                     'thursday': {
-                        open: '09:00',
+                        open: '08:00',
                         close: '17:00'
                     },
                     'friday': {
-                        open: '09:00',
+                        open: '08:00',
                         close: '17:00'
                     },
                     'saturday': {
-                        open: '09:00',
+                        open: '08:00',
                         close: '17:00'
                     },
-                    'sunday': {
-                        open: '10:00',
-                        close: '16:00'
-                    }
                 };
 
                 days.forEach(day => {

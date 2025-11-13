@@ -8,8 +8,8 @@
         body { font-family: DejaVu Sans, Arial, Helvetica, sans-serif; font-size: 12px; color: #111; }
         h1 { font-size: 20px; margin: 0 0 6px; }
         .muted { color: #666; }
-        .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0 18px; }
-        .card { border: 1px solid #ddd; padding: 10px; border-radius: 6px; }
+        .summary { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 12px 0 18px; }
+        .card { border: 1px solid #ddd; padding: 8px; border-radius: 6px; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 8px 6px; border-bottom: 1px solid #e5e5e5; }
         th { text-align: left; background: #f7f7f7; }
@@ -24,19 +24,26 @@
     <div class="summary">
         <div class="card">
             <div class="small muted">Total Orders</div>
-            <div style="font-size:18px; font-weight:700">{{ $report['summary']['total_orders'] ?? 0 }}</div>
+            <div style="font-size:16px; font-weight:700">{{ $report['summary']['total_orders'] ?? 0 }}</div>
         </div>
         <div class="card">
             <div class="small muted">Total Revenue</div>
-            <div style="font-size:18px; font-weight:700">₱{{ number_format($report['summary']['total_revenue'] ?? 0, 2) }}</div>
+            <div style="font-size:16px; font-weight:700">₱{{ number_format($report['summary']['total_revenue'] ?? 0, 2) }}</div>
+            <div class="small muted" style="font-size:9px; margin-top:2px">(incl. tax & shipping)</div>
+        </div>
+        <div class="card">
+            <div class="small muted">Gross Revenue</div>
+            <div style="font-size:16px; font-weight:700">₱{{ number_format($report['summary']['gross_revenue'] ?? 0, 2) }}</div>
+            <div class="small muted" style="font-size:9px; margin-top:2px">(before tax & shipping)</div>
         </div>
         <div class="card">
             <div class="small muted">Total Profit</div>
-            <div style="font-size:18px; font-weight:700">₱{{ number_format($report['summary']['total_profit'] ?? 0, 2) }}</div>
+            <div style="font-size:16px; font-weight:700">₱{{ number_format($report['summary']['total_profit'] ?? 0, 2) }}</div>
+            <div class="small muted" style="font-size:9px; margin-top:2px">(Gross Revenue - COGS)</div>
         </div>
         <div class="card">
             <div class="small muted">Profit Margin</div>
-            <div style="font-size:18px; font-weight:700">{{ number_format($report['summary']['profit_margin'] ?? 0, 1) }}%</div>
+            <div style="font-size:16px; font-weight:700">{{ number_format($report['summary']['profit_margin'] ?? 0, 1) }}%</div>
         </div>
     </div>
 

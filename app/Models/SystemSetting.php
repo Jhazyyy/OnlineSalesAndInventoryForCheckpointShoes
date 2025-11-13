@@ -55,8 +55,11 @@ class SystemSetting extends Model
      */
     private function encodeValue($value)
     {
-        // If data_type isn't set yet (e.g., during create), infer safely
-        if (empty($this->data_type)) {
+        // Check if data_type is being set in the current operation
+        $dataType = $this->data_type ?? $this->getAttributes()['data_type'] ?? null;
+        
+        // If data_type isn't available, infer from value type
+        if (empty($dataType)) {
             if (is_array($value)) {
                 return json_encode($value);
             }
@@ -66,8 +69,8 @@ class SystemSetting extends Model
             return (string) $value;
         }
 
-        return match ($this->data_type) {
-            'json' => json_encode($value),
+        return match ($dataType) {
+            'json' => is_array($value) ? json_encode($value) : $value,
             'boolean' => $value ? '1' : '0',
             default => (string) $value
         };
@@ -102,16 +105,13 @@ class SystemSetting extends Model
      */
     public static function getValue($category, $key, $default = null)
     {
-        $cacheKey = "setting_{$category}_{$key}";
+        // Don't cache - always fetch fresh to ensure accessor works correctly
+        $setting = static::where('category', $category)
+                        ->where('key', $key)
+                        ->where('is_active', true)
+                        ->first();
         
-        return Cache::remember($cacheKey, 3600, function () use ($category, $key, $default) {
-            $setting = static::where('category', $category)
-                            ->where('key', $key)
-                            ->where('is_active', true)
-                            ->first();
-            
-            return $setting ? $setting->value : $default;
-        });
+        return $setting ? $setting->value : $default;
     }
 
     /**
@@ -119,18 +119,24 @@ class SystemSetting extends Model
      */
     public static function setValue($category, $key, $value, $dataType = 'string', $description = null)
     {
-        $setting = static::updateOrCreate(
-            ['category' => $category, 'key' => $key],
-            [
-                'value' => $value,
-                'data_type' => $dataType,
-                'description' => $description,
-                'is_active' => true
-            ]
-        );
+        // Find or create the setting
+        $setting = static::firstOrNew([
+            'category' => $category,
+            'key' => $key
+        ]);
+        
+        // Set data_type FIRST so the setter accessor knows how to encode
+        $setting->data_type = $dataType;
+        $setting->description = $description;
+        $setting->is_active = true;
+        // Set value LAST - this will trigger the accessor which uses data_type
+        $setting->value = $value;
+        
+        $setting->save();
 
         // Clear cache
         Cache::forget("setting_{$category}_{$key}");
+        Cache::forget("settings_category_{$category}");
         
         return $setting;
     }
@@ -140,14 +146,19 @@ class SystemSetting extends Model
      */
     public static function getByCategory($category)
     {
-        $cacheKey = "settings_category_{$category}";
+        // Don't cache - always fetch fresh to ensure accessor works correctly
+        $settings = static::byCategory($category)
+                    ->active()
+                    ->get();
         
-        return Cache::remember($cacheKey, 3600, function () use ($category) {
-            return static::byCategory($category)
-                        ->active()
-                        ->pluck('value', 'key')
-                        ->toArray();
-        });
+        // Build array with decoded values
+        $result = [];
+        foreach ($settings as $setting) {
+            // The accessor will handle decoding based on data_type
+            $result[$setting->key] = $setting->value;
+        }
+        
+        return $result;
     }
 
     /**

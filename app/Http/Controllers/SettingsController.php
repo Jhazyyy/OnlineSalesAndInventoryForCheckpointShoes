@@ -6,6 +6,7 @@ use App\Services\SettingsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class SettingsController extends Controller
@@ -57,10 +58,21 @@ class SettingsController extends Controller
     {
         try {
             // Validate non-file settings first
-            $validatedData = $this->settingsService->validateSettings('general', $request->except('company_logo'));
+            $validatedData = $this->settingsService->validateSettings('general', $request->except(['company_logo', 'remove_logo']));
 
-            // Validate and handle company logo upload (optional)
-            if ($request->hasFile('company_logo')) {
+            // Handle logo removal
+            if ($request->input('remove_logo') == '1') {
+                // Delete old logo file if exists
+                $oldPath = $this->settingsService->get('general', 'company_logo');
+                if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
+                }
+                
+                // Set logo to empty string (will show default)
+                $validatedData['company_logo'] = '';
+            }
+            // Handle logo upload
+            elseif ($request->hasFile('company_logo')) {
                 $request->validate([
                     'company_logo' => 'image|mimes:jpeg,png,gif,webp,svg|max:2048|dimensions:max_width=836,max_height=836',
                 ]);
@@ -81,9 +93,20 @@ class SettingsController extends Controller
             DB::transaction(function () use ($validatedData) {
                 foreach ($validatedData as $key => $value) {
                     $dataType = $this->getDataType($key, $value);
+                    
+                    // Log for debugging
+                    Log::info("Saving setting: {$key}", [
+                        'value' => $value,
+                        'dataType' => $dataType,
+                        'is_array' => is_array($value)
+                    ]);
+                    
                     $this->settingsService->set('general', $key, $value, $dataType);
                 }
             });
+
+            // Clear the settings cache to ensure fresh data is loaded
+            \Illuminate\Support\Facades\Cache::forget('settings_category_general');
 
             return redirect()->route('settings.general')
                            ->with('success', 'General settings updated successfully.');

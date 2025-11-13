@@ -42,8 +42,8 @@
                 </div>
 
                 <!-- Quick Actions Row -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <a href="{{ route('inventory.product_stock_adjustment.import') }}"
+                <div class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 gap-4 mb-6">
+                    {{-- <a href="{{ route('inventory.product_stock_adjustment.import') }}"
                         class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border dark:border-gray-700">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900">
@@ -59,9 +59,9 @@
                                 <p class="text-xs text-gray-500 dark:text-gray-400">Bulk adjustments</p>
                             </div>
                         </div>
-                    </a>
+                    </a> --}}
 
-                    <a href="{{ route('inventory.product_stock_adjustment.export') }}"
+                    {{-- <a href="{{ route('inventory.product_stock_adjustment.export') }}"
                         class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border dark:border-gray-700">
                         <div class="flex items-center">
                             <div class="p-3 rounded-full bg-indigo-100 dark:bg-indigo-900">
@@ -77,7 +77,7 @@
                                 <p class="text-xs text-gray-500 dark:text-gray-400">Download movements</p>
                             </div>
                         </div>
-                    </a>
+                    </a> --}}
 
                     {{-- <a href="{{ route('inventory.product_stock_adjustment.analytics') }}"
                         class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border dark:border-gray-700">

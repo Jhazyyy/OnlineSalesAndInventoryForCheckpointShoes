@@ -57,29 +57,47 @@
             </div>
 
             <!-- Summary Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
                 @php
                     $cards = [
-                        ['label' => 'Total Orders', 'color' => 'from-blue-500 to-blue-600', 'value' => $report['summary']['total_orders'] ?? 0, 'icon' => 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z'],
-                        ['label' => 'Total Revenue', 'color' => 'from-green-500 to-green-600', 'value' => '₱' . number_format($report['summary']['total_revenue'] ?? 0, 2), 'icon' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
-                        ['label' => 'Total Profit', 'color' => 'from-purple-500 to-purple-600', 'value' => '₱' . number_format($report['summary']['total_profit'] ?? 0, 2), 'icon' => 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6'],
-                        ['label' => 'Avg. Profit Margin', 'color' => 'from-yellow-500 to-yellow-600', 'value' => number_format($report['summary']['profit_margin'] ?? 0, 1) . '%', 'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z']
+                        ['label' => 'Total Orders', 'color' => 'from-blue-500 to-blue-600', 'value' => $report['summary']['total_orders'] ?? 0, 'icon' => 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z', 'info' => 'Total number of sales orders'],
+                        ['label' => 'Total Revenue', 'color' => 'from-green-500 to-green-600', 'value' => '₱' . number_format($report['summary']['total_revenue'] ?? 0, 2), 'icon' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'info' => 'Total sales including tax & shipping'],
+                        ['label' => 'Gross Revenue', 'color' => 'from-teal-500 to-teal-600', 'value' => '₱' . number_format($report['summary']['gross_revenue'] ?? 0, 2), 'icon' => 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z', 'info' => 'Subtotal before tax & shipping'],
+                        ['label' => 'Total Profit', 'color' => 'from-purple-500 to-purple-600', 'value' => '₱' . number_format($report['summary']['total_profit'] ?? 0, 2), 'icon' => 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6', 'info' => 'Gross Revenue - Cost of Goods'],
+                        ['label' => 'Profit Margin', 'color' => 'from-yellow-500 to-yellow-600', 'value' => number_format($report['summary']['profit_margin'] ?? 0, 1) . '%', 'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', 'info' => 'Profit as % of Gross Revenue']
                     ];
                 @endphp
 
                 @foreach($cards as $card)
-                    <div class="bg-gradient-to-br {{ $card['color'] }} text-white rounded-lg shadow-lg p-5 transform hover:scale-[1.03] transition duration-300 ease-in-out">
+                    <div class="bg-gradient-to-br {{ $card['color'] }} text-white rounded-lg shadow-lg p-4 transform hover:scale-[1.03] transition duration-300 ease-in-out relative group">
                         <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-xs sm:text-sm opacity-90">{{ $card['label'] }}</p>
-                                <p class="text-2xl sm:text-3xl font-bold mt-1">{{ $card['value'] }}</p>
+                            <div class="flex-1">
+                                <p class="text-xs sm:text-sm opacity-90 mb-1">{{ $card['label'] }}</p>
+                                <p class="text-xl sm:text-2xl font-bold">{{ $card['value'] }}</p>
+                                <p class="text-xs opacity-75 mt-1 hidden sm:block">{{ $card['info'] }}</p>
                             </div>
-                            <svg class="w-8 h-8 sm:w-10 sm:h-10 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-8 h-8 opacity-70 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $card['icon'] }}" />
                             </svg>
                         </div>
                     </div>
                 @endforeach
+            </div>
+
+            <!-- Info Box explaining Revenue vs Profit -->
+            <div class="bg-blue-50 dark:bg-blue-900 border-l-4 border-blue-500 p-4 mb-6 rounded">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-blue-500 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    </svg>
+                    <div class="text-sm text-blue-800 dark:text-blue-200">
+                        <p class="font-semibold mb-1">Understanding Revenue vs Profit</p>
+                        <p><strong>Total Revenue</strong> = Complete amount received from customers (including taxes & shipping)</p>
+                        <p><strong>Gross Revenue</strong> = Product sales amount only (before taxes & shipping)</p>
+                        <p><strong>Total Profit</strong> = Gross Revenue - Cost of Goods Sold (COGS)</p>
+                        <p class="mt-1 text-xs opacity-90">Note: Profit calculation uses Gross Revenue (subtotal) to accurately reflect product profitability</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Export Buttons -->
