@@ -333,7 +333,10 @@
                                         <td
                                             class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                             @if ($user->last_login_at)
-                                                {{ $user->last_login_at->diffForHumans() }}
+                                                <div>{{ $user->last_login_at->diffForHumans() }}</div>
+                                                <div class="text-xs text-gray-400 dark:text-gray-500">
+                                                    {{ $user->login_count }} {{ Str::plural('login', $user->login_count) }}
+                                                </div>
                                             @else
                                                 <span class="text-gray-400">Never</span>
                                             @endif

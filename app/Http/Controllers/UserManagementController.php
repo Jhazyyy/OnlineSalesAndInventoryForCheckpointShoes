@@ -8,8 +8,10 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Spatie\Activitylog\Models\Activity;
+use Illuminate\Auth\Events\Registered;
 
 class UserManagementController extends Controller
 {
@@ -126,8 +128,11 @@ class UserManagementController extends Controller
         // Assign role using Spatie Permission
         $user->syncRoles([$request->role]);
 
+        // Trigger the Registered event to send email verification notification
+        event(new Registered($user));
+
         return redirect()->route('user-management.index')
-            ->with('success', 'User created successfully.');
+            ->with('success', 'User created successfully. A verification email has been sent to ' . $user->email);
     }
 
     /**
@@ -254,7 +259,7 @@ class UserManagementController extends Controller
         $user = User::findOrFail($userManagement);
         
         // Prevent deleting the currently authenticated user
-        if ($user->id === auth()->id()) {
+        if ($user->id === Auth::id()) {
             return redirect()->route('user-management.index')
                 ->with('error', 'You cannot delete your own account.');
         }
@@ -306,7 +311,7 @@ class UserManagementController extends Controller
         $userIds = $request->user_ids;
         
         // Remove current user's ID from the list
-        $userIds = array_diff($userIds, [auth()->id()]);
+        $userIds = array_diff($userIds, [Auth::id()]);
 
         // Remove admin users from the list
         $adminUserIds = User::whereIn('id', $userIds)

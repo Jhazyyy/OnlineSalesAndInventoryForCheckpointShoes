@@ -132,6 +132,37 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Check if user can login
+     * User can login if:
+     * - is_active is true
+     * - status is 'active' (not 'inactive' or 'suspended')
+     */
+    public function canLogin(): bool
+    {
+        return $this->is_active && $this->status === 'active';
+    }
+
+    /**
+     * Get the reason why user cannot login
+     */
+    public function getLoginBlockReasonAttribute(): ?string
+    {
+        if (!$this->is_active) {
+            return 'Account has been deactivated';
+        }
+
+        if ($this->status === 'inactive') {
+            return 'Account is inactive';
+        }
+
+        if ($this->status === 'suspended') {
+            return 'Account has been suspended';
+        }
+
+        return null;
+    }
+
+    /**
      * Get status badge color
      * Considers both is_active and status fields
      */

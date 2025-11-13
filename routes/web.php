@@ -80,7 +80,7 @@ Route::post('/csrf-test', function () {
 });
 
 // Livewire demo pages (non-invasive)
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/livewire/products', fn () => view('livewire-pages.products'))->name('livewire.products');
     Route::get('/livewire/inventory', fn () => view('livewire-pages.inventory'))->name('livewire.inventory');
     Route::get('/livewire/customers', fn () => view('livewire-pages.customers'))->name('livewire.customers');
@@ -522,7 +522,7 @@ Route::get('dashboard', function() {
         'last6Months',
         'monthlyRevenue'
     ));
-})->middleware(['auth'])->name('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 // Dashboard Top Selling Items AJAX Route
 Route::get('dashboard/top-selling-items', function (Illuminate\Http\Request $request) {
@@ -603,12 +603,12 @@ Route::get('dashboard/top-selling-items', function (Illuminate\Http\Request $req
         ->values();
 
     return response()->json(['items' => $topSellingItems]);
-})->middleware(['auth'])->name('dashboard.top-selling-items');
+})->middleware(['auth', 'verified'])->name('dashboard.top-selling-items');
 
 
 
 // CurrentUser UpdateInfo Routes 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     // Inventory list (separate from master data)
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -1156,7 +1156,7 @@ Route::get('/sales/shipments/tracking', [\App\Http\Controllers\ShipmentControlle
 Route::get('/terms/{slug}', [\App\Http\Controllers\TermsAndConditionsController::class, 'showPublic'])->name('terms.public');
 
 // Bank Transfer Payment Routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     // Customer routes - submit bank transfer payment proof
     Route::get('/bank-transfer-payments/create', [\App\Http\Controllers\BankTransferPaymentController::class, 'create'])
         ->name('bank-transfer-payments.create');
