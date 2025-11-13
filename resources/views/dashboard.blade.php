@@ -333,7 +333,7 @@
                     </div>
 
                     <!-- Additional Quick Stats (Optional Secondary Row) -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-6">
                         <!-- Purchases Card -->
                         <div
                             class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
@@ -385,7 +385,7 @@
                         </div>
 
                         <!-- Customers Card -->
-                        <div
+                        {{-- <div
                             class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                             <div class="flex items-center">
                                 <div class="p-2 bg-purple-500 rounded-lg">
@@ -407,10 +407,10 @@
                                     </p>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Revenue Card -->
-                        <div
+                        {{-- <div
                             class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                             <div class="flex items-center">
                                 <div class="p-2 bg-green-500 rounded-lg">
@@ -432,7 +432,7 @@
                                     </p>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
 
                 </div>

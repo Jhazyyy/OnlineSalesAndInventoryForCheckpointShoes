@@ -257,6 +257,20 @@
                                             {{ ucfirst($gcashPayment->status) }}
                                         </span>
                                     </div>
+
+                                    <!-- GCash QR Code Display -->
+                                    {{-- <div class="mb-4 flex justify-center">
+                                        <div class="p-3 bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-blue-200 dark:border-blue-700">
+                                            <img src="{{ asset('storage/gcash_qr.png') }}" 
+                                                 alt="GCash QR Code" 
+                                                 class="w-32 h-32 object-contain"
+                                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'128\' height=\'128\' viewBox=\'0 0 128 128\'%3E%3Crect width=\'128\' height=\'128\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'monospace\' font-size=\'12\' fill=\'%236b7280\'%3EGCASH%3C/text%3E%3C/svg%3E'">
+                                            <p class="text-center text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                Paid via GCash
+                                            </p>
+                                        </div>
+                                    </div> --}}
+
                                     <div class="space-y-2 text-sm">
                                         <div class="flex justify-between">
                                             <span class="text-blue-700 dark:text-blue-300">Reference Number:</span>

@@ -107,6 +107,25 @@
                             </div>
                         </div>
 
+                        <!-- Product Movement Analysis Report Card -->
+                        <div class="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900 dark:to-teal-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-teal-500 rounded-lg">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-semibold text-teal-600 dark:text-teal-300 bg-teal-200 dark:bg-teal-700 px-2 py-1 rounded">New</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-teal-900 dark:text-teal-100 mb-2">Product Movement Analysis</h3>
+                            <p class="text-sm text-teal-700 dark:text-teal-300 mb-4">Fast, slow, and non-moving product performance metrics</p>
+                            <div class="flex gap-2">
+                                <a href="{{ route('reports.product-movement') }}" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white text-center px-4 py-2 rounded font-medium">
+                                    View Analysis
+                                </a>
+                            </div>
+                        </div>
+
                         <!-- Reorder Items Report Card -->
                         <div class="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900 dark:to-rose-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition">
                             <div class="flex items-center justify-between mb-4">

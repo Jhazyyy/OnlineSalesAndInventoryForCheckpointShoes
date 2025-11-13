@@ -339,14 +339,26 @@ class ReportService
         
         // Calculate totals
         $totalOrders = $orders->count();
+        
+        // Revenue = Total amount received from customers (includes taxes, shipping, excludes discounts)
         $totalRevenue = $orders->sum('total_amount');
+        
+        // Calculate total cost of goods sold (COGS)
         $totalCost = $orders->sum(function ($order) {
             return $order->items->sum(function ($item) {
                 return ($item->product->total_cost ?? 0) * $item->quantity;
             });
         });
-        $totalProfit = $totalRevenue - $totalCost;
-        $profitMargin = $totalRevenue > 0 ? (($totalProfit / $totalRevenue) * 100) : 0;
+        
+        // Calculate gross revenue (subtotal before taxes and shipping)
+        $grossRevenue = $orders->sum('subtotal');
+        
+        // Calculate total profit (Gross Revenue - COGS)
+        // Note: Using subtotal (not total_amount) because profit should be calculated before taxes/shipping
+        $totalProfit = $grossRevenue - $totalCost;
+        
+        // Profit margin based on gross revenue
+        $profitMargin = $grossRevenue > 0 ? (($totalProfit / $grossRevenue) * 100) : 0;
         
         // Group by date
         $salesByDate = $orders->groupBy(function ($order) {
@@ -355,6 +367,7 @@ class ReportService
             return [
                 'count' => $dayOrders->count(),
                 'revenue' => $dayOrders->sum('total_amount'),
+                'gross_revenue' => $dayOrders->sum('subtotal'),
             ];
         });
         
@@ -391,9 +404,10 @@ class ReportService
             ],
             'summary' => [
                 'total_orders' => $totalOrders,
-                'total_revenue' => round($totalRevenue, 2),
+                'total_revenue' => round($totalRevenue, 2), // Total amount including taxes and shipping
+                'gross_revenue' => round($grossRevenue, 2), // Subtotal before taxes and shipping
                 'total_cost' => round($totalCost, 2),
-                'total_profit' => round($totalProfit, 2),
+                'total_profit' => round($totalProfit, 2), // Gross Revenue - COGS
                 'profit_margin' => round($profitMargin, 2),
                 'average_order_value' => $totalOrders > 0 ? round($totalRevenue / $totalOrders, 2) : 0,
             ],
@@ -833,6 +847,8 @@ class ReportService
                 return $this->generateFinancialReport($filters);
             case 'movement':
                 return $this->generateMovementReport($filters);
+            case 'product-movement':
+                return $this->generateProductMovementReport($filters);
             case 'reorder':
                 return $this->generateReorderReport($filters);
             case 'blocked':
@@ -841,4 +857,117 @@ class ReportService
                 return [];
         }
     }
+
+    /**
+     * Generate product movement report (fast, slow, non-moving analysis)
+     * 
+     * @param array $filters
+     * @return array
+     */
+    public function generateProductMovementReport(array $filters = []): array
+    {
+        $days = $filters['days'] ?? 90;
+        
+        // Build base query
+        $query = Product::query();
+        
+        // Apply filters
+        if (!empty($filters['category'])) {
+            $query->where('product_category', $filters['category']);
+        }
+        
+        if (!empty($filters['movement_category'])) {
+            $query->where('movement_category', $filters['movement_category']);
+        }
+        
+        // Get all products with movement data
+        $products = $query->whereNotNull('movement_category')
+            ->orderBy('movement_velocity', 'desc')
+            ->get();
+        
+        // Calculate statistics
+        $totalProducts = Product::count();
+        $fastMoving = Product::where('movement_category', 'fast')->count();
+        $slowMoving = Product::where('movement_category', 'slow')->count();
+        $nonMoving = Product::where('movement_category', 'non-moving')->count();
+        $uncategorized = $totalProducts - ($fastMoving + $slowMoving + $nonMoving);
+        
+        // Get top fast-moving products
+        $topFastMoving = Product::where('movement_category', 'fast')
+            ->orderBy('movement_velocity', 'desc')
+            ->limit(10)
+            ->get();
+        
+        // Get critical slow-moving products
+        $criticalSlowMoving = Product::where('movement_category', 'slow')
+            ->where('quantity', '>', 0)
+            ->orderBy('days_since_last_sale', 'desc')
+            ->limit(10)
+            ->get();
+        
+        // Get non-moving products with high stock value
+        $nonMovingHighValue = Product::where('movement_category', 'non-moving')
+            ->where('quantity', '>', 0)
+            ->selectRaw('*, quantity * COALESCE(total_cost, price) as stock_value')
+            ->orderByRaw('stock_value DESC')
+            ->limit(10)
+            ->get();
+        
+        // Calculate category breakdown
+        $categoryBreakdown = Product::select('product_category', 'movement_category')
+            ->selectRaw('COUNT(*) as count')
+            ->whereNotNull('movement_category')
+            ->groupBy('product_category', 'movement_category')
+            ->get()
+            ->groupBy('product_category');
+        
+        // Calculate total stock value by movement category
+        $valueByMovement = Product::select('movement_category')
+            ->selectRaw('COUNT(*) as count')
+            ->selectRaw('SUM(quantity) as total_quantity')
+            ->selectRaw('SUM(quantity * COALESCE(total_cost, price)) as total_value')
+            ->whereNotNull('movement_category')
+            ->groupBy('movement_category')
+            ->get()
+            ->keyBy('movement_category');
+        
+        // Get products needing attention (slow/non-moving with high stock)
+        $needsAttention = Product::whereIn('movement_category', ['slow', 'non-moving'])
+            ->where('quantity', '>', 0)
+            ->whereRaw('quantity * COALESCE(total_cost, price) > 1000')
+            ->selectRaw('*, quantity * COALESCE(total_cost, price) as stock_value')
+            ->orderByRaw('stock_value DESC')
+            ->limit(20)
+            ->get();
+        
+        return [
+            'summary' => [
+                'total_products' => $totalProducts,
+                'fast_moving' => $fastMoving,
+                'fast_moving_percentage' => $totalProducts > 0 ? round(($fastMoving / $totalProducts) * 100, 1) : 0,
+                'slow_moving' => $slowMoving,
+                'slow_moving_percentage' => $totalProducts > 0 ? round(($slowMoving / $totalProducts) * 100, 1) : 0,
+                'non_moving' => $nonMoving,
+                'non_moving_percentage' => $totalProducts > 0 ? round(($nonMoving / $totalProducts) * 100, 1) : 0,
+                'uncategorized' => $uncategorized,
+                'uncategorized_percentage' => $totalProducts > 0 ? round(($uncategorized / $totalProducts) * 100, 1) : 0,
+                'analysis_period' => $days . ' days',
+            ],
+            'value_analysis' => [
+                'fast_moving_value' => $valueByMovement->get('fast')->total_value ?? 0,
+                'fast_moving_quantity' => $valueByMovement->get('fast')->total_quantity ?? 0,
+                'slow_moving_value' => $valueByMovement->get('slow')->total_value ?? 0,
+                'slow_moving_quantity' => $valueByMovement->get('slow')->total_quantity ?? 0,
+                'non_moving_value' => $valueByMovement->get('non-moving')->total_value ?? 0,
+                'non_moving_quantity' => $valueByMovement->get('non-moving')->total_quantity ?? 0,
+            ],
+            'products' => $products,
+            'top_fast_moving' => $topFastMoving,
+            'critical_slow_moving' => $criticalSlowMoving,
+            'non_moving_high_value' => $nonMovingHighValue,
+            'category_breakdown' => $categoryBreakdown,
+            'needs_attention' => $needsAttention,
+        ];
+    }
 }
+

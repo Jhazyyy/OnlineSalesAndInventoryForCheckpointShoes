@@ -690,7 +690,7 @@
                                 <div class="mb-6 flex justify-center">
                                     <div class="p-4 bg-white dark:bg-gray-900 rounded-lg shadow-inner border-2 border-dashed border-gray-300 dark:border-gray-600">
                                         <!-- Replace this with your actual QR code image -->
-                                        <img src="{{ asset('storage/gcash_qr.png') }}" 
+                                        <img src="{{ asset('gcash_qr.jpg') }}" 
                                              alt="GCash QR Code" 
                                              class="w-64 h-64 object-contain"
                                              onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'256\' height=\'256\' viewBox=\'0 0 256 256\'%3E%3Crect width=\'256\' height=\'256\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'monospace\' font-size=\'16\' fill=\'%236b7280\'%3EGCASH QR%3C/text%3E%3C/svg%3E'">

@@ -190,6 +190,23 @@ class ReportController extends Controller
     }
 
     /**
+     * Display product movement report (fast, slow, non-moving)
+     */
+    public function productMovement(Request $request): View
+    {
+        $filters = $request->only(['category', 'movement_category', 'days']);
+        
+        // Set defaults
+        if (!isset($filters['days'])) {
+            $filters['days'] = 90;
+        }
+        
+        $report = $this->reportService->generateProductMovementReport($filters);
+        
+        return view('reports.product-movement', compact('report', 'filters'));
+    }
+
+    /**
      * Create a purchase order for a specific product (reorder action)
      */
     public function reorderProduct(Request $request)
