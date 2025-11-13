@@ -337,7 +337,7 @@
                                                     
                                                     @if($return->isPending())
                                                         <a href="{{ route('sales.returns.edit', $return) }}" 
-                                                           class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
+                                                           class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">
                                                             Edit
                                                         </a>
                                                         

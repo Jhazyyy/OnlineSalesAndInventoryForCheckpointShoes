@@ -63,7 +63,8 @@
                                     <!-- Delivery Date -->
                                     <div>
                                         <label for="delivery_date"
-                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Delivery Date
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Delivery
+                                            Date
                                             *</label>
                                         <input type="date" id="delivery_date" name="delivery_date"
                                             value="{{ old('delivery_date', now()->format('Y-m-d')) }}" required
@@ -78,7 +79,8 @@
                                         <label for="scheduled_delivery_date"
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300">Scheduled
                                             Delivery</label>
-                                        <input type="date" id="scheduled_delivery_date" name="scheduled_delivery_date"
+                                        <input type="date" id="scheduled_delivery_date"
+                                            name="scheduled_delivery_date"
                                             value="{{ old('scheduled_delivery_date') }} required"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     </div>
@@ -93,7 +95,8 @@
                                                 {{ old('status', 'scheduled') == 'scheduled' ? 'selected' : '' }}>
                                                 Scheduled</option>
                                             <option value="in_transit"
-                                                {{ old('status') == 'in_transit' ? 'selected' : '' }}>In Transit</option>
+                                                {{ old('status') == 'in_transit' ? 'selected' : '' }}>In Transit
+                                            </option>
                                             <option value="out_for_delivery"
                                                 {{ old('status') == 'out_for_delivery' ? 'selected' : '' }}>Out for
                                                 Delivery</option>
@@ -185,8 +188,8 @@
                                         <label for="shipping_cost"
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300">Shipping
                                             Cost</label>
-                                        <input type="number" id="shipping_cost" name="shipping_cost" step="0.01" min="0"
-                                            value="{{ old('shipping_cost', 0) }}"
+                                        <input type="number" id="shipping_cost" name="shipping_cost" step="0.01"
+                                            min="0" value="{{ old('shipping_cost', 0) }}"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                             placeholder="0.00">
                                         @error('shipping_cost')
@@ -223,18 +226,18 @@
                                     <h3 class="text-lg font-medium text-gray-900 dark:text-white">Delivery Items</h3>
                                     <div id="loadItemsSection" style="display: none;">
                                         <button type="button" id="loadItemsBtn" onclick="loadPurchaseOrderItems()"
-                                            class="inline-flex items-center px-3 py-1.5 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                                            class="inline-flex items-center px-3 py-1.5 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12">
+                                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
                                                 </path>
                                             </svg>
-                                            Load Items from PO
+                                            Load
                                         </button>
                                         <span id="poItemsLoadedMessage"
-                                            class="ml-2 text-sm text-green-600 dark:text-green-400"
-                                            style="display: none;">Items loaded</span>
+                                            class="ml-2 text-sm text-blue-600 dark:text-blue-400"
+                                            style="display: none;">Items loaded from PO</span>
                                     </div>
                                 </div>
 
@@ -284,7 +287,8 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
                                             d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                     </svg>
-                                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No items added</h3>
+                                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No items added
+                                    </h3>
                                     <p class="mt-1 text-sm text-gray-500">Select a purchase order to load items.</p>
                                 </div>
 
@@ -508,7 +512,8 @@
             availableProducts.forEach(product => {
                 const brandInfo = product.product_brand ? ' - ' + product.product_brand : '';
                 const skuInfo = product.sku ? ' [' + product.sku + ']' : '';
-                productOptions += `<option value="${product.product_id}">${product.product_name}${brandInfo}${skuInfo}</option>`;
+                productOptions +=
+                    `<option value="${product.product_id}">${product.product_name}${brandInfo}${skuInfo}</option>`;
             });
 
             row.innerHTML = `

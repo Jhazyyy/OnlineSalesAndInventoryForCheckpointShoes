@@ -44,9 +44,37 @@ class InventoryThresholdController extends Controller
     /**
      * Show the form for editing the specified product's thresholds.
      */
-    public function edit(Product $product)
+    public function edit(Product $product, Request $request)
     {
         $suppliers = $this->thresholdService->getSuppliers();
+        
+        // If AJAX request, return JSON data for modal
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'product' => [
+                    'product_id' => $product->product_id,
+                    'product_name' => $product->product_name,
+                    'product_brand' => $product->product_brand,
+                    'reorder_level' => $product->reorder_level,
+                    'critical_level' => $product->critical_level,
+                    'ceiling_level' => $product->ceiling_level,
+                    'floor_level' => $product->floor_level,
+                    'economic_order_quantity' => $product->economic_order_quantity,
+                    'lead_time_days' => $product->lead_time_days,
+                    'preferred_supplier_id' => $product->preferred_supplier_id,
+                    'auto_reorder_enabled' => $product->auto_reorder_enabled,
+                    'threshold_alerts_enabled' => $product->threshold_alerts_enabled,
+                ],
+                'suppliers' => $suppliers->map(function($supplier) {
+                    return [
+                        'supplier_id' => $supplier->supplier_id,
+                        'supplier_name' => $supplier->supplier_name,
+                    ];
+                })
+            ]);
+        }
+        
+        // Otherwise return the view (for backward compatibility)
         return view('inventory.thresholds.edit', compact('product', 'suppliers'));
     }
 
@@ -75,6 +103,12 @@ class InventoryThresholdController extends Controller
 
         try {
             $this->thresholdService->updateProductThresholds($product, $validator->validated(), auth()->user());
+            
+            // If request came from modal (check referer or add a hidden field)
+            if ($request->header('referer') && str_contains($request->header('referer'), 'inventory/thresholds') && !str_contains($request->header('referer'), 'inventory/thresholds/edit')) {
+                return redirect()->route('inventory.thresholds.index')
+                    ->with('success', 'Threshold settings updated successfully!');
+            }
             
             return redirect()->route('inventory.thresholds.show', $product)
                 ->with('success', 'Threshold settings updated successfully!');

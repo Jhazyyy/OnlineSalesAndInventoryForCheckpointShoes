@@ -61,7 +61,7 @@
                             <div>
                                 <x-input-label for="expected_date" :value="__('Expected Delivery Date')" />
                                 <x-text-input id="expected_date" name="expected_date" type="date"
-                                    class="mt-1 block w-full" :value="old('expected_date')"  required />
+                                    class="mt-1 block w-full" :value="old('expected_date')" />
                                 <x-input-error :messages="$errors->get('expected_date')" class="mt-2" />
                             </div>
 

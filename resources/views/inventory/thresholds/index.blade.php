@@ -265,8 +265,8 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                                                 <a href="{{ route('inventory.thresholds.show', $product) }}" 
                                                    class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">View</a>
-                                                <a href="{{ route('inventory.thresholds.edit', $product) }}" 
-                                                   class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">Edit</a>
+                                                <button onclick="openEditThresholdModal({{ $product->product_id }})" 
+                                                   class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">Edit</button>
                                                 <a href="{{ route('master_data.products.show', $product) }}" 
                                                    class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300">Product Details</a>
                                             </td>
@@ -294,7 +294,222 @@
         </div>
     </div>
 
+    <!-- Edit Threshold Modal -->
+    <div id="editThresholdModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-3/4 shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="mt-3">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between pb-3 border-b dark:border-gray-700">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                        Edit Product Threshold
+                    </h3>
+                    <button onclick="closeEditThresholdModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <form id="editThresholdForm" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="mt-4 space-y-4">
+                        <!-- Product Info -->
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                            <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2" id="modalProductName">Loading...</h4>
+                            <p class="text-xs text-gray-600 dark:text-gray-400" id="modalProductBrand"></p>
+                        </div>
+
+                        <!-- Threshold Levels -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div>
+                                <label for="modal_reorder_level" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Reorder Level
+                                </label>
+                                <input type="number" min="0" id="modal_reorder_level" name="reorder_level"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            </div>
+                            <div>
+                                <label for="modal_critical_level" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Critical Level
+                                </label>
+                                <input type="number" min="0" id="modal_critical_level" name="critical_level"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            </div>
+                            <div>
+                                <label for="modal_ceiling_level" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Ceiling Level
+                                </label>
+                                <input type="number" min="0" id="modal_ceiling_level" name="ceiling_level"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            </div>
+                            <div>
+                                <label for="modal_floor_level" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Floor Level
+                                </label>
+                                <input type="number" min="0" id="modal_floor_level" name="floor_level"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            </div>
+                        </div>
+
+                        <!-- EOQ / Lead Time / Supplier -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="modal_economic_order_quantity" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Economic Order Quantity
+                                </label>
+                                <input type="number" min="1" id="modal_economic_order_quantity" name="economic_order_quantity"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            </div>
+                            <div>
+                                <label for="modal_lead_time_days" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Lead Time (days)
+                                </label>
+                                <input type="number" min="1" id="modal_lead_time_days" name="lead_time_days"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            </div>
+                            <div>
+                                <label for="modal_preferred_supplier_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Preferred Supplier
+                                </label>
+                                <select id="modal_preferred_supplier_id" name="preferred_supplier_id"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">— None —</option>
+                                    <!-- Suppliers will be loaded dynamically -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Toggles -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label class="inline-flex items-center">
+                                <input type="hidden" name="auto_reorder_enabled" value="0" />
+                                <input type="checkbox" id="modal_auto_reorder_enabled" name="auto_reorder_enabled" value="1"
+                                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Enable Auto Reorder</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="hidden" name="threshold_alerts_enabled" value="0" />
+                                <input type="checkbox" id="modal_threshold_alerts_enabled" name="threshold_alerts_enabled" value="1"
+                                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Enable Alerts</span>
+                            </label>
+                        </div>
+
+                        <!-- Info Box -->
+                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                            <div class="flex">
+                                <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-blue-800 dark:text-blue-300">Threshold Guidelines</h3>
+                                    <p class="mt-2 text-sm text-blue-700 dark:text-blue-400">
+                                        Set appropriate threshold levels to manage inventory efficiently. The system will alert you when stock levels reach these thresholds.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="flex justify-end gap-3 mt-6 pt-4 border-t dark:border-gray-700">
+                        <button type="button" onclick="closeEditThresholdModal()"
+                            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
+        let suppliers = [];
+        
+        function openEditThresholdModal(productId) {
+            // Show loading state
+            document.getElementById('modalProductName').textContent = 'Loading...';
+            document.getElementById('modalProductBrand').textContent = '';
+            
+            // Show modal
+            document.getElementById('editThresholdModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+            // Fetch product data
+            fetch(`/inventory/thresholds/${productId}/edit`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update form action
+                document.getElementById('editThresholdForm').action = `/inventory/thresholds/${productId}`;
+                
+                // Populate product info
+                document.getElementById('modalProductName').textContent = data.product.product_name;
+                document.getElementById('modalProductBrand').textContent = data.product.product_brand || '';
+                
+                // Populate form fields
+                document.getElementById('modal_reorder_level').value = data.product.reorder_level || '';
+                document.getElementById('modal_critical_level').value = data.product.critical_level || '';
+                document.getElementById('modal_ceiling_level').value = data.product.ceiling_level || '';
+                document.getElementById('modal_floor_level').value = data.product.floor_level || '';
+                document.getElementById('modal_economic_order_quantity').value = data.product.economic_order_quantity || '';
+                document.getElementById('modal_lead_time_days').value = data.product.lead_time_days || '';
+                document.getElementById('modal_auto_reorder_enabled').checked = data.product.auto_reorder_enabled || false;
+                document.getElementById('modal_threshold_alerts_enabled').checked = data.product.threshold_alerts_enabled || false;
+                
+                // Populate suppliers dropdown
+                const supplierSelect = document.getElementById('modal_preferred_supplier_id');
+                supplierSelect.innerHTML = '<option value="">— None —</option>';
+                data.suppliers.forEach(supplier => {
+                    const option = document.createElement('option');
+                    option.value = supplier.supplier_id;
+                    option.textContent = supplier.supplier_name;
+                    option.selected = data.product.preferred_supplier_id == supplier.supplier_id;
+                    supplierSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load product data. Please try again.');
+                closeEditThresholdModal();
+            });
+        }
+
+        function closeEditThresholdModal() {
+            document.getElementById('editThresholdModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            
+            // Reset form
+            document.getElementById('editThresholdForm').reset();
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modal = document.getElementById('editThresholdModal');
+                if (!modal.classList.contains('hidden')) {
+                    closeEditThresholdModal();
+                }
+            }
+        });
+
+        // Close modal on outside click
+        document.getElementById('editThresholdModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeEditThresholdModal();
+            }
+        });
+
         function runThresholdCheck() {
             if (confirm('Run threshold check for all products? This may generate new alerts.')) {
                 fetch('{{ route("inventory.thresholds.run-check") }}', {

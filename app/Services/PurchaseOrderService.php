@@ -279,7 +279,7 @@ class PurchaseOrderService
         // Log activity based on status change
         $activityType = match($status) {
             'approved' => 'purchase_order_approved',
-            'received' => 'purchase_order_received',
+            // 'received' => 'purchase_order_received',
             'cancelled' => 'purchase_order_cancelled',
             default => 'purchase_order_updated',
         };
