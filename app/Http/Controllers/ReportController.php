@@ -121,7 +121,12 @@ class ReportController extends Controller
         
         $report = $this->reportService->generateMovementReport($filters);
         
-        return view('reports.movement', compact('report', 'filters'));
+        return view('reports.movement', [
+            'report' => $report,
+            'filters' => $filters,
+            'startDate' => $filters['start_date'],
+            'endDate' => $filters['end_date'],
+        ]);
     }
 
     /**

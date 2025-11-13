@@ -30,7 +30,8 @@
         .harvard-red {
             background-color: #A41034;
         }
-        .login-blue{
+
+        .login-blue {
             background-color: #A41034;
         }
 
@@ -62,14 +63,15 @@
             </div>
             <a class="btn btn-ghost normal-case text-xl font-crimson text-gray-800 font-bold">
                 Checkpoint Shoes</a>
-                {{-- <i class="fas fa-university mr-2"></i> --}}
+            {{-- <i class="fas fa-university mr-2"></i> --}}
         </div>
         <div class="navbar-center hidden lg:flex">
             <ul class="menu menu-horizontal px-1">
                 <li><a class="font-medium text-gray-700 hover:text-blue-800">Home</a></li>
                 <li><a class="font-medium text-gray-700 hover:text-blue-800">About</a></li>
                 <li><a href="#features" class="font-medium text-gray-700 hover:text-blue-800">Features</a></li>
-                <li><a href="{{ route('login') }}" class="font-medium text-gray-700 hover:text-blue-800">Get Started</a></li>
+                <li><a href="{{ route('login') }}" class="font-medium text-gray-700 hover:text-blue-800">Get Started</a>
+                </li>
             </ul>
         </div>
         <div class="navbar-end">
@@ -120,7 +122,8 @@
     <div class="py-16 bg-white">
         <div class="container mx-auto px-4">
             <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold font-crimson text-blue-500 md:harvard-red-text mb-4">A Legacy of Footwear
+                <h2 class="text-3xl md:text-4xl font-bold font-crimson text-blue-500 md:harvard-red-text mb-4">A Legacy
+                    of Footwear
                     Excellence Since the 1970s</h2>
                 <p class="text-lg text-gray-600 max-w-2xl mx-auto italic font-extralight">
                     “Honoring the Past. Powering the Present. Stepping Into the Future.”
@@ -318,7 +321,10 @@
         </div>
         <div>
             <span class="footer-title text-white font-crimson">CONTACT OR VISIT US</span>
-            <a class="link link-hover">#325 M.A. Street, Brgy. San Roque, Marikina City</a><iframe src="https://www.google.com/maps/embed?pb=!3m2!1sen!2sph!4v1758470274215!5m2!1sen!2sph!6m8!1m7!1sjUX36HvkV44xE2fAgfYowg!2m2!1d14.62575226224081!2d121.0981233589207!3f262.52615576382146!4f7.153406606787058!5f0.4003161831622405" width="300" height="250" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <a class="link link-hover">#325 M.A. Street, Brgy. San Roque, Marikina City</a><iframe
+                src="https://www.google.com/maps/embed?pb=!3m2!1sen!2sph!4v1758470274215!5m2!1sen!2sph!6m8!1m7!1sjUX36HvkV44xE2fAgfYowg!2m2!1d14.62575226224081!2d121.0981233589207!3f262.52615576382146!4f7.153406606787058!5f0.4003161831622405"
+                width="300" height="250" style="border:0;" allowfullscreen="" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
             <a class="link link-hover">info@checkpoint.business</a>
             <a class="link link-hover">+(02) 7006 4700</a>
             <div class="grid grid-flow-col gap-4 mt-2">
@@ -330,10 +336,140 @@
         </div>
     </footer>
     <footer class="footer footer-center p-4 bg-black text-gray-400">
+
         <div>
+            <button onclick="terms_modal.showModal()" class="text-white hover:text-base text-sm cursor-pointer">Terms
+                & Conditions</button>
             <p class="font-crimson">© 2025 Checkpoint. All rights reserved.</p>
         </div>
     </footer>
+
+    <!-- Terms and Conditions Modal -->
+    <dialog id="terms_modal" class="modal modal-bottom sm:modal-middle">
+        <div class="modal-box w-11/12 max-w-5xl max-h-[90vh] overflow-y-auto">
+
+            <!-- Header -->
+            <div class="text-center border-b pb-4">
+                <h1 class="text-3xl font-bold text-gray-800">Terms and Conditions</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Online Sales and Inventory: Checkpoint</p>
+            </div>
+
+            <!-- Section 1 -->
+            <div>
+                <h2 class="text-lg font-semibold text-gray-800 ">1. Use of the System</h2>
+                <p class="text-gray-700 mt-2">
+                    By using this system, you agree to comply with these Terms and Conditions. Please ensure all order
+                    and account
+                    details you provide are accurate and complete. Misuse of the system may result in suspension or
+                    termination of access.
+                </p>
+            </div>
+
+            <!-- Section 2 -->
+            <div>
+                <h2 class="text-lg font-semibold text-gray-800 ">2. Account and Security</h2>
+                <ul class="list-disc pl-6 text-gray-700 mt-2 space-y-1">
+                    <li>You are responsible for maintaining the confidentiality of your account credentials.</li>
+                    <li>Report any unauthorized access or suspicious activity immediately.</li>
+                    <li>The system owner reserves the right to suspend accounts that violate these terms.</li>
+                </ul>
+            </div>
+
+            <!-- Section 3 -->
+            <div>
+                <h2 class="text-lg font-semibold text-gray-800 ">3. Orders and Payments</h2>
+                <ul class="list-disc pl-6 text-gray-700 mt-2 space-y-1">
+                    <li>All orders must be reviewed carefully before confirmation.</li>
+                    <li>Accepted payment methods include <span class="font-semibold">Cash</span> and <span
+                            class="font-semibold">GCash (Scan to Pay)</span>.</li>
+                    <li>For GCash payments, please ensure your <span class="font-semibold">reference number</span> is
+                        correct before confirming.</li>
+                    <li>Orders may be canceled if payment details are invalid or incomplete.</li>
+                </ul>
+            </div>
+
+            <!-- Section 4 -->
+            <div>
+                <h2 class="text-lg font-semibold text-gray-800 ">4. Delivery and Pick-Up</h2>
+                <ul class="list-disc pl-6 text-gray-700 mt-2 space-y-1">
+                    <li>Estimated delivery times may vary depending on location and availability.</li>
+                    <li>Additional delivery charges may apply outside standard service areas.</li>
+                    <li>For in-store pick-up, please present your order confirmation or reference number.</li>
+                </ul>
+            </div>
+
+            <!-- Section 5 -->
+            <div>
+                <h2 class="text-lg font-semibold text-gray-800 ">5. Cancellations and Refunds</h2>
+                <ul class="list-disc pl-6 text-gray-700 mt-2 space-y-1">
+                    <li>Orders can be canceled within the allowed timeframe before dispatch.</li>
+                    <li>Refunds are issued only for defective products, incorrect charges, or verified payment errors.
+                    </li>
+                    <li>Completed and verified transactions are non-refundable.</li>
+                </ul>
+            </div>
+
+            <!-- Section 6 -->
+            <div>
+                <h2 class="text-lg font-semibold text-gray-800 ">6. Data Privacy</h2>
+                <ul class="list-disc pl-6 text-gray-700 mt-2 space-y-1">
+                    <li>Your personal data is collected and processed in accordance with our Privacy Policy.</li>
+                    <li>We do not share or sell your personal information to third parties.</li>
+                    <li>Data is used only for processing orders and improving services.</li>
+                </ul>
+            </div>
+
+            <!-- Section 7 -->
+            <div>
+                <h2 class="text-lg font-semibold text-gray-800 ">7. System Usage</h2>
+                <ul class="list-disc pl-6 text-gray-700 mt-2 space-y-1">
+                    <li>Do not attempt to misuse, hack, or disrupt the system.</li>
+                    <li>The system may occasionally be unavailable due to maintenance or updates.</li>
+                    <li>The merchant may suspend or terminate access for any misuse.</li>
+                </ul>
+            </div>
+
+            <!-- Section 8 -->
+            <div>
+                <h2 class="text-lg font-semibold text-gray-800 ">8. Liability</h2>
+                <ul class="list-disc pl-6 text-gray-700 mt-2 space-y-1">
+                    <li>We are not responsible for losses caused by technical issues, delays, or service interruptions.
+                    </li>
+                    <li>Our liability is limited to the total amount paid for the affected transaction.</li>
+                </ul>
+            </div>
+
+            <!-- Section 9 -->
+            <div>
+                <h2 class="text-lg font-semibold text-gray-800 ">9. Governing Law</h2>
+                <p class="text-gray-700 mt-2">
+                    These Terms and Conditions are governed by the laws of the Republic of the Philippines. Any disputes
+                    will be handled
+                    in accordance with applicable legal procedures.
+                </p>
+            </div>
+
+            <!-- Section 10 -->
+            <div>
+                <h2 class="text-lg font-semibold text-gray-800 ">10. Contact Us</h2>
+                <p class="text-gray-700 mt-2">
+                    For questions, feedback, or concerns, please contact our support team or visit our customer service
+                    section.
+                </p>
+            </div>
+
+
+            <!-- Modal Actions -->
+            <div class="modal-action">
+                <form method="dialog">
+                    <button class="btn btn-primary">Close</button>
+                </form>
+            </div>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
 </body>
 
 </html>

@@ -75,7 +75,7 @@
 
                     <!-- Inventory Section -->
                     <x-nav-item
-                        route-pattern="inventory.products.*|inventory.product_stocks.*|inventory.thresholds.*|inventory.product-movement.*"
+                        route-pattern="inventory.products.*|inventory.product_stocks.*|inventory.thresholds.*|inventory.product-movement.*|inventory.product-costing.*"
                         :icon="App\Helpers\NavigationHelper::getIcon('inventory')" title="Inventory" :is-dropdown="true">
 
                         <!-- Inventory List -->
@@ -94,6 +94,11 @@
                             route-pattern="inventory.product-movement.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>'
                             title="Product Movement" size="small" /> --}}
+
+                        <!-- Product Costing -->
+                        <x-nav-item route="inventory.product-costing.index" route-pattern="inventory.product-costing.*"
+                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'
+                            title="Product Costing" size="small" />
 
                         <!-- Inventory Thresholds -->
                         <x-nav-item route="inventory.thresholds.index" route-pattern="inventory.thresholds.*"
@@ -213,6 +218,10 @@
                         <!-- Inventory Report -->
                         <x-nav-item route="reports.inventory" route-pattern="reports.inventory" :icon="App\Helpers\NavigationHelper::getIcon('inventory_report', 'w-4 h-4 mr-3')"
                             title="Inventory Report" size="small" />
+                        
+                        {{-- Product Movement --}}
+                        <x-nav-item route="reports.product-movement" route-pattern="reports.product-movement" :icon="App\Helpers\NavigationHelper::getIcon('product_movement_analysis', 'w-4 h-4 mr-3')"
+                            title="Product Movement" size="small" />
 
                         <!-- Reorder Items -->
                         <x-nav-item route="reports.reorder" route-pattern="reports.reorder" :icon="App\Helpers\NavigationHelper::getIcon('reorder_items', 'w-4 h-4 mr-3')"

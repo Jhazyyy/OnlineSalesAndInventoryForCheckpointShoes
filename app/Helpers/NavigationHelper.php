@@ -157,6 +157,12 @@ class NavigationHelper
                                             d="M5 21v-2a4 4 0 014-4h6a4 4 0 014 4v2" />
                                     <text x="16" y="18" font-size="6" fill="currentColor" font-weight="bold" font-family="Arial, sans-serif">$</text>
                                 </svg>',
+                                
+            'product_movement_analysis' => '
+                                <svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 20h16M8 20V10m4 10V6m4 14v-4m2-10l2 2m0 0l-2 2m2-2h-8" />
+                                </svg>',
 
             'block_items' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <!-- Box -->

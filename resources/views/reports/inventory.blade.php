@@ -26,25 +26,47 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <form method="GET" action="{{ route('reports.inventory') }}" class="space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
-                                <input type="date" name="start_date"
-                                       value="{{ request('start_date', $startDate ?? '') }}"
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Product Category</label>
+                                <select name="category"
                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">All Categories</option>
+                                    @foreach(\App\Models\Product::select('product_category')->distinct()->whereNotNull('product_category')->orderBy('product_category')->pluck('product_category') as $category)
+                                        <option value="{{ $category }}" {{ request('category') == $category ? 'selected' : '' }}>
+                                            {{ $category }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Date</label>
-                                <input type="date" name="end_date"
-                                       value="{{ request('end_date', $endDate ?? '') }}"
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Movement Category</label>
+                                <select name="movement_category"
                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">All Movement Types</option>
+                                    <option value="fast" {{ request('movement_category') == 'fast' ? 'selected' : '' }}>Fast Moving</option>
+                                    <option value="slow" {{ request('movement_category') == 'slow' ? 'selected' : '' }}>Slow Moving</option>
+                                    <option value="non-moving" {{ request('movement_category') == 'non-moving' ? 'selected' : '' }}>Non-Moving</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stock Status</label>
+                                <select name="stock_status"
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">All Stock Status</option>
+                                    <option value="out_of_stock" {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>Out of Stock</option>
+                                    <option value="low_stock" {{ request('stock_status') == 'low_stock' ? 'selected' : '' }}>Low Stock</option>
+                                    <option value="critical" {{ request('stock_status') == 'critical' ? 'selected' : '' }}>Critical</option>
+                                    <option value="overstocked" {{ request('stock_status') == 'overstocked' ? 'selected' : '' }}>Overstocked</option>
+                                </select>
                             </div>
 
                             <div class="flex flex-wrap gap-2 sm:justify-end sm:items-end">
                                 <button type="submit"
                                         class="inline-flex items-center justify-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs uppercase rounded-md transition w-auto">
-                                    Apply
+                                    Apply Filters
                                 </button>
                                 <a href="{{ route('reports.inventory') }}"
                                    class="inline-flex items-center justify-center px-3 py-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-semibold text-xs uppercase rounded-md transition w-auto">
@@ -86,7 +108,7 @@
             <!-- Export Buttons -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-4 flex flex-wrap gap-3 sm:gap-4">
-                    <a href="{{ route('reports.export-pdf', ['reportType' => 'inventory', 'start_date' => request('start_date', $startDate ?? ''), 'end_date' => request('end_date', $endDate ?? '')]) }}"
+                    <a href="{{ route('reports.export-pdf', array_merge(['reportType' => 'inventory'], request()->only(['category', 'movement_category', 'stock_status']))) }}"
                        target="_blank"
                        class="inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-medium rounded-md transition w-fit">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -96,7 +118,7 @@
                         Export PDF
                     </a>
 
-                    <a href="{{ route('reports.export-excel', ['reportType' => 'inventory', 'start_date' => request('start_date', $startDate ?? ''), 'end_date' => request('end_date', $endDate ?? '')]) }}"
+                    <a href="{{ route('reports.export-excel', array_merge(['reportType' => 'inventory'], request()->only(['category', 'movement_category', 'stock_status']))) }}"
                        class="inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-medium rounded-md transition w-fit">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
@@ -169,7 +191,7 @@
                                 @forelse($report['low_stock_products'] ?? [] as $product)
                                 <div class="flex items-center justify-between p-2 hover:bg-white dark:hover:bg-gray-800 rounded transition border-l-4 border-orange-500">
                                     <div>
-                                        <p class="font-medium text-gray-900 dark:text-white">{{ $product->name ?? 'Unknown' }}</p>
+                                        <p class="font-medium text-gray-900 dark:text-white">{{ $product->product_name ?? 'Unknown' }}</p>
                                         <p class="text-xs text-gray-500">SKU: {{ $product->sku ?? 'N/A' }}</p>
                                     </div>
                                     <div class="text-right">
@@ -190,7 +212,7 @@
                                 @forelse($report['out_of_stock_products'] ?? [] as $product)
                                 <div class="flex items-center justify-between p-2 hover:bg-white dark:hover:bg-gray-800 rounded transition border-l-4 border-red-500">
                                     <div>
-                                        <p class="font-medium text-gray-900 dark:text-white">{{ $product->name ?? 'Unknown' }}</p>
+                                        <p class="font-medium text-gray-900 dark:text-white">{{ $product->product_name ?? 'Unknown' }}</p>
                                         <p class="text-xs text-gray-500">SKU: {{ $product->sku ?? 'N/A' }}</p>
                                     </div>
                                     <div class="text-right">
@@ -214,7 +236,7 @@
                                     <div class="flex items-center gap-3">
                                         <span class="font-bold text-lg text-gray-400">#{{ $index + 1 }}</span>
                                         <div>
-                                            <p class="font-medium text-gray-900 dark:text-white">{{ $product->name ?? 'Unknown' }}</p>
+                                            <p class="font-medium text-gray-900 dark:text-white">{{ $product->product_name ?? 'Unknown' }}</p>
                                             <p class="text-xs text-gray-500">{{ $product->quantity ?? 0 }} units @ ₱{{ number_format($product->price ?? 0, 2) }}</p>
                                         </div>
                                     </div>

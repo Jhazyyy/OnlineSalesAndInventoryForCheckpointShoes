@@ -135,7 +135,24 @@ class ProductCostingController extends Controller
     {
         $threshold = $request->get('threshold', 20);
         $products = $this->costingService->getLowMarginProducts($threshold);
-        $stats = $this->costingService->getCostingStatistics();
+        
+        // Calculate stats specific to low margin products
+        $stats = [
+            'total' => $products->count(),
+            'average_margin' => $products->avg('profit_margin') ?? 0,
+            'total_value' => $products->sum(function($product) {
+                return ($product->price ?? 0) * ($product->quantity ?? 0);
+            })
+        ];
+        
+        // Paginate the products
+        $products = new \Illuminate\Pagination\LengthAwarePaginator(
+            $products->forPage($request->get('page', 1), 15),
+            $products->count(),
+            15,
+            $request->get('page', 1),
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
         
         return view('inventory.product-costing.low-margin', compact('products', 'stats', 'threshold'));
     }
@@ -143,10 +160,25 @@ class ProductCostingController extends Controller
     /**
      * Get negative margin products
      */
-    public function negativeMargin(): View
+    public function negativeMargin(Request $request): View
     {
         $products = $this->costingService->getNegativeMarginProducts();
-        $stats = $this->costingService->getCostingStatistics();
+        
+        // Calculate stats specific to negative margin products
+        $stats = [
+            'total' => $products->count(),
+            'average_margin' => $products->avg('profit_margin') ?? 0,
+            'total_loss' => $products->sum('profit_amount') ?? 0
+        ];
+        
+        // Paginate the products
+        $products = new \Illuminate\Pagination\LengthAwarePaginator(
+            $products->forPage($request->get('page', 1), 15),
+            $products->count(),
+            15,
+            $request->get('page', 1),
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
         
         return view('inventory.product-costing.negative-margin', compact('products', 'stats'));
     }

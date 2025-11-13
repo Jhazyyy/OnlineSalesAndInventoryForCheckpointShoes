@@ -8,7 +8,7 @@
                             <div>
                                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
                                     {{ $product->product_name }}</h2>
-                                <p class="text-gray-600 dark:text-gray-400">{{ $product->product_brand }}</p>
+                                <p class="text-gray-600 dark:text-gray-400">{{ $product->sku }}</p>
                             </div>
                         <div class="flex space-x-3 mt-4 sm:mt-0">
                             <a href="{{ route('master_data.products.edit', $product) }}"

@@ -402,7 +402,7 @@
             </script>
 
             <!-- Export Options -->
-            @if($report['products']->count() > 0)
+            {{-- @if($report['products']->count() > 0)
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Export Options</h4>
@@ -424,7 +424,7 @@
                         </div>
                     </div>
                 </div>
-            @endif
+            @endif --}}
         </div>
     </div>
 </x-app-layout>

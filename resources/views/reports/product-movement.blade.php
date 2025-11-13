@@ -121,7 +121,7 @@
                 </div>
 
                 <!-- Uncategorized -->
-                <div class="bg-gradient-to-br from-gray-500 to-gray-600 text-white rounded-lg shadow-lg p-5 transform hover:scale-[1.03] transition duration-300 ease-in-out">
+                <div class="bg-gradient-to-br from-gray-200 to-gray-600 text-black dark:text-white rounded-lg shadow-lg p-5 transform hover:scale-[1.03] transition duration-300 ease-in-out">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-xs sm:text-sm opacity-90">Uncategorized</p>
@@ -136,7 +136,7 @@
             </div>
 
             <!-- Export Buttons -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-4 flex flex-wrap gap-3 sm:gap-4">
                     <a href="{{ route('reports.export-pdf', array_merge(['reportType' => 'product-movement'], $filters)) }}"
                        target="_blank"
@@ -166,7 +166,7 @@
                         Manage Movement
                     </a>
                 </div>
-            </div>
+            </div> --}}
 
             <!-- Value Analysis Section -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">

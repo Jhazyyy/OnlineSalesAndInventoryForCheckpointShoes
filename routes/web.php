@@ -25,7 +25,9 @@ use Illuminate\Support\Facades\Log;
 
 Route::get('/', function () {
     return view('welcome');
+    
 });
+Route::view('/terms', 'terms')->name('terms');
 
 // Debug route to check authentication and session
 Route::get('/debug', function () {
@@ -43,33 +45,6 @@ Route::get('/debug', function () {
     ];
 });
 
-// Debug route to check authentication and session (old - commented)
-// Route::get('/debug', function () {
-//     return [
-//         'authenticated' => auth()->check(),
-//         'user' => auth()->user(),
-//         'session_id' => session()->getId(),
-//         'intended_url' => session('url.intended'),
-//         'session_driver' => config('session.driver'),
-//         'session_domain' => config('session.domain'),
-//         'csrf_token' => csrf_token(),
-//         'session_lifetime' => config('session.lifetime'),
-//         'app_key' => config('app.key') ? 'Set' : 'Not set',
-//         'session_table_exists' => \Schema::hasTable('sessions'),
-//         'session_data' => session()->all(),
-//     ];
-// });
-
-// Test login route
-// Route::get('/test-login', function () {
-//     $user = \App\Models\User::first();
-//     if ($user) {
-//         auth()->login($user);
-//         return redirect()->route('dashboard')->with('success', 'Test login successful!');
-//     }
-//     return 'No users found';
-// });
-
 // CSRF Test routes
 Route::get('/csrf-test', function () {
     return view('csrf-test');
@@ -86,8 +61,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/livewire/customers', fn () => view('livewire-pages.customers'))->name('livewire.customers');
     Route::get('/livewire/sales-orders', fn () => view('livewire-pages.sales-orders'))->name('livewire.sales-orders');
 });
-
-
 
 // Main Route
 Route::get('dashboard', function() {
@@ -345,6 +318,37 @@ Route::get('dashboard', function() {
         $topSellingItems = collect();
     }
 
+    // Top Purchase Items - From Purchase Order Items (Default: Today)
+    try {
+        $topPurchaseItems = \App\Models\PurchaseOrderItem::select('product_id')
+            ->selectRaw('SUM(quantity_ordered) as total_quantity')
+            ->selectRaw('SUM(quantity_ordered * unit_price) as total_cost')
+            ->whereNotNull('product_id')
+            ->whereHas('order', function ($q) {
+                $q->whereDate('order_date', today());
+            })
+            ->with('product')
+            ->groupBy('product_id')
+            ->orderByDesc('total_quantity')
+            ->limit(10)
+            ->get()
+            ->filter(function ($item) {
+                return $item->product !== null;
+            })
+            ->map(function ($item) {
+                return [
+                    'name' => $item->product->name ?? 'Unknown Product',
+                    'quantity' => (int) $item->total_quantity,
+                    'cost' => (float) $item->total_cost,
+                    'image' => $item->product->image ?? null,
+                ];
+            })
+            ->values();
+    } catch (\Exception $e) {
+        Log::error('Error fetching top purchase items: ' . $e->getMessage());
+        $topPurchaseItems = collect();
+    }
+
     // Product Details (Stock Status)
     try {
         $stockStatus = [
@@ -497,6 +501,7 @@ Route::get('dashboard', function() {
 
     // Ensure all variables are defined
     $topSellingItems = $topSellingItems ?? collect();
+    $topPurchaseItems = $topPurchaseItems ?? collect();
     $salesActivity = $salesActivity ?? ['total_invoices' => 0, 'paid_invoices' => 0, 'draft_invoices' => 0, 'past_due' => 0];
     $stockStatus = $stockStatus ?? ['in_stock' => 0, 'low_stock' => 0, 'out_of_stock' => 0];
     $purchaseOrderStatus = $purchaseOrderStatus ?? ['pending' => 0, 'approved' => 0, 'ordered' => 0, 'partial_received' => 0, 'received' => 0, 'cancelled' => 0];
@@ -521,6 +526,7 @@ Route::get('dashboard', function() {
         'salesOrderData',
         'salesActivity',
         'topSellingItems',
+        'topPurchaseItems',
         'stockStatus',
         'purchaseOrderStatus',
         'purchaseReceiveStats',
@@ -611,6 +617,87 @@ Route::get('dashboard/top-selling-items', function (Illuminate\Http\Request $req
 
     return response()->json(['items' => $topSellingItems]);
 })->middleware(['auth', 'verified'])->name('dashboard.top-selling-items');
+
+// Dashboard Top Purchase Items AJAX Route
+Route::get('dashboard/top-purchase-items', function (Illuminate\Http\Request $request) {
+    if (!Auth::check()) {
+        return response()->json(['items' => []], 401);
+    }
+
+    $period = $request->get('period', 'this_month');
+    $query = \App\Models\PurchaseOrderItem::query();
+
+    // Apply date filter based on period
+    switch ($period) {
+        case 'today':
+            $query->whereHas('order', function ($q) {
+                $q->whereDate('order_date', today());
+            });
+            break;
+        case 'yesterday':
+            $query->whereHas('order', function ($q) {
+                $q->whereDate('order_date', today()->subDay());
+            });
+            break;
+        case 'this_week':
+            $query->whereHas('order', function ($q) {
+                $q->whereBetween('order_date', [now()->startOfWeek(), now()->endOfWeek()]);
+            });
+            break;
+        case 'last_week':
+            $query->whereHas('order', function ($q) {
+                $q->whereBetween('order_date', [
+                    now()->subWeek()->startOfWeek(),
+                    now()->subWeek()->endOfWeek()
+                ]);
+            });
+            break;
+        case 'this_month':
+            $query->whereHas('order', function ($q) {
+                $q->whereMonth('order_date', now()->month)
+                  ->whereYear('order_date', now()->year);
+            });
+            break;
+        case 'last_month':
+            $query->whereHas('order', function ($q) {
+                $q->whereMonth('order_date', now()->subMonth()->month)
+                  ->whereYear('order_date', now()->subMonth()->year);
+            });
+            break;
+        case 'this_year':
+            $query->whereHas('order', function ($q) {
+                $q->whereYear('order_date', now()->year);
+            });
+            break;
+        case 'all_time':
+            // No date filter
+            break;
+    }
+
+    $topPurchaseItems = $query->select('product_id')
+        ->selectRaw('SUM(quantity_ordered) as total_quantity')
+        ->selectRaw('SUM(quantity_ordered * unit_price) as total_cost')
+        ->whereNotNull('product_id')
+        ->with('product')
+        ->groupBy('product_id')
+        ->orderByDesc('total_quantity')
+        ->limit(10)
+        ->get()
+        ->filter(function ($item) {
+            return $item->product !== null;
+        })
+        ->map(function ($item) {
+            return [
+                'name' => $item->product->name ?? 'Unknown Product',
+                'quantity' => (int) $item->total_quantity,
+                'cost' => (float) $item->total_cost,
+                'image' => $item->product->image ?? null,
+            ];
+        })
+        ->values();
+
+    return response()->json(['items' => $topPurchaseItems]);
+})->middleware(['auth', 'verified'])->name('dashboard.top-purchase-items');
 
 
 

@@ -154,28 +154,30 @@
                                 </div>
                             </div>
 
-                            <!-- Top Selling Items Section -->
-                            <div
-                                class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                            <!-- Top Selling & Purchase Items Section (Grid Layout) -->
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- Top Selling Items Section -->
                                 <div
-                                    class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-                                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                                        Top Selling Items
-                                    </h3>
-                                    <select id="topSellingPeriod"
-                                        class="appearance-none w-full sm:w-auto text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="today" selected>Today</option>
-                                        <option value="yesterday">Yesterday</option>
-                                        <option value="this_week">This Week</option>
-                                        <option value="last_week">Last Week</option>
-                                        <option value="this_month">This Month</option>
-                                        <option value="last_month">Last Month</option>
-                                        <option value="this_year">This Year</option>
-                                        <option value="all_time">All Time</option>
-                                    </select>
-                                </div>
+                                    class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                                    <div
+                                        class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                                            Top Selling Items
+                                        </h3>
+                                        <select id="topSellingPeriod"
+                                            class="appearance-none w-full sm:w-auto text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            <option value="today" selected>Today</option>
+                                            <option value="yesterday">Yesterday</option>
+                                            <option value="this_week">This Week</option>
+                                            <option value="last_week">Last Week</option>
+                                            <option value="this_month">This Month</option>
+                                            <option value="last_month">Last Month</option>
+                                            <option value="this_year">This Year</option>
+                                            <option value="all_time">All Time</option>
+                                        </select>
+                                    </div>
 
-                                <div id="topSellingItemsContainer" class="space-y-4">
+                                    <div id="topSellingItemsContainer" class="space-y-4">
                                     @forelse($topSellingItems->take(10) ?? [] as $item)
                                         <div
                                             class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
@@ -230,6 +232,84 @@
                                     @endforelse
                                 </div>
                             </div>
+
+                            <!-- Top Purchase Items Section -->
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                                <div
+                                    class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                                        Top Purchase Items
+                                    </h3>
+                                    <select id="topPurchasePeriod"
+                                        class="appearance-none w-full sm:w-auto text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="today" selected>Today</option>
+                                        <option value="yesterday">Yesterday</option>
+                                        <option value="this_week">This Week</option>
+                                        <option value="last_week">Last Week</option>
+                                        <option value="this_month">This Month</option>
+                                        <option value="last_month">Last Month</option>
+                                        <option value="this_year">This Year</option>
+                                        <option value="all_time">All Time</option>
+                                    </select>
+                                </div>
+
+                                <div id="topPurchaseItemsContainer" class="space-y-4">
+                                    @forelse($topPurchaseItems->take(10) ?? [] as $item)
+                                        <div
+                                            class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                            <div class="flex items-center space-x-4 flex-1">
+                                                <!-- Product Image -->
+                                                <div
+                                                    class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center overflow-hidden">
+                                                    @if (!empty($item['image']))
+                                                        <img src="{{ asset('storage/' . $item['image']) }}"
+                                                            alt="{{ $item['name'] ?? 'Product' }}"
+                                                            class="w-full h-full object-cover"
+                                                            onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\'w-8 h-8 text-white\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\'></path></svg>';">
+                                                    @else
+                                                        <svg class="w-8 h-8 text-white" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4">
+                                                            </path>
+                                                        </svg>
+                                                    @endif
+                                                </div>
+
+                                                <div class="flex-1 min-w-0">
+                                                    <div
+                                                        class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
+                                                        {{ $item['name'] ?? 'Unknown Product' }}
+                                                    </div>
+                                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                        Purchased: {{ number_format($item['quantity'] ?? 0) }} units
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="text-right ml-4">
+                                                <div class="text-lg font-bold text-gray-800 dark:text-gray-100">
+                                                    {{ number_format($item['quantity'] ?? 0) }}
+                                                </div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">PCS</div>
+                                            </div>
+                                        </div>
+                                    @empty
+                                        <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                                            <svg class="w-12 h-12 mx-auto mb-2 opacity-50" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8.5m-8.5 0a2 2 0 11-4 0 2 2 0 014 0zm8.5 0a2 2 0 11-4 0 2 2 0 014 0z">
+                                                </path>
+                                            </svg>
+                                            <p class="text-sm">No purchase data available</p>
+                                        </div>
+                                    @endforelse
+                                </div>
+                            </div>
+                        </div>
 
                         </div>
 
@@ -635,6 +715,80 @@
                         })
                         .catch(error => {
                             console.error('Error fetching top selling items:', error);
+                            container.innerHTML = `
+                                <div class="text-center py-8 text-red-500 dark:text-red-400">
+                                    <p class="text-sm">Error loading data. Please try again.</p>
+                                </div>
+                            `;
+                        });
+                });
+            }
+
+            // Top Purchase Items Period Filter
+            const topPurchasePeriodSelect = document.getElementById('topPurchasePeriod');
+
+            if (topPurchasePeriodSelect) {
+                topPurchasePeriodSelect.addEventListener('change', function() {
+                    const period = this.value;
+                    const selectedText = this.options[this.selectedIndex].text;
+                    const container = document.getElementById('topPurchaseItemsContainer');
+
+                    // Show loading state
+                    container.innerHTML = `
+                        <div class="flex justify-center items-center py-8">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-600"></div>
+                        </div>
+                    `;
+
+                    // Fetch new data
+                    fetch('/dashboard/top-purchase-items?period=' + period)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.items && data.items.length > 0) {
+                                container.innerHTML = data.items.map(item => `
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                        <div class="flex items-center space-x-4 flex-1">
+                                            <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center overflow-hidden">
+                                                ${item.image 
+                                                    ? `<img src="/storage/${item.image}" 
+                                                               alt="${item.name}" 
+                                                               class="w-full h-full object-cover"
+                                                               onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-8 h-8 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
+                                                    : `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                           </svg>`
+                                                }
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
+                                                    ${item.name}
+                                                </div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                    Purchased: ${item.quantity.toLocaleString()} units
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-right ml-4">
+                                            <div class="text-lg font-bold text-gray-800 dark:text-gray-100">
+                                                ${item.quantity.toLocaleString()}
+                                            </div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">PCS</div>
+                                        </div>
+                                    </div>
+                                `).join('');
+                            } else {
+                                container.innerHTML = `
+                                    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                                        <svg class="w-12 h-12 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8.5m-8.5 0a2 2 0 11-4 0 2 2 0 014 0zm8.5 0a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
+                                        <p class="text-sm">No purchase data available for this period</p>
+                                    </div>
+                                `;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching top purchase items:', error);
                             container.innerHTML = `
                                 <div class="text-center py-8 text-red-500 dark:text-red-400">
                                     <p class="text-sm">Error loading data. Please try again.</p>

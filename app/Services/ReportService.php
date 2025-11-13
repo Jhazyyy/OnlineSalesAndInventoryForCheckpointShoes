@@ -446,6 +446,9 @@ class ReportService
         // Calculate totals
         $totalOrders = $orders->count();
         $totalAmount = $orders->sum('total_amount');
+        $totalPaid = $orders->sum(function ($order) {
+            return $order->payments->sum('amount');
+        });
         $totalItems = $orders->sum(function ($order) {
             return $order->items->sum('quantity');
         });
@@ -479,6 +482,34 @@ class ReportService
             ];
         });
         
+        // Product-level purchase details (Purchase Order Master)
+        $productPurchases = DB::table('purchase_order_items')
+            ->join('purchase_orders', 'purchase_order_items.order_id', '=', 'purchase_orders.order_id')
+            ->join('products', 'purchase_order_items.product_id', '=', 'products.product_id')
+            ->whereBetween('purchase_orders.order_date', [$startDate, $endDate])
+            ->select(
+                'products.product_id',
+                'products.sku',
+                'products.product_name',
+                'products.product_brand',
+                'products.product_category',
+                'products.quantity as current_stock',
+                DB::raw('SUM(purchase_order_items.quantity_ordered) as total_ordered'),
+                DB::raw('SUM(purchase_order_items.quantity_received) as total_received'),
+                DB::raw('SUM(purchase_order_items.quantity_ordered * purchase_order_items.unit_price) as total_cost'),
+                DB::raw('AVG(purchase_order_items.unit_price) as avg_unit_price')
+            )
+            ->groupBy(
+                'products.product_id',
+                'products.sku',
+                'products.product_name',
+                'products.product_brand',
+                'products.product_category',
+                'products.quantity'
+            )
+            ->orderByDesc('total_cost')
+            ->get();
+        
         return [
             'period' => [
                 'start_date' => $startDate->format('Y-m-d'),
@@ -488,12 +519,16 @@ class ReportService
             'summary' => [
                 'total_orders' => $totalOrders,
                 'total_amount' => round($totalAmount, 2),
+                'total_paid' => round($totalPaid, 2),
+                'total_due' => round($totalAmount - $totalPaid, 2),
                 'total_items' => $totalItems,
                 'average_order_value' => $totalOrders > 0 ? round($totalAmount / $totalOrders, 2) : 0,
+                'avg_order_value' => $totalOrders > 0 ? round($totalAmount / $totalOrders, 2) : 0,
             ],
             'purchases_by_date' => $purchasesByDate,
             'purchases_by_status' => $purchasesByStatus,
             'top_suppliers' => $topSuppliers,
+            'product_purchases' => $productPurchases,
             'orders' => $orders,
         ];
     }
@@ -521,10 +556,12 @@ class ReportService
                     $query->where('quantity', '<=', 0);
                     break;
                 case 'low_stock':
-                    $query->whereColumn('quantity', '<=', 'reorder_level');
+                    $query->whereColumn('quantity', '<=', 'reorder_level')
+                        ->where('quantity', '>', 0);
                     break;
                 case 'critical':
-                    $query->whereColumn('quantity', '<=', 'critical_level');
+                    $query->whereColumn('quantity', '<=', 'critical_level')
+                        ->where('quantity', '>', 0);
                     break;
                 case 'overstocked':
                     $query->whereColumn('quantity', '>', 'ceiling_level');
@@ -565,18 +602,65 @@ class ReportService
             ->groupBy('product_category')
             ->get();
         
+        // Products by movement category for chart
+        $byMovementCategory = Product::select('movement_category', DB::raw('COUNT(*) as count'), DB::raw('SUM(quantity) as total_stock'))
+            ->whereNotNull('movement_category')
+            ->groupBy('movement_category')
+            ->get();
+        
+        // Products by stock status for chart
+        $byStockStatus = collect([
+            (object)[
+                'stock_status' => 'out_of_stock',
+                'count' => $outOfStock,
+                'total_quantity' => Product::where('quantity', '<=', 0)->sum('quantity')
+            ],
+            (object)[
+                'stock_status' => 'low_stock',
+                'count' => $lowStock,
+                'total_quantity' => Product::whereColumn('quantity', '<=', 'reorder_level')
+                    ->whereNotNull('reorder_level')
+                    ->where('quantity', '>', 0)
+                    ->sum('quantity')
+            ],
+            (object)[
+                'stock_status' => 'in_stock',
+                'count' => Product::where('quantity', '>', 0)
+                    ->whereRaw('(reorder_level IS NULL OR quantity > reorder_level)')
+                    ->count(),
+                'total_quantity' => Product::where('quantity', '>', 0)
+                    ->whereRaw('(reorder_level IS NULL OR quantity > reorder_level)')
+                    ->sum('quantity')
+            ]
+        ])->filter(fn($item) => $item->count > 0);
+        
+        // Low stock products list
+        $lowStockProducts = Product::whereColumn('quantity', '<=', 'reorder_level')
+            ->whereNotNull('reorder_level')
+            ->where('quantity', '>', 0)
+            ->orderBy('quantity', 'asc')
+            ->get();
+        
+        // Out of stock products list
+        $outOfStockProducts = Product::where('quantity', '<=', 0)
+            ->orderBy('product_name', 'asc')
+            ->get();
+        
         // Top value products
         $topValueProducts = Product::select('*')
-            ->selectRaw('quantity * COALESCE(total_cost, price) as stock_value')
-            ->orderByDesc('stock_value')
+            ->selectRaw('quantity * COALESCE(total_cost, price) as total_value')
+            ->where('quantity', '>', 0)
+            ->orderByDesc('total_value')
             ->limit(10)
             ->get();
         
         return [
             'summary' => [
                 'total_products' => $totalProducts,
-                'total_stock_value' => round($totalStockValue, 2),
-                'total_quantity' => $totalQuantity,
+                'total_stock' => $totalQuantity,
+                'total_value' => round($totalStockValue, 2),
+                'low_stock' => $lowStock,
+                'out_of_stock' => $outOfStock,
                 'average_value_per_product' => $totalProducts > 0 ? round($totalStockValue / $totalProducts, 2) : 0,
             ],
             'stock_status' => [
@@ -593,6 +677,10 @@ class ReportService
                 'uncategorized' => $totalProducts - ($fastMoving + $slowMoving + $nonMoving),
             ],
             'products_by_category' => $productsByCategory,
+            'by_movement_category' => $byMovementCategory,
+            'by_stock_status' => $byStockStatus,
+            'low_stock_products' => $lowStockProducts,
+            'out_of_stock_products' => $outOfStockProducts,
             'top_value_products' => $topValueProducts,
             'products' => $products,
         ];
@@ -716,37 +804,105 @@ class ReportService
         // Get stock movements
         $movements = StockMovement::whereBetween('movement_date', [$startDate, $endDate])
             ->with('product')
+            ->orderBy('movement_date', 'desc')
             ->get();
         
+        // Summary statistics
+        $totalMovements = $movements->count();
+        $stockIn = $movements->where('quantity_change', '>', 0)->sum('quantity_change');
+        $stockOut = abs($movements->where('quantity_change', '<', 0)->sum('quantity_change'));
+        $adjustments = $movements->whereIn('movement_type', ['adjustment', 'audit'])->count();
+        
         // Movement by type
-        $movementsByType = $movements->groupBy('movement_type')->map(function ($typeMovements) {
-            return [
+        $movementsByType = $movements->groupBy('movement_type')->map(function ($typeMovements, $type) {
+            return (object)[
+                'type' => $type,
                 'count' => $typeMovements->count(),
-                'total_quantity' => $typeMovements->sum('quantity_change'),
+                'total_quantity' => abs($typeMovements->sum('quantity_change')),
+            ];
+        })->values();
+        
+        // Most active products
+        $mostActiveProducts = $movements->groupBy('product_id')
+            ->map(function ($productMovements) {
+                $product = $productMovements->first()->product;
+                if (!$product) return null;
+                
+                return (object)[
+                    'product_id' => $product->product_id,
+                    'name' => $product->product_name,
+                    'movement_count' => $productMovements->count(),
+                    'total_in' => $productMovements->where('quantity_change', '>', 0)->sum('quantity_change'),
+                    'total_out' => abs($productMovements->where('quantity_change', '<', 0)->sum('quantity_change')),
+                ];
+            })
+            ->filter()
+            ->sortByDesc('movement_count')
+            ->take(10)
+            ->values();
+        
+        // Recent movements (formatted for table display)
+        $recentMovements = $movements->take(50)->map(function ($movement) {
+            return (object)[
+                'date' => $movement->movement_date,
+                'product_name' => $movement->product->product_name ?? 'Unknown',
+                'type' => $movement->quantity_change > 0 ? 'in' : 'out',
+                'quantity' => abs($movement->quantity_change),
+                'reference' => $movement->reference_type ? ucfirst($movement->reference_type) . ' #' . $movement->reference_id : 'Manual',
+                'notes' => $movement->notes ?? $movement->reason ?? '-',
             ];
         });
         
-        // Most active products
-        $mostActiveProducts = $movements->groupBy('product_id')->map(function ($productMovements) {
-            $product = $productMovements->first()->product;
-            return [
-                'product_id' => $product->product_id,
-                'product_name' => $product->product_name,
-                'movement_count' => $productMovements->count(),
-                'total_quantity_change' => $productMovements->sum('quantity_change'),
+        // Movements by date
+        $movementsByDate = $movements->groupBy(function ($movement) {
+            return Carbon::parse($movement->movement_date)->format('Y-m-d');
+        })->map(function ($dayMovements, $date) {
+            return (object)[
+                'date' => $date,
+                'in_count' => $dayMovements->where('quantity_change', '>', 0)->count(),
+                'out_count' => $dayMovements->where('quantity_change', '<', 0)->count(),
+                'total_count' => $dayMovements->count(),
             ];
-        })->sortByDesc('movement_count')->take(20)->values();
+        })->sortByDesc('date')->values();
+        
+        // Movements by category (product category)
+        $movementsByCategory = DB::table('stock_movements')
+            ->join('products', 'stock_movements.product_id', '=', 'products.product_id')
+            ->whereBetween('stock_movements.movement_date', [$startDate, $endDate])
+            ->whereNotNull('products.product_category')
+            ->select(
+                'products.product_category as movement_category',
+                DB::raw('COUNT(DISTINCT products.product_id) as product_count'),
+                DB::raw('COUNT(*) as total_movements')
+            )
+            ->groupBy('products.product_category')
+            ->orderByDesc('total_movements')
+            ->get()
+            ->map(function ($item) {
+                return (object)[
+                    'movement_category' => $item->movement_category,
+                    'product_count' => $item->product_count,
+                    'total_movements' => $item->total_movements,
+                ];
+            });
         
         return [
             'period' => [
                 'start_date' => $startDate->format('Y-m-d'),
                 'end_date' => $endDate->format('Y-m-d'),
+                'days' => $startDate->diffInDays($endDate) + 1,
             ],
             'summary' => [
-                'total_movements' => $movements->count(),
-                'movements_by_type' => $movementsByType,
+                'total_movements' => $totalMovements,
+                'stock_in' => $stockIn,
+                'stock_out' => $stockOut,
+                'adjustments' => $adjustments,
             ],
+            'movements_by_type' => $movementsByType,
             'most_active_products' => $mostActiveProducts,
+            'recent_movements' => $recentMovements,
+            'movements_by_date' => $movementsByDate,
+            'movements_by_category' => $movementsByCategory,
             'movements' => $movements,
         ];
     }

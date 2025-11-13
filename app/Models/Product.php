@@ -166,6 +166,18 @@ class Product extends Model
         'last_threshold_check' => 'datetime',
         'last_received_at' => 'datetime',
         'last_purchase_price' => 'decimal:2',
+        // Product Costing casts
+        'raw_material_cost' => 'decimal:2',
+        'labor_cost' => 'decimal:2',
+        'overhead_cost' => 'decimal:2',
+        'manufacturing_cost' => 'decimal:2',
+        'shipping_cost_per_unit' => 'decimal:2',
+        'tax_amount_per_unit' => 'decimal:2',
+        'handling_cost' => 'decimal:2',
+        'total_cost' => 'decimal:2',
+        'profit_margin' => 'decimal:2',
+        'profit_amount' => 'decimal:2',
+        'last_cost_update' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

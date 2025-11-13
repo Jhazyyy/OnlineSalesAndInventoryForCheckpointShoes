@@ -59,7 +59,7 @@
             </div>
 
             <!-- Summary Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
                 @php
                     $cards = [
                         [
@@ -76,16 +76,22 @@
                             'icon' => 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6m2 4h10a2 2 0 002-2V9H5v6',
                         ],
                         [
+                            'label' => 'Total Paid',
+                            'color' => 'from-green-500 to-green-600',
+                            'value' => '₱' . number_format($report['summary']['total_paid'] ?? 0, 2),
+                            'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+                        ],
+                        [
+                            'label' => 'Total Due',
+                            'color' => 'from-orange-500 to-orange-600',
+                            'value' => '₱' . number_format($report['summary']['total_due'] ?? 0, 2),
+                            'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+                        ],
+                        [
                             'label' => 'Items Purchased',
                             'color' => 'from-indigo-500 to-indigo-600',
                             'value' => $report['summary']['total_items'] ?? 0,
                             'icon' => 'M20 7l-8-4-8 4v10l8 4 8-4V7z',
-                        ],
-                        [
-                            'label' => 'Avg. Order Value',
-                            'color' => 'from-teal-500 to-teal-600',
-                            'value' => '₱' . number_format($report['summary']['avg_order_value'] ?? 0, 2),
-                            'icon' => 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M12 14h.01M15 11h.01',
                         ],
                     ];
                 @endphp
@@ -134,7 +140,7 @@
                         Export PDF
                     </a>
 
-                    <a href="{{ route('reports.export-excel', ['reportType' => 'purchases', 'start_date' => request('start_date', $filters['start_date'] ?? ''), 'end_date' => request('end_date', $filters['end_date'] ?? '')]) }}"
+                    {{-- <a href="{{ route('reports.export-excel', ['reportType' => 'purchases', 'start_date' => request('start_date', $filters['start_date'] ?? ''), 'end_date' => request('end_date', $filters['end_date'] ?? '')]) }}"
                         class="inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-medium rounded-md transition w-fit">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
@@ -142,15 +148,61 @@
                                 d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         Export Excel
-                    </a>
+                    </a> --}}
                 </div>
             </div>
+
+            <!-- Product Purchase Details (Purchase Order Master by Product) -->
+            @if(!empty($report['product_purchases']) && count($report['product_purchases']) > 0)
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="p-4 sm:p-6">
+                    <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Purchase Order Master (By Product)</h3>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm sm:text-base">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    @foreach (['SKU', 'Product Name', 'Brand', 'Category', 'Qty Ordered', 'Qty Received', 'Avg. Unit Price', 'Total Cost', 'Current Stock'] as $header)
+                                        <th
+                                            class="px-4 py-3 sm:px-6 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">
+                                            {{ $header }}</th>
+                                    @endforeach
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                @foreach($report['product_purchases'] as $product)
+                                    <tr class="hover:bg-blue-50 dark:hover:bg-gray-700 transition">
+                                        <td class="px-4 py-3 sm:px-6 font-medium text-gray-900 dark:text-white">
+                                            {{ $product->sku ?? 'N/A' }}</td>
+                                        <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
+                                            {{ $product->product_name ?? 'N/A' }}</td>
+                                        <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
+                                            {{ $product->product_brand ?? 'N/A' }}</td>
+                                        <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
+                                            {{ $product->product_category ?? 'N/A' }}</td>
+                                        <td class="px-4 py-3 sm:px-6 text-right text-gray-800 dark:text-gray-300">
+                                            {{ number_format($product->total_ordered ?? 0) }}</td>
+                                        <td class="px-4 py-3 sm:px-6 text-right text-gray-800 dark:text-gray-300">
+                                            {{ number_format($product->total_received ?? 0) }}</td>
+                                        <td class="px-4 py-3 sm:px-6 text-right text-gray-800 dark:text-gray-300">
+                                            ₱{{ number_format($product->avg_unit_price ?? 0, 2) }}</td>
+                                        <td class="px-4 py-3 sm:px-6 text-right text-gray-800 dark:text-gray-300">
+                                            ₱{{ number_format($product->total_cost ?? 0, 2) }}</td>
+                                        <td class="px-4 py-3 sm:px-6 text-right text-gray-800 dark:text-gray-300">
+                                            {{ number_format($product->current_stock ?? 0) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @endif
 
             <!-- Purchase Order Master Table -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-4 sm:p-6">
-                    <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Purchase Order Master
-                    </h3>
+                    <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Purchase Orders (By Order)</h3>
 
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm sm:text-base">

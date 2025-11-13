@@ -198,7 +198,7 @@
                         </a>
 
                         <!-- Terms & Conditions -->
-                        <a href="{{ route('settings.terms.index') }}" class="block group">
+                        {{-- <a href="{{ route('settings.terms.index') }}" class="block group">
                             <div class="bg-gradient-to-br from-indigo-50 to-blue-100 dark:from-indigo-900/20 dark:to-blue-900/20 p-6 rounded-xl border border-indigo-200 dark:border-indigo-700 hover:shadow-lg transition-all duration-200 group-hover:scale-105">
                                 <div class="flex items-start justify-between mb-4">
                                     <div class="p-3 bg-indigo-500 rounded-lg">
@@ -215,7 +215,7 @@
                                     </svg>
                                 </div>
                             </div>
-                        </a>
+                        </a> --}}
 
                         <!-- API Documentation -->
                         {{-- <div class="bg-gradient-to-br from-gray-50 to-slate-100 dark:from-gray-900/20 dark:to-slate-900/20 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
