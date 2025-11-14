@@ -32,7 +32,7 @@
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Order Information</h3>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <!-- Supplier Selection -->
                             <div>
                                 <x-input-label for="supplier_id" :value="__('Supplier')" />
@@ -131,8 +131,8 @@
 
                         <div id="orderItems">
                             <!-- Initial item row -->
-                            <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-4">
-                                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                            <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-2">
+                                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                                     <div class="md:col-span-2">
                                         <label
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>

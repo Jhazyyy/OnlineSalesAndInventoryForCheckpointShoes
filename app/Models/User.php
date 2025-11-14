@@ -33,6 +33,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'last_login_at',
         'login_count',
         'is_active',
+        'email_verified_at',
         // Note: 'role' removed - now managed by Spatie Permission package
         'bio',
         'department',

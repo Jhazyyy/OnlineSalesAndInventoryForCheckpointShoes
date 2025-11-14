@@ -287,14 +287,15 @@ Route::get('dashboard', function() {
         ];
     }
 
-    // Top Selling Items - From Sales Orders (Default: Today)
+    // Top Selling Items - From Sales Orders (Default: This Month)
     try {
         $topSellingItems = \App\Models\SalesOrderItem::select('product_id')
             ->selectRaw('SUM(quantity) as total_quantity')
             ->selectRaw('SUM(quantity * unit_price) as total_revenue')
             ->whereNotNull('product_id')
             ->whereHas('order', function ($q) {
-                $q->whereDate('order_date', today());
+                $q->whereMonth('order_date', now()->month)
+                  ->whereYear('order_date', now()->year);
             })
             ->with('product')
             ->groupBy('product_id')
@@ -318,14 +319,15 @@ Route::get('dashboard', function() {
         $topSellingItems = collect();
     }
 
-    // Top Purchase Items - From Purchase Order Items (Default: Today)
+    // Top Purchase Items - From Purchase Order Items (Default: This Month)
     try {
         $topPurchaseItems = \App\Models\PurchaseOrderItem::select('product_id')
             ->selectRaw('SUM(quantity_ordered) as total_quantity')
             ->selectRaw('SUM(quantity_ordered * unit_price) as total_cost')
             ->whereNotNull('product_id')
             ->whereHas('order', function ($q) {
-                $q->whereDate('order_date', today());
+                $q->whereMonth('order_date', now()->month)
+                  ->whereYear('order_date', now()->year);
             })
             ->with('product')
             ->groupBy('product_id')

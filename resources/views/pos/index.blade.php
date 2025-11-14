@@ -105,14 +105,14 @@
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
                             <input type="date" 
                                    name="start_date" 
-                                   value="{{ request('start_date', now()->format('Y-m-d')) }}"
+                                   value="{{ request('start_date') }}"
                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Date</label>
                             <input type="date" 
                                    name="end_date" 
-                                   value="{{ request('end_date', now()->format('Y-m-d')) }}"
+                                   value="{{ request('end_date') }}"
                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         </div>
                         <div>

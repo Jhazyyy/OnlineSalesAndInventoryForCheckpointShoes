@@ -95,6 +95,7 @@
                             </div>
                         </a> --}}
 
+                        @hasrole('admin')
                         <!-- Inventory Settings -->
                         <a href="{{ route('settings.inventory') }}" class="block group">
                             <div class="bg-gradient-to-br from-yellow-50 to-orange-100 dark:from-yellow-900/20 dark:to-orange-900/20 p-6 rounded-xl border border-yellow-200 dark:border-yellow-700 hover:shadow-lg transition-all duration-200 group-hover:scale-105">
@@ -150,6 +151,7 @@
                                 </div>
                             </div>
                         </a>
+                        @endhasrole
 
                         <!-- Sales Settings -->
                         {{-- <a href="{{ route('settings.sales') }}" class="block group">
@@ -175,7 +177,7 @@
                         </a> --}}
 
                         <!-- Notification Settings -->
-                        <a href="{{ route('settings.notifications') }}" class="block group">
+                        {{-- <a href="{{ route('settings.notifications') }}" class="block group">
                             <div class="bg-gradient-to-br from-red-50 to-pink-100 dark:from-red-900/20 dark:to-pink-900/20 p-6 rounded-xl border border-red-200 dark:border-red-700 hover:shadow-lg transition-all duration-200 group-hover:scale-105">
                                 <div class="flex items-start justify-between mb-4">
                                     <div class="p-3 bg-red-500 rounded-lg">
@@ -183,9 +185,9 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                                         </svg>
                                     </div>
-                                    {{-- <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-200">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-200">
                                         {{ count($currentSettings['notifications'] ?? []) }} items
-                                    </span> --}}
+                                    </span>
                                 </div>
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Notification Settings</h3>
                                 <p class="text-gray-600 dark:text-gray-300 text-sm">Email alerts, low stock notifications, and system messaging preferences</p>
@@ -195,7 +197,7 @@
                                     </svg>
                                 </div>
                             </div>
-                        </a>
+                        </a> --}}
 
                         <!-- Terms & Conditions -->
                         {{-- <a href="{{ route('settings.terms.index') }}" class="block group">

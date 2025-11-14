@@ -80,11 +80,11 @@
 
                         <!-- Toggles -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <label class="inline-flex items-center">
+                            {{-- <label class="inline-flex items-center">
                                 <input type="hidden" name="auto_reorder_enabled" value="0" />
                                 <input type="checkbox" name="auto_reorder_enabled" value="1" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" {{ old('auto_reorder_enabled', $product->auto_reorder_enabled) ? 'checked' : '' }}>
                                 <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Enable Auto Reorder</span>
-                            </label>
+                            </label> --}}
                             <label class="inline-flex items-center">
                                 <input type="hidden" name="threshold_alerts_enabled" value="0" />
                                 <input type="checkbox" name="threshold_alerts_enabled" value="1" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" {{ old('threshold_alerts_enabled', $product->threshold_alerts_enabled) ? 'checked' : '' }}>

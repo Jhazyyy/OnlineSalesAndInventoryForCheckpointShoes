@@ -158,33 +158,33 @@
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <!-- Top Selling Items Section -->
                                 <div
-                                    class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                                    class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col">
                                     <div
-                                        class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                                        class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 flex-shrink-0">
                                         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
                                             Top Selling Items
                                         </h3>
                                         <select id="topSellingPeriod"
                                             class="appearance-none w-full sm:w-auto text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                            <option value="today" selected>Today</option>
+                                            <option value="today">Today</option>
                                             <option value="yesterday">Yesterday</option>
                                             <option value="this_week">This Week</option>
                                             <option value="last_week">Last Week</option>
-                                            <option value="this_month">This Month</option>
+                                            <option value="this_month" selected>This Month</option>
                                             <option value="last_month">Last Month</option>
                                             <option value="this_year">This Year</option>
                                             <option value="all_time">All Time</option>
                                         </select>
                                     </div>
 
-                                    <div id="topSellingItemsContainer" class="space-y-4">
+                                    <div id="topSellingItemsContainer" class="space-y-3 overflow-y-auto flex-1" style="max-height: 600px;">
                                     @forelse($topSellingItems->take(10) ?? [] as $item)
                                         <div
-                                            class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                                            <div class="flex items-center space-x-4 flex-1">
+                                            class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex-shrink-0">
+                                            <div class="flex items-center space-x-3 flex-1 min-w-0">
                                                 <!-- Product Image -->
                                                 <div
-                                                    class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
+                                                    class="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
                                                     @if (!empty($item['image']))
                                                         <img src="{{ asset('storage/' . $item['image']) }}"
                                                             alt="{{ $item['name'] ?? 'Product' }}"
@@ -203,17 +203,18 @@
 
                                                 <div class="flex-1 min-w-0">
                                                     <div
-                                                        class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
+                                                        class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate"
+                                                        title="{{ $item['name'] ?? 'Unknown Product' }}">
                                                         {{ $item['name'] ?? 'Unknown Product' }}
                                                     </div>
-                                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
                                                         Sold: {{ number_format($item['quantity'] ?? 0) }} units
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div class="text-right ml-4">
-                                                <div class="text-lg font-bold text-gray-800 dark:text-gray-100">
+                                            <div class="text-right ml-3 flex-shrink-0">
+                                                <div class="text-base font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
                                                     {{ number_format($item['quantity'] ?? 0) }}
                                                 </div>
                                                 <div class="text-xs text-gray-500 dark:text-gray-400">PCS</div>
@@ -235,33 +236,33 @@
 
                             <!-- Top Purchase Items Section -->
                             <div
-                                class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                                class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col">
                                 <div
-                                    class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                                    class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 flex-shrink-0">
                                     <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
                                         Top Purchase Items
                                     </h3>
                                     <select id="topPurchasePeriod"
                                         class="appearance-none w-full sm:w-auto text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                        <option value="today" selected>Today</option>
+                                        <option value="today">Today</option>
                                         <option value="yesterday">Yesterday</option>
                                         <option value="this_week">This Week</option>
                                         <option value="last_week">Last Week</option>
-                                        <option value="this_month">This Month</option>
+                                        <option value="this_month" selected>This Month</option>
                                         <option value="last_month">Last Month</option>
                                         <option value="this_year">This Year</option>
                                         <option value="all_time">All Time</option>
                                     </select>
                                 </div>
 
-                                <div id="topPurchaseItemsContainer" class="space-y-4">
+                                <div id="topPurchaseItemsContainer" class="space-y-3 overflow-y-auto flex-1" style="max-height: 600px;">
                                     @forelse($topPurchaseItems->take(10) ?? [] as $item)
                                         <div
-                                            class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                                            <div class="flex items-center space-x-4 flex-1">
+                                            class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex-shrink-0">
+                                            <div class="flex items-center space-x-3 flex-1 min-w-0">
                                                 <!-- Product Image -->
                                                 <div
-                                                    class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center overflow-hidden">
+                                                    class="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center overflow-hidden">
                                                     @if (!empty($item['image']))
                                                         <img src="{{ asset('storage/' . $item['image']) }}"
                                                             alt="{{ $item['name'] ?? 'Product' }}"
@@ -280,17 +281,18 @@
 
                                                 <div class="flex-1 min-w-0">
                                                     <div
-                                                        class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
+                                                        class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate"
+                                                        title="{{ $item['name'] ?? 'Unknown Product' }}">
                                                         {{ $item['name'] ?? 'Unknown Product' }}
                                                     </div>
-                                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
                                                         Purchased: {{ number_format($item['quantity'] ?? 0) }} units
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div class="text-right ml-4">
-                                                <div class="text-lg font-bold text-gray-800 dark:text-gray-100">
+                                            <div class="text-right ml-3 flex-shrink-0">
+                                                <div class="text-base font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
                                                     {{ number_format($item['quantity'] ?? 0) }}
                                                 </div>
                                                 <div class="text-xs text-gray-500 dark:text-gray-400">PCS</div>
@@ -672,9 +674,9 @@
                         .then(data => {
                             if (data.items && data.items.length > 0) {
                                 container.innerHTML = data.items.map(item => `
-                                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                                        <div class="flex items-center space-x-4 flex-1">
-                                            <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex-shrink-0">
+                                        <div class="flex items-center space-x-3 flex-1 min-w-0">
+                                            <div class="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
                                                 ${item.image 
                                                     ? `<img src="/storage/${item.image}" 
                                                                alt="${item.name}" 
@@ -686,16 +688,16 @@
                                                 }
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
+                                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate" title="${item.name}">
                                                     ${item.name}
                                                 </div>
-                                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
                                                     Sold: ${item.quantity.toLocaleString()} units
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="text-right ml-4">
-                                            <div class="text-lg font-bold text-gray-800 dark:text-gray-100">
+                                        <div class="text-right ml-3 flex-shrink-0">
+                                            <div class="text-base font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
                                                 ${item.quantity.toLocaleString()}
                                             </div>
                                             <div class="text-xs text-gray-500 dark:text-gray-400">PCS</div>
@@ -746,9 +748,9 @@
                         .then(data => {
                             if (data.items && data.items.length > 0) {
                                 container.innerHTML = data.items.map(item => `
-                                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                                        <div class="flex items-center space-x-4 flex-1">
-                                            <div class="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center overflow-hidden">
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex-shrink-0">
+                                        <div class="flex items-center space-x-3 flex-1 min-w-0">
+                                            <div class="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center overflow-hidden">
                                                 ${item.image 
                                                     ? `<img src="/storage/${item.image}" 
                                                                alt="${item.name}" 
@@ -760,16 +762,16 @@
                                                 }
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
+                                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate" title="${item.name}">
                                                     ${item.name}
                                                 </div>
-                                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
                                                     Purchased: ${item.quantity.toLocaleString()} units
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="text-right ml-4">
-                                            <div class="text-lg font-bold text-gray-800 dark:text-gray-100">
+                                        <div class="text-right ml-3 flex-shrink-0">
+                                            <div class="text-base font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
                                                 ${item.quantity.toLocaleString()}
                                             </div>
                                             <div class="text-xs text-gray-500 dark:text-gray-400">PCS</div>

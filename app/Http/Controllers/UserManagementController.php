@@ -113,6 +113,7 @@ class UserManagementController extends Controller
             'department' => $request->department,
             'position' => $request->position,
             'bio' => $request->bio,
+            'email_verified_at' => now(), // Auto-verify users created by admin
         ];
 
         // Handle profile photo upload
@@ -128,11 +129,8 @@ class UserManagementController extends Controller
         // Assign role using Spatie Permission
         $user->syncRoles([$request->role]);
 
-        // Trigger the Registered event to send email verification notification
-        event(new Registered($user));
-
         return redirect()->route('user-management.index')
-            ->with('success', 'User created successfully. A verification email has been sent to ' . $user->email);
+            ->with('success', 'User created successfully and email verified.');
     }
 
     /**

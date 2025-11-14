@@ -6,11 +6,11 @@
                     <!-- Header Section -->
                     <div class="mb-6">
                         <div class="flex items-center mb-4">
-                            <a href="{{ route('settings.index') }}" class="mr-4 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
+                            {{-- <a href="{{ route('settings.index') }}" class="mr-4 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
                                 <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                                 </svg>
-                            </a>
+                            </a> --}}
                             <h1 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
                                 <svg class="w-8 h-8 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
@@ -19,7 +19,7 @@
                             </h1>
                         </div>
                         <p class="text-gray-600 dark:text-gray-400">
-                            Configure email alerts, system notifications, and messaging preferences.
+                            System notifications, and messaging preferences.
                         </p>
                     </div>
 
@@ -43,13 +43,13 @@
 
                             <div class="space-y-6">
                                 <!-- Email Notifications Enabled -->
-                                <div class="flex items-start">
+                                {{-- <div class="flex items-start">
                                     <input id="email_notifications_enabled" name="email_notifications_enabled" type="checkbox" value="1" {{ old('email_notifications_enabled', $settings['email_notifications_enabled'] ?? true) ? 'checked' : '' }} class="mt-1 mr-3 border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <div>
                                         <label for="email_notifications_enabled" class="text-sm font-medium text-gray-700 dark:text-gray-300">Enable Email Notifications</label>
                                         <p class="text-sm text-gray-500">Send notifications via email to administrators and users</p>
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <!-- Low Stock Alerts -->
                                 <div class="flex items-start">
@@ -70,13 +70,13 @@
                                 </div>
 
                                 <!-- Payment Confirmations -->
-                                <div class="flex items-start">
+                                {{-- <div class="flex items-start">
                                     <input id="payment_confirmations" name="payment_confirmations" type="checkbox" value="1" {{ old('payment_confirmations', $settings['payment_confirmations'] ?? true) ? 'checked' : '' }} class="mt-1 mr-3 border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <div>
                                         <label for="payment_confirmations" class="text-sm font-medium text-gray-700 dark:text-gray-300">Payment Confirmations</label>
                                         <p class="text-sm text-gray-500">Send payment confirmation emails to customers</p>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
 

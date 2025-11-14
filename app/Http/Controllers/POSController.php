@@ -30,9 +30,9 @@ class POSController extends Controller
                           ->where('purchase_type', 'in_store')
                           ->orderBy('created_at', 'desc');
 
-        // Filter by date range
-        $startDate = $request->get('start_date', Carbon::today()->format('Y-m-d'));
-        $endDate = $request->get('end_date', Carbon::today()->format('Y-m-d'));
+        // Filter by date range (no default dates - show all)
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
 
         if ($startDate) {
             $query->whereDate('order_date', '>=', $startDate);
