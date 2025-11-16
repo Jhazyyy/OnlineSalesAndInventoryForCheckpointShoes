@@ -147,27 +147,27 @@
                             </div>
 
                             <!-- Recipient Name -->
-                            <div>
+                            {{-- <div>
                                 <label for="recipient_name"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Recipient
                                     Name</label>
                                 <input type="text" id="recipient_name" name="recipient_name"
                                     value="{{ old('recipient_name', $delivery->recipient_name) }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                            </div>
+                            </div> --}}
 
                             <!-- Recipient Phone -->
-                            <div>
+                            {{-- <div>
                                 <label for="recipient_phone"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Recipient
                                     Phone</label>
                                 <input type="text" id="recipient_phone" name="recipient_phone"
                                     value="{{ old('recipient_phone', $delivery->recipient_phone) }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                            </div>
+                            </div> --}}
 
                             <!-- Shipping Cost -->
-                            <div>
+                            {{-- <div>
                                 <label for="shipping_cost"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Shipping
                                     Cost</label>
@@ -178,16 +178,16 @@
                                 @error('shipping_cost')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
-                            </div>
+                            </div> --}}
 
                             <!-- Delivery Address -->
-                            <div class="md:col-span-2">
+                            {{-- <div class="md:col-span-2">
                                 <label for="delivery_address"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Delivery
                                     Address</label>
                                 <textarea id="delivery_address" name="delivery_address" rows="3"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">{{ old('delivery_address', $delivery->delivery_address) }}</textarea>
-                            </div>
+                            </div> --}}
 
                             <!-- Delivery Notes -->
                             <div class="md:col-span-2">

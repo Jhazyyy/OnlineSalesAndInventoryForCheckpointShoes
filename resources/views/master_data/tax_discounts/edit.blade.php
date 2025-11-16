@@ -86,9 +86,9 @@
                                     <x-input-label for="applicable_for" :value="__('Applicable For')" />
                                     <select id="applicable_for" name="applicable_for" required
                                         class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                                        <option value="both"
+                                        {{-- <option value="both"
                                             {{ old('applicable_for', $taxDiscount->applicable_for ?? 'both') === 'both' ? 'selected' : '' }}>
-                                            Both (Supplier & Customer)</option>
+                                            Both (Supplier & Customer)</option> --}}
                                         <option value="supplier"
                                             {{ old('applicable_for', $taxDiscount->applicable_for) === 'supplier' ? 'selected' : '' }}>
                                             Supplier (Purchase Orders)</option>
@@ -98,7 +98,7 @@
                                     </select>
                                     <x-input-error class="mt-2" :messages="$errors->get('applicable_for')" />
                                     <p class="mt-1 text-sm text-gray-500">Choose whether this applies to suppliers,
-                                        customers, or both</p>
+                                        {{-- customers, or both</p> --}}
                                 </div>
 
                                 <!-- Calculation Method -->

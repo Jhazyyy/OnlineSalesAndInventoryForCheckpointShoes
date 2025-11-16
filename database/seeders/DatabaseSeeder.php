@@ -19,6 +19,27 @@ class DatabaseSeeder extends Seeder
         // First, seed roles and permissions
         $this->call(RolesAndPermissionsSeeder::class);
 
+        // Create super admin user
+        $superAdmin = User::firstOrCreate(
+            ['email' => 'superadmin@checkpoint.com'],
+            [
+                'name' => 'Super Administrator',
+                'first_name' => 'Super',
+                'last_name' => 'Admin',
+                'email' => 'superadmin@checkpoint.com',
+                'password' => bcrypt('SuperAdmin@2025'),
+                'is_active' => true,
+                'status' => 'active',
+                'email_verified_at' => now(),
+            ]
+        );
+        
+        // Ensure only super_admin role is assigned
+        if (!$superAdmin->hasRole('super_admin') || $superAdmin->roles->count() > 1) {
+            $superAdmin->roles()->detach();
+            $superAdmin->assignRole('super_admin');
+        }
+
         // Create admin user
         $admin = User::firstOrCreate(
             ['email' => 'admin@example.com'],
@@ -28,9 +49,9 @@ class DatabaseSeeder extends Seeder
                 'last_name' => 'User',
                 'email' => 'admin@example.com',
                 'password' => bcrypt('admin#123*'),
-                'role' => 'admin',
                 'is_active' => true,
                 'status' => 'active',
+                'email_verified_at' => now(),
             ]
         );
         
@@ -51,9 +72,9 @@ class DatabaseSeeder extends Seeder
                 'last_name' => 'User',
                 'email' => 'test@example.com',
                 'password' => bcrypt('test#123*'),
-                'role' => 'user',
                 'is_active' => true,
                 'status' => 'active',
+                'email_verified_at' => now(),
             ]
         );
         

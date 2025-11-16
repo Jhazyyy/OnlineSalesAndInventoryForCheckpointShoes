@@ -127,10 +127,6 @@ class PurchaseDeliveryService
     public function getCarriers(): array
     {
         return [
-            // ['id' => 'FedEx', 'name' => 'FedEx'],
-            // ['id' => 'UPS', 'name' => 'UPS'],
-            // ['id' => 'DHL', 'name' => 'DHL'],
-            // ['id' => 'USPS', 'name' => 'USPS'],
             ['id' => 'Local Courier', 'name' => 'Local Courier'],
             ['id' => 'Supplier Direct', 'name' => 'Supplier Direct'],
             ['id' => 'Other', 'name' => 'Other'],
@@ -242,7 +238,12 @@ class PurchaseDeliveryService
                 // If quantities don't match, set condition to partial
                 if ($quantityDelivered != $quantityExpected) {
                     $itemData['condition'] = 'partial';
-                } else {
+                } elseif($quantityDelivered > $quantityExpected){
+                    $itemData['condition'] = 'excess';
+                }elseif($quantityDelivered < $quantityExpected){
+                    $itemData['condition'] = 'shortage';
+                }
+                else {
                     $itemData['condition'] = 'good';
                 }
             }

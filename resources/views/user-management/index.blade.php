@@ -11,15 +11,6 @@
                             <p class="text-gray-600 dark:text-gray-400">Manage system users and their permissions</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
-                            {{-- <a href="{{ route('user-management.export', request()->query()) }}"
-                                class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                    </path>
-                                </svg>
-                                Export CSV
-                            </a> --}}
                             <a href="{{ route('user-management.create') }}"
                                 class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -34,7 +25,7 @@
             </div>
 
             <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div
                     class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <div class="flex items-center justify-between">
@@ -69,8 +60,22 @@
                         </div>
                     </div>
                 </div>
-
-                {{-- <div class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
+{{-- 
+                <div class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Super Admins</p>
+                            <p class="text-2xl font-bold text-red-600 dark:text-red-400">{{ $stats['super_admins'] }}</p>
+                        </div>
+                        <div class="p-3 bg-red-100 dark:bg-red-900 rounded-full">
+                            <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div> --}}
+{{-- 
+                <div class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Admins</p>
@@ -84,7 +89,7 @@
                     </div>
                 </div> --}}
 
-                <div
+                {{-- <div
                     class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <div class="flex items-center justify-between">
                         <div>
@@ -101,7 +106,7 @@
                             </svg>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
 
             <!-- Flash Messages -->
@@ -309,7 +314,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $user->role_color }}-100 text-{{ $user->role_color }}-800">
-                                                {{ ucfirst($user->primary_role) }}
+                                                {{ $user->primary_role === 'super_admin' ? 'Super Admin' : ucfirst(str_replace('_', ' ', $user->primary_role)) }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
@@ -356,7 +361,7 @@
                                                         </path>
                                                     </svg>
                                                 </a>
-                                                @if (!$user->hasRole('admin'))
+                                                @if (!$user->hasAnyRole(['super_admin', 'admin']) || (auth()->user()->hasRole('super_admin') && $user->hasRole('admin')))
                                                     <a href="{{ route('user-management.edit', $user) }}"
                                                         class="text-indigo-600 hover:text-indigo-900" title="Edit">
                                                         <svg class="w-5 h-5" fill="none" stroke="currentColor"
@@ -367,45 +372,8 @@
                                                             </path>
                                                         </svg>
                                                     </a>
-                                                @else
-                                                    <span class="text-gray-400 cursor-not-allowed" title="Admin users cannot be edited">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                                            </path>
-                                                        </svg>
-                                                    </span>
                                                 @endif
-                                                @if (!$user->hasRole('admin'))
-                                                    <form action="{{ route('user-management.toggle-status', $user) }}"
-                                                        method="POST" class="inline">
-                                                        @csrf
-                                                        <button type="submit"
-                                                            class="text-yellow-600 hover:text-yellow-900"
-                                                            title="{{ $user->is_active ? 'Deactivate' : 'Activate' }}">
-                                                            @if ($user->is_active)
-                                                                <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                                    viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                                        stroke-width="2"
-                                                                        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636">
-                                                                    </path>
-                                                                </svg>
-                                                            @else
-                                                                <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                                    viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    stroke-width="2"
-                                                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z">
-                                                                </path>
-                                                            </svg>
-                                                        @endif
-                                                    </button>
-                                                </form>
-                                                @endif
-                                                @if ($user->id !== auth()->id() && !$user->hasRole('admin'))
+                                                @if ($user->id !== auth()->id() && (!$user->hasAnyRole(['super_admin', 'admin']) || (auth()->user()->hasRole('super_admin') && $user->hasRole('admin'))))
                                                     <form action="{{ route('user-management.destroy', $user) }}"
                                                         method="POST" class="inline">
                                                         @csrf

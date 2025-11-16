@@ -93,22 +93,8 @@
                                     <option value="bank_transfer"
                                         {{ old('payment_method') == 'bank_transfer' ? 'selected' : '' }}>Bank Transfer
                                     </option>
-                                    {{-- <option value="check" {{ old('payment_method') == 'check' ? 'selected' : '' }}>
-                                        Check
-                                    </option>
-                                    <option value="credit" {{ old('payment_method') == 'credit' ? 'selected' : '' }}>
-                                        Credit</option> --}}
                                 </select>
                                 <x-input-error :messages="$errors->get('payment_method')" class="mt-2" />
-                            </div>
-
-                            <!-- Reference Number -->
-                            <div>
-                                <x-input-label for="reference_number" :value="__('Reference Number')" />
-                                <x-text-input id="reference_number" name="reference_number" type="text"
-                                    class="mt-1 block w-full" :value="old('reference_number')"
-                                    placeholder="Optional reference number" />
-                                <x-input-error :messages="$errors->get('reference_number')" class="mt-2" />
                             </div>
                         </div>
                     </div>
@@ -229,7 +215,7 @@
                 </div>
 
                 <!-- Additional Information -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
+                {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Additional Information</h3>
 
@@ -271,7 +257,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Form Actions -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
@@ -319,8 +305,7 @@
                 // Event delegation for quantity, price, and discount inputs
                 orderItemsContainer.addEventListener('input', function(e) {
                     if (e.target.classList.contains('quantity-input') ||
-                        e.target.classList.contains('unit-price-input') ||
-                        e.target.classList.contains('discount-input')) {
+                        e.target.classList.contains('unit-price-input')) {
                         calculateLineTotal(e.target.closest('.item-row'));
                     }
                 });

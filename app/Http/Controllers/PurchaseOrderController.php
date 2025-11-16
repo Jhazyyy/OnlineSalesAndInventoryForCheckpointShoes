@@ -71,7 +71,6 @@ class PurchaseOrderController extends Controller
             'billing_address' => 'nullable|string|max:2000',
             'notes' => 'nullable|string|max:2000',
             'internal_notes' => 'nullable|string|max:2000',
-            'reference_number' => 'nullable|string|max:100',
         ]);
 
         if ($validator->fails()) {

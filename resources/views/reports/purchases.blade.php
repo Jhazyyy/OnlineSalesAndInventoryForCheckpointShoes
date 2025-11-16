@@ -59,7 +59,7 @@
             </div>
 
             <!-- Summary Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 @php
                     $cards = [
                         [
@@ -75,18 +75,18 @@
                             'value' => '₱' . number_format($report['summary']['total_amount'] ?? 0, 2),
                             'icon' => 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6m2 4h10a2 2 0 002-2V9H5v6',
                         ],
-                        [
-                            'label' => 'Total Paid',
-                            'color' => 'from-green-500 to-green-600',
-                            'value' => '₱' . number_format($report['summary']['total_paid'] ?? 0, 2),
-                            'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
-                        ],
-                        [
-                            'label' => 'Total Due',
-                            'color' => 'from-orange-500 to-orange-600',
-                            'value' => '₱' . number_format($report['summary']['total_due'] ?? 0, 2),
-                            'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
-                        ],
+                        // [
+                        //     'label' => 'Total Paid',
+                        //     'color' => 'from-green-500 to-green-600',
+                        //     'value' => '₱' . number_format($report['summary']['total_paid'] ?? 0, 2),
+                        //     'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+                        // ],
+                        // [
+                        //     'label' => 'Total Due',
+                        //     'color' => 'from-orange-500 to-orange-600',
+                        //     'value' => '₱' . number_format($report['summary']['total_due'] ?? 0, 2),
+                        //     'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+                        // ],
                         [
                             'label' => 'Items Purchased',
                             'color' => 'from-indigo-500 to-indigo-600',
@@ -208,7 +208,7 @@
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm sm:text-base">
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
-                                    @foreach (['PO Number', 'Supplier', 'Order Date', 'Amount Due', 'Due Date', 'Total Paid', 'Status'] as $header)
+                                    @foreach (['PO Number', 'Supplier', 'Order Date', 'Amount Due', 'Status'] as $header)
                                         <th
                                             class="px-4 py-3 sm:px-6 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">
                                             {{ $header }}</th>

@@ -1,31 +1,13 @@
 <x-app-layout>
     <div class="py-6">
         <div class="w-full mx-auto sm:px-6 lg:px-8">
-            <!-- Inventory Notice -->
-            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
-                <div class="flex">
-                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <div>
-                        <h4 class="text-sm font-medium text-blue-800 dark:text-blue-300">Inventory
-                            Management</h4>
-                        <p class="text-xs text-blue-700 dark:text-blue-400 mt-1">
-                            Stock quantities are managed through <strong>Stock Movements</strong>.
-                            After creating this product, set initial inventory via Stock Adjustment.
-                        </p>
-                    </div>
-                </div>
-            </div>
             <!-- Header Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Add New Product</h2>
-                            <p class="text-gray-600 dark:text-gray-400">Create a new product in your inventory</p>
+                            <p class="text-gray-600 dark:text-gray-400">Create a new product to add in your inventory</p>
                         </div>
                         <div class="flex space-x-3 mt-4 sm:mt-0">
                             <a href="{{ route('master_data.products.index') }}"
@@ -191,7 +173,7 @@
                             <div>
                                 <label for="price"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Base Price (Peso) <span class="text-red-500">*</span>
+                                    Price<span class="text-red-500">*</span>
                                 </label>
                                 <div class="mt-1 relative rounded-md shadow-sm">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -206,7 +188,7 @@
                                 @enderror
                             </div>
                             <!-- Barcode -->
-                            <div>
+                            {{-- <div>
                                 <label for="barcode"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Barcode <span class="text-gray-400 text-xs">(Optional)</span>
@@ -217,7 +199,7 @@
                                 @error('barcode')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
-                            </div>
+                            </div> --}}
                         </div>
 
                         {{-- Product Image and Description --}}
@@ -256,7 +238,7 @@
 
                                     <!-- Image Preview (inside box) -->
                                     <img id="previewImg" src="#" alt="Preview"
-                                        class="inset-0 max-w-md h-auto object-cover rounded-md hidden" />
+                                        class="inset-0 max-w-fit h-auto object-cover rounded-md hidden" />
                                 </div>
 
                                 @error('image')
@@ -371,6 +353,4 @@
             }
         }
     </script>
-
-
 </x-app-layout>

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->decimal('unit_price', 10, 2)->default(0);
             $table->boolean('update_product_price')->default(false)->comment('Flag to indicate whether to update product master price upon successful receipt');
             $table->decimal('total_amount', 12, 2)->default(0);
-            $table->enum('condition', ['good', 'damaged', 'expired', 'partial'])->default('good');
+            $table->enum('condition', ['good', 'damaged', 'expired', 'partial', 'shortage', 'excess'])->default('good');
             $table->boolean('is_short_closed')->default(false);
             $table->text('short_close_reason')->nullable();
             $table->text('item_notes')->nullable();

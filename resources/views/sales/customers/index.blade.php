@@ -17,13 +17,13 @@
                                 </svg>
                                 Export Customers
                             </a> --}}
-                            <a href="{{ route('sales.customers.import') }}" 
+                            {{-- <a href="{{ route('sales.customers.import') }}" 
                                class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                 </svg>
                                 Import Customers
-                            </a>
+                            </a> --}}
                             <a href="{{ route('sales.customers.create') }}" 
                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,7 +40,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <form method="GET" action="{{ route('sales.customers.index') }}" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-8">
                             <!-- Search -->
                             <div>
                                 <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>
@@ -50,7 +50,7 @@
                             </div>
 
                             <!-- Customer Type -->
-                            <div>
+                            {{-- <div>
                                 <label for="customer_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Customer Type</label>
                                 <select id="customer_type" name="customer_type" 
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
@@ -58,10 +58,10 @@
                                     <option value="individual" {{ request('customer_type') == 'individual' ? 'selected' : '' }}>Individual</option>
                                     <option value="business" {{ request('customer_type') == 'business' ? 'selected' : '' }}>Business</option>
                                 </select>
-                            </div>
+                            </div> --}}
 
                             <!-- Status -->
-                            <div>
+                            {{-- <div>
                                 <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
                                 <select id="status" name="status" 
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
@@ -69,10 +69,10 @@
                                     <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
                                     <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                                 </select>
-                            </div>
+                            </div> --}}
 
                             <!-- City -->
-                            <div>
+                            {{-- <div>
                                 <label for="city" class="block text-sm font-medium text-gray-700 dark:text-gray-300">City</label>
                                 <select id="city" name="city" 
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
@@ -83,10 +83,10 @@
                                         </option>
                                     @endforeach
                                 </select>
-                            </div>
+                            </div> --}}
 
                             <!-- Country -->
-                            <div>
+                            {{-- <div>
                                 <label for="country" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Country</label>
                                 <select id="country" name="country" 
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
@@ -97,7 +97,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                            </div>
+                            </div> --}}
                         </div>
 
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -157,16 +157,16 @@
                                             </a>
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Phone</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a href="{{ request()->fullUrlWithQuery(['sort' => 'customer_type', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
                                                 Type
                                                 @if(request('sort') === 'customer_type')
                                                     <span class="ml-1">{{ request('order') === 'asc' ? '↑' : '↓' }}</span>
                                                 @endif
                                             </a>
-                                        </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Location</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                        </th> --}}
+                                        {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Location</th> --}}
+                                        {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th> --}}
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
@@ -183,31 +183,31 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $customer->email }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $customer->phone ?? 'N/A' }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            {{-- <td class="px-6 py-4 whitespace-nowrap">
                                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $customer->customer_type === 'business' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }}">
                                                     {{ ucfirst($customer->customer_type) }}
                                                 </span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                            </td> --}}
+                                            {{-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                 {{ $customer->city ? $customer->city . ', ' . $customer->country : $customer->country ?? 'N/A' }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            </td> --}}
+                                            {{-- <td class="px-6 py-4 whitespace-nowrap">
                                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $customer->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                                     {{ ucfirst($customer->status) }}
                                                 </span>
-                                            </td>
+                                            </td> --}}
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                                                 <a href="{{ route('sales.customers.show', $customer) }}" 
                                                    class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">View</a>
                                                 <a href="{{ route('sales.customers.edit', $customer) }}" 
                                                    class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">Edit</a>
-                                                <form method="POST" action="{{ route('sales.customers.toggle-status', $customer) }}" 
+                                                {{-- <form method="POST" action="{{ route('sales.customers.toggle-status', $customer) }}" 
                                                       class="inline-block">
                                                     @csrf
                                                     <button type="submit" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
                                                         {{ $customer->status === 'active' ? 'Deactivate' : 'Activate' }}
                                                     </button>
-                                                </form>
+                                                </form> --}}
                                                 <form method="POST" action="{{ route('sales.customers.destroy', $customer) }}" 
                                                       class="inline-block" 
                                                       onsubmit="return confirm('Are you sure you want to delete this customer? This action cannot be undone.')">

@@ -68,8 +68,9 @@
                         </path>
                     </svg>
                     <!-- Notification Badge - shows count when there are unread notifications -->
-                    @if(isset($unreadNotificationCount) && $unreadNotificationCount > 0)
-                        <span class="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-opacity-100 text-xs font-bold text-white bg-red-500 rounded-md ring-white dark:ring-gray-900">
+                    @if (isset($unreadNotificationCount) && $unreadNotificationCount > 0)
+                        <span
+                            class="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-opacity-100 text-xs font-bold text-white bg-red-500 rounded-md ring-white dark:ring-gray-900">
                             {{ $unreadNotificationCount > 99 ? '99+' : $unreadNotificationCount }}
                         </span>
                     @endif
@@ -153,18 +154,19 @@
 
                 <x-responsive-nav-link :href="route('notifications.list')" class="flex items-center justify-between">
                     <span>{{ __('Notifications') }}</span>
-                    @if(isset($unreadNotificationCount) && $unreadNotificationCount > 0)
-                        <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                    @if (isset($unreadNotificationCount) && $unreadNotificationCount > 0)
+                        <span
+                            class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
                             {{ $unreadNotificationCount > 99 ? '99+' : $unreadNotificationCount }}
                         </span>
                     @endif
                 </x-responsive-nav-link>
 
-                @hasrole('admin')
+                @hasanyrole('super_admin|admin')
                     <x-responsive-nav-link :href="route('user-management.index')">
                         {{ __('User Management') }}
                     </x-responsive-nav-link>
-                @endhasrole
+                @endhasanyrole
 
                 <x-responsive-nav-link :href="route('settings.index')">
                     {{ __('System Settings') }}

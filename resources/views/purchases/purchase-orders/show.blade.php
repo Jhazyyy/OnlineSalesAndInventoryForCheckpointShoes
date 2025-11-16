@@ -150,7 +150,7 @@
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ordered</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Received</th>
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Unit Price</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Discount</th>
+                                            {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Discount</th> --}}
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Line Total</th>
                                         </tr>
                                     </thead>
@@ -178,9 +178,9 @@
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                     ₱{{ number_format($item->unit_price, 2) }}
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                                {{-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                     ₱{{ number_format($item->discount_amount, 2) }}
-                                                </td>
+                                                </td> --}}
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                     ₱{{ number_format($item->line_total, 2) }}
                                                 </td>
@@ -288,14 +288,14 @@
                                     </div>
                                 </div>
 
-                                <div>
+                                {{-- <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Status</label>
                                     <div class="mt-1">
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $order->payment_status_badge_class }}">
                                             {{ ucfirst($order->payment_status) }}
                                         </span>
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Progress</label>
@@ -539,7 +539,7 @@
                                 @endif
 
                                 <!-- Create Delivery Button (shown when status is ordered and not short-closed) -->
-                                @if($order->status === 'ordered' && $order->canCreateDelivery())
+                                @if($order->status === 'ordered' && $order->canCreateDelivery() && $order->hasShortClosedReceive())
                                     <!-- Show delivery button for ordered status without short-close -->
                                     <div class="pt-3 border-t">
                                         <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3">Delivery Management</h4>

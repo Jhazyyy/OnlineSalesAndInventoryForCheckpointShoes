@@ -11,7 +11,7 @@ class RolesAndPermissionsSeeder extends Seeder
     /**
      * Run the database seeds.
      * 
-     * Creates admin and user roles with appropriate permissions
+     * Creates super admin, admin, and user roles with appropriate permissions
      * Supports multi-user simultaneous access through Spatie Permission package
      */
     public function run(): void
@@ -26,6 +26,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'create users',
             'edit users',
             'delete users',
+            'manage admins', // Super Admin only
             
             // Product management
             'view products',
@@ -85,9 +86,52 @@ class RolesAndPermissionsSeeder extends Seeder
             Permission::firstOrCreate(['name' => $permission]);
         }
 
-        // Create Admin role and assign all permissions
+        // Create Super Admin role with all permissions (highest level)
+        $superAdminRole = Role::firstOrCreate(['name' => 'super_admin']);
+        $superAdminRole->syncPermissions(Permission::all());
+
+        // Create Admin role with all permissions except managing other admins
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
-        $adminRole->syncPermissions(Permission::all());
+        $adminRole->syncPermissions([
+            'view users',
+            'create users',
+            'edit users',
+            'delete users',
+            'view products',
+            'create products',
+            'edit products',
+            'delete products',
+            'view inventory',
+            'create inventory',
+            'edit inventory',
+            'delete inventory',
+            'manage stock',
+            'view sales',
+            'create sales',
+            'edit sales',
+            'delete sales',
+            'process refunds',
+            'view customers',
+            'create customers',
+            'edit customers',
+            'delete customers',
+            'view suppliers',
+            'create suppliers',
+            'edit suppliers',
+            'delete suppliers',
+            'view purchases',
+            'create purchases',
+            'edit purchases',
+            'delete purchases',
+            'view reports',
+            'export reports',
+            'view settings',
+            'manage settings',
+            'view categories',
+            'manage categories',
+            'view brands',
+            'manage brands',
+        ]);
 
         // Create User role with limited permissions
         $userRole = Role::firstOrCreate(['name' => 'user']);
@@ -105,7 +149,8 @@ class RolesAndPermissionsSeeder extends Seeder
         ]);
 
         $this->command->info('Roles and permissions created successfully!');
-        $this->command->info('Admin role has all permissions.');
+        $this->command->info('Super Admin role has all permissions (including managing admins).');
+        $this->command->info('Admin role has all permissions except managing other admins.');
         $this->command->info('User role has limited view and create permissions.');
     }
 }

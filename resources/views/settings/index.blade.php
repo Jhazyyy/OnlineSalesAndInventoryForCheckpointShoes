@@ -95,7 +95,7 @@
                             </div>
                         </a> --}}
 
-                        @hasrole('admin')
+                        @hasanyrole('super_admin|admin')
                         <!-- Inventory Settings -->
                         <a href="{{ route('settings.inventory') }}" class="block group">
                             <div class="bg-gradient-to-br from-yellow-50 to-orange-100 dark:from-yellow-900/20 dark:to-orange-900/20 p-6 rounded-xl border border-yellow-200 dark:border-yellow-700 hover:shadow-lg transition-all duration-200 group-hover:scale-105">

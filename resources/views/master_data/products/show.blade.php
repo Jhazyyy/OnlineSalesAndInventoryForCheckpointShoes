@@ -243,7 +243,7 @@
                         </div>
                     </div>
                     <!-- Key Metrics -->
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Key Metrics</h3>
 
@@ -275,7 +275,7 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <!-- Product Info -->
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">

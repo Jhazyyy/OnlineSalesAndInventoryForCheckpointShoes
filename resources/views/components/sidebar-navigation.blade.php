@@ -13,14 +13,14 @@
             <div class="flex items-center space-x-3">
                 <!-- Logo Icon/Image -->
                 <div class="flex-shrink-0">
-                    <img src="{{ companyLogoUrl() }}" 
-                        alt="{{ setting('general.company_name', 'Checkpoint') }}" 
+                    <img src="{{ companyLogoUrl() }}" alt="{{ setting('general.company_name', 'Checkpoint') }}"
                         class="w-10 h-10 rounded-lg object-contain bg-white dark:bg-gray-700 p-1 shadow-sm border-2 dark:border-gray-700">
                 </div>
 
                 <!-- Logo Text -->
                 <div>
-                    <h1 class="text-lg font-bold text-gray-900 dark:text-white">{{ setting('general.company_name', 'Checkpoint') }}</h1>
+                    <h1 class="text-lg font-bold text-gray-900 dark:text-white">
+                        {{ setting('general.company_name', 'Checkpoint') }}</h1>
                     <p class="text-xs text-gray-500 dark:text-gray-400">Sales & Inventory</p>
                 </div>
             </div>
@@ -39,77 +39,71 @@
         <!-- Navigation Menu -->
         <div class="flex-1 overflow-y-auto">
             <div class="p-4">
-                <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+                <h3 class="text-sm font-thin text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
                     Main Menu</h3>
                 <nav class="space-y-2">
                     <!-- Dashboard -->
                     <x-nav-item route="dashboard" :icon="App\Helpers\NavigationHelper::getIcon('dashboard')" title="Dashboard" />
 
                     <!-- Master Data Section -->
-                    <x-nav-item
-                        route-pattern="master_data.products.*|master_data.categories.*|master_data.brands.*|master_data.suppliers.*|master_data.tax_discounts.*"
-                        :icon="App\Helpers\NavigationHelper::getIcon('master_data')" title="Master Data" :is-dropdown="true">
+                    @hasanyrole('super_admin|admin')
+                        <x-nav-item
+                            route-pattern="master_data.products.*|master_data.categories.*|master_data.brands.*|master_data.suppliers.*|master_data.tax_discounts.*"
+                            :icon="App\Helpers\NavigationHelper::getIcon('master_data')" title="Master Data" :is-dropdown="true">
 
-                        <!-- Products -->
-                        <x-nav-item route="master_data.products.index" route-pattern="master_data.products.*"
-                            :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Products" size="small" />
+                            <!-- Products -->
+                            <x-nav-item route="master_data.products.index" route-pattern="master_data.products.*"
+                                :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Products" size="small" />
 
-                        <!-- Vendor/Supplier -->
-                        <x-nav-item route="master_data.suppliers.index" route-pattern="master_data.suppliers.*"
-                            :icon="App\Helpers\NavigationHelper::getIcon('suppliers', 'w-4 h-4 mr-3')" title="Vendor/Supplier" size="small" />
+                            <!-- Vendor/Supplier -->
+                            <x-nav-item route="master_data.suppliers.index" route-pattern="master_data.suppliers.*"
+                                :icon="App\Helpers\NavigationHelper::getIcon('suppliers', 'w-4 h-4 mr-3')" title="Vendor/Supplier" size="small" />
 
-                        <!-- Categories -->
-                        <x-nav-item route="master_data.categories.index" route-pattern="master_data.categories.*"
-                            :icon="App\Helpers\NavigationHelper::getIcon('categories', 'w-4 h-4 mr-3')" title="Categories" size="small" />
+                            <!-- Categories -->
+                            <x-nav-item route="master_data.categories.index" route-pattern="master_data.categories.*"
+                                :icon="App\Helpers\NavigationHelper::getIcon('categories', 'w-4 h-4 mr-3')" title="Categories" size="small" />
 
-                        <!-- Brands -->
-                        <x-nav-item route="master_data.brands.index" route-pattern="master_data.brands.*"
-                            :icon="App\Helpers\NavigationHelper::getIcon('brands', 'w-4 h-4 mr-3')" title="Brands" size="small" />
+                            <!-- Brands -->
+                            <x-nav-item route="master_data.brands.index" route-pattern="master_data.brands.*"
+                                :icon="App\Helpers\NavigationHelper::getIcon('brands', 'w-4 h-4 mr-3')" title="Brands" size="small" />
 
-                        <!-- Tax & Discount -->
-                        <x-nav-item route="master_data.tax_discounts.index" route-pattern="master_data.tax_discounts.*"
-                            :icon="App\Helpers\NavigationHelper::getIcon('tax_and_discount', 'w-5 h-5 mr-3')" title="Tax & Discount" size="small" />
-
+                            <!-- Tax & Discount -->
+                            <x-nav-item route="master_data.tax_discounts.index" route-pattern="master_data.tax_discounts.*"
+                                :icon="App\Helpers\NavigationHelper::getIcon('tax_and_discount', 'w-5 h-5 mr-3')" title="Tax & Discount" size="small" />
+                        @endhasanyrole
                     </x-nav-item>
-
 
                     <!-- Inventory Section -->
                     <x-nav-item
                         route-pattern="inventory.products.*|inventory.product_stocks.*|inventory.thresholds.*|inventory.product-movement.*|inventory.product-costing.*"
                         :icon="App\Helpers\NavigationHelper::getIcon('inventory')" title="Inventory" :is-dropdown="true">
 
-                        <!-- Inventory List -->
-                        <x-nav-item route="inventory.index" route-pattern="inventory.index"
-                            :icon="App\Helpers\NavigationHelper::getIcon('inventory', 'w-4 h-4 mr-3')"
-                            title="Inventory List" size="small" />
+                        @hasanyrole('super_admin|admin')
+                            <!-- Stock Adjustment -->
+                            <x-nav-item route="inventory.product_stock_adjustment.index"
+                                route-pattern="inventory.product_stock_adjustment.*" :icon="App\Helpers\NavigationHelper::getIcon('stock_adjustment', 'w-4 h-4 mr-3')"
+                                title="Stock Adjustment" size="small" />
 
-
-                        <!-- Stock Adjustment -->
-                        <x-nav-item route="inventory.product_stock_adjustment.index"
-                            route-pattern="inventory.product_stock_adjustment.*" :icon="App\Helpers\NavigationHelper::getIcon('stock_adjustment', 'w-4 h-4 mr-3')"
-                            title="Stock Adjustment" size="small" />
-
-                        <!-- Product Movement (Fast/Slow/Non-Moving) -->
-                        {{-- <x-nav-item route="inventory.product-movement.index"
+                            <!-- Product Movement (Fast/Slow/Non-Moving) -->
+                            {{-- <x-nav-item route="inventory.product-movement.index"
                             route-pattern="inventory.product-movement.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>'
                             title="Product Movement" size="small" /> --}}
 
-                            @hasrole('admin')
-                        <!-- Product Costing -->
-                        <x-nav-item route="inventory.product-costing.index" route-pattern="inventory.product-costing.*"
-                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'
-                            title="Product Costing" size="small" />
-                            @endhasrole
 
-                        <!-- Inventory Thresholds -->
-                        @hasrole('admin')
-                        <x-nav-item route="inventory.thresholds.index" route-pattern="inventory.thresholds.*"
-                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>'
-                            title="Inventory Thresholds" size="small" />
-                        @endhasrole
+                            <!-- Product Costing -->
+                            <x-nav-item route="inventory.product-costing.index" route-pattern="inventory.product-costing.*"
+                                icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'
+                                title="Product Costing" size="small" />
+
+                            <!-- Inventory Thresholds -->
+
+                            <x-nav-item route="inventory.thresholds.index" route-pattern="inventory.thresholds.*"
+                                icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>'
+                                title="Inventory Thresholds" size="small" />
+                        @endhasanyrole
                     </x-nav-item>
-        
+
 
                     <!-- Sales Section-->
                     <x-nav-item route-pattern="pos.*" :icon="App\Helpers\NavigationHelper::getIcon('sales')" title="Sales" :is-dropdown="true">
@@ -117,27 +111,29 @@
                         <!-- Sales Order -->
                         <x-nav-item route="pos.index" route-pattern="pos.orders.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>'
-                            title="Sales Order" size="small" />
+                            title="Sales/POS" size="small" />
 
                         <!-- Bank Transfer Payments -->
                         @hasrole('admin')
-                        <x-nav-item route="admin.bank-transfer-payments.index" route-pattern="admin.bank-transfer-payments.*"
-                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>'
-                            title="Bank Transfer Payments" size="small">
-                            @php
-                                $pendingCount = \App\Models\BankTransferPayment::pending()->count();
-                            @endphp
-                            @if($pendingCount > 0)
-                                <span class="ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
-                                    {{ $pendingCount }}
-                                </span>
-                            @endif
-                        </x-nav-item>
+                            <x-nav-item route="admin.bank-transfer-payments.index"
+                                route-pattern="admin.bank-transfer-payments.*"
+                                icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>'
+                                title="Bank Transfer Payments" size="small">
+                                @php
+                                    $pendingCount = \App\Models\BankTransferPayment::pending()->count();
+                                @endphp
+                                @if ($pendingCount > 0)
+                                    <span
+                                        class="ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                                        {{ $pendingCount }}
+                                    </span>
+                                @endif
+                            </x-nav-item>
                         @endhasrole
 
                         <!-- Customers -->
-                        {{-- <x-nav-item route="sales.customers.index" route-pattern="sales.customers.*"
-                            :icon="App\Helpers\NavigationHelper::getIcon('customers', 'w-4 h-4 mr-3')" title="Customers" size="small" />     --}}
+                        <x-nav-item route="sales.customers.index" route-pattern="sales.customers.*" :icon="App\Helpers\NavigationHelper::getIcon('customers', 'w-4 h-4 mr-3')"
+                            title="Customers" size="small" />
 
                         <!-- Packages -->
                         {{-- <x-nav-item route="sales.packages.index" route-pattern="sales.packages.*"
@@ -169,7 +165,8 @@
                     </x-nav-item>
 
                     <!-- Purchases Section-->
-                    <x-nav-item route-pattern="purchases.purchase-orders.*|purchases.purchase-receives.*|purchases.deliveries.*"
+                    <x-nav-item
+                        route-pattern="purchases.purchase-orders.*|purchases.purchase-receives.*|purchases.deliveries.*"
                         :icon="App\Helpers\NavigationHelper::getIcon('purchases')" title="Purchases" :is-dropdown="true">
 
                         <!-- Purchase Order -->
@@ -177,15 +174,15 @@
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>'
                             title="Purchase Order" size="small" />
 
+                        <!-- Delivery -->
+                        <x-nav-item route="purchases.deliveries.index" route-pattern="purchases.deliveries.*"
+                            :icon="App\Helpers\NavigationHelper::getIcon('delivery', 'w-4 h-4 mr-3')" title="Delivery" size="small" />
+
                         <!-- Goods Receipt -->
                         <x-nav-item route="purchases.purchase-receives.index"
                             route-pattern="purchases.purchase-receives.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>'
                             title="Goods Receipt" size="small" />
-
-                        <!-- Delivery -->
-                        <x-nav-item route="purchases.deliveries.index" route-pattern="purchases.deliveries.*"
-                            :icon="App\Helpers\NavigationHelper::getIcon('delivery', 'w-4 h-4 mr-3')" title="Delivery" size="small" />
 
                         <!-- Purchase Return -->
                         {{-- <x-nav-item route="purchases.purchase-returns.index"
@@ -223,10 +220,13 @@
                         <!-- Inventory Report -->
                         <x-nav-item route="reports.inventory" route-pattern="reports.inventory" :icon="App\Helpers\NavigationHelper::getIcon('inventory_report', 'w-4 h-4 mr-3')"
                             title="Inventory Report" size="small" />
-                        
+
                         {{-- Product Movement --}}
-                        <x-nav-item route="reports.product-movement" route-pattern="reports.product-movement" :icon="App\Helpers\NavigationHelper::getIcon('product_movement_analysis', 'w-4 h-4 mr-3')"
-                            title="Product Movement" size="small" />
+                        <x-nav-item route="reports.product-movement" route-pattern="reports.product-movement"
+                            :icon="App\Helpers\NavigationHelper::getIcon(
+                                'product_movement_analysis',
+                                'w-4 h-4 mr-3',
+                            )" title="Product Movement" size="small" />
 
                         <!-- Reorder Items -->
                         <x-nav-item route="reports.reorder" route-pattern="reports.reorder" :icon="App\Helpers\NavigationHelper::getIcon('reorder_items', 'w-4 h-4 mr-3')"
@@ -263,11 +263,11 @@
                     <!-- Integration -->
                     {{-- <x-nav-item href="#" :icon="App\Helpers\NavigationHelper::getIcon('integration')" title="Integration" /> --}}
 
-                    <!-- User Management (Admin Only) -->
-                    @hasrole('admin')
+                    <!-- User Management (Super Admin and Admin Only) -->
+                    @hasanyrole('super_admin|admin')
                         <x-nav-item route="user-management.index" route-pattern="user-management.*" :icon="App\Helpers\NavigationHelper::getIcon('user_accounts_control', 'w-4 h-4 mr-3')"
-                            title="User Accounts Control" size="large" />
-                    @endhasrole
+                            title="User Management" size="large" />
+                    @endhasanyrole
 
                     <!-- Profile -->
                     {{-- <a href="{{ route('profile.edit') }}"

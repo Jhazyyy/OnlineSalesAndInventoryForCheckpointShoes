@@ -98,17 +98,17 @@ class TaxDiscount extends Model
     /**
      * Scope to get supplier applicable discounts/taxes
      */
-    public function scopeForSupplier($query)
-    {
-        return $query->whereIn('applicable_for', ['supplier', 'both']);
-    }
+    // public function scopeForSupplier($query)
+    // {
+    //     return $query->whereIn('applicable_for', ['supplier', 'both']);
+    // }
 
     /**
      * Scope to get customer applicable discounts/taxes
      */
     public function scopeForCustomer($query)
     {
-        return $query->whereIn('applicable_for', ['customer', 'both']);
+        return $query->whereIn('applicable_for', ('customer'));
     }
 
     /**

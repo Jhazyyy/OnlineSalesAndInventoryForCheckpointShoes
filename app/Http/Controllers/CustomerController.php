@@ -58,8 +58,8 @@ class CustomerController extends Controller
             'date_of_birth' => 'nullable|date|before:today',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'notes' => 'nullable|string|max:2000',
-            'status' => 'required|in:active,inactive',
-            'customer_type' => 'required|in:individual,business',
+            // 'status' => 'required|in:active,inactive',
+            // 'customer_type' => 'required|in:individual,business',
             'company_name' => 'nullable|string|max:255',
             'tax_id' => 'nullable|string|max:50',
         ]);
@@ -136,8 +136,8 @@ class CustomerController extends Controller
             'date_of_birth' => 'nullable|date|before:today',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'notes' => 'nullable|string|max:2000',
-            'status' => 'required|in:active,inactive',
-            'customer_type' => 'required|in:individual,business',
+            // 'status' => 'required|in:active,inactive',
+            // 'customer_type' => 'required|in:individual,business',
             'company_name' => 'nullable|string|max:255',
             'tax_id' => 'nullable|string|max:50',
         ]);

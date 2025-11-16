@@ -205,11 +205,11 @@
                                                                 @endif
                                                             </div>
                                                         @endif
-                                                        @if ($item->item_notes)
+                                                        {{-- @if ($item->item_notes)
                                                             <div class="text-xs text-blue-600 dark:text-blue-400 mt-1">
                                                                 <strong>Notes:</strong> {{ $item->item_notes }}
                                                             </div>
-                                                        @endif
+                                                        @endif --}}
                                                     </td>
                                                     <td
                                                         class="px-3 sm:px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
@@ -234,7 +234,7 @@
                                                     </td>
                                                     <td class="px-3 sm:px-4 lg:px-6 py-4 whitespace-nowrap">
                                                         <span
-                                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $item->condition_badge_class }}">
+                                                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $item}}">
                                                             {{ ucfirst($item->condition) }}
                                                         </span>
                                                     </td>

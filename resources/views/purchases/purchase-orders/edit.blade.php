@@ -136,7 +136,7 @@
                 </div>
 
                 <!-- Order Items -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white">Order Items</h3>
@@ -153,7 +153,7 @@
                         <div id="orderItems">
                             @foreach ($order->items as $index => $item)
                                 <!-- Existing item row -->
-                                <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-4">
+                                <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                                         <div class="md:col-span-2">
                                             <label
@@ -223,7 +223,7 @@
                 </div>
 
                 <!-- Order Summary -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Order Summary</h3>
 
@@ -262,7 +262,7 @@
                 </div>
 
                 <!-- Additional Information -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Additional Information</h3>
 
@@ -304,10 +304,10 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Form Actions -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
                     <div class="p-6">
                         <div class="flex items-center justify-end space-x-3">
                             <a href="{{ route('purchases.purchase-orders.show', $order->order_id) }}"
@@ -315,12 +315,10 @@
                                 Cancel
                             </a>
                             <x-primary-button type="submit">
-
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                                 </svg>
-
                                 {{ __('Update') }}
                             </x-primary-button>
                         </div>

@@ -4,6 +4,7 @@
  * Example Routes with Role-Based Access Control
  * 
  * This file demonstrates how to protect routes using roles and permissions
+ * Three-tier system: Super Admin, Admin, and User
  * Copy these examples to your routes/web.php file
  */
 
@@ -15,27 +16,40 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\SettingsController;
 
 // ============================================
-// ADMIN ONLY ROUTES
+// SUPER ADMIN ONLY ROUTES
 // ============================================
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('super-admin.')->group(function () {
     
-    // User Management (Admin only)
+    // User Management (Super Admin only - can manage all users including admins)
     Route::resource('users', UserController::class);
     
-    // System Settings (Admin only)
+    // System Settings (Super Admin only)
+    Route::get('/settings/advanced', [SettingsController::class, 'advanced'])->name('settings.advanced');
+    
+    // Critical Reports (Super Admin only)
+    Route::get('/reports/critical', [ReportController::class, 'critical'])->name('reports.critical');
+});
+
+// ============================================
+// ADMIN AND SUPER ADMIN ROUTES
+// ============================================
+
+Route::middleware(['auth', 'role:super_admin,admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    // System Settings (Admin and Super Admin)
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
     
-    // Advanced Reports (Admin only)
+    // Advanced Reports (Admin and Super Admin)
     Route::get('/reports/advanced', [ReportController::class, 'advanced'])->name('reports.advanced');
 });
 
 // ============================================
-// ADMIN OR USER ROUTES (Both roles)
+// ALL AUTHENTICATED USERS (Super Admin, Admin, and User)
 // ============================================
 
-Route::middleware(['auth', 'role:admin,user'])->group(function () {
+Route::middleware(['auth', 'role:super_admin,admin,user'])->group(function () {
     
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -83,10 +97,15 @@ Route::middleware(['auth', 'permission:delete sales'])
 // MIXED PROTECTION EXAMPLES
 // ============================================
 
-// Route accessible by both roles but with different views
-Route::middleware(['auth', 'role:admin,user'])->group(function () {
+// Route accessible by all authenticated users with different views based on role
+Route::middleware(['auth', 'role:super_admin,admin,user'])->group(function () {
     Route::get('/reports', function () {
         $user = auth()->user();
+        
+        // Super Admins see all critical reports
+        if ($user->hasRole('super_admin')) {
+            return view('reports.super-admin');
+        }
         
         // Admins see all reports
         if ($user->hasRole('admin')) {

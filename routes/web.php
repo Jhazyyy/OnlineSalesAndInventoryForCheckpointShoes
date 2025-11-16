@@ -706,7 +706,7 @@ Route::get('dashboard/top-purchase-items', function (Illuminate\Http\Request $re
 // CurrentUser UpdateInfo Routes 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Inventory list (separate from master data)
-    Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+    // Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -718,8 +718,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/notifications/mark-all-read', [\App\Http\Controllers\NotificationsController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     Route::delete('/notifications/{id}', [\App\Http\Controllers\NotificationsController::class, 'destroy'])->name('notifications.destroy');
     
-    // User Management Routes (Admin Only)
-    Route::middleware(['role:admin'])->group(function () {
+    // User Management Routes (Admin and Super Admin Only)
+    Route::middleware(['role:super_admin,admin'])->group(function () {
         Route::resource('user-management', UserManagementController::class);
         Route::post('user-management/{user}/toggle-status', [UserManagementController::class, 'toggleStatus'])->name('user-management.toggle-status');
         Route::post('user-management/bulk-delete', [UserManagementController::class, 'bulkDelete'])->name('user-management.bulk-delete');

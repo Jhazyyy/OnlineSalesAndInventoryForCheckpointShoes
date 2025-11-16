@@ -13,7 +13,7 @@
                             </div>
                             <div>
                                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $customer->display_name }}</h2>
-                                <div class="flex items-center space-x-4 mt-1">
+                                {{-- <div class="flex items-center space-x-4 mt-1">
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $customer->status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                         {{ ucfirst($customer->status) }}
                                     </span>
@@ -25,15 +25,15 @@
                                             VIP Customer
                                         </span>
                                     @endif
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
                             <form method="POST" action="{{ route('sales.customers.toggle-status', $customer) }}" class="inline-block">
                                 @csrf
-                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                {{-- <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     {{ $customer->status === 'active' ? 'Deactivate' : 'Activate' }}
-                                </button>
+                                </button> --}}
                             </form>
                             <a href="{{ route('sales.customers.edit', $customer) }}" 
                                class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:bg-yellow-700 active:bg-yellow-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
@@ -86,7 +86,7 @@
                                         @endif
                                     </p>
                                 </div>
-                                <div>
+                                {{-- <div>
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Age</label>
                                     <p class="mt-1 text-sm text-gray-900 dark:text-white">
                                         @if($customer->date_of_birth)
@@ -96,7 +96,7 @@
                                             <span class="text-gray-400">Date of birth not provided</span>
                                         @endif
                                     </p>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>
@@ -121,7 +121,7 @@
                     @endif
 
                     <!-- Address Information -->
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Address Information</h3>
                             <div class="grid grid-cols-1 gap-4">
@@ -140,7 +140,7 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <!-- Notes -->
                     @if($customer->notes)
@@ -153,7 +153,7 @@
                     @endif
 
                     <!-- Recent Sales/Orders would go here -->
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Orders</h3>
                             <div class="text-center py-8">
@@ -164,13 +164,13 @@
                                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Orders will appear here when the customer makes purchases.</p>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
 
                 <!-- Right Column - Statistics and Quick Info -->
                 <div class="space-y-6">
                     <!-- Customer Statistics -->
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Customer Statistics</h3>
                             <div class="space-y-4">
@@ -202,7 +202,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <!-- Quick Actions -->
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -225,7 +225,7 @@
                                         Call Customer
                                     </a>
                                 @endif
-                                <a href="{{ route('sales.orders.create') }}" class="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
+                                <a href="{{ route('pos.create') }}" class="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                     </svg>
@@ -236,7 +236,7 @@
                     </div>
 
                     <!-- Customer Timeline -->
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Activity Timeline</h3>
                             <div class="flow-root">
@@ -292,7 +292,7 @@
                                 </ul>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>

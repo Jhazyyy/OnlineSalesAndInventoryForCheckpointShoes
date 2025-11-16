@@ -171,7 +171,7 @@
             <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 font-crimson harvard-red-text">
                 Features
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
                 <div class="card bg-white shadow-xl border border-gray-200 hover:shadow-2xl transition-shadow">
                     <figure class="px-10 pt-10">
                         <div class="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center">
@@ -186,7 +186,7 @@
                     </div>
                 </div>
 
-                <div class="card bg-white shadow-xl border border-gray-200 hover:shadow-2xl transition-shadow">
+                {{-- <div class="card bg-white shadow-xl border border-gray-200 hover:shadow-2xl transition-shadow">
                     <figure class="px-10 pt-10">
                         <div class="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center">
                             <i class="fas fa-group-arrows-rotate text-4xl harvard-red-text"></i>
@@ -199,7 +199,7 @@
                             TikTok, making it simple to manage both your online and in-store stock.
                         </p>
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="card bg-white shadow-xl border border-gray-200 hover:shadow-2xl transition-shadow">
                     <figure class="px-10 pt-10">
@@ -462,7 +462,7 @@
             <!-- Modal Actions -->
             <div class="modal-action">
                 <form method="dialog">
-                    <button class="btn btn-primary">Close</button>
+                    <button class="btn btn-primary bg-gray-950">Close</button>
                 </form>
             </div>
         </div>

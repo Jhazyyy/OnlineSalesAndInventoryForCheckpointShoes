@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use App\Models\Notification;
 use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseReceive;
 use App\Models\PurchaseReceiveItem;
 use App\Models\StockMovement;
 use App\Models\Supplier;
-use App\Models\Notification;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -74,7 +74,7 @@ class PurchaseReceiveService
 
     /**
      * Get filter options for purchase receive listing.
-     * 
+     *
      * WORKFLOW NOTE: Receives can ONLY be created for:
      * 1. Orders that are 'ordered' (still expecting goods)
      * 2. A delivery MUST exist for the order (delivery is mandatory)
@@ -115,7 +115,7 @@ class PurchaseReceiveService
 
     /**
      * Create a new purchase receive.
-     * 
+     *
      * WORKFLOW:
      * 1. Can be created directly from a PO (delivery_id optional)
      * 2. Can be created from a delivery (delivery_id provided)
@@ -150,7 +150,7 @@ class PurchaseReceiveService
             \App\Models\SupplierActivityLog::log(
                 supplierId: $receive->supplier_id,
                 activityType: 'purchase_order_received',
-                description: "Goods Receipt {$receive->receive_number} created for Purchase Order " . ($receive->purchaseOrder->order_number ?? 'N/A'),
+                description: "Goods Receipt {$receive->receive_number} created for Purchase Order ".($receive->purchaseOrder->order_number ?? 'N/A'),
                 relatedId: $receive->receive_id,
                 relatedType: 'PurchaseReceive',
                 amount: $receive->total_amount_received,
@@ -227,9 +227,12 @@ class PurchaseReceiveService
             $condition = $itemData['condition'] ?? 'good';
             if ($condition === 'good') {
                 // If quantities don't match, set condition to partial
-                if ($quantityReceived != $quantityExpected) {
-                    $condition = 'partial';
-                } else {
+                if ($quantityReceived < $quantityExpected) {
+                    $condition = 'shortage';
+                } elseif ($quantityReceived > $quantityExpected) {
+                   $condition = 'excess';
+                }
+                else {
                     $condition = 'good';
                 }
             }
@@ -259,16 +262,16 @@ class PurchaseReceiveService
                     'last_supplier_id' => $receive->supplier_id,
                     'last_received_at' => now(),
                 ];
-                
+
                 // Update product master price only if flag is set and receive is successful
                 if ($updateProductPrice && $receive->status === 'received') {
                     $updateData['price'] = $unitPrice;
                 }
-                
+
                 $product->update($updateData);
 
                 // If linked to a PO item, sync received quantity there too
-                if (!empty($itemData['purchase_order_item_id'])) {
+                if (! empty($itemData['purchase_order_item_id'])) {
                     $poItem = \App\Models\PurchaseOrderItem::find($itemData['purchase_order_item_id']);
                     if ($poItem) {
                         $before = $poItem->quantity_received;
@@ -374,7 +377,7 @@ class PurchaseReceiveService
 
     /**
      * Delete a purchase receive.
-     * 
+     *
      * This method reverses all changes made when the receive was created:
      * 1. Reverses inventory changes
      * 2. Reverses PO item quantity_received
@@ -426,7 +429,7 @@ class PurchaseReceiveService
 
         } catch (\Exception $e) {
             DB::rollBack();
-            throw new \Exception("Failed to delete purchase receive: " . $e->getMessage());
+            throw new \Exception('Failed to delete purchase receive: '.$e->getMessage());
         }
     }
 
@@ -445,7 +448,7 @@ class PurchaseReceiveService
         $receive->update(['status' => $status]);
 
         // Create notification for status change
-        $level = match($status) {
+        $level = match ($status) {
             'received' => 'success',
             'damaged' => 'warning',
             'cancelled' => 'warning',
@@ -508,28 +511,24 @@ class PurchaseReceiveService
 
     /**
      * Short close a purchase receive.
-     * 
+     *
      * This allows closing a purchase order when the supplier cannot deliver
      * the full expected quantity. The receive is marked as complete with
      * the quantities that were actually received.
-     * 
+     *
      * WORKFLOW:
      * 1. Mark the receive as short closed with reason
      * 2. Mark all items with shortfall as short closed
      * 3. Update the related Purchase Order status to 'received' (closed)
      * 4. Update PO items to reflect that no more items are expected
      * 5. Log the activity
-     * 
-     * @param PurchaseReceive $receive
-     * @param string $reason
-     * @param int|null $userId
-     * @return PurchaseReceive
+     *
      * @throws \Exception
      */
     public function shortCloseReceive(PurchaseReceive $receive, string $reason, ?int $userId = null): PurchaseReceive
     {
         // Validate that receive can be short closed
-        if (!$receive->canBeShortClosed()) {
+        if (! $receive->canBeShortClosed()) {
             throw new \Exception('This purchase receive cannot be short closed. It may already be fully received or already short closed.');
         }
 
@@ -559,7 +558,7 @@ class PurchaseReceiveService
             // Update the related Purchase Order
             if ($receive->purchase_order_id) {
                 $purchaseOrder = PurchaseOrder::with(['items', 'deliveries'])->find($receive->purchase_order_id);
-                
+
                 if ($purchaseOrder) {
                     // Note: Purchase Order status remains 'ordered'
                     // We only mark the receive as short-closed and complete the deliveries
@@ -571,7 +570,7 @@ class PurchaseReceiveService
                         $receiveItem = $receive->items()
                             ->where('purchase_order_item_id', $poItem->item_id)
                             ->first();
-                        
+
                         if ($receiveItem) {
                             // Set quantity_ordered to match what was actually received
                             // This effectively closes the PO item
@@ -586,16 +585,16 @@ class PurchaseReceiveService
                     if ($purchaseOrder->deliveries && $purchaseOrder->deliveries->count() > 0) {
                         foreach ($purchaseOrder->deliveries as $delivery) {
                             // Only update deliveries that are not yet delivered or cancelled
-                            if (!in_array($delivery->status, ['delivered', 'cancelled', 'failed'])) {
+                            if (! in_array($delivery->status, ['delivered', 'cancelled', 'failed'])) {
                                 $oldStatus = $delivery->status;
-                                
+
                                 // Mark delivery as delivered since PO is short-closed
                                 $delivery->update([
                                     'status' => 'delivered',
                                     'actual_delivery_date' => now()->toDateString(),
                                     'delivered_at' => now(),
-                                    'delivery_notes' => ($delivery->delivery_notes ? $delivery->delivery_notes . "\n\n" : '') . 
-                                        "Auto-completed due to purchase order short close. Original status: {$oldStatus}. " .
+                                    'delivery_notes' => ($delivery->delivery_notes ? $delivery->delivery_notes."\n\n" : '').
+                                        "Auto-completed due to purchase order short close. Original status: {$oldStatus}. ".
                                         "Reason: {$reason}",
                                 ]);
 
@@ -648,7 +647,7 @@ class PurchaseReceiveService
 
         } catch (\Exception $e) {
             DB::rollBack();
-            throw new \Exception("Failed to short close purchase receive: " . $e->getMessage());
+            throw new \Exception('Failed to short close purchase receive: '.$e->getMessage());
         }
     }
 }

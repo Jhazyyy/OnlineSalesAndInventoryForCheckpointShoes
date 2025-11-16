@@ -23,7 +23,7 @@
                                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Edit: {{ $user->name }}
                                 </h2>
                                 <p class="text-gray-600 dark:text-gray-400">
-                                    {{ ucfirst($user->primary_role) }}
+                                    {{ $user->primary_role === 'super_admin' ? 'Super Admin' : ucfirst(str_replace('_', ' ', $user->primary_role)) }}
                                     @php
                                         // Determine the correct badge based on both is_active and status
                                         $badgeClass = 'bg-gray-100 text-gray-800';
@@ -231,12 +231,10 @@
                                     <select id="role" name="role" required
                                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('role') border-red-500 @enderror">
                                         @foreach ($roles as $role)
-                                            @if ($role !== 'admin')
-                                                <option value="{{ $role }}"
-                                                    {{ old('role', $user->primary_role) == $role ? 'selected' : '' }}>
-                                                    {{ ucfirst($role) }}
-                                                </option>
-                                            @endif
+                                            <option value="{{ $role }}"
+                                                {{ old('role', $user->primary_role) == $role ? 'selected' : '' }}>
+                                                {{ $role === 'super_admin' ? 'Super Admin' : ucfirst(str_replace('_', ' ', $role)) }}
+                                            </option>
                                         @endforeach
                                     </select>
                                     @error('role')
@@ -278,7 +276,7 @@
                         </div>
 
                         <!-- Work Information Section -->
-                        <div class="mb-6">
+                        {{-- <div class="mb-6">
                             <h3
                                 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
                                 Work Information
@@ -328,7 +326,7 @@
                                     @enderror
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Form Actions -->
                         <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">

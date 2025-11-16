@@ -55,13 +55,14 @@ class UserManagementController extends Controller
             'active' => User::active()->count(),
             'inactive' => User::where('status', 'inactive')->count(),
             'suspended' => User::where('status', 'suspended')->count(),
+            'super_admins' => User::byRole('super_admin')->count(),
             'admins' => User::byRole('admin')->count(),
             'users' => User::byRole('user')->count(),
             'new_this_month' => User::whereMonth('created_at', now()->month)->count(),
         ];
 
         // Role and status options for filters
-        $roles = ['admin', 'user'];
+        $roles = ['super_admin', 'admin', 'user'];
         $statuses = ['active', 'inactive', 'suspended'];
 
         return view('user-management.index', compact('users', 'stats', 'roles', 'statuses'));
@@ -72,7 +73,18 @@ class UserManagementController extends Controller
      */
     public function create(): View
     {
-        $roles = ['admin', 'user'];
+        $currentUser = Auth::user();
+        
+        // Super admin can create any role
+        // Admin can create admin and user roles (not super_admin)
+        if ($currentUser->hasRole('super_admin')) {
+            $roles = ['super_admin', 'admin', 'user'];
+        } elseif ($currentUser->hasRole('admin')) {
+            $roles = ['admin', 'user'];
+        } else {
+            $roles = ['user'];
+        }
+        
         $statuses = ['active', 'inactive', 'suspended'];
         return view('user-management.create', compact('roles', 'statuses'));
     }
@@ -82,6 +94,17 @@ class UserManagementController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $currentUser = Auth::user();
+        
+        // Determine allowed roles based on current user
+        if ($currentUser->hasRole('super_admin')) {
+            $allowedRoles = ['super_admin', 'admin', 'user'];
+        } elseif ($currentUser->hasRole('admin')) {
+            $allowedRoles = ['admin', 'user'];
+        } else {
+            $allowedRoles = ['user'];
+        }
+        
         $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
@@ -89,7 +112,7 @@ class UserManagementController extends Controller
             'username' => ['nullable', 'string', 'max:255', 'unique:users'],
             'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'in:user'],  // Only 'user' role allowed
+            'role' => ['required', Rule::in($allowedRoles)],
             'status' => ['required', 'in:active,inactive,suspended'],
             'department' => ['nullable', 'string', 'max:255'],
             'position' => ['nullable', 'string', 'max:255'],
@@ -169,14 +192,29 @@ class UserManagementController extends Controller
     public function edit($userManagement): View|RedirectResponse
     {
         $user = User::findOrFail($userManagement);
+        $currentUser = Auth::user();
         
-        // Prevent editing admin users
-        if ($user->hasRole('admin')) {
+        // Super admin cannot be edited by anyone
+        if ($user->hasRole('super_admin') && !$currentUser->hasRole('super_admin')) {
             return redirect()->route('user-management.index')
-                ->with('error', 'Admin users cannot be edited through this interface.');
+                ->with('error', 'Super admin users cannot be edited.');
         }
         
-        $roles = ['admin', 'user'];
+        // Admin users can only be edited by super admin
+        if ($user->hasRole('admin') && !$currentUser->hasRole('super_admin')) {
+            return redirect()->route('user-management.index')
+                ->with('error', 'Admin users can only be edited by super admin.');
+        }
+        
+        // Determine available roles based on current user
+        if ($currentUser->hasRole('super_admin')) {
+            $roles = ['super_admin', 'admin', 'user'];
+        } elseif ($currentUser->hasRole('admin')) {
+            $roles = ['admin', 'user'];
+        } else {
+            $roles = ['user'];
+        }
+        
         $statuses = ['active', 'inactive', 'suspended'];
         return view('user-management.edit', compact('user', 'roles', 'statuses'));
     }
@@ -187,11 +225,27 @@ class UserManagementController extends Controller
     public function update(Request $request, $userManagement): RedirectResponse
     {
         $user = User::findOrFail($userManagement);
+        $currentUser = Auth::user();
         
-        // Prevent editing admin users
-        if ($user->hasRole('admin')) {
+        // Super admin cannot be edited by anyone except themselves
+        if ($user->hasRole('super_admin') && !$currentUser->hasRole('super_admin')) {
             return redirect()->route('user-management.index')
-                ->with('error', 'Admin users cannot be edited through this interface.');
+                ->with('error', 'Super admin users cannot be edited.');
+        }
+        
+        // Admin users can only be edited by super admin
+        if ($user->hasRole('admin') && !$currentUser->hasRole('super_admin')) {
+            return redirect()->route('user-management.index')
+                ->with('error', 'Admin users can only be edited by super admin.');
+        }
+        
+        // Determine allowed roles based on current user
+        if ($currentUser->hasRole('super_admin')) {
+            $allowedRoles = ['super_admin', 'admin', 'user'];
+        } elseif ($currentUser->hasRole('admin')) {
+            $allowedRoles = ['admin', 'user'];
+        } else {
+            $allowedRoles = ['user'];
         }
         
         $request->validate([
@@ -201,7 +255,7 @@ class UserManagementController extends Controller
             'username' => ['nullable', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
             'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'in:user'],  // Only 'user' role allowed
+            'role' => ['required', Rule::in($allowedRoles)],
             'status' => ['required', 'in:active,inactive,suspended'],
             'department' => ['nullable', 'string', 'max:255'],
             'position' => ['nullable', 'string', 'max:255'],
@@ -255,6 +309,7 @@ class UserManagementController extends Controller
     public function destroy($userManagement): RedirectResponse
     {
         $user = User::findOrFail($userManagement);
+        $currentUser = Auth::user();
         
         // Prevent deleting the currently authenticated user
         if ($user->id === Auth::id()) {
@@ -262,10 +317,16 @@ class UserManagementController extends Controller
                 ->with('error', 'You cannot delete your own account.');
         }
 
-        // Prevent deleting admin users
-        if ($user->hasRole('admin')) {
+        // Prevent deleting super admin users
+        if ($user->hasRole('super_admin')) {
             return redirect()->route('user-management.index')
-                ->with('error', 'You cannot delete admin users.');
+                ->with('error', 'You cannot delete super admin users.');
+        }
+        
+        // Only super admin can delete admin users
+        if ($user->hasRole('admin') && !$currentUser->hasRole('super_admin')) {
+            return redirect()->route('user-management.index')
+                ->with('error', 'Only super admin can delete admin users.');
         }
 
         // Delete profile photo if exists
@@ -279,22 +340,6 @@ class UserManagementController extends Controller
             ->with('success', 'User deleted successfully.');
     }
 
-    /**
-     * Toggle user status
-     */
-    public function toggleStatus($id): RedirectResponse
-    {
-        $user = User::findOrFail($id);
-        
-        $user->update([
-            'is_active' => !$user->is_active,
-        ]);
-
-        $status = $user->is_active ? 'activated' : 'deactivated';
-        
-        return redirect()->back()
-            ->with('success', "User {$status} successfully.");
-    }
 
     /**
      * Bulk delete users

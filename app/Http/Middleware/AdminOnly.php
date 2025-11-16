@@ -25,8 +25,8 @@ class AdminOnly
                 ->with('error', 'Please login to access this page.');
         }
 
-        // Check if user has admin role
-        if (!$request->user()->hasRole('admin')) {
+        // Check if user has super_admin or admin role
+        if (!$request->user()->hasAnyRole(['super_admin', 'admin'])) {
             abort(403, 'Access denied. Admin privileges required.');
         }
 

@@ -30,22 +30,24 @@
                         @csrf
                         @method('PUT')
 
-                        <!-- Product Name -->
-                        <div>
-                            <label for="product_name"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Product Name <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" id="product_name" name="product_name"
-                                value="{{ old('product_name', $product->product_name) }}" required
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('product_name') border-red-500 @enderror">
-                            @error('product_name')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+
 
                         <!-- SKU, Barcode Row -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                            <!-- Product Name -->
+                            <div>
+                                <label for="product_name"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Product Name <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="product_name" name="product_name"
+                                    value="{{ old('product_name', $product->product_name) }}" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('product_name') border-red-500 @enderror">
+                                @error('product_name')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
                             <!-- SKU -->
                             <div>
                                 <label for="sku"
@@ -53,8 +55,7 @@
                                     SKU
                                 </label>
                                 <input type="text" id="sku" name="sku"
-                                    value="{{ old('sku', $product->sku) }}"
-                                    placeholder="e.g., SHOE-001"
+                                    value="{{ old('sku', $product->sku) }}" placeholder="e.g., SHOE-001"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('sku') border-red-500 @enderror">
                                 @error('sku')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -62,7 +63,7 @@
                             </div>
 
                             <!-- Barcode -->
-                            <div>
+                            {{-- <div>
                                 <label for="barcode"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Barcode
@@ -74,11 +75,11 @@
                                 @error('barcode')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
-                            </div>
+                            </div> --}}
                         </div>
 
                         <!-- Property Name and Value Row -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Property Name -->
                             <div>
                                 <label for="property_name"
@@ -108,7 +109,7 @@
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Brand and Category Row -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -197,7 +198,7 @@
                             <div>
                                 <label for="price"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Base Price (Peso) <span class="text-red-500">*</span>
+                                    Price<span class="text-red-500">*</span>
                                 </label>
                                 <div class="mt-1 relative rounded-md shadow-sm">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -212,24 +213,30 @@
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
-                            
                             <!-- Current Stock (Read-only Display) -->
-                            <div class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                            {{-- <div
+                                class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                                 <div class="flex items-start">
-                                    <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                    <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mr-2 mt-0.5" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                     </svg>
                                     <div class="flex-1">
-                                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Current Stock Quantity</label>
+                                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Current
+                                            Stock Quantity</label>
                                         <div class="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">
                                             {{ number_format($product->quantity) }}
                                         </div>
                                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                            Managed via <a href="{{ route('inventory.product_stock_adjustment.index') }}" class="text-indigo-600 dark:text-indigo-400 hover:underline">Stock Movements</a>
+                                            Managed via <a
+                                                href="{{ route('inventory.product_stock_adjustment.index') }}"
+                                                class="text-indigo-600 dark:text-indigo-400 hover:underline">Stock
+                                                Movements</a>
                                         </p>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-rows-1 gap-6">

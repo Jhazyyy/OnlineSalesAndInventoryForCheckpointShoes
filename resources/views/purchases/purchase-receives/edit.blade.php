@@ -495,6 +495,8 @@
                         <option value="damaged">Damaged</option>
                         <option value="expired">Expired</option>
                         <option value="partial">Partial</option>
+                        <option value="shortage">Shortage</option>
+                        <option value="excess">Excess</option>
                     </select>
                     <textarea name="items[${index}][item_notes]" rows="1" placeholder="Item notes..." class="block w-full text-xs rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
                 </div>

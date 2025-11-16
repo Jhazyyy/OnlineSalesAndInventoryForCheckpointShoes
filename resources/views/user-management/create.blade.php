@@ -183,12 +183,10 @@
                                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('role') border-red-500 @enderror">
                                         <option value="">Select Role</option>
                                         @foreach ($roles as $role)
-                                            @if ($role !== 'admin')
-                                                <option value="{{ $role }}"
-                                                    {{ old('role') == $role ? 'selected' : '' }}>
-                                                    {{ ucfirst($role) }}
-                                                </option>
-                                            @endif
+                                            <option value="{{ $role }}"
+                                                {{ old('role') == $role ? 'selected' : '' }}>
+                                                {{ $role === 'super_admin' ? 'Super Admin' : ucfirst(str_replace('_', ' ', $role)) }}
+                                            </option>
                                         @endforeach
                                     </select>
                                     @error('role')
@@ -231,7 +229,7 @@
                         </div>
 
                         <!-- Work Information Section -->
-                        <div class="mb-6">
+                        {{-- <div class="mb-6">
                             <h3
                                 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
                                 Work Information
@@ -281,7 +279,7 @@
                                     @enderror
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Form Actions -->
                         <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">

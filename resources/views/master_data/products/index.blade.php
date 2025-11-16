@@ -1,27 +1,6 @@
 <x-app-layout>
     <div class="py-6">
         <div class="w-full mx-auto sm:px-6 lg:px-8">
-
-            <!-- Info Banner about Stock Management -->
-            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
-                <div class="flex items-start">
-                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400 mr-3 mt-0.5" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-
-                    <div class="flex-1">
-                        <h3 class="text-sm font-medium text-blue-800 dark:text-blue-300">Inventory Management</h3>
-                        <p class="text-sm text-blue-700 dark:text-blue-400 mt-1">
-                            Stock quantities are managed through <strong>Stock Movements</strong>.
-                            To adjust inventory, use <a href="{{ route('inventory.product_stock_adjustment.index') }}"
-                                class="underline hover:text-blue-900 dark:hover:text-blue-200">Stock Adjustments</a>.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
             <!-- Header Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
@@ -48,7 +27,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <form method="GET" action="{{ route('master_data.products.index') }}" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <!-- Search -->
                             <div>
                                 <label for="search"
@@ -110,7 +89,7 @@
                             </div>
 
                             <!-- Price Range -->
-                            <div class="flex space-x-2">
+                            {{-- <div class="flex space-x-2">
                                 <div class="flex-1">
                                     <label for="min_price"
                                         class="block text-sm font-medium text-gray-700 dark:text-gray-300">Min
@@ -127,7 +106,7 @@
                                         value="{{ request('max_price') }}" step="0.01" placeholder="999.99"
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
 
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -223,16 +202,16 @@
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a
                                                 href="{{ request()->fullUrlWithQuery(['sort' => 'price', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
-                                                Base Price
+                                                Price
                                                 @if (request('sort') === 'price')
                                                     <span
                                                         class="ml-1">{{ request('order') === 'asc' ? '↑' : '↓' }}</span>
                                                 @endif
                                             </a>
                                         </th>
-                                        {{-- <th
+                                        <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Last Supplier</th> --}}
+                                            Last Supplier</th>
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             Status</th>
@@ -290,7 +269,7 @@
                                                 class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                                 ₱{{ number_format($product->price, 2) }}</td>
                                             {{-- Last Supplier --}}
-                                            {{-- <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="px-6 py-4 whitespace-nowrap">
                                                 @if ($product->lastSupplier)
                                                     <div class="text-sm font-medium text-gray-900 dark:text-white">
                                                         {{ $product->lastSupplier->supplier_name ?? $product->lastSupplier->name }}
@@ -302,7 +281,7 @@
                                                 @else
                                                     <span class="text-sm text-gray-500 dark:text-gray-400">-</span>
                                                 @endif
-                                            </td> --}}
+                                            </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 @if ($product->quantity <= 0)
                                                     <span

@@ -35,11 +35,11 @@
             @endif
 
             <!-- Customer Form -->
-            <form action="{{ route('sales.customers.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <form action="{{ route('sales.customers.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <!-- Customer Type Selection -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Customer Type</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -73,10 +73,10 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Basic Information -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Basic Information</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -115,14 +115,14 @@
                             </div>
 
                             <!-- Status -->
-                            <div>
+                            {{-- <div>
                                 <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
                                 <select id="status" name="status" 
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>Active</option>
                                     <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                                 </select>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>
@@ -145,7 +145,7 @@
                 </div>
 
                 <!-- Address Information -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Address Information</h3>
                         <div class="grid grid-cols-1 gap-4">
@@ -187,10 +187,10 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Additional Information -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Additional Information</h3>
                         <div>
@@ -202,7 +202,7 @@
                 </div>
 
                 <!-- Form Actions -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
                     <div class="p-6">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3">
                             <a href="{{ route('sales.customers.index') }}" 

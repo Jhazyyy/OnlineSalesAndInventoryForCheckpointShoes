@@ -186,7 +186,7 @@
 
                         <!-- Low Stock Products -->
                         <div class="bg-gray-50 dark:bg-gray-700 rounded-lg shadow p-6">
-                            <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Low Stock Alert</h3>
+                            <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Low Stock</h3>
                             <div class="space-y-2 max-h-96 overflow-y-auto">
                                 @forelse($report['low_stock_products'] ?? [] as $product)
                                 <div class="flex items-center justify-between p-2 hover:bg-white dark:hover:bg-gray-800 rounded transition border-l-4 border-orange-500">

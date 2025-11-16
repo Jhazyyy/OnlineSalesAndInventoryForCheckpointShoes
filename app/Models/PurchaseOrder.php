@@ -53,7 +53,6 @@ class PurchaseOrder extends Model
         'billing_address',
         'notes',
         'internal_notes',
-        'reference_number',
     ];
 
     /**
