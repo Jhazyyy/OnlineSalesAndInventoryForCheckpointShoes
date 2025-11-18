@@ -22,8 +22,16 @@ class StatsCards extends Component
     {
         return [
             'total_products' => Product::count(),
-            // Use quantity column as per the rest of the app
-            'low_stock_products' => Product::where('quantity', '>', 0)->where('quantity', '<=', 10)->count(),
+            // Use product-specific reorder levels or system default
+            'low_stock_products' => Product::where(function ($query) {
+                $query->whereColumn('quantity', '<=', 'reorder_level')
+                      ->whereNotNull('reorder_level')
+                      ->where('quantity', '>', 0);
+            })->orWhere(function ($query) {
+                $query->whereNull('reorder_level')
+                      ->where('quantity', '>', 0)
+                      ->where('quantity', '<=', lowStockThreshold());
+            })->count(),
             'out_of_stock' => Product::where('quantity', '<=', 0)->count(),
             'total_value' => (float) Product::select(DB::raw('SUM(quantity * price) as total'))
                 ->value('total') ?? 0,

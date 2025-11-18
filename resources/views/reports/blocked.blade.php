@@ -202,7 +202,7 @@
             </div>
 
             <!-- Purchase Order Master -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-4 sm:p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Purchase Order Master
@@ -266,7 +266,7 @@
                         </table>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
         </div>
     </div>

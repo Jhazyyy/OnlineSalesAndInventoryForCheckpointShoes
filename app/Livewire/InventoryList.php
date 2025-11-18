@@ -52,11 +52,16 @@ class InventoryList extends Component
                 });
             })
             ->when($this->stockFilter === 'low', function ($query) {
-                $query->where('quantity_on_hand', '>', 0)
-                    ->where('quantity_on_hand', '<=', 10);
+                $query->whereHas('product', function ($q) {
+                    $q->where('quantity', '>', 0)
+                      ->whereColumn('quantity', '<=', 'reorder_level')
+                      ->whereNotNull('reorder_level');
+                });
             })
             ->when($this->stockFilter === 'out', function ($query) {
-                $query->where('quantity_on_hand', '<=', 0);
+                $query->whereHas('product', function ($q) {
+                    $q->where('quantity', '<=', 0);
+                });
             })
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate($this->perPage);

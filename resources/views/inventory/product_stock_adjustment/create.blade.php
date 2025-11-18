@@ -90,7 +90,7 @@
                         </div>
 
                         <!-- Unit Cost -->
-                        <div class="col-span-1">
+                        {{-- <div class="col-span-1">
                             <label for="unit_cost"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Unit Cost (Optional)
@@ -110,7 +110,7 @@
                             @error('unit_cost')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-                        </div>
+                        </div> --}}
 
                         <!-- Reason -->
                         <div class="col-span-1 md:col-span-2">

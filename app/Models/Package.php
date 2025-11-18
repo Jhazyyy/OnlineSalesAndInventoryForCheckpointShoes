@@ -249,13 +249,20 @@ class Package extends Model
     }
 
     /**
-     * Get stock status badge color.
+     * Get stock status badge color using industry-standard formula.
      */
     public function getStockStatusColorAttribute(): string
     {
-        if ($this->quantity <= 0) {
+        $available = $this->quantity;
+        $reorderLevel = 10; // Default reorder level for packages
+        $criticalLevel = $reorderLevel * 0.50;
+        $lowLevel = $reorderLevel;
+        
+        if ($available <= 0) {
             return 'red';
-        } elseif ($this->quantity <= 5) {
+        } elseif ($available <= $criticalLevel) {
+            return 'red';
+        } elseif ($available <= $lowLevel) {
             return 'yellow';
         } else {
             return 'green';
@@ -263,14 +270,21 @@ class Package extends Model
     }
 
     /**
-     * Get stock status text.
+     * Get stock status text using industry-standard formula.
      */
     public function getStockStatusTextAttribute(): string
     {
-        if ($this->quantity <= 0) {
+        $available = $this->quantity;
+        $reorderLevel = 10; // Default reorder level for packages
+        $criticalLevel = $reorderLevel * 0.50;
+        $lowLevel = $reorderLevel;
+        
+        if ($available <= 0) {
             return 'Out of Stock';
-        } elseif ($this->quantity <= 5) {
-            return 'Low Stock';
+        } elseif ($available <= $criticalLevel) {
+            return 'Critical';
+        } elseif ($available <= $lowLevel) {
+            return 'Low';
         } else {
             return 'In Stock';
         }

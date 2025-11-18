@@ -77,24 +77,47 @@
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Stock Status</h3>
                             <div class="mt-2 flex flex-wrap gap-2">
-                                @forelse($thresholdData['stock_status'] as $status)
-                                    @php
-                                        $map = [
-                                            'out_of_stock' => 'bg-red-100 text-red-800',
-                                            'critical_stock' => 'bg-red-100 text-red-800',
-                                            'low_stock' => 'bg-yellow-100 text-yellow-800',
-                                            'overstock' => 'bg-blue-100 text-blue-800',
-                                            'reorder_needed' => 'bg-orange-100 text-orange-800',
-                                        ];
-                                    @endphp
-                                    <span
-                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $map[$status['type']] ?? 'bg-green-100 text-green-800' }}">
-                                        {{ ucwords(str_replace('_', ' ', $status['type'])) }}
+                                @php
+                                    $stockStatus = $thresholdData['stock_status'];
+                                    $statusMap = [
+                                        'Out of Stock' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+                                        'Critical' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+                                        'Low' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                                        'In Stock' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                                    ];
+                                    $statusClass = $statusMap[$stockStatus['status']] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+                                @endphp
+                                <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full {{ $statusClass }}">
+                                    {{ $stockStatus['status'] }}
+                                </span>
+                                
+                                @if($thresholdData['reorder_needed'])
+                                    <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                                        Reorder Needed
                                     </span>
-                                @empty
-                                    <span
-                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Normal</span>
-                                @endforelse
+                                @endif
+                                
+                                @if($product->quantity > ($product->ceiling_level ?? PHP_INT_MAX))
+                                    <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                        Overstocked
+                                    </span>
+                                @endif
+                            </div>
+                            
+                            <!-- Stock Level Progress Bar -->
+                            <div class="mt-4">
+                                <div class="flex justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                                    <span>Stock Level</span>
+                                    <span>{{ number_format($stockStatus['percentage'], 1) }}%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                                    <div class="h-2.5 rounded-full transition-all {{ $stockStatus['status'] === 'Out of Stock' ? 'bg-red-600' : ($stockStatus['status'] === 'Critical' ? 'bg-red-500' : ($stockStatus['status'] === 'Low' ? 'bg-yellow-500' : 'bg-green-500')) }}" 
+                                         style="width: {{ min(100, $stockStatus['percentage']) }}%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    <span>0</span>
+                                    <span>{{ number_format($stockStatus['reorder_level']) }}</span>
+                                </div>
                             </div>
                         </div>
 

@@ -739,7 +739,7 @@ class InventoryThresholdService
             // Data
             foreach ($products as $product) {
                 $stockStatus = $product->getStockStatus();
-                $statusText = !empty($stockStatus) ? $stockStatus[0]['type'] : 'normal';
+                $statusText = $stockStatus['status'] ?? 'In Stock';
                 
                 fputcsv($file, [
                     $product->product_id,

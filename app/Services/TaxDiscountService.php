@@ -93,7 +93,16 @@ class TaxDiscountService
         
         // Check if any order item matches the applicable categories or products
         $applicableCategories = $taxDiscount->applicable_categories ?? [];
+        if (is_string($applicableCategories)) {
+            $applicableCategories = json_decode($applicableCategories, true) ?? [];
+        }
+        $applicableCategories = is_array($applicableCategories) ? $applicableCategories : [];
+        
         $applicableProducts = $taxDiscount->applicable_products ?? [];
+        if (is_string($applicableProducts)) {
+            $applicableProducts = json_decode($applicableProducts, true) ?? [];
+        }
+        $applicableProducts = is_array($applicableProducts) ? $applicableProducts : [];
         
         foreach ($items as $item) {
             // Get the product

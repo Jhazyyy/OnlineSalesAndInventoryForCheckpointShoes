@@ -413,7 +413,7 @@ class ProductController extends Controller
      */
     public function getAlertsData()
     {
-        $lowStockProducts = Product::needsReordering(10);
+        $lowStockProducts = Product::needsReordering()->get();
         $outOfStockProducts = Product::outOfStock();
 
         return response()->json([

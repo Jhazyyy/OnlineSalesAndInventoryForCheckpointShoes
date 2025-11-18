@@ -108,7 +108,7 @@ class TaxDiscount extends Model
      */
     public function scopeForCustomer($query)
     {
-        return $query->whereIn('applicable_for', ('customer'));
+        return $query->whereIn('applicable_for', ['customer', 'both']);
     }
 
     /**

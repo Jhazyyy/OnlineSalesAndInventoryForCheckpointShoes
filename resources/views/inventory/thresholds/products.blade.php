@@ -134,24 +134,16 @@
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @php
                                             $statusArray = $product->getStockStatus();
-                                            $primaryStatus = !empty($statusArray) ? $statusArray[0]['type'] : 'good';
+                                            $statusClass = $statusArray['status_class'] ?? 'green';
+                                            $statusText = $statusArray['status'] ?? 'In Stock';
                                             $statusColors = [
-                                                'critical_stock' => 'bg-red-100 text-red-800',
-                                                'low_stock' => 'bg-yellow-100 text-yellow-800',
-                                                'out_of_stock' => 'bg-red-100 text-red-800',
-                                                'overstock' => 'bg-blue-100 text-blue-800',
-                                                'good' => 'bg-green-100 text-green-800'
+                                                'red' => 'bg-red-100 text-red-800',
+                                                'yellow' => 'bg-yellow-100 text-yellow-800',
+                                                'green' => 'bg-green-100 text-green-800'
                                             ];
-                                            $statusLabel = match($primaryStatus) {
-                                                'critical_stock' => 'Critical',
-                                                'low_stock' => 'Low Stock',
-                                                'out_of_stock' => 'Out of Stock',
-                                                'overstock' => 'Overstock',
-                                                default => 'Good'
-                                            };
                                         @endphp
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusColors[$primaryStatus] ?? 'bg-gray-100 text-gray-800' }}">
-                                            {{ $statusLabel }}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusColors[$statusClass] ?? 'bg-gray-100 text-gray-800' }}">
+                                            {{ $statusText }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">

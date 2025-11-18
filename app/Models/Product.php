@@ -301,6 +301,26 @@ class Product extends Model
     }
 
     /**
+     * Scope a query to only include products that need reordering.
+     * Uses product-specific reorder levels or falls back to system default.
+     */
+    public function scopeNeedsReordering(Builder $query): Builder
+    {
+        $defaultThreshold = lowStockThreshold();
+        
+        return $query->where(function ($q) use ($defaultThreshold) {
+            // Products with configured reorder_level
+            $q->whereNotNull('reorder_level')
+              ->whereColumn('quantity', '<=', 'reorder_level')
+              // Products without configured reorder_level (use default)
+              ->orWhere(function ($subQ) use ($defaultThreshold) {
+                  $subQ->whereNull('reorder_level')
+                       ->where('quantity', '<=', $defaultThreshold);
+              });
+        });
+    }
+
+    /**
      * Scope a query to search products by name, brand, or category.
      */
     public function scopeSearch(Builder $query, string $search): Builder
@@ -355,28 +375,35 @@ class Product extends Model
      */
     public function isInStock(int $requestedQuantity = 1): bool
     {
-        $availableQuantity = $this->hasProperties() ? $this->actual_quantity : $this->quantity;
+        $availableQuantity = $this->hasProperties() ? $this->actual_quantity : $this->getAvailableQuantity();
         return $availableQuantity >= $requestedQuantity;
     }
 
     /**
-     * Check if the product is low in stock.
-     * Returns true only if product has stock but is below threshold (excludes out of stock).
+     * Check if the product is low in stock using configured thresholds.
+     * Returns true if available stock is above critical but at or below reorder level.
      */
     public function isLowStock(int $threshold = null): bool
     {
-        $threshold = $threshold ?? $this->reorder_level ?? lowStockThreshold();
-        // Low stock means: has some stock (> 0) but below or equal to threshold
-        return $this->quantity > 0 && $this->quantity <= $threshold;
+        $available = $this->getAvailableQuantity();
+        $reorderLevel = $threshold ?? $this->reorder_level ?? lowStockThreshold();
+        $criticalLevel = $this->critical_level ?? criticalStockLevel();
+        
+        // Low stock: available > criticalLevel AND available <= reorderLevel
+        return $available > $criticalLevel && $available <= $reorderLevel;
     }
 
     /**
-     * Check if the product is at critical stock level.
+     * Check if the product is at critical stock level using configured thresholds.
+     * Returns true if available stock is above 0 but at or below critical level.
      */
     public function isCriticalStock(): bool
     {
+        $available = $this->getAvailableQuantity();
         $criticalLevel = $this->critical_level ?? criticalStockLevel();
-        return $this->quantity <= $criticalLevel;
+        
+        // Critical: available > 0 AND available <= criticalLevel
+        return $available > 0 && $available <= $criticalLevel;
     }
 
     /**
@@ -396,11 +423,14 @@ class Product extends Model
     }
 
     /**
-     * Check if product needs reordering.
+     * Check if product needs reordering using industry-standard formula.
+     * Returns true if available stock is at or below reorder level.
      */
     public function needsReordering(): bool
     {
-        return $this->reorder_level && $this->quantity <= $this->reorder_level;
+        $available = $this->getAvailableQuantity();
+        $reorderLevel = $this->reorder_level ?? lowStockThreshold();
+        return $available <= $reorderLevel;
     }
 
     /**
@@ -428,29 +458,61 @@ class Product extends Model
     }
 
     /**
-     * Get stock status with threshold context.
+     * Get available quantity (total stock - reserved).
+     */
+    public function getAvailableQuantity(): int
+    {
+        $reserved = $this->inventories()->sum('quantity_reserved');
+        return max(0, $this->quantity - $reserved);
+    }
+
+        /**
+     * Get stock status with threshold information.
+     * 
+     * Formula:
+     * - Use product's configured thresholds (reorder_level, critical_level)
+     * - Fall back to system defaults if not set
+     * - Out of Stock: available <= 0
+     * - Critical: available <= critical_level
+     * - Low: available <= reorder_level (but above critical)
+     * - In Stock: available > reorder_level
      */
     public function getStockStatus(): array
     {
-        $status = [];
+        $available = $this->getAvailableQuantity();
+        $reorderLevel = $this->reorder_level ?? lowStockThreshold();
+        $criticalLevel = $this->critical_level ?? criticalStockLevel();
+        $lowLevel = $reorderLevel;
         
-        if ($this->quantity <= 0) {
-            $status[] = ['type' => 'out_of_stock', 'severity' => 'urgent'];
-        } elseif ($this->isCriticalStock()) {
-            $status[] = ['type' => 'critical_stock', 'severity' => 'critical'];
-        } elseif ($this->isLowStock()) {
-            $status[] = ['type' => 'low_stock', 'severity' => 'warning'];
+        // Determine status based on configured thresholds
+        if ($available <= 0) {
+            $status = 'Out of Stock';
+            $statusClass = 'red';
+        } elseif ($available <= $criticalLevel) {
+            $status = 'Critical';
+            $statusClass = 'red';
+        } elseif ($available <= $lowLevel) {
+            $status = 'Low';
+            $statusClass = 'yellow';
+        } else {
+            $status = 'In Stock';
+            $statusClass = 'green';
         }
         
-        if ($this->isOverstocked()) {
-            $status[] = ['type' => 'overstock', 'severity' => 'info'];
-        }
+        // Calculate percentage based on reorder level
+        $percentage = $lowLevel > 0 ? min(100, ($available / $lowLevel) * 100) : 0;
         
-        if ($this->needsReordering()) {
-            $status[] = ['type' => 'reorder_needed', 'severity' => 'warning'];
-        }
-        
-        return $status;
+        return [
+            'available' => $available,
+            'total_stock' => $this->quantity,
+            'reserved' => $this->quantity - $available,
+            'reorder_level' => $reorderLevel,
+            'critical_level' => $criticalLevel,
+            'low_level' => $lowLevel,
+            'status' => $status,
+            'status_class' => $statusClass,
+            'percentage' => round($percentage, 2)
+        ];
     }
 
     /**

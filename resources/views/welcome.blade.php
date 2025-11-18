@@ -99,9 +99,7 @@
                         continues its legacy of craftsmanship and customer care. --}}
                         With over 50 years in the Philippine shoe industry, Checkpoint Shoes by Felicel Shoe
                         Manufacturing continues to deliver authentic footwear and garments — from dress and school shoes
-                        to safety and nursing footwear. Trusted by generations and led by Mr. Nepomuceno, our
-                        business proudly serves both in-store and online customers through Shopee, Lazada, TikTok, and
-                        Facebook.
+                        to safety and nursing footwear.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center">
                         <a href="{{ route('login') }}"
@@ -147,7 +145,7 @@
                     </div>
                     <h3 class="text-xl font-bold font-crimson mb-2">Everyday Impact</h3>
                     <p class="text-gray-600">Serving communities, one pair at a time.
-                        <span>With hundreds of designs and daily orders fulfilled both online and in-store, our products
+                        <span>With hundreds of designs, our products
                             support students, professionals, families, and frontline workers across the
                             Philippines.</span>
                     </p>
@@ -158,7 +156,7 @@
                     </div>
                     <h3 class="text-xl font-bold font-crimson mb-2">Driven by Innovation</h3>
                     <p class="text-gray-600">Merging tradition with modern retail technology.
-                        We continue to evolve by integrating smart inventory systems, eCommerce platforms, and digital
+                        We continue to evolve by integrating online inventory system, and digital
                         payment methods — ensuring efficiency, accuracy, and better service.</p>
                 </div>
             </div>

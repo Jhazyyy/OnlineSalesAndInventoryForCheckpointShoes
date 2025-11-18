@@ -16,7 +16,7 @@ class ProductService
     public function getInventoryDashboard(): array
     {
         $totalProducts = Product::count();
-        $lowStockProducts = Product::needsReordering();
+        $lowStockProducts = Product::needsReordering()->get();
         $outOfStockProducts = Product::outOfStock();
         $totalInventoryValue = Product::totalInventoryValue();
 
@@ -184,7 +184,7 @@ class ProductService
      */
     public function getProductsNeedingAttention(): array
     {
-        $lowStockProducts = Product::needsReordering(10);
+        $lowStockProducts = Product::needsReordering()->get();
         $outOfStockProducts = Product::outOfStock();
         $oversoldProducts = Product::oversoldProducts();
         $highReturnProducts = Returns::mostReturnedProducts(5);

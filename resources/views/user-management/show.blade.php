@@ -226,7 +226,7 @@
             @endif
 
             <!-- Activity History -->
-            <div
+            {{-- <div
                 class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <h3
@@ -279,7 +279,7 @@
                         </div>
                     @endif
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
 </x-app-layout>
