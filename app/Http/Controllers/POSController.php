@@ -165,7 +165,7 @@ class POSController extends Controller
             'payment_proof' => 'nullable|required_if:payment_method,bank_transfer|file|mimes:jpeg,jpg,png,pdf|max:5120',
             
             // GCash fields (required if payment method is gcash)
-            'gcash_reference_no' => 'nullable|required_if:payment_method,gcash|string|size:13|regex:/^[0-9]{13}$/',
+            'gcash_reference_no' => 'nullable|required_if:payment_method,gcash|string|min:10|max:20',
         ]);
 
         if ($validator->fails()) {
@@ -309,7 +309,7 @@ class POSController extends Controller
                     'amount' => $totalAmount,
                     'status' => 'verified', // Automatically verified for POS transactions
                     'payment_date' => now(),
-                    'verified_by' => auth()->id(),
+                    'verified_by' => \Illuminate\Support\Facades\Auth::id(),
                     'verified_at' => now(),
                     'notes' => 'POS walk-in customer payment via GCash QR scan',
                 ]);
@@ -379,8 +379,8 @@ class POSController extends Controller
 
         DB::beginTransaction();
         try {
-            $additionalPayment = $request->additional_payment;
-            $currentPaid = $order->amount_received ?? 0;
+            $additionalPayment = (float) $request->additional_payment;
+            $currentPaid = (float) ($order->amount_received ?? 0);
             $totalPaid = $currentPaid + $additionalPayment;
             
             // Update payment method if provided
@@ -392,11 +392,11 @@ class POSController extends Controller
             if ($totalPaid >= $order->total_amount) {
                 $order->payment_status = 'paid';
                 $order->status = 'delivered'; // Mark order as completed/delivered
-                $order->amount_received = $order->total_amount; // Set exactly to total
+                $order->setAttribute('amount_received', $order->total_amount); // Set exactly to total
                 $successMessage = 'Payment completed successfully! Order is now fully paid and completed.';
             } else {
                 $order->payment_status = 'partial';
-                $order->amount_received = $totalPaid;
+                $order->setAttribute('amount_received', $totalPaid);
                 $remaining = $order->total_amount - $totalPaid;
                 $successMessage = 'Payment updated successfully! Remaining balance: ₱' . number_format($remaining, 2);
             }

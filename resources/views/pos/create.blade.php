@@ -401,7 +401,7 @@
                                             <label
                                                 class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                                 <span class="flex items-center justify-between">
-                                                    <span>Discount Rule</span>
+                                                    <span>Discount</span>
                                                     <span x-show="selectedDiscountRule"
                                                         class="text-green-600 dark:text-green-400"
                                                         x-text="'₱' + discountAmount.toFixed(2)"></span>
@@ -434,12 +434,15 @@
                                             <span class="font-medium text-gray-900 dark:text-white"
                                                 x-text="'₱' + subtotal.toFixed(2)"></span>
                                         </div>
-                                        <div class="flex justify-between text-sm" x-show="taxAmount > 0">
+                                        <!-- Tax Line - Always Visible -->
+                                        <div class="flex justify-between text-sm border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
                                             <div class="flex flex-col">
-                                                <span class="text-gray-600 dark:text-gray-400">Tax</span>
+                                                <span class="font-medium text-gray-700 dark:text-gray-300">Tax</span>
                                                 <span class="text-xs text-gray-500 dark:text-gray-500" x-show="selectedTaxRule" x-text="getTaxRuleName()"></span>
+                                                <span class="text-xs text-gray-400 dark:text-gray-600" x-show="!selectedTaxRule">No tax applied</span>
                                             </div>
-                                            <span class="font-medium text-indigo-600 dark:text-indigo-400"
+                                            <span class="font-semibold" 
+                                                :class="taxAmount > 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-500'"
                                                 x-text="'₱' + taxAmount.toFixed(2)"></span>
                                         </div>
                                         <div class="flex justify-between text-sm" x-show="discountAmount > 0">

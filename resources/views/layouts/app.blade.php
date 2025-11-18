@@ -33,7 +33,7 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.store('sidebar', {
-                open: true,
+                open: false,
                 toggle() {
                     this.open = !this.open;
                 }
@@ -63,6 +63,12 @@
         <div class="pt-14 transition-all duration-100 ease-in-out" 
              x-data 
              :class="$store.sidebar.open ? 'lg:ml-72' : 'ml-0'">
+            
+            <!-- Breadcrumb Navigation -->
+            @isset($breadcrumbs)
+                <x-breadcrumb :items="$breadcrumbs" />
+            @endisset
+
             <!-- Page Heading -->
             @isset($header)
                 <header class="bg-gray-100 dark:bg-gray-800 shadow">

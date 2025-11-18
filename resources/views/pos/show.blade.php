@@ -125,17 +125,20 @@
                                 <span class="text-red-600 dark:text-red-400">-₱{{ number_format($order->discount_amount, 2) }}</span>
                             </div>
                             @endif
-                            @if($order->tax_amount > 0)
-                            <div class="flex justify-between text-sm">
+                            <!-- Tax Line - Always Visible -->
+                            <div class="flex justify-between text-sm border-t border-gray-300 dark:border-gray-600 pt-2 mt-2">
                                 <div class="flex flex-col">
-                                    <span class="text-gray-600 dark:text-gray-400">Tax:</span>
+                                    <span class="font-medium text-gray-700 dark:text-gray-300">Tax:</span>
                                     @if($order->taxRule)
-                                    <span class="text-xs text-gray-500 dark:text-gray-500">{{ $order->taxRule->name }}</span>
+                                        <span class="text-xs text-gray-500 dark:text-gray-500">{{ $order->taxRule->name }}</span>
+                                    @else
+                                        <span class="text-xs text-gray-400 dark:text-gray-600">No tax applied</span>
                                     @endif
                                 </div>
-                                <span class="text-gray-900 dark:text-white">₱{{ number_format($order->tax_amount, 2) }}</span>
+                                <span class="font-semibold {{ $order->tax_amount > 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-500' }}">
+                                    ₱{{ number_format($order->tax_amount ?? 0, 2) }}
+                                </span>
                             </div>
-                            @endif
                             <div class="flex justify-between text-xl font-bold pt-2 border-t border-gray-300 dark:border-gray-600">
                                 <span class="text-gray-900 dark:text-white">Total:</span>
                                 <span class="text-gray-900 dark:text-white">₱{{ number_format($order->total_amount, 2) }}</span>

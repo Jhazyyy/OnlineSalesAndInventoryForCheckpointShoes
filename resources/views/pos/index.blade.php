@@ -1,8 +1,8 @@
 <x-app-layout>
-    <div class="py-6">
+    <div class="py-2">
         <div class="w-full mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -23,7 +23,7 @@
             </div>
 
             <!-- Today's Summary -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -35,7 +35,7 @@
                                 </div>
                             </div>
                             <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Today's Sales</p>
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Today Sales</p>
                                 <p class="text-2xl font-bold text-gray-900 dark:text-white">₱{{ number_format($todaySummary['total_sales'], 2) }}</p>
                             </div>
                         </div>
@@ -146,7 +146,9 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Items</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Payment</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Payment Status</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Subtotal</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tax</th>
                                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total</th>
                                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                                 </tr>
@@ -177,6 +179,19 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right">
+                                        <div class="text-sm text-gray-700 dark:text-gray-300">₱{{ number_format($order->subtotal ?? ($order->total_amount - ($order->tax_amount ?? 0) + ($order->discount_amount ?? 0)), 2) }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right">
+                                        @if($order->tax_amount > 0)
+                                            <div class="text-sm font-medium text-indigo-600 dark:text-indigo-400">₱{{ number_format($order->tax_amount, 2) }}</div>
+                                            @if($order->taxRule)
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">{{ $order->taxRule->name }}</div>
+                                            @endif
+                                        @else
+                                            <div class="text-sm text-gray-400 dark:text-gray-600">₱0.00</div>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right">
                                         <div class="text-sm font-bold text-gray-900 dark:text-white">₱{{ number_format($order->total_amount, 2) }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -188,7 +203,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="8" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                                    <td colspan="10" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                         </svg>

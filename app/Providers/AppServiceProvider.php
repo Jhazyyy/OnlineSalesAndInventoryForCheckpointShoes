@@ -56,5 +56,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Register view composer for notification count
         View::composer('layouts.navigation', \App\View\Composers\NotificationComposer::class);
+
+        // Register view composer for breadcrumbs
+        View::composer('layouts.app', function ($view) {
+            $breadcrumbs = \App\Helpers\NavigationHelper::getBreadcrumbs();
+            $view->with('breadcrumbs', $breadcrumbs);
+        });
     }
 }

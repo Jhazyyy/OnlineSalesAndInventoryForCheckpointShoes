@@ -243,4 +243,119 @@ class NavigationHelper
     {
         return self::isActiveRoute($routePatterns) ? $activeClass : '';
     }
+
+    /**
+     * Generate breadcrumbs based on current route
+     *
+     * @return array
+     */
+    public static function getBreadcrumbs()
+    {
+        $routeName = request()->route()->getName();
+        $breadcrumbs = [];
+
+        // Define breadcrumb mappings
+        $breadcrumbMap = [
+            // Master Data
+            'master_data.products.index' => [
+                ['label' => 'Master Data', 'url' => null],
+                ['label' => 'Products', 'url' => null],
+            ],
+            'master_data.products.create' => [
+                ['label' => 'Master Data', 'url' => null],
+                ['label' => 'Products', 'url' => route('master_data.products.index')],
+                ['label' => 'Create Product', 'url' => null],
+            ],
+            'master_data.products.edit' => [
+                ['label' => 'Master Data', 'url' => null],
+                ['label' => 'Products', 'url' => route('master_data.products.index')],
+                ['label' => 'Edit Product', 'url' => null],
+            ],
+            'master_data.products.show' => [
+                ['label' => 'Master Data', 'url' => null],
+                ['label' => 'Products', 'url' => route('master_data.products.index')],
+                ['label' => 'View Product', 'url' => null],
+            ],
+            'master_data.customers.index' => [
+                ['label' => 'Master Data', 'url' => null],
+                ['label' => 'Customers', 'url' => null],
+            ],
+            'master_data.suppliers.index' => [
+                ['label' => 'Master Data', 'url' => null],
+                ['label' => 'Suppliers', 'url' => null],
+            ],
+
+            // Sales
+            'sales.orders.index' => [
+                ['label' => 'Sales', 'url' => null],
+                ['label' => 'Orders', 'url' => null],
+            ],
+            'sales.orders.create' => [
+                ['label' => 'Sales', 'url' => null],
+                ['label' => 'Orders', 'url' => route('sales.orders.index')],
+                ['label' => 'Create Order', 'url' => null],
+            ],
+            'sales.invoices.index' => [
+                ['label' => 'Sales', 'url' => null],
+                ['label' => 'Invoices', 'url' => null],
+            ],
+
+            // Purchases
+            'purchases.orders.index' => [
+                ['label' => 'Purchases', 'url' => null],
+                ['label' => 'Purchase Orders', 'url' => null],
+            ],
+            'purchases.deliveries.index' => [
+                ['label' => 'Purchases', 'url' => null],
+                ['label' => 'Deliveries', 'url' => null],
+            ],
+            'purchases.receives.index' => [
+                ['label' => 'Purchases', 'url' => null],
+                ['label' => 'Receives', 'url' => null],
+            ],
+
+            // Inventory
+            'inventory.stocks.index' => [
+                ['label' => 'Inventory', 'url' => null],
+                ['label' => 'Stock Management', 'url' => null],
+            ],
+            'inventory.adjustments.index' => [
+                ['label' => 'Inventory', 'url' => null],
+                ['label' => 'Stock Adjustments', 'url' => null],
+            ],
+
+            // Reports
+            'reports.sales' => [
+                ['label' => 'Reports', 'url' => null],
+                ['label' => 'Sales Report', 'url' => null],
+            ],
+            'reports.inventory' => [
+                ['label' => 'Reports', 'url' => null],
+                ['label' => 'Inventory Report', 'url' => null],
+            ],
+
+            // Settings
+            'settings.index' => [
+                ['label' => 'Settings', 'url' => null],
+            ],
+
+            // User Management
+            'user-management.index' => [
+                ['label' => 'User Management', 'url' => null],
+                ['label' => 'Users', 'url' => null],
+            ],
+
+            // POS
+            'pos.index' => [
+                ['label' => 'Sales History', 'url' => null],
+                   ],
+            'pos.create' => [
+                ['label' => 'Point of Sale', 'url' => null],
+            ],
+        ];
+
+        // Return breadcrumbs for the current route
+        return $breadcrumbMap[$routeName] ?? [];
+    }
 }
+
