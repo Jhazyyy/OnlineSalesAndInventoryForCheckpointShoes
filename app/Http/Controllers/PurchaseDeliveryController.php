@@ -52,6 +52,25 @@ class PurchaseDeliveryController extends Controller
      */
     public function store(Request $request)
     {
+        // Check if purchase order can accept a new delivery
+        if ($request->has('purchase_order_id')) {
+            $purchaseOrder = PurchaseOrder::find($request->purchase_order_id);
+            if ($purchaseOrder && !$purchaseOrder->canCreateDelivery()) {
+                $reason = '';
+                if ($purchaseOrder->hasDeliveredStatus()) {
+                    $reason = 'This purchase order has already been delivered.';
+                } elseif ($purchaseOrder->hasShortClosedReceive()) {
+                    $reason = 'This purchase order has been short-closed.';
+                } elseif (!in_array($purchaseOrder->status, ['approved', 'ordered'])) {
+                    $reason = 'Purchase order status must be approved or ordered.';
+                }
+                
+                return redirect()->back()
+                    ->withErrors(['purchase_order_id' => "Cannot create delivery. {$reason}"])
+                    ->withInput();
+            }
+        }
+
         $validator = Validator::make($request->all(), [
             'purchase_order_id' => 'required|exists:purchase_orders,order_id',
             'supplier_id' => 'nullable|exists:suppliers,supplier_id',

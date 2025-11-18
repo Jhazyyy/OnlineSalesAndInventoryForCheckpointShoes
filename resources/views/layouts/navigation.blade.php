@@ -19,11 +19,11 @@
                 </div>
 
                 <!-- Logo -->
-                <div class="shrink-0 flex items-center pl-2">
+                {{-- <div class="shrink-0 flex items-center pl-2">
                     <a href="{{ route('dashboard') }}">
                         <x-application-logo class="h-12 rounded-lg border-2" />
                     </a>
-                </div>
+                </div> --}}
 
                 <!-- Navigation Links -->
                 {{-- <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
@@ -31,6 +31,9 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div> --}}
+
+
+                <x-breadcrumb :items="$breadcrumbs" />
             </div>
 
             <!-- Settings Dropdown -->

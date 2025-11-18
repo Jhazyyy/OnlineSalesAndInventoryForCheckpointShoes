@@ -147,7 +147,7 @@
                 <div class="p-6">
                     @if ($products->count() > 0)
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 border border-gray-200 dark:border-gray-400">
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
                                         <th
@@ -219,9 +219,9 @@
                                             Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                <tbody class="bg-slate-800 dark:bg-gray-400 divide-y divide-gray-600 dark:divide-gray-400">
                                     @foreach ($products as $product)
-                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-400">
                                             {{-- Product Image --}}
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 @if ($product->image)

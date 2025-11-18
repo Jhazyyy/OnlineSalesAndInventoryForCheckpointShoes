@@ -128,43 +128,42 @@ class NavigationHelper
                                         d="M9 17v-2a2 2 0 012-2h2a2 2 0 012 2v2m4 0V7a2 2 0 00-2-2h-4.586a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 008.586 2H6a2 2 0 00-2 2v13a2 2 0 002 2h1m2 0h6" />
                                     </svg>',
 
-           'purchase_order_master' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            'purchase_order_master' => '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 2h6a1 1 0 011 1v1h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2V3a1 1 0 011-1zm0 0h6v2H9V2z" />
                                     </svg>',
 
-            'inventory_report' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            'inventory_report' => '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 2h6a1 1 0 011 1v1h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2V3a1 1 0 011-1zm3 7h4m-4 4h4m-8-4h.01M8 13h.01" />
                                     </svg>',
 
-
-            'reorder_items' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            'reorder_items' => '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 3h6l2 3h10a1 1 0 011 1v3M16 21H6a1 1 0 01-1-1V9m13 6l3 3m0 0l-3 3m3-3h-6" />
                                 </svg>',
 
-            'critical_level_items' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            'critical_level_items' => '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M16 3h-4a2 2 0 00-2 2v2h8V5a2 2 0 00-2-2z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M12 9v4m0 4h.01" />
                                         </svg>',
 
-            'supplier_cost' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            'supplier_cost' => '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M5 21v-2a4 4 0 014-4h6a4 4 0 014 4v2" />
                                     <text x="16" y="18" font-size="6" fill="currentColor" font-weight="bold" font-family="Arial, sans-serif">$</text>
                                 </svg>',
-                                
+
             'product_movement_analysis' => '
-                                <svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M4 20h16M8 20V10m4 10V6m4 14v-4m2-10l2 2m0 0l-2 2m2-2h-8" />
                                 </svg>',
 
-            'block_items' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            'block_items' => '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <!-- Box -->
                                 <rect x="3" y="7" width="18" height="10" rx="2" ry="2" stroke-width="2" stroke="currentColor" />
                                 <!-- X mark -->
@@ -172,17 +171,17 @@ class NavigationHelper
                                 <line x1="17" y1="11" x2="7" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
                                 </svg>',
 
-            'delivery' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            'delivery' => '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M2.25 7.5V17.25A1.5 1.5 0 003.75 18.75H5.25M2.25 7.5L6.75 3H17.25A1.5 1.5 0 0118.75 4.5V6.75M2.25 7.5H18.75M18.75 6.75H20.25A1.5 1.5 0 0121.75 8.25V14.25A1.5 1.5 0 0120.25 15.75H19.5M5.25 18.75A1.5 1.5 0 006.75 20.25H8.25A1.5 1.5 0 009.75 18.75H5.25ZM14.25 18.75A1.5 1.5 0 0015.75 20.25H17.25A1.5 1.5 0 0018.75 18.75H14.25Z" />
                                 </svg>',
 
-            'user_accounts_control' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            'user_accounts_control' => '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M16 14c1.656 0 3 1.344 3 3v3H5v-3c0-1.656 1.344-3 3-3h8z" />
                                             <circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
                                         </svg>',
-                                        
-            'stock_adjustment' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+            'stock_adjustment' => '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <!-- Box / Inventory base -->
                                     <rect x="3" y="7" width="18" height="13" rx="2" ry="2" stroke-width="2"/>
                                     
@@ -193,7 +192,7 @@ class NavigationHelper
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 13l2 2 2-2M16 9v6" />
                                 </svg>',
 
-            'tax_and_discount' => '<svg class="' . $size . '" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            'tax_and_discount' => '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <!-- Document shape -->
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M8 3h8a2 2 0 0 1 2 2v14l-4-2-4 2-4-2V5a2 2 0 0 1 2-2z" />
@@ -266,42 +265,36 @@ class NavigationHelper
                 ['label' => 'Products', 'url' => route('master_data.products.index')],
                 ['label' => 'Create Product', 'url' => null],
             ],
-            'master_data.products.edit' => [
+            'master_data.categories.index' => [
                 ['label' => 'Master Data', 'url' => null],
-                ['label' => 'Products', 'url' => route('master_data.products.index')],
-                ['label' => 'Edit Product', 'url' => null],
+                ['label' => 'Categories', 'url' => route('master_data.categories.index')],
             ],
-            'master_data.products.show' => [
+            'master_data.brands.index' => [
                 ['label' => 'Master Data', 'url' => null],
-                ['label' => 'Products', 'url' => route('master_data.products.index')],
-                ['label' => 'View Product', 'url' => null],
-            ],
-            'master_data.customers.index' => [
-                ['label' => 'Master Data', 'url' => null],
-                ['label' => 'Customers', 'url' => null],
+                ['label' => 'Brands', 'url' => route('master_data.brands.index')],
             ],
             'master_data.suppliers.index' => [
                 ['label' => 'Master Data', 'url' => null],
-                ['label' => 'Suppliers', 'url' => null],
+                ['label' => 'Suppliers', 'url' => route('master_data.suppliers.index')],
             ],
 
             // Sales
-            'sales.orders.index' => [
-                ['label' => 'Sales', 'url' => null],
-                ['label' => 'Orders', 'url' => null],
-            ],
-            'sales.orders.create' => [
-                ['label' => 'Sales', 'url' => null],
-                ['label' => 'Orders', 'url' => route('sales.orders.index')],
-                ['label' => 'Create Order', 'url' => null],
-            ],
-            'sales.invoices.index' => [
-                ['label' => 'Sales', 'url' => null],
-                ['label' => 'Invoices', 'url' => null],
-            ],
+            // 'sales.orders.index' => [
+            //     ['label' => 'Sales', 'url' => null],
+            //     ['label' => 'Orders', 'url' => null],
+            // ],
+            // 'sales.orders.create' => [
+            //     ['label' => 'Sales', 'url' => null],
+            //     ['label' => 'Orders', 'url' => route('sales.orders.index')],
+            //     ['label' => 'Create Order', 'url' => null],
+            // ],
+            // 'sales.invoices.index' => [
+            //     ['label' => 'Sales', 'url' => null],
+            //     ['label' => 'Invoices', 'url' => null],
+            // ],
 
             // Purchases
-            'purchases.orders.index' => [
+            'purchase-orders.index' => [
                 ['label' => 'Purchases', 'url' => null],
                 ['label' => 'Purchase Orders', 'url' => null],
             ],
@@ -315,14 +308,14 @@ class NavigationHelper
             ],
 
             // Inventory
-            'inventory.stocks.index' => [
-                ['label' => 'Inventory', 'url' => null],
-                ['label' => 'Stock Management', 'url' => null],
-            ],
-            'inventory.adjustments.index' => [
-                ['label' => 'Inventory', 'url' => null],
-                ['label' => 'Stock Adjustments', 'url' => null],
-            ],
+            // 'inventory.stocks.index' => [
+            //     ['label' => 'Inventory', 'url' => null],
+            //     ['label' => 'Stock Management', 'url' => null],
+            // ],
+            // 'inventory.adjustments.index' => [
+            //     ['label' => 'Inventory', 'url' => null],
+            //     ['label' => 'Stock Adjustments', 'url' => null],
+            // ],
 
             // Reports
             'reports.sales' => [
@@ -348,9 +341,11 @@ class NavigationHelper
             // POS
             'pos.index' => [
                 ['label' => 'Sales History', 'url' => null],
-                   ],
-            'pos.create' => [
                 ['label' => 'Point of Sale', 'url' => null],
+            ],
+
+            'notifications.index' => [
+                ['label' => 'Notifications', 'url' => 'notifications.index'],
             ],
         ];
 
@@ -358,4 +353,3 @@ class NavigationHelper
         return $breadcrumbMap[$routeName] ?? [];
     }
 }
-

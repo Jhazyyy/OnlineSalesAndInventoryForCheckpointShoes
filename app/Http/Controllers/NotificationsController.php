@@ -153,6 +153,36 @@ class NotificationsController extends Controller
     }
     
     /**
+     * Delete all notifications for the current user
+     */
+    public function destroyAll()
+    {
+        try {
+            $query = Notification::query();
+            
+            if (Auth::check()) {
+                $query->where(function($q) {
+                    $q->whereNull('user_id')
+                      ->orWhere('user_id', Auth::id());
+                });
+            } else {
+                $query->whereNull('user_id');
+            }
+            
+            $deletedCount = $query->delete();
+            
+            return response()->json([
+                'success' => true,
+                'message' => "All notifications deleted ({$deletedCount} removed)",
+                'unread_count' => 0
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to delete all notifications: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to delete all notifications'], 500);
+        }
+    }
+    
+    /**
      * Get unread notification count
      */
     public function getUnreadCount()

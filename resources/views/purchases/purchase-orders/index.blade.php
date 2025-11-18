@@ -1,8 +1,8 @@
 <x-app-layout>
-    <div class="py-6">
+    <div class="py-2">
         <div class="w-full mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -23,10 +23,10 @@
             </div>
 
             <!-- Filters Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
-                    <form method="GET" action="{{ route('purchases.purchase-orders.index') }}" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+                    <form method="GET" action="{{ route('purchases.purchase-orders.index') }}" class="space-y-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                             <!-- Search -->
                             <div>
                                 <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>

@@ -705,7 +705,6 @@ Route::get('dashboard/top-purchase-items', function (Illuminate\Http\Request $re
 
 // CurrentUser UpdateInfo Routes 
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Inventory list (separate from master data)
     // Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -716,6 +715,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/notifications/latest', [\App\Http\Controllers\NotificationsController::class, 'getLatest'])->name('notifications.latest');
     Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationsController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/mark-all-read', [\App\Http\Controllers\NotificationsController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifications/delete-all', [\App\Http\Controllers\NotificationsController::class, 'destroyAll'])->name('notifications.destroy-all');
     Route::delete('/notifications/{id}', [\App\Http\Controllers\NotificationsController::class, 'destroy'])->name('notifications.destroy');
     
     // User Management Routes (Admin and Super Admin Only)

@@ -65,9 +65,9 @@
              :class="$store.sidebar.open ? 'lg:ml-72' : 'ml-0'">
             
             <!-- Breadcrumb Navigation -->
-            @isset($breadcrumbs)
+            {{-- @isset($breadcrumbs)
                 <x-breadcrumb :items="$breadcrumbs" />
-            @endisset
+            @endisset --}}
 
             <!-- Page Heading -->
             @isset($header)

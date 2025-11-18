@@ -103,6 +103,33 @@ class PurchaseReceiveController extends Controller
 
         $data = $validator->validated();
         
+        // Check if purchase order can receive items (includes all validations)
+        $purchaseOrder = PurchaseOrder::with(['deliveries', 'receives'])->find($data['purchase_order_id']);
+        if ($purchaseOrder && !$purchaseOrder->canReceiveItems()) {
+            $errorMessage = 'This purchase order cannot receive items.';
+            
+            // Provide specific error message based on the reason
+            if ($purchaseOrder->hasReceivedStatus()) {
+                $errorMessage = 'This purchase order has already been fully received. Cannot create another receive.';
+            } elseif ($purchaseOrder->hasShortClosedReceive()) {
+                $errorMessage = 'This purchase order has been short-closed.';
+            } elseif ($purchaseOrder->status !== 'ordered') {
+                $errorMessage = 'Purchase order status must be "ordered". Current status: ' . $purchaseOrder->status;
+            } else {
+                $deliveries = $purchaseOrder->deliveries()->whereNotIn('status', ['cancelled'])->get();
+                
+                if ($deliveries->count() === 0) {
+                    $errorMessage = 'This purchase order requires a delivery to be created first. Please create a delivery for this PO before receiving items.';
+                } elseif ($deliveries->where('status', 'delivered')->count() === 0) {
+                    $errorMessage = 'This purchase order has deliveries that have not been delivered yet. Please wait for delivery confirmation before receiving items.';
+                }
+            }
+            
+            return redirect()->back()
+                ->withErrors(['purchase_order_id' => $errorMessage])
+                ->withInput();
+        }
+        
         // Check if the delivery has already been received (if delivery_id is provided)
         if (!empty($data['delivery_id'])) {
             $delivery = \App\Models\PurchaseDelivery::find($data['delivery_id']);
@@ -118,25 +145,6 @@ class PurchaseReceiveController extends Controller
                     ->withErrors(['delivery_id' => 'Only deliveries with "delivered" status can be received. Current status: ' . $delivery->status])
                     ->withInput();
             }
-        }
-        
-        // Check if the purchase order can receive items (includes delivery status check)
-        $purchaseOrder = PurchaseOrder::with('deliveries')->find($data['purchase_order_id']);
-        if ($purchaseOrder && !$purchaseOrder->canReceiveItems()) {
-            $errorMessage = 'This purchase order cannot receive items yet.';
-            
-            // Provide specific error message based on the reason
-            $deliveries = $purchaseOrder->deliveries()->whereNotIn('status', ['cancelled'])->get();
-            
-            if ($deliveries->count() === 0) {
-                $errorMessage = 'This purchase order requires a delivery to be created first. Please create a delivery for this PO before receiving items.';
-            } elseif ($deliveries->where('status', 'delivered')->count() === 0) {
-                $errorMessage = 'This purchase order has deliveries that have not been delivered yet. Please wait for delivery confirmation before receiving items.';
-            }
-            
-            return redirect()->back()
-                ->withErrors(['purchase_order_id' => $errorMessage])
-                ->withInput();
         }
         
         // Auto-assign delivered delivery if exists and not provided
