@@ -55,9 +55,9 @@
                             <x-nav-item route="master_data.products.index" route-pattern="master_data.products.*"
                                 :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Products" size="small" />
 
-                            <!-- Vendor/Supplier -->
+                            <!-- Supplier -->
                             <x-nav-item route="master_data.suppliers.index" route-pattern="master_data.suppliers.*"
-                                :icon="App\Helpers\NavigationHelper::getIcon('suppliers', 'w-4 h-4 mr-3')" title="Vendor/Supplier" size="small" />
+                                :icon="App\Helpers\NavigationHelper::getIcon('suppliers', 'w-4 h-4 mr-3')" title="Supplier" size="small" />
 
                             <!-- Categories -->
                             <x-nav-item route="master_data.categories.index" route-pattern="master_data.categories.*"
@@ -105,13 +105,51 @@
                     </x-nav-item>
 
 
+
+                    <!-- Purchases Section-->
+                    <x-nav-item
+                        route-pattern="purchases.purchase-orders.*|purchases.purchase-receives.*|purchases.deliveries.*"
+                        :icon="App\Helpers\NavigationHelper::getIcon('purchases')" title="Purchases" :is-dropdown="true">
+
+                        <!-- Purchase Order -->
+                        <x-nav-item route="purchases.purchase-orders.index" route-pattern="purchases.purchase-orders.*"
+                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>'
+                            title="Purchase Order" size="small" />
+
+                        <!-- Delivery -->
+                        <x-nav-item route="purchases.deliveries.index" route-pattern="purchases.deliveries.*"
+                            :icon="App\Helpers\NavigationHelper::getIcon('delivery', 'w-4 h-4 mr-3')" title="Delivery" size="small" />
+
+                        <!-- Goods Receipt -->
+                        <x-nav-item route="purchases.purchase-receives.index"
+                            route-pattern="purchases.purchase-receives.*"
+                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>'
+                            title="Goods Receipt" size="small" />
+
+                        <!-- Purchase Return -->
+                        {{-- <x-nav-item route="purchases.purchase-returns.index"
+                            route-pattern="purchases.purchase-returns.*"
+                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg>'
+                            title="Purchase Return" size="small" /> --}}
+
+                        <!-- Payments Made -->
+                        {{-- <x-nav-item route="purchases.payments.index" route-pattern="purchases.payments.*"
+                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>'
+                            title="Payments Made" size="small" /> --}}
+
+                        <!-- Bills -->
+                        {{-- <x-nav-item href="#"
+                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>'
+                            title="Bills" size="small" /> --}}
+                    </x-nav-item>
+
                     <!-- Sales Section-->
                     <x-nav-item route-pattern="pos.*" :icon="App\Helpers\NavigationHelper::getIcon('sales')" title="Sales" :is-dropdown="true">
 
                         <!-- Sales Order -->
                         <x-nav-item route="pos.index" route-pattern="pos.orders.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>'
-                            title="Sales/POS" size="small" />
+                            title="Sales (POS)" size="small" />
 
                         <!-- Bank Transfer Payments -->
                         @hasrole('admin')
@@ -164,42 +202,6 @@
                             title="Exchange" size="small" /> --}}
                     </x-nav-item>
 
-                    <!-- Purchases Section-->
-                    <x-nav-item
-                        route-pattern="purchases.purchase-orders.*|purchases.purchase-receives.*|purchases.deliveries.*"
-                        :icon="App\Helpers\NavigationHelper::getIcon('purchases')" title="Purchases" :is-dropdown="true">
-
-                        <!-- Purchase Order -->
-                        <x-nav-item route="purchases.purchase-orders.index" route-pattern="purchases.purchase-orders.*"
-                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>'
-                            title="Purchase Order" size="small" />
-
-                        <!-- Delivery -->
-                        <x-nav-item route="purchases.deliveries.index" route-pattern="purchases.deliveries.*"
-                            :icon="App\Helpers\NavigationHelper::getIcon('delivery', 'w-4 h-4 mr-3')" title="Delivery" size="small" />
-
-                        <!-- Goods Receipt -->
-                        <x-nav-item route="purchases.purchase-receives.index"
-                            route-pattern="purchases.purchase-receives.*"
-                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>'
-                            title="Goods Receipt" size="small" />
-
-                        <!-- Purchase Return -->
-                        {{-- <x-nav-item route="purchases.purchase-returns.index"
-                            route-pattern="purchases.purchase-returns.*"
-                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg>'
-                            title="Purchase Return" size="small" /> --}}
-
-                        <!-- Payments Made -->
-                        {{-- <x-nav-item route="purchases.payments.index" route-pattern="purchases.payments.*"
-                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>'
-                            title="Payments Made" size="small" /> --}}
-
-                        <!-- Bills -->
-                        {{-- <x-nav-item href="#"
-                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>'
-                            title="Bills" size="small" /> --}}
-                    </x-nav-item>
 
                     <!-- Reports Section -->
                     <x-nav-item route-pattern="reports.*" :icon="App\Helpers\NavigationHelper::getIcon('reports')" title="Reports" :is-dropdown="true">

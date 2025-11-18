@@ -186,6 +186,11 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
+        // Check if request wants JSON (AJAX request for modal)
+        if (request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json($product);
+        }
+
         // Load relationships for detailed view
         $product->load(['sales', 'purchases', 'returns', 'lastSupplier', 'preferredSupplier']);
 
@@ -204,6 +209,15 @@ class ProductController extends Controller
     {
         $brands = Brand::pluck('name');  // get brand names as a collection
         $categories = Category::pluck('name');  // get category names as a collection
+
+        // Check if request wants JSON (AJAX request for modal)
+        if (request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'product' => $product,
+                'brands' => $brands,
+                'categories' => $categories,
+            ]);
+        }
 
         return view('master_data.products.edit', compact('product', 'brands', 'categories'));
     }

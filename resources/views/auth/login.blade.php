@@ -16,8 +16,8 @@
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email')" class="text-sm sm:text-base" />
-            <x-text-input id="email" class="block mt-1 w-full text-sm sm:text-base px-3 py-2 sm:px-4 sm:py-2.5" type="email" name="email" :value="old('email')" required
-                autofocus autocomplete="username" />
+            <x-text-input id="email" class="block mt-1 w-full text-sm sm:text-base px-3 py-2 sm:px-4 sm:py-2.5"
+                type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
@@ -25,8 +25,8 @@
         <div>
             <x-input-label for="password" :value="__('Password')" class="text-sm sm:text-base" />
 
-            <x-text-input id="password" class="block mt-1 w-full text-sm sm:text-base px-3 py-2 sm:px-4 sm:py-2.5" type="password" name="password" required
-                autocomplete="current-password" />
+            <x-text-input id="password" class="block mt-1 w-full text-sm sm:text-base px-3 py-2 sm:px-4 sm:py-2.5"
+                type="password" name="password" required autocomplete="current-password" />
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
@@ -41,19 +41,25 @@
             </label>
         </div>
 
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-            <div class="order-2 sm:order-1">
+        {{-- <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+           <div class="order-1 sm:order-1">
                 @if (Route::has('password.request'))
                         <a class="underline text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
                             href="{{ route('password.request') }}">
                             {{ __('Forgot your password?') }}
                         </a>
                     </div>
-                @endif
+                @endif 
                 <x-primary-button class="order-1 sm:order-2 w-full sm:w-auto justify-center px-6 py-2.5 sm:px-4 sm:py-2 text-sm sm:text-base">
                 {{ __('Log in') }}
                 </x-primary-button>
-        </div>
+             
+            </div>   --}}
+
+        <x-primary-button
+            class="w-full lg:w-full sm:w-auto md:w-full items-center  justify-center px-6 py-2.5 sm:px-4 sm:py-2 text-sm sm:text-base">
+            {{ __('Log in') }}
+        </x-primary-button>
     </form>
 
     <!-- Auto-refresh token if page is idle for too long -->
@@ -61,16 +67,16 @@
         // Refresh the page if it's been idle for more than 100 minutes (before session expires at 120 minutes)
         let idleTime = 0;
         const maxIdleTime = 100; // minutes
-        
+
         // Increment idle time counter every minute
         const idleInterval = setInterval(timerIncrement, 60000); // 1 minute
-        
+
         // Reset timer on user activity
         document.addEventListener('mousemove', resetTimer);
         document.addEventListener('keypress', resetTimer);
         document.addEventListener('click', resetTimer);
         document.addEventListener('scroll', resetTimer);
-        
+
         function timerIncrement() {
             idleTime++;
             if (idleTime >= maxIdleTime) {
@@ -78,7 +84,7 @@
                 window.location.reload();
             }
         }
-        
+
         function resetTimer() {
             idleTime = 0;
         }

@@ -200,7 +200,7 @@
             @endif
 
             <!-- Purchase Order Master Table -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-4 sm:p-6">
                     <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Purchase Orders (By Order)</h3>
 
@@ -267,7 +267,7 @@
                         </table>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
         </div>
     </div>

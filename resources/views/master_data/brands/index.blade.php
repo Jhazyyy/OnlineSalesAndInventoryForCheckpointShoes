@@ -47,7 +47,7 @@
                             <!-- Search -->
                             <div>
                                 <label for="search"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filter</label>
                                 <input type="text" id="search" name="search" value="{{ request('search') }}"
                                     placeholder="Search by name, code, or description..."
                                     class="mt-1 block w-full md:w-72 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
@@ -76,7 +76,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
-                                Search
+                                Filter
                             </button>
 
                             <a href="{{ route('master_data.brands.index') }}"

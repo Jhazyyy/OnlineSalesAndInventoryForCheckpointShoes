@@ -7,7 +7,7 @@
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Supplier Management</h2>
-                            <p class="text-gray-600 dark:text-gray-400">Manage your supplier database</p>
+                            <p class="text-gray-600 dark:text-gray-400">Manage your supplier records</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
                             {{-- <a href="{{ route('purchases.suppliers.export', request()->query()) }}" 

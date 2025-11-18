@@ -6,7 +6,8 @@
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">All Goods Receipts</h2>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Goods Received</h2>
+                            <p class="text-gray-600 dark:text-gray-400">Manage your goods received records</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
                             <a href="{{ route('purchases.purchase-receives.create') }}" 
