@@ -45,38 +45,13 @@
                     <!-- Dashboard -->
                     <x-nav-item route="dashboard" :icon="App\Helpers\NavigationHelper::getIcon('dashboard')" title="Dashboard" />
 
-                    <!-- Master Data Section -->
-                    @hasanyrole('super_admin|admin')
-                        <x-nav-item
-                            route-pattern="master_data.products.*|master_data.categories.*|master_data.brands.*|master_data.suppliers.*|master_data.tax_discounts.*"
-                            :icon="App\Helpers\NavigationHelper::getIcon('master_data')" title="Master Data" :is-dropdown="true">
-
-                            <!-- Products -->
-                            <x-nav-item route="master_data.products.index" route-pattern="master_data.products.*"
-                                :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Products" size="small" />
-
-                            <!-- Supplier -->
-                            <x-nav-item route="master_data.suppliers.index" route-pattern="master_data.suppliers.*"
-                                :icon="App\Helpers\NavigationHelper::getIcon('suppliers', 'w-4 h-4 mr-3')" title="Supplier" size="small" />
-
-                            <!-- Categories -->
-                            <x-nav-item route="master_data.categories.index" route-pattern="master_data.categories.*"
-                                :icon="App\Helpers\NavigationHelper::getIcon('categories', 'w-4 h-4 mr-3')" title="Categories" size="small" />
-
-                            <!-- Brands -->
-                            <x-nav-item route="master_data.brands.index" route-pattern="master_data.brands.*"
-                                :icon="App\Helpers\NavigationHelper::getIcon('brands', 'w-4 h-4 mr-3')" title="Brands" size="small" />
-
-                            <!-- Tax & Discount -->
-                            <x-nav-item route="master_data.tax_discounts.index" route-pattern="master_data.tax_discounts.*"
-                                :icon="App\Helpers\NavigationHelper::getIcon('tax_and_discount', 'w-5 h-5 mr-3')" title="Tax & Discount" size="small" />
-                        @endhasanyrole
-                    </x-nav-item>
-
                     <!-- Inventory Section -->
                     <x-nav-item
                         route-pattern="inventory.products.*|inventory.product_stocks.*|inventory.thresholds.*|inventory.product-movement.*|inventory.product-costing.*"
                         :icon="App\Helpers\NavigationHelper::getIcon('inventory')" title="Inventory" :is-dropdown="true">
+
+                        <x-nav-item route="master_data.products.index" route-pattern="master_data.products.*"
+                            :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Inventory" size="small" />
 
                         @hasanyrole('super_admin|admin')
                             <!-- Stock Adjustment -->
@@ -200,6 +175,36 @@
                         <!-- Exchange -->
                         {{-- <x-nav-item route="sales.exchanges.index" route-pattern="sales.exchanges.*" :icon="App\Helpers\NavigationHelper::getIcon('exchange', 'w-4 h-4 mr-3')"
                             title="Exchange" size="small" /> --}}
+                    </x-nav-item>
+
+
+                    <!-- Master Data Section -->
+                    @hasanyrole('super_admin|admin')
+                        <x-nav-item
+                            route-pattern="master_data.products.*|master_data.categories.*|master_data.brands.*|master_data.suppliers.*|master_data.tax_discounts.*"
+                            :icon="App\Helpers\NavigationHelper::getIcon('master_data')" title="Master Data" :is-dropdown="true">
+
+                            <!-- Products -->
+                            {{-- <x-nav-item route="master_data.products.index" route-pattern="master_data.products.*"
+                                :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Products" size="small" /> --}}
+
+                            <!-- Supplier -->
+                            <x-nav-item route="master_data.suppliers.index" route-pattern="master_data.suppliers.*"
+                                :icon="App\Helpers\NavigationHelper::getIcon('suppliers', 'w-4 h-4 mr-3')" title="Supplier" size="small" />
+
+                            <!-- Categories -->
+                            <x-nav-item route="master_data.categories.index" route-pattern="master_data.categories.*"
+                                :icon="App\Helpers\NavigationHelper::getIcon('categories', 'w-4 h-4 mr-3')" title="Categories" size="small" />
+
+                            <!-- Brands -->
+                            <x-nav-item route="master_data.brands.index" route-pattern="master_data.brands.*"
+                                :icon="App\Helpers\NavigationHelper::getIcon('brands', 'w-4 h-4 mr-3')" title="Brands" size="small" />
+
+                            <!-- Tax & Discount -->
+                            <x-nav-item route="master_data.tax_discounts.index"
+                                route-pattern="master_data.tax_discounts.*" :icon="App\Helpers\NavigationHelper::getIcon('tax_and_discount', 'w-5 h-5 mr-3')" title="Tax & Discount"
+                                size="small" />
+                        @endhasanyrole
                     </x-nav-item>
 
 

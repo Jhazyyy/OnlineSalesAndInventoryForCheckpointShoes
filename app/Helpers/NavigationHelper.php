@@ -257,7 +257,7 @@ class NavigationHelper
         $breadcrumbMap = [
             // Master Data
             'master_data.products.index' => [
-                ['label' => 'Master Data', 'url' => null],
+                ['label' => 'Inventory', 'url' => null],
                 ['label' => 'Products', 'url' => null],
             ],
             'master_data.products.create' => [
@@ -273,9 +273,18 @@ class NavigationHelper
                 ['label' => 'Master Data', 'url' => null],
                 ['label' => 'Brands', 'url' => route('master_data.brands.index')],
             ],
+            'master_data.tax_discounts.index' => [
+                ['label' => 'Master Data', 'url' => null],
+                ['label' => 'Tax Discounts', 'url' => route('master_data.tax_discounts.index')],
+            ],
             'master_data.suppliers.index' => [
                 ['label' => 'Master Data', 'url' => null],
                 ['label' => 'Suppliers', 'url' => route('master_data.suppliers.index')],
+            ],
+
+            'inventory.products.index' => [
+                ['label' => 'Inventory', 'url' => null],
+                ['label' => 'Products', 'url' => route('master_data.products.index')],
             ],
 
             // Sales
@@ -294,17 +303,36 @@ class NavigationHelper
             // ],
 
             // Purchases
-            'purchase-orders.index' => [
+            'purchases.purchase-orders.index' => [
                 ['label' => 'Purchases', 'url' => null],
-                ['label' => 'Purchase Orders', 'url' => null],
+                ['label' => 'Purchase Orders', 'url' => route('purchases.purchase-orders.index')],
             ],
+            'purchases.purchase-orders.create' => [
+                ['label' => 'Purchases', 'url' => null],
+                ['label' => 'Create Purchase Order', 'url' => route('purchases.purchase-orders.create')],
+            ],
+            // 'purchases.purchase-orders.edit' => [
+            //     ['label' => 'Purchases', 'url' => null],
+            //     ['label' => 'Edit Purchase Order', 'url' => route('purchases.purchase-orders.edit')],
+            // ],
+
+
+
+            
             'purchases.deliveries.index' => [
                 ['label' => 'Purchases', 'url' => null],
-                ['label' => 'Deliveries', 'url' => null],
+                ['label' => 'Deliveries', 'url' => route('purchases.deliveries.index')],
             ],
+            'purchases.deliveries.create' => [
+                ['label' => 'Purchases', 'url' => null],
+                 ['label' => 'Deliveries', 'url' => route('purchases.deliveries.index')],
+                ['label' => 'Record Delivery', 'url' => route('purchases.deliveries.create')],
+            ],
+
+
             'purchases.receives.index' => [
                 ['label' => 'Purchases', 'url' => null],
-                ['label' => 'Receives', 'url' => null],
+                ['label' => 'Receives', 'url' => route('purchases.purchase-receives.index')],
             ],
 
             // Inventory

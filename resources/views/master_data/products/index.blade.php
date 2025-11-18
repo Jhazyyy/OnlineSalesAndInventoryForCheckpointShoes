@@ -147,7 +147,7 @@
                 <div class="p-6">
                     @if ($products->count() > 0)
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 border border-gray-200 dark:border-gray-400">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 border border-gray-200 dark:border-gray-100">
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
                                         <th
