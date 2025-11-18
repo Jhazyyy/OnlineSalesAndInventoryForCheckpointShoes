@@ -149,6 +149,36 @@ class Product extends Model
     }
 
     /**
+     * Check if the image is a URL (external link)
+     */
+    public function isImageUrl(): bool
+    {
+        if (empty($this->image)) {
+            return false;
+        }
+        
+        return filter_var($this->image, FILTER_VALIDATE_URL) !== false;
+    }
+
+    /**
+     * Get the full image URL for display
+     */
+    public function getImageUrlAttribute(): string
+    {
+        if (empty($this->image)) {
+            return asset('images/no-image.png'); // Default placeholder
+        }
+        
+        // If it's already a URL, return it as-is
+        if ($this->isImageUrl()) {
+            return $this->image;
+        }
+        
+        // Otherwise, it's a local file in storage
+        return asset('storage/' . $this->image);
+    }
+
+    /**
      * The attributes that should be cast.
      *
      * @var array<string, string>

@@ -211,37 +211,77 @@
                                     Product Image
                                 </label>
 
-                                <div class="mt-1 relative flex justify-center items-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600 overflow-hidden cursor-pointer"
-                                    onclick="document.getElementById('image').click()">
+                                <!-- Image Source Toggle -->
+                                <div class="mt-2 flex space-x-4">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="image_source" value="file" checked
+                                            onchange="toggleImageSource()"
+                                            class="form-radio text-indigo-600 focus:ring-indigo-500">
+                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Upload File</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="image_source" value="url"
+                                            onchange="toggleImageSource()"
+                                            class="form-radio text-indigo-600 focus:ring-indigo-500">
+                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Image URL</span>
+                                    </label>
+                                </div>
 
-                                    <!-- Upload placeholder -->
-                                    <div id="uploadPlaceholder" class="space-y-1 text-center">
-                                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor"
-                                            fill="none" viewBox="0 0 48 48">
-                                            <path
-                                                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                        <div class="flex text-sm text-gray-600 dark:text-gray-400 justify-center">
-                                            <span
-                                                class="relative bg-white dark:bg-gray-800 rounded-md font-medium text-indigo-600 hover:text-indigo-500">
-                                                Click to upload
-                                            </span>
-                                            <p class="pl-1">or drag and drop</p>
+                                <!-- File Upload Section -->
+                                <div id="fileUploadSection" class="mt-2">
+                                    <div class="relative flex justify-center items-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600 overflow-hidden cursor-pointer"
+                                        onclick="document.getElementById('image').click()">
+
+                                        <!-- Upload placeholder -->
+                                        <div id="uploadPlaceholder" class="space-y-1 text-center">
+                                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor"
+                                                fill="none" viewBox="0 0 48 48">
+                                                <path
+                                                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                            <div class="flex text-sm text-gray-600 dark:text-gray-400 justify-center">
+                                                <span
+                                                    class="relative bg-white dark:bg-gray-800 rounded-md font-medium text-indigo-600 hover:text-indigo-500">
+                                                    Click to upload
+                                                </span>
+                                                <p class="pl-1">or drag and drop</p>
+                                            </div>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF up to 2MB</p>
                                         </div>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF up to 2MB</p>
+
+                                        <!-- Hidden File Input -->
+                                        <input id="image" name="image" type="file" class="sr-only"
+                                            accept="image/*" onchange="previewImage(this)">
+
+                                        <!-- Image Preview (inside box) -->
+                                        <img id="previewImg" src="#" alt="Preview"
+                                            class="inset-0 max-w-fit h-auto object-cover rounded-md hidden" />
                                     </div>
+                                </div>
 
-                                    <!-- Hidden File Input -->
-                                    <input id="image" name="image" type="file" class="sr-only"
-                                        accept="image/*" onchange="previewImage(this)">
-
-                                    <!-- Image Preview (inside box) -->
-                                    <img id="previewImg" src="#" alt="Preview"
-                                        class="inset-0 max-w-fit h-auto object-cover rounded-md hidden" />
+                                <!-- URL Input Section -->
+                                <div id="urlInputSection" class="mt-2 hidden">
+                                    <input type="url" id="image_url" name="image_url"
+                                        value="{{ old('image_url') }}"
+                                        placeholder="https://example.com/image.jpg"
+                                        onchange="previewImageFromUrl(this.value)"
+                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Enter a direct image URL (must end with .jpg, .jpeg, .png, or .gif)</p>
+                                    
+                                    <!-- URL Image Preview -->
+                                    <div id="urlPreviewContainer" class="mt-3 hidden">
+                                        <div class="relative border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600 p-4">
+                                            <img id="urlPreviewImg" src="#" alt="URL Preview"
+                                                class="max-w-full h-auto object-cover rounded-md" />
+                                        </div>
+                                    </div>
                                 </div>
 
                                 @error('image')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                                @error('image_url')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -350,6 +390,52 @@
                 previewImg.src = '#';
                 previewImg.classList.add('hidden');
                 uploadPlaceholder.classList.remove('hidden');
+            }
+        }
+
+        function toggleImageSource() {
+            const imageSource = document.querySelector('input[name="image_source"]:checked').value;
+            const fileUploadSection = document.getElementById('fileUploadSection');
+            const urlInputSection = document.getElementById('urlInputSection');
+            const imageInput = document.getElementById('image');
+            const imageUrlInput = document.getElementById('image_url');
+
+            if (imageSource === 'file') {
+                fileUploadSection.classList.remove('hidden');
+                urlInputSection.classList.add('hidden');
+                imageInput.removeAttribute('disabled');
+                imageUrlInput.setAttribute('disabled', 'disabled');
+                imageUrlInput.value = '';
+            } else {
+                fileUploadSection.classList.add('hidden');
+                urlInputSection.classList.remove('hidden');
+                imageInput.setAttribute('disabled', 'disabled');
+                imageInput.value = '';
+                imageUrlInput.removeAttribute('disabled');
+                // Reset file preview
+                document.getElementById('previewImg').classList.add('hidden');
+                document.getElementById('uploadPlaceholder').classList.remove('hidden');
+            }
+        }
+
+        function previewImageFromUrl(url) {
+            const urlPreviewContainer = document.getElementById('urlPreviewContainer');
+            const urlPreviewImg = document.getElementById('urlPreviewImg');
+
+            if (url && (url.match(/\.(jpeg|jpg|gif|png)$/i) || url.includes('unsplash') || url.includes('imgur') || url.includes('cloudinary'))) {
+                urlPreviewImg.src = url;
+                urlPreviewImg.onerror = function() {
+                    urlPreviewContainer.classList.add('hidden');
+                    alert('Unable to load image from URL. Please check the URL and try again.');
+                };
+                urlPreviewImg.onload = function() {
+                    urlPreviewContainer.classList.remove('hidden');
+                };
+            } else if (url) {
+                urlPreviewContainer.classList.add('hidden');
+                alert('Please enter a valid image URL (must end with .jpg, .jpeg, .png, or .gif)');
+            } else {
+                urlPreviewContainer.classList.add('hidden');
             }
         }
     </script>

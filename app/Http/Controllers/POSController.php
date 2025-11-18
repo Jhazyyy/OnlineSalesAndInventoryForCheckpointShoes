@@ -101,7 +101,7 @@ class POSController extends Controller
                                   'stock' => $product->quantity,
                                   'category' => $product->product_category ?? 'Uncategorized',
                                   'brand' => $product->product_brand ?? 'N/A',
-                                  'image' => $product->image ? asset('storage/' . $product->image) : null,
+                                  'image' => $product->image ? $product->image_url : null,
                                   'unit' => 'pcs',
                               ];
                           });

@@ -413,6 +413,26 @@ class PurchaseDelivery extends Model
     }
 
     /**
+     * Check if the delivery has been received.
+     * A delivery is considered received if it has at least one purchase receive record.
+     */
+    public function hasBeenReceived(): bool
+    {
+        return $this->receives()->exists();
+    }
+
+    /**
+     * Check if the delivery can be used to create a purchase receive.
+     * A delivery can be received if:
+     * 1. It has 'delivered' status
+     * 2. It hasn't been received yet (no purchase receive records)
+     */
+    public function canBeReceived(): bool
+    {
+        return $this->status === 'delivered' && !$this->hasBeenReceived();
+    }
+
+    /**
      * Get status badge class for UI.
      */
     public function getStatusBadgeClassAttribute(): string

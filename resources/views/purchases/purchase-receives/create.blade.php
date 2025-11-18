@@ -746,6 +746,9 @@
 
                 // Find delivered deliveries
                 const deliveredDeliveries = relatedDeliveries.filter(d => d.status === 'delivered');
+                
+                // Find delivered deliveries that haven't been received yet
+                const availableDeliveries = deliveredDeliveries.filter(d => !d.has_been_received);
 
                 // Show warning if there are deliveries but none are delivered
                 if (deliveredDeliveries.length === 0) {
@@ -754,33 +757,49 @@
                         deliveryWarning.innerHTML =
                             '⚠️ This PO has no delivered shipments yet. Please mark a delivery as delivered first.';
                     }
+                } else if (availableDeliveries.length === 0) {
+                    // All delivered deliveries have already been received
+                    if (deliveryWarning) {
+                        deliveryWarning.style.display = 'block';
+                        deliveryWarning.innerHTML =
+                            '⚠️ All delivered shipments for this PO have already been received.';
+                    }
                 }
 
                 relatedDeliveries.forEach(delivery => {
                     const option = document.createElement('option');
                     option.value = delivery.id;
-                    option.textContent =
-                        `${delivery.delivery_number} - ${delivery.carrier || 'N/A'}${delivery.tracking_number ? ' (' + delivery.tracking_number + ')' : ''} [${delivery.status}]`;
-                    // Disable non-delivered options
-                    if (delivery.status !== 'delivered') {
+                    
+                    // Build option text with status indicators
+                    let optionText = `${delivery.delivery_number} - ${delivery.carrier || 'N/A'}${delivery.tracking_number ? ' (' + delivery.tracking_number + ')' : ''} [${delivery.status}]`;
+                    
+                    // Add "Already Received" indicator if applicable
+                    if (delivery.has_been_received) {
+                        optionText += ' - Already Received';
+                    }
+                    
+                    option.textContent = optionText;
+                    
+                    // Disable non-delivered options OR already received deliveries
+                    if (delivery.status !== 'delivered' || delivery.has_been_received) {
                         option.disabled = true;
                         option.style.color = '#999';
                     }
                     deliverySelect.appendChild(option);
                 });
 
-                // Auto-select the most recent delivered delivery
-                if (deliveredDeliveries.length > 0) {
+                // Auto-select the most recent available delivery (delivered and not received)
+                if (availableDeliveries.length > 0) {
                     // Sort by actual_delivery_date or delivery_date, most recent first
-                    deliveredDeliveries.sort((a, b) => {
+                    availableDeliveries.sort((a, b) => {
                         const dateA = new Date(a.actual_delivery_date || a.delivery_date);
                         const dateB = new Date(b.actual_delivery_date || b.delivery_date);
                         return dateB - dateA;
                     });
 
-                    deliverySelect.value = deliveredDeliveries[0].id;
+                    deliverySelect.value = availableDeliveries[0].id;
 
-                    // Hide warning if we have a delivered delivery
+                    // Hide warning if we have an available delivery
                     if (deliveryWarning) deliveryWarning.style.display = 'none';
                 }
             }

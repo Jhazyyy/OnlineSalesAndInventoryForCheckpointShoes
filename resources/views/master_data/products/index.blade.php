@@ -225,9 +225,9 @@
                                             {{-- Product Image --}}
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 @if ($product->image)
-                                                    <img src="{{ asset('storage/' . $product->image) }}"
+                                                    <img src="{{ $product->image_url }}"
                                                         alt="{{ $product->product_name }}"
-                                                        class="h-24 w-24 object-cover rounded-lg">
+                                                        class="h-24 w-auto object-cover rounded-lg">
                                                 @else
                                                     <div
                                                         class="h-16 w-16 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center">
@@ -242,7 +242,7 @@
                                                 @endif
                                             </td>
                                             {{-- Product Name and Description --}}
-                                            <td class="px-6 py-4 whitespace-nowrap">
+                                            <td class="px-6 py-4 whitespace-nowrap truncate">
                                                 <div class="text-sm font-medium text-gray-900 dark:text-white">
                                                     {{ $product->product_name }}</div>
                                                 @if ($product->description)
@@ -467,31 +467,68 @@
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Product Image
                                 </label>
-                                <div class="mt-1 relative flex justify-center items-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600 overflow-hidden cursor-pointer"
-                                    onclick="document.getElementById('modal_image').click()">
-                                    <!-- Upload placeholder -->
-                                    <div id="modal_uploadPlaceholder" class="space-y-1 text-center">
-                                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor"
-                                            fill="none" viewBox="0 0 48 48">
-                                            <path
-                                                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                        <div class="flex text-sm text-gray-600 dark:text-gray-400 justify-center">
-                                            <span
-                                                class="relative bg-white dark:bg-gray-800 rounded-md font-medium text-indigo-600 hover:text-indigo-500">
-                                                Click to upload
-                                            </span>
-                                            <p class="pl-1">or drag and drop</p>
+
+                                <!-- Image Source Toggle -->
+                                <div class="mt-2 flex space-x-4">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="modal_image_source" value="file" checked
+                                            onchange="toggleModalImageSource()"
+                                            class="form-radio text-indigo-600 focus:ring-indigo-500">
+                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Upload File</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="modal_image_source" value="url"
+                                            onchange="toggleModalImageSource()"
+                                            class="form-radio text-indigo-600 focus:ring-indigo-500">
+                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Image URL</span>
+                                    </label>
+                                </div>
+
+                                <!-- File Upload Section -->
+                                <div id="modal_fileUploadSection" class="mt-2">
+                                    <div class="relative flex justify-center items-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600 overflow-hidden cursor-pointer"
+                                        onclick="document.getElementById('modal_image').click()">
+                                        <!-- Upload placeholder -->
+                                        <div id="modal_uploadPlaceholder" class="space-y-1 text-center">
+                                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor"
+                                                fill="none" viewBox="0 0 48 48">
+                                                <path
+                                                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                            <div class="flex text-sm text-gray-600 dark:text-gray-400 justify-center">
+                                                <span
+                                                    class="relative bg-white dark:bg-gray-800 rounded-md font-medium text-indigo-600 hover:text-indigo-500">
+                                                    Click to upload
+                                                </span>
+                                                <p class="pl-1">or drag and drop</p>
+                                            </div>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF up to 2MB</p>
                                         </div>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF up to 2MB</p>
+                                        <!-- Hidden File Input -->
+                                        <input id="modal_image" name="image" type="file" class="sr-only"
+                                            accept="image/*" onchange="previewModalImage(this)">
+                                        <!-- Image Preview -->
+                                        <img id="modal_previewImg" src="#" alt="Preview"
+                                            class="inset-0 max-w-auto h-auto object-cover rounded-md hidden" />
                                     </div>
-                                    <!-- Hidden File Input -->
-                                    <input id="modal_image" name="image" type="file" class="sr-only"
-                                        accept="image/*" onchange="previewModalImage(this)">
-                                    <!-- Image Preview -->
-                                    <img id="modal_previewImg" src="#" alt="Preview"
-                                        class="inset-0 max-w-auto h-auto object-cover rounded-md hidden" />
+                                </div>
+
+                                <!-- URL Input Section -->
+                                <div id="modal_urlInputSection" class="mt-2 hidden">
+                                    <input type="url" id="modal_image_url" name="image_url"
+                                        placeholder="https://example.com/image.jpg"
+                                        onchange="previewModalImageFromUrl(this.value)"
+                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Enter a direct image URL</p>
+                                    
+                                    <!-- URL Image Preview -->
+                                    <div id="modal_urlPreviewContainer" class="mt-3 hidden">
+                                        <div class="relative border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600 p-4">
+                                            <img id="modal_urlPreviewImg" src="#" alt="URL Preview"
+                                                class="max-w-auto h-auto object-cover rounded-md" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -568,6 +605,51 @@
                 previewImg.src = '#';
                 previewImg.classList.add('hidden');
                 uploadPlaceholder.classList.remove('hidden');
+            }
+        }
+
+        function toggleModalImageSource() {
+            const source = document.querySelector('input[name="modal_image_source"]:checked').value;
+            const fileSection = document.getElementById('modal_fileUploadSection');
+            const urlSection = document.getElementById('modal_urlInputSection');
+            const fileInput = document.getElementById('modal_image');
+            const urlInput = document.getElementById('modal_image_url');
+
+            if (source === 'file') {
+                fileSection.classList.remove('hidden');
+                urlSection.classList.add('hidden');
+                urlInput.value = '';
+                urlInput.disabled = true;
+                fileInput.disabled = false;
+                document.getElementById('modal_urlPreviewContainer').classList.add('hidden');
+            } else {
+                fileSection.classList.add('hidden');
+                urlSection.classList.remove('hidden');
+                fileInput.value = '';
+                fileInput.disabled = true;
+                urlInput.disabled = false;
+                const previewImg = document.getElementById('modal_previewImg');
+                const uploadPlaceholder = document.getElementById('modal_uploadPlaceholder');
+                previewImg.classList.add('hidden');
+                uploadPlaceholder.classList.remove('hidden');
+            }
+        }
+
+        function previewModalImageFromUrl(url) {
+            const urlPreviewContainer = document.getElementById('modal_urlPreviewContainer');
+            const urlPreviewImg = document.getElementById('modal_urlPreviewImg');
+
+            if (url && url.trim() !== '') {
+                urlPreviewImg.src = url;
+                urlPreviewImg.onerror = function() {
+                    urlPreviewContainer.classList.add('hidden');
+                    alert('Unable to load image from the provided URL. Please check the URL and try again.');
+                };
+                urlPreviewImg.onload = function() {
+                    urlPreviewContainer.classList.remove('hidden');
+                };
+            } else {
+                urlPreviewContainer.classList.add('hidden');
             }
         }
 
@@ -690,9 +772,28 @@
 
                     if (data.product.image) {
                         document.getElementById('edit_current_image').classList.remove('hidden');
-                        document.getElementById('edit_current_image_preview').src = `/storage/${data.product.image}`;
+                        // Check if image is a URL or storage path
+                        const imageUrl = data.product.image.startsWith('http://') || data.product.image.startsWith('https://') 
+                            ? data.product.image 
+                            : `/storage/${data.product.image}`;
+                        document.getElementById('edit_current_image_preview').src = imageUrl;
+                        
+                        // If current image is a URL, pre-fill the URL field and switch to URL mode
+                        if (data.product.image.startsWith('http://') || data.product.image.startsWith('https://')) {
+                            document.querySelector('input[name="edit_image_source"][value="url"]').checked = true;
+                            document.getElementById('edit_image_url').value = data.product.image;
+                            toggleEditImageSource();
+                            previewEditImageFromUrl(data.product.image);
+                        } else {
+                            // Reset to file mode for local images
+                            document.querySelector('input[name="edit_image_source"][value="file"]').checked = true;
+                            toggleEditImageSource();
+                        }
                     } else {
                         document.getElementById('edit_current_image').classList.add('hidden');
+                        // Reset to file mode
+                        document.querySelector('input[name="edit_image_source"][value="file"]').checked = true;
+                        toggleEditImageSource();
                     }
                 })
                 .catch(error => {
@@ -707,6 +808,14 @@
             document.body.style.overflow = 'auto';
             document.getElementById('editProductForm').reset();
             document.getElementById('edit_current_image').classList.add('hidden');
+            
+            // Reset to file upload mode
+            document.querySelector('input[name="edit_image_source"][value="file"]').checked = true;
+            document.getElementById('edit_fileUploadSection').classList.remove('hidden');
+            document.getElementById('edit_urlInputSection').classList.add('hidden');
+            document.getElementById('edit_image').disabled = false;
+            document.getElementById('edit_image_url').disabled = true;
+            document.getElementById('edit_urlPreviewContainer').classList.add('hidden');
         }
 
         function previewEditImage(input) {
@@ -717,6 +826,47 @@
                     document.getElementById('edit_current_image_preview').src = e.target.result;
                 };
                 reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function toggleEditImageSource() {
+            const source = document.querySelector('input[name="edit_image_source"]:checked').value;
+            const fileSection = document.getElementById('edit_fileUploadSection');
+            const urlSection = document.getElementById('edit_urlInputSection');
+            const fileInput = document.getElementById('edit_image');
+            const urlInput = document.getElementById('edit_image_url');
+
+            if (source === 'file') {
+                fileSection.classList.remove('hidden');
+                urlSection.classList.add('hidden');
+                urlInput.value = '';
+                urlInput.disabled = true;
+                fileInput.disabled = false;
+                document.getElementById('edit_urlPreviewContainer').classList.add('hidden');
+            } else {
+                fileSection.classList.add('hidden');
+                urlSection.classList.remove('hidden');
+                fileInput.value = '';
+                fileInput.disabled = true;
+                urlInput.disabled = false;
+            }
+        }
+
+        function previewEditImageFromUrl(url) {
+            const urlPreviewContainer = document.getElementById('edit_urlPreviewContainer');
+            const urlPreviewImg = document.getElementById('edit_urlPreviewImg');
+
+            if (url && url.trim() !== '') {
+                urlPreviewImg.src = url;
+                urlPreviewImg.onerror = function() {
+                    urlPreviewContainer.classList.add('hidden');
+                    alert('Unable to load image from the provided URL. Please check the URL and try again.');
+                };
+                urlPreviewImg.onload = function() {
+                    urlPreviewContainer.classList.remove('hidden');
+                };
+            } else {
+                urlPreviewContainer.classList.add('hidden');
             }
         }
 
@@ -746,7 +896,11 @@
 
                     if (data.image) {
                         document.getElementById('view_image_container').classList.remove('hidden');
-                        document.getElementById('view_product_image').src = `/storage/${data.image}`;
+                        // Check if image is a URL or storage path
+                        const imageUrl = data.image.startsWith('http://') || data.image.startsWith('https://') 
+                            ? data.image 
+                            : `/storage/${data.image}`;
+                        document.getElementById('view_product_image').src = imageUrl;
                         document.getElementById('view_no_image').classList.add('hidden');
                     } else {
                         document.getElementById('view_image_container').classList.add('hidden');
@@ -900,10 +1054,45 @@
                                         class="h-32 w-32 object-cover rounded-lg border">
                                     <p class="text-xs text-gray-500 mt-1">Current image</p>
                                 </div>
-                                <div class="mt-2">
+
+                                <!-- Image Source Toggle -->
+                                <div class="mt-2 flex space-x-4">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="edit_image_source" value="file" checked
+                                            onchange="toggleEditImageSource()"
+                                            class="form-radio text-indigo-600 focus:ring-indigo-500">
+                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Upload File</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="edit_image_source" value="url"
+                                            onchange="toggleEditImageSource()"
+                                            class="form-radio text-indigo-600 focus:ring-indigo-500">
+                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Image URL</span>
+                                    </label>
+                                </div>
+
+                                <!-- File Upload Section -->
+                                <div id="edit_fileUploadSection" class="mt-2">
                                     <input type="file" id="edit_image" name="image" accept="image/*"
                                         onchange="previewEditImage(this)"
                                         class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                </div>
+
+                                <!-- URL Input Section -->
+                                <div id="edit_urlInputSection" class="mt-2 hidden">
+                                    <input type="url" id="edit_image_url" name="image_url"
+                                        placeholder="https://example.com/image.jpg"
+                                        onchange="previewEditImageFromUrl(this.value)"
+                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Enter a direct image URL</p>
+                                    
+                                    <!-- URL Image Preview -->
+                                    <div id="edit_urlPreviewContainer" class="mt-3 hidden">
+                                        <div class="relative border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600 p-4">
+                                            <img id="edit_urlPreviewImg" src="#" alt="URL Preview"
+                                                class="max-w-full h-auto object-cover rounded-md" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div>

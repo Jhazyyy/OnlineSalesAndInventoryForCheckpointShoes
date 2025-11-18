@@ -56,6 +56,7 @@ class PurchaseReceiveController extends Controller
                     'status' => $delivery->status,
                     'delivery_date' => (string) $delivery->delivery_date,
                     'actual_delivery_date' => (string) $delivery->actual_delivery_date,
+                    'has_been_received' => $delivery->hasBeenReceived(), // Check if already received
                 ];
             });
         
@@ -102,6 +103,23 @@ class PurchaseReceiveController extends Controller
 
         $data = $validator->validated();
         
+        // Check if the delivery has already been received (if delivery_id is provided)
+        if (!empty($data['delivery_id'])) {
+            $delivery = \App\Models\PurchaseDelivery::find($data['delivery_id']);
+            if ($delivery && $delivery->hasBeenReceived()) {
+                return redirect()->back()
+                    ->withErrors(['delivery_id' => 'This delivery has already been received. Please select a different delivery or create a new one.'])
+                    ->withInput();
+            }
+            
+            // Also check if the delivery status is 'delivered'
+            if ($delivery && $delivery->status !== 'delivered') {
+                return redirect()->back()
+                    ->withErrors(['delivery_id' => 'Only deliveries with "delivered" status can be received. Current status: ' . $delivery->status])
+                    ->withInput();
+            }
+        }
+        
         // Check if the purchase order can receive items (includes delivery status check)
         $purchaseOrder = PurchaseOrder::with('deliveries')->find($data['purchase_order_id']);
         if ($purchaseOrder && !$purchaseOrder->canReceiveItems()) {
@@ -123,10 +141,13 @@ class PurchaseReceiveController extends Controller
         
         // Auto-assign delivered delivery if exists and not provided
         if ($purchaseOrder && empty($data['delivery_id'])) {
+            // Find a delivered delivery that hasn't been received yet
             $deliveredDelivery = $purchaseOrder->deliveries()
                 ->where('status', 'delivered')
-                ->orderBy('actual_delivery_date', 'desc')
-                ->first();
+                ->get()
+                ->first(function ($delivery) {
+                    return !$delivery->hasBeenReceived();
+                });
                 
             if ($deliveredDelivery) {
                 $data['delivery_id'] = $deliveredDelivery->delivery_id;
