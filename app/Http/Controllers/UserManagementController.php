@@ -62,7 +62,7 @@ class UserManagementController extends Controller
         ];
 
         // Role and status options for filters
-        $roles = ['super_admin', 'admin', 'user'];
+        $roles = ['super admin', 'admin', 'user'];
         $statuses = ['active', 'inactive', 'suspended'];
 
         return view('user-management.index', compact('users', 'stats', 'roles', 'statuses'));

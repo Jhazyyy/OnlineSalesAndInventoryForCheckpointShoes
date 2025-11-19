@@ -770,6 +770,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{brand}', [BrandController::class, 'destroy'])->name('destroy');
     });
 
+    //Master Data Stock Name Routes
+    Route::prefix('master_data/stock_names')->name('master_data.stock_names.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\StockNameController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\StockNameController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\StockNameController::class, 'store'])->name('store');
+        Route::get('/{stockName}', [\App\Http\Controllers\StockNameController::class, 'show'])->name('show');
+        Route::get('/{stockName}/edit', [\App\Http\Controllers\StockNameController::class, 'edit'])->name('edit');
+        Route::put('/{stockName}', [\App\Http\Controllers\StockNameController::class, 'update'])->name('update');
+        Route::delete('/{stockName}', [\App\Http\Controllers\StockNameController::class, 'destroy'])->name('destroy');
+    });
+
     //Master Data Tax & Discount Routes
     Route::prefix('master_data/tax_discounts')->name('master_data.tax_discounts.')->group(function () {
         Route::get('/', [\App\Http\Controllers\TaxDiscountController::class, 'index'])->name('index');

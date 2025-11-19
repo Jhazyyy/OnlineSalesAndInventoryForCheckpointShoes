@@ -7,6 +7,7 @@ use App\Imports\ProductsImport;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\StockName;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -60,13 +61,19 @@ class ProductController extends Controller
 
         $products = $query->with('lastSupplier')->paginate(15)->withQueryString();
 
+        // Get unique stock names for filter dropdown
+        $stockNames = StockName::where('is_active', true)->orderBy('name')->pluck('name')->filter()->sort();
+
         // Get unique brands for filter dropdown
         $brands = Product::distinct()->pluck('product_brand')->filter()->sort();
 
         // Get unique categories for filter dropdown
         $categories = Product::distinct()->pluck('product_category')->filter()->sort();
 
-        return view('master_data.products.index', compact('products', 'brands', 'categories'));
+        // Get active suppliers for dropdown
+        $suppliers = \App\Models\Supplier::where('status', 'active')->orderBy('supplier_name')->get();
+
+        return view('master_data.products.index', compact('products', 'stockNames', 'brands', 'categories', 'suppliers'));
     }
 
     /**
@@ -74,26 +81,37 @@ class ProductController extends Controller
      */
     public function create()
     {
+        // Get active stock names for dropdown
+        $stockNames = StockName::where('is_active', true)->orderBy('name')->pluck('name', 'name');
+
         // Get active brands for dropdown
         $brands = Brand::where('is_active', true)->orderBy('name')->pluck('name', 'name');
 
         // Get active categories for dropdown
         $categories = Category::where('is_active', true)->orderBy('name')->pluck('name', 'name');
 
-        return view('master_data.products.create', compact('brands', 'categories'));
+        // Get active suppliers for dropdown
+        $suppliers = \App\Models\Supplier::where('status', 'active')->orderBy('supplier_name')->get();
+
+        return view('master_data.products.create', compact('stockNames', 'brands', 'categories', 'suppliers'));
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'stock_name' => 'nullable|string|max:255',
+            'custom_stock_name' => 'nullable|string|max:255',
             'product_name' => 'required|string|max:255',
             'sku' => 'nullable|string|max:255|unique:products,sku',
             'barcode' => 'nullable|string|max:255|unique:products,barcode',
+            'size' => 'nullable|string|max:50',
+            'color' => 'nullable|string|max:50',
+            'preferred_supplier_id' => 'nullable|exists:suppliers,supplier_id',
             'property_name' => 'nullable|string|max:255',
             'property_value' => 'nullable|string|max:255',
             'product_category' => 'nullable|string|max:255',
             'custom_category' => 'nullable|string|max:255',
-            'price' => 'required|numeric|min:0',
+            'price' => 'nullable|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image_url' => 'nullable|url|max:500',
             'description' => 'nullable|string|max:1000',
@@ -107,6 +125,28 @@ class ProductController extends Controller
         }
 
         $data = $validator->validated();
+
+        // Handle stock name selection/creation
+        $stockNameId = null;
+        if ($request->stock_name) {
+            $stockNameValue = $request->stock_name === 'custom' ? $request->custom_stock_name : $request->stock_name;
+            
+            if ($stockNameValue) {
+                // Create stock name if it doesn't exist
+                $stockName = StockName::firstOrCreate(
+                    ['name' => $stockNameValue],
+                    [
+                        'stock_code' => strtoupper(str_replace([' ', '-'], '_', $stockNameValue)),
+                        'description' => 'Auto-created stock name from product: '.$request->product_name,
+                        'is_active' => true,
+                    ]
+                );
+                $stockNameId = $stockName->id;
+                // Keep the string version for backward compatibility
+                $data['stock_name'] = $stockName->name;
+            }
+        }
+        $data['stock_name_id'] = $stockNameId;
 
         // Determine the brand name to use
         $brandName = $request->product_brand === 'custom' ? $request->custom_brand : $request->product_brand;
@@ -151,10 +191,10 @@ class ProductController extends Controller
         // Auto-generate SKU if not provided
         if (empty($data['sku'])) {
             // Generate SKU based on brand and product name
-            $brandPrefix = strtoupper(substr(str_replace([' ', '-'], '', $brand->name), 0, 3));
+            $stockNamePrefix = strtoupper(substr(str_replace([' ', '-'], '', $stockName->name), 0, 3));
             $namePrefix = strtoupper(substr(str_replace([' ', '-'], '', $request->product_name), 0, 3));
-            $randomSuffix = strtoupper(substr(md5(uniqid()), 0, 4));
-            $data['sku'] = "{$brandPrefix}-{$namePrefix}-{$randomSuffix}";
+            $randomSuffix = strtoupper(substr(md5(uniqid()), 0, length: 6));
+            $data['sku'] = "{$stockNamePrefix}-{$namePrefix}-{$randomSuffix}";
             
             // Ensure uniqueness
             $counter = 1;
@@ -217,32 +257,41 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
+        $stockNames = StockName::pluck('name');  // get stock names as a collection
         $brands = Brand::pluck('name');  // get brand names as a collection
         $categories = Category::pluck('name');  // get category names as a collection
+        $suppliers = \App\Models\Supplier::where('status', 'active')->orderBy('supplier_name')->get();
 
         // Check if request wants JSON (AJAX request for modal)
         if (request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json([
                 'product' => $product,
+                'stockNames' => $stockNames,
                 'brands' => $brands,
                 'categories' => $categories,
+                'suppliers' => $suppliers,
             ]);
         }
 
-        return view('master_data.products.edit', compact('product', 'brands', 'categories'));
+        return view('master_data.products.edit', compact('product', 'stockNames', 'brands', 'categories', 'suppliers'));
     }
 
     public function update(Request $request, Product $product)
     {
         $validator = Validator::make($request->all(), [
+            'stock_name' => 'nullable|string|max:255',
+            'custom_stock_name' => 'nullable|string|max:255',
             'product_name' => 'required|string|max:255',
             'sku' => 'nullable|string|max:255|unique:products,sku,' . $product->product_id . ',product_id',
             'barcode' => 'nullable|string|max:255|unique:products,barcode,' . $product->product_id . ',product_id',
+            'size' => 'nullable|string|max:50',
+            'color' => 'nullable|string|max:50',
+            'preferred_supplier_id' => 'nullable|exists:suppliers,supplier_id',
             'property_name' => 'nullable|string|max:255',
             'property_value' => 'nullable|string|max:255',
             'product_category' => 'nullable|string|max:255',
             'custom_category' => 'nullable|string|max:255',
-            'price' => 'required|numeric|min:0',
+            'price' => 'nullable|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image_url' => 'nullable|url|max:500',
             'description' => 'nullable|string|max:1000',
@@ -255,6 +304,28 @@ class ProductController extends Controller
         }
 
         $data = $validator->validated();
+
+        // Handle stock name selection/creation
+        $stockNameId = null;
+        if ($request->stock_name) {
+            $stockNameValue = $request->stock_name === 'custom' ? $request->custom_stock_name : $request->stock_name;
+            
+            if ($stockNameValue) {
+                // Create stock name if it doesn't exist
+                $stockName = StockName::firstOrCreate(
+                    ['name' => $stockNameValue],
+                    [
+                        'stock_code' => strtoupper(str_replace([' ', '-'], '_', $stockNameValue)),
+                        'description' => 'Auto-created stock name from product: '.$request->product_name,
+                        'is_active' => true,
+                    ]
+                );
+                $stockNameId = $stockName->id;
+                // Keep the string version for backward compatibility
+                $data['stock_name'] = $stockName->name;
+            }
+        }
+        $data['stock_name_id'] = $stockNameId;
 
         // Handle brand selection
         $brandName = $request->product_brand === 'custom' ? $request->custom_brand : $request->product_brand;

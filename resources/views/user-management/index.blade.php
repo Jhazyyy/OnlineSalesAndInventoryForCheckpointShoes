@@ -272,7 +272,7 @@
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0 h-10 w-10">
                                                     @if ($user->profile_photo)
-                                                        <img class="w-10 h-6 rounded-full object-cover"
+                                                        <img class="max-w-20 max-h-auto rounded-full object-cover"
                                                             src="{{ asset(path: 'storage/' . $user->profile_photo) }}"
                                                             alt="{{ $user->name }}">
                                                     @else

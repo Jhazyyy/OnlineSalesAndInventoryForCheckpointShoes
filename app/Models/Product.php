@@ -26,12 +26,16 @@ class Product extends Model
     protected $fillable = [
         'product_name',
         'stock_name',
+        'stock_name_id',
         'sku',
         'barcode',
+        'size',
+        'color',
         'property_name',
         'property_value',
         'product_brand',
         'product_category',
+        'preferred_supplier_id',
         'price', 
         'image',
         'description',
@@ -319,6 +323,14 @@ class Product extends Model
     public function brand()
     {
         return $this->belongsTo(Brand::class, 'product_brand', 'name');
+    }
+
+    /**
+     * Get the stock name (parent product) associated with this product.
+     */
+    public function stockName()
+    {
+        return $this->belongsTo(StockName::class, 'stock_name_id');
     }
 
     /**
@@ -744,6 +756,28 @@ class Product extends Model
                        ->groupBy('product_id');
               });
         });
+    }
+
+    /**
+     * Scope a query to filter by stock name.
+     */
+    public function scopeByStockName(Builder $query, string $stockName): Builder
+    {
+        return $query->where('stock_name', $stockName);
+    }
+
+    /**
+     * Get all product variants with the same stock name.
+     */
+    public function getVariantsAttribute()
+    {
+        if (!$this->stock_name) {
+            return collect([]);
+        }
+        
+        return static::where('stock_name', $this->stock_name)
+            ->where('product_id', '!=', $this->product_id)
+            ->get();
     }
 
     /**

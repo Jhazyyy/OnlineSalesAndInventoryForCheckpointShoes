@@ -67,6 +67,15 @@
 
                                 <!-- Product Details -->
                                 <div class="space-y-4">
+                                    @if($product->stock_name)
+                                    <div>
+                                        <label
+                                            class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock Name (Base Product)</label>
+                                        <p class="text-lg text-gray-900 dark:text-white">{{ $product->stock_name }}
+                                        </p>
+                                    </div>
+                                    @endif
+
                                     <div>
                                         <label
                                             class="block text-sm font-medium text-gray-500 dark:text-gray-400">Product
@@ -74,6 +83,22 @@
                                         <p class="text-lg text-gray-900 dark:text-white">{{ $product->product_name }}
                                         </p>
                                     </div>
+
+                                    @if($product->size)
+                                    <div>
+                                        <label
+                                            class="block text-sm font-medium text-gray-500 dark:text-gray-400">Size</label>
+                                        <p class="text-lg text-gray-900 dark:text-white">{{ $product->size }}</p>
+                                    </div>
+                                    @endif
+
+                                    @if($product->color)
+                                    <div>
+                                        <label
+                                            class="block text-sm font-medium text-gray-500 dark:text-gray-400">Color</label>
+                                        <p class="text-lg text-gray-900 dark:text-white">{{ $product->color }}</p>
+                                    </div>
+                                    @endif
 
                                     <div>
                                         <label
@@ -89,6 +114,14 @@
                                         <p class="text-lg text-gray-900 dark:text-white">{{ $product->product_category }}
                                         </p>
                                     </div>
+
+                                    @if($product->preferredSupplier)
+                                    <div>
+                                        <label
+                                            class="block text-sm font-medium text-gray-500 dark:text-gray-400">Preferred Supplier</label>
+                                        <p class="text-lg text-gray-900 dark:text-white">{{ $product->preferredSupplier->supplier_name }}</p>
+                                    </div>
+                                    @endif
 
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>

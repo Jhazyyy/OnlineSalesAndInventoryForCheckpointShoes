@@ -23,7 +23,7 @@ return new class extends Migration {
             $table->string('product_brand')->nullable();
             $table->string('product_category')->nullable();
             $table->integer('quantity')->default(0);
-            $table->decimal('price', 10, 2)->comment('base price'); 
+            $table->decimal('price', 10, 2)->nullable()->comment('base price'); 
             $table->string('image')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();

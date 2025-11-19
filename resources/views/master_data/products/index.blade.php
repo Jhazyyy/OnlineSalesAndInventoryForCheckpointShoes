@@ -27,7 +27,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <form method="GET" action="{{ route('master_data.products.index') }}" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                             <!-- Search -->
                             <div>
                                 <label for="search"
@@ -35,6 +35,23 @@
                                 <input type="text" id="search" name="search" value="{{ request('search') }}"
                                     placeholder="Search products..."
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            </div>
+
+
+                            <!-- Stock Name Filter -->
+                            <div>
+                                <label for="stock_names"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Stock Name</label>
+                                <select id="stock_names" name="stock_names"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">All Stock Names</option>
+                                    @foreach ($stockNames as $stock_name)
+                                        <option value="{{ $stock_name }}"
+                                            {{ request('stock_names') == $stock_name ? 'selected' : '' }}>
+                                            {{ $stock_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <!-- Brand Filter -->
@@ -234,8 +251,7 @@
                                 <tbody
                                     class="bg-slate-100 dark:bg-gray-900 divide-y divide-gray-600 dark:divide-gray-400">
                                     @foreach ($products as $product)
-                                        <tr
-                                            class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                             {{-- Product Image --}}
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 @if ($product->image)
@@ -263,10 +279,30 @@
                                             </td>
                                             {{-- Product Name and Description --}}
                                             <td class="px-6 py-4">
+                                                @if ($product->stock_name)
+                                                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                                                        <span class="font-medium">Stock:</span>
+                                                        {{ $product->stock_name }}
+                                                    </div>
+                                                @endif
                                                 <div
                                                     class="text-sm font-medium text-gray-900 dark:text-white break-words">
                                                     {{ $product->product_name }}
                                                 </div>
+                                                @if ($product->size || $product->color)
+                                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                        @if ($product->size)
+                                                            <span
+                                                                class="inline-block bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded mr-1">Size:
+                                                                {{ $product->size }}</span>
+                                                        @endif
+                                                        @if ($product->color)
+                                                            <span
+                                                                class="inline-block bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">Color:
+                                                                {{ $product->color }}</span>
+                                                        @endif
+                                                    </div>
+                                                @endif
 
                                                 @if ($product->description)
                                                     <div class="text-sm text-gray-500 dark:text-gray-400 break-words">
@@ -275,20 +311,16 @@
                                                 @endif
                                             </td>
                                             {{-- Product Brand --}}
-                                            <td
-                                                class="px-6 py-4 text-sm text-gray-900 dark:text-white break-words">
+                                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-white break-words">
                                                 {{ $product->product_brand }}</td>
                                             {{-- Product Category --}}
-                                            <td
-                                                class="px-6 py-4 text-sm text-gray-900 dark:text-white break-words">
+                                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-white break-words">
                                                 {{ $product->product_category }}</td>
                                             {{-- Product Quantity --}}
-                                            <td
-                                                class="px-6 py-4 text-sm text-gray-900 dark:text-white break-words">
+                                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-white break-words">
                                                 {{ number_format($product->quantity) }}</td>
                                             {{-- Product Price --}}
-                                            <td
-                                                class="px-6 py-4 text-sm text-gray-900 dark:text-white break-words">
+                                            <td class="px-6 py-4 text-sm text-gray-900 dark:text-white break-words">
                                                 ₱{{ number_format($product->price, 2) }}</td>
                                             {{-- Last Supplier --}}
                                             {{-- <td class="px-6 py-4 whitespace-nowrap">
@@ -398,6 +430,29 @@
                     @csrf
                     <div class="mt-4 space-y-6 max-h-[60vh] overflow-y-auto pr-2">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Stock Name (Base Product) -->
+                            <div>
+                                <label for="modal_stock_name"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Stock Name (Base Product) <span class="text-gray-400 text-xs">(Optional)</span>
+                                </label>
+                                <div class="mt-1 flex">
+                                    <select id="modal_stock_name" name="stock_name"
+                                        class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                        <option value="">Select a stock name...</option>
+                                        @foreach ($stockNames as $stockName)
+                                            <option value="{{ $stockName }}">{{ $stockName }}</option>
+                                        @endforeach
+                                        <option value="custom">+ Add New Stock Name</option>
+                                    </select>
+                                </div>
+                                <input type="text" id="modal_custom_stock_name" name="custom_stock_name"
+                                    placeholder="Enter new stock name..." style="display: none;"
+                                    class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The parent/base product name
+                                </p>
+                            </div>
+
                             <!-- Product Name -->
                             <div>
                                 <label for="modal_product_name"
@@ -407,7 +462,33 @@
                                 <input type="text" id="modal_product_name" name="product_name" required
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
+                        </div>
 
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Size -->
+                            <div>
+                                <label for="modal_size"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Size <span class="text-gray-400 text-xs">(Optional)</span>
+                                </label>
+                                <input type="text" id="modal_size" name="size"
+                                    placeholder="e.g., 42, Large, XL"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            </div>
+
+                            <!-- Color -->
+                            <div>
+                                <label for="modal_color"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Color <span class="text-gray-400 text-xs">(Optional)</span>
+                                </label>
+                                <input type="text" id="modal_color" name="color"
+                                    placeholder="e.g., Black, Red, Blue"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- SKU -->
                             <div>
                                 <label for="modal_sku"
@@ -464,6 +545,24 @@
                             </div>
                         </div>
 
+                        <!-- Supplier -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="modal_preferred_supplier_id"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Preferred Supplier <span class="text-gray-400 text-xs">(Optional)</span>
+                                </label>
+                                <select id="modal_preferred_supplier_id" name="preferred_supplier_id"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">Select a supplier...</option>
+                                    @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->supplier_id }}">{{ $supplier->supplier_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
                         <!-- Price -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
@@ -476,7 +575,7 @@
                                         <span class="text-gray-500 sm:text-sm">₱</span>
                                     </div>
                                     <input type="number" id="modal_price" name="price" step="0.01"
-                                        min="0" required
+                                        min="0"
                                         class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 </div>
                             </div>
@@ -680,12 +779,26 @@
             }
         }
 
-        // Handle custom brand/category selection
+        // Handle custom brand/category/stock name selection
         document.addEventListener('DOMContentLoaded', function() {
+            const stockNameSelect = document.getElementById('modal_stock_name');
+            const customStockNameInput = document.getElementById('modal_custom_stock_name');
             const brandSelect = document.getElementById('modal_product_brand');
             const customBrandInput = document.getElementById('modal_custom_brand');
             const categorySelect = document.getElementById('modal_product_category');
             const customCategoryInput = document.getElementById('modal_custom_category');
+
+            if (stockNameSelect) {
+                stockNameSelect.addEventListener('change', function() {
+                    if (this.value === 'custom') {
+                        customStockNameInput.style.display = 'block';
+                        customStockNameInput.required = false; // Stock name is optional
+                    } else {
+                        customStockNameInput.style.display = 'none';
+                        customStockNameInput.required = false;
+                    }
+                });
+            }
 
             if (brandSelect) {
                 brandSelect.addEventListener('change', function() {
@@ -719,6 +832,11 @@
             const createForm = document.getElementById('createProductForm');
             if (createForm) {
                 createForm.addEventListener('submit', function(e) {
+                    if (stockNameSelect && stockNameSelect.value === 'custom' && !customStockNameInput.value.trim()) {
+                        e.preventDefault();
+                        alert('Please enter a custom stock name.');
+                        return false;
+                    }
                     if (brandSelect.value === 'custom' && !customBrandInput.value.trim()) {
                         e.preventDefault();
                         alert('Please enter a custom brand name.');
@@ -753,6 +871,22 @@
                     }
                 });
             }
+
+            // Setup edit modal custom input handlers
+            const editStockNameSelect = document.getElementById('edit_stock_name');
+            const editCustomStockNameInput = document.getElementById('edit_custom_stock_name');
+
+            if (editStockNameSelect) {
+                editStockNameSelect.addEventListener('change', function() {
+                    if (this.value === 'custom') {
+                        editCustomStockNameInput.style.display = 'block';
+                        editCustomStockNameInput.required = false; // Stock name is optional
+                    } else {
+                        editCustomStockNameInput.style.display = 'none';
+                        editCustomStockNameInput.required = false;
+                    }
+                });
+            }
         });
 
         // EDIT PRODUCT MODAL
@@ -773,9 +907,27 @@
                 .then(data => {
                     document.getElementById('editProductForm').action = `/master_data/products/${productId}`;
                     document.getElementById('edit_product_name').value = data.product.product_name;
+                    document.getElementById('edit_size').value = data.product.size || '';
+                    document.getElementById('edit_color').value = data.product.color || '';
                     document.getElementById('edit_sku').value = data.product.sku || '';
                     document.getElementById('edit_price').value = data.product.price;
                     document.getElementById('edit_description').value = data.product.description || '';
+
+                    // Populate stock names dropdown
+                    const stockNameSelect = document.getElementById('edit_stock_name');
+                    stockNameSelect.innerHTML = '<option value="">Select a stock name...</option>';
+                    data.stockNames.forEach(stockName => {
+                        const option = document.createElement('option');
+                        option.value = stockName;
+                        option.textContent = stockName;
+                        option.selected = data.product.stock_name === stockName;
+                        stockNameSelect.appendChild(option);
+                    });
+                    // Add custom option
+                    const customStockOption = document.createElement('option');
+                    customStockOption.value = 'custom';
+                    customStockOption.textContent = '+ Add New Stock Name';
+                    stockNameSelect.appendChild(customStockOption);
 
                     const brandSelect = document.getElementById('edit_product_brand');
                     brandSelect.innerHTML = '<option value="">Select a brand...</option>';
@@ -795,6 +947,16 @@
                         option.textContent = category;
                         option.selected = data.product.product_category === category;
                         categorySelect.appendChild(option);
+                    });
+
+                    const supplierSelect = document.getElementById('edit_preferred_supplier_id');
+                    supplierSelect.innerHTML = '<option value="">Select a supplier...</option>';
+                    data.suppliers.forEach(supplier => {
+                        const option = document.createElement('option');
+                        option.value = supplier.supplier_id;
+                        option.textContent = supplier.supplier_name;
+                        option.selected = data.product.preferred_supplier_id === supplier.supplier_id;
+                        supplierSelect.appendChild(option);
                     });
 
                     if (data.product.image) {
@@ -1018,6 +1180,23 @@
                     <div class="mt-4 space-y-6 max-h-[60vh] overflow-y-auto pr-2">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
+                                <label for="edit_stock_name"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Stock Name (Base Product) <span class="text-gray-400 text-xs">(Optional)</span>
+                                </label>
+                                <div class="mt-1 flex">
+                                    <select id="edit_stock_name" name="stock_name"
+                                        class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                        <option value="">Select a stock name...</option>
+                                    </select>
+                                </div>
+                                <input type="text" id="edit_custom_stock_name" name="custom_stock_name"
+                                    placeholder="Enter new stock name..." style="display: none;"
+                                    class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The parent/base product name
+                                </p>
+                            </div>
+                            <div>
                                 <label for="edit_product_name"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Product Name <span class="text-red-500">*</span>
@@ -1025,6 +1204,30 @@
                                 <input type="text" id="edit_product_name" name="product_name" required
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="edit_size"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Size <span class="text-gray-400 text-xs">(Optional)</span>
+                                </label>
+                                <input type="text" id="edit_size" name="size"
+                                    placeholder="e.g., 42, Large, XL"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            </div>
+                            <div>
+                                <label for="edit_color"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Color <span class="text-gray-400 text-xs">(Optional)</span>
+                                </label>
+                                <input type="text" id="edit_color" name="color"
+                                    placeholder="e.g., Black, Red, Blue"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label for="edit_sku"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">SKU</label>
@@ -1052,6 +1255,19 @@
                                 <select id="edit_product_category" name="product_category" required
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     <option value="">Select a category...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="edit_preferred_supplier_id"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Preferred Supplier <span class="text-gray-400 text-xs">(Optional)</span>
+                                </label>
+                                <select id="edit_preferred_supplier_id" name="preferred_supplier_id"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">Select a supplier...</option>
                                 </select>
                             </div>
                         </div>

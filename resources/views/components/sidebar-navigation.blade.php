@@ -192,6 +192,10 @@
                             <x-nav-item route="master_data.suppliers.index" route-pattern="master_data.suppliers.*"
                                 :icon="App\Helpers\NavigationHelper::getIcon('suppliers', 'w-4 h-4 mr-3')" title="Supplier" size="small" />
 
+                            <!-- Stock Name Management -->
+                            <x-nav-item route="master_data.stock_names.index" route-pattern="master_data.stock_names.*"
+                                :icon="App\Helpers\NavigationHelper::getIcon('stock-name-management', 'w-4 h-4 mr-3')" title="Stock Name" size="small" />
+
                             <!-- Categories -->
                             <x-nav-item route="master_data.categories.index" route-pattern="master_data.categories.*"
                                 :icon="App\Helpers\NavigationHelper::getIcon('categories', 'w-4 h-4 mr-3')" title="Categories" size="small" />

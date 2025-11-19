@@ -30,10 +30,23 @@
                         @csrf
                         @method('PUT')
 
-
-
-                        <!-- SKU, Barcode Row -->
+                        <!-- Stock Name and Product Name Row -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Stock Name (Parent Product) -->
+                            <div>
+                                <label for="stock_name"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Stock Name (Base Product) <span class="text-gray-400 text-xs">(Optional)</span>
+                                </label>
+                                <input type="text" id="stock_name" name="stock_name"
+                                    value="{{ old('stock_name', $product->stock_name) }}"
+                                    placeholder="Ella"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('stock_name') border-red-500 @enderror">
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The parent/base product name that variants are associated with</p>
+                                @error('stock_name')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
 
                             <!-- Product Name -->
                             <div>
@@ -48,6 +61,65 @@
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Preferred Supplier -->
+                            <div>
+                                <label for="preferred_supplier_id"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Preferred Supplier <span class="text-gray-400 text-xs">(Optional)</span>
+                                </label>
+                                <select id="preferred_supplier_id" name="preferred_supplier_id"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">Select a supplier...</option>
+                                    @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->supplier_id }}" {{ old('preferred_supplier_id', $product->preferred_supplier_id) == $supplier->supplier_id ? 'selected' : '' }}>
+                                            {{ $supplier->supplier_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('preferred_supplier_id')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Price and Image Row -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Size -->
+                            <div>
+                                <label for="size"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Size <span class="text-gray-400 text-xs">(Optional)</span>
+                                </label>
+                                <input type="text" id="size" name="size"
+                                    value="{{ old('size', $product->size) }}"
+                                    placeholder="e.g., 42, Large, XL"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('size') border-red-500 @enderror">
+                                @error('size')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Color -->
+                            <div>
+                                <label for="color"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Color <span class="text-gray-400 text-xs"></span>
+                                </label>
+                                <input type="text" id="color" name="color"
+                                    value="{{ old('color', $product->color) }}"
+                                    placeholder="e.g., Black, Red, Blue"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('color') border-red-500 @enderror">
+                                @error('color')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- SKU, Barcode Row -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- SKU -->
                             <div>
                                 <label for="sku"
