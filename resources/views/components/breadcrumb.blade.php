@@ -1,6 +1,6 @@
 @props(['items' => []])
 
-<nav class="flex px-4 py-3 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700" aria-label="Breadcrumb">
+<nav class="flex px-4 py-3 text-gray-700 dark:text-gray-200 dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700" aria-label="Breadcrumb">
     <ol class="inline-flex items-center space-x-1 md:space-x-3">
         <!-- Home/Dashboard Link -->
         <li class="inline-flex items-center">

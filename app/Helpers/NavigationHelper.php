@@ -309,6 +309,7 @@ class NavigationHelper
             ],
             'purchases.purchase-orders.create' => [
                 ['label' => 'Purchases', 'url' => null],
+                ['label' => 'Purchase Orders', 'url' => route('purchases.purchase-orders.index')],
                 ['label' => 'Create Purchase Order', 'url' => route('purchases.purchase-orders.create')],
             ],
             // 'purchases.purchase-orders.edit' => [
@@ -318,32 +319,32 @@ class NavigationHelper
 
 
 
-            
             'purchases.deliveries.index' => [
                 ['label' => 'Purchases', 'url' => null],
                 ['label' => 'Deliveries', 'url' => route('purchases.deliveries.index')],
             ],
+
             'purchases.deliveries.create' => [
                 ['label' => 'Purchases', 'url' => null],
-                 ['label' => 'Deliveries', 'url' => route('purchases.deliveries.index')],
+                ['label' => 'Deliveries', 'url' => route('purchases.deliveries.index')],
                 ['label' => 'Record Delivery', 'url' => route('purchases.deliveries.create')],
             ],
 
-
+            // Purchase Receives
             'purchases.receives.index' => [
                 ['label' => 'Purchases', 'url' => null],
                 ['label' => 'Receives', 'url' => route('purchases.purchase-receives.index')],
             ],
 
-            // Inventory
-            // 'inventory.stocks.index' => [
-            //     ['label' => 'Inventory', 'url' => null],
-            //     ['label' => 'Stock Management', 'url' => null],
-            // ],
-            // 'inventory.adjustments.index' => [
-            //     ['label' => 'Inventory', 'url' => null],
-            //     ['label' => 'Stock Adjustments', 'url' => null],
-            // ],
+            'purchases.purchase-receives.index' => [
+                ['label' => 'Purchases', 'url' => null],
+                ['label' => 'Goods Received', 'url' => route('purchases.purchase-receives.index')],
+            ],
+            'purchases.purchase-receives.create' => [
+                ['label' => 'Purchases', 'url' => null],
+                ['label' => 'Goods Received', 'url' => route('purchases.purchase-receives.index')],
+                ['label' => 'Record Goods Received', 'url' => route('purchases.purchase-receives.create')],
+            ],
 
             // Reports
             'reports.sales' => [
@@ -369,7 +370,14 @@ class NavigationHelper
             // POS
             'pos.index' => [
                 ['label' => 'Sales History', 'url' => null],
+            ],
+            'pos.create' => [
+                ['label' => 'Sales History', 'url' => route('pos.index')],
                 ['label' => 'Point of Sale', 'url' => null],
+            ],
+            'sales.customers.index' => [
+                ['label' => 'Sales', 'url' => null],
+                ['label' => 'Customers', 'url' => route('sales.customers.index')],
             ],
 
             'notifications.index' => [

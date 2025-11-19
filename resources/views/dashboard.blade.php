@@ -4,7 +4,7 @@
         <div class="h-full overflow-y-auto">
             <div class="bg-gray-50 dark:bg-gray-900 min-h-full flex flex-col">
                 <div class="flex-1 p-6 text-gray-900 dark:text-gray-100">
-                    <h2 class="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">Dashboard</h2>
+                    {{-- <h2 class="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">Dashboard</h2> --}}
 
                     <!-- Main Dashboard Grid -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

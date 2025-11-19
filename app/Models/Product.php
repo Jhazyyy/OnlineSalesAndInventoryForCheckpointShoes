@@ -25,6 +25,7 @@ class Product extends Model
      */
     protected $fillable = [
         'product_name',
+        'stock_name',
         'sku',
         'barcode',
         'property_name',
@@ -139,6 +140,7 @@ class Product extends Model
     {
         $this->fillable = [
             'product_name',
+            'stock_name',
             'product_brand',
             'product_category',
             'price',
@@ -357,6 +359,7 @@ class Product extends Model
     {
         return $query->where(function ($q) use ($search) {
             $q->where('product_name', 'LIKE', "%{$search}%")
+              ->orWhere('stock_name', 'LIKE', "%{$search}%")
               ->orWhere('product_brand', 'LIKE', "%{$search}%")
               ->orWhere('product_category', 'LIKE', "%{$search}%");
         });
@@ -702,7 +705,7 @@ class Product extends Model
     {
         // Get products where the latest stock movement shows 0 or negative quantity
         return self::whereHas('stockMovements', function($q) {
-            $q->where('quantity_after', '<=', 0)
+            $q->where('quantity_after', '==', 0)
               ->whereIn('movement_id', function($subQ) {
                   $subQ->selectRaw('MAX(movement_id)')
                        ->from('stock_movements')

@@ -15,10 +15,11 @@ return new class extends Migration {
             // Core Product Information
             $table->id('product_id');
             $table->string('product_name');
+            $table->string('stock_name')->nullable();
             $table->string('sku')->unique();
             $table->string('barcode')->nullable()->unique();
-            $table->string('property_name')->nullable();
-            $table->string('property_value')->nullable();
+            $table->string('size')->nullable();
+            $table->string('color')->nullable();
             $table->string('product_brand')->nullable();
             $table->string('product_category')->nullable();
             $table->integer('quantity')->default(0);
