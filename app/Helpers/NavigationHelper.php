@@ -281,7 +281,6 @@ class NavigationHelper
                 ['label' => 'Inventory', 'url' => null],
                 ['label' => 'Products', 'url' => route('inventory.products.index')],
             ],
-                        // Master Data
             'master_data.products.index' => [
                 ['label' => 'Inventory', 'url' => null],
                 ['label' => 'Products', 'url' => null],
@@ -321,19 +320,6 @@ class NavigationHelper
             //     ['label' => 'Purchases', 'url' => null],
             //     ['label' => 'Edit Purchase Order', 'url' => route('purchases.purchase-orders.edit')],
             // ],
-
-
-
-            'purchases.deliveries.index' => [
-                ['label' => 'Purchases', 'url' => null],
-                ['label' => 'Deliveries', 'url' => route('purchases.deliveries.index')],
-            ],
-
-            'purchases.deliveries.create' => [
-                ['label' => 'Purchases', 'url' => null],
-                ['label' => 'Deliveries', 'url' => route('purchases.deliveries.index')],
-                ['label' => 'Record Delivery', 'url' => route('purchases.deliveries.create')],
-            ],
 
             // Purchase Receives
             'purchases.receives.index' => [

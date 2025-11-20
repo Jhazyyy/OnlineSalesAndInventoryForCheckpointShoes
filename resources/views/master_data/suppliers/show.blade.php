@@ -112,7 +112,7 @@
                                         </path>
                                     </svg>
                                     <span class="text-sm text-gray-900 dark:text-white">Supplier Type:
-                                        {{ $supplier->supplier_type }}</span>
+                                        {{ ucwords(str_replace('_', ' ',$supplier->supplier_type)) }}</span>
                                 </div>
                             @endif
                             @if ($supplier->payment_terms)

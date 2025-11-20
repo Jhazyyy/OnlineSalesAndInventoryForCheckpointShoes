@@ -231,6 +231,9 @@ class ReportController extends Controller
         }
 
         // Create a basic PO with one line item
+        // Use price, fallback to last_purchase_price, or default to 0
+        $unitPrice = $product->price ?? $product->last_purchase_price ?? 0;
+        
         $order = $this->purchaseOrderService->createOrder([
             'supplier_id' => $supplierId,
             'order_date' => now()->toDateString(),
@@ -238,7 +241,7 @@ class ReportController extends Controller
             'items' => [[
                 'product_id' => $product->product_id,
                 'quantity_ordered' => (int) $data['quantity'],
-                'unit_price' => $product->price,
+                'unit_price' => $unitPrice,
             ]],
         ]);
 
@@ -291,10 +294,13 @@ class ReportController extends Controller
             $product = $products[$productId];
             $quantity = (int) $quantities[$productId];
             
+            // Use price, fallback to last_purchase_price, or default to 0
+            $unitPrice = $product->price ?? $product->last_purchase_price ?? 0;
+            
             $items[] = [
                 'product_id' => $product->product_id,
                 'quantity_ordered' => $quantity,
-                'unit_price' => $product->price,
+                'unit_price' => $unitPrice,
             ];
         }
 

@@ -96,13 +96,6 @@ class PurchaseOrder extends Model
         return $this->hasMany(PurchasePayment::class, 'purchase_order_id', 'order_id');
     }
 
-    /**
-     * Get the deliveries for the purchase order.
-     */
-    public function deliveries(): HasMany
-    {
-        return $this->hasMany(PurchaseDelivery::class, 'purchase_order_id', 'order_id');
-    }
 
     /**
      * Get the receives for the purchase order.
@@ -342,10 +335,10 @@ class PurchaseOrder extends Model
      * 
      * Items can only be received if:
      * 1. The order status is 'ordered'
-     * 2. A delivery MUST exist for this order (delivery is mandatory)
-     * 3. At least one delivery must be in 'delivered' status
-     * 4. The order doesn't have any short-closed receives
-     * 5. The order doesn't already have a receive with 'received' status
+     * 2. The order doesn't have any short-closed receives
+     * 3. The order doesn't already have a receive with 'received' status
+     * 
+     * SIMPLIFIED: No longer requires delivery - direct PO to receive flow
      */
     public function canReceiveItems(): bool
     {
@@ -361,43 +354,6 @@ class PurchaseOrder extends Model
 
         // Check if order already has a receive with 'received' status
         if ($this->hasReceivedStatus()) {
-            return false;
-        }
-
-        // Check if there's any delivery for this order (excluding cancelled)
-        $deliveries = $this->deliveries()->whereNotIn('status', ['cancelled'])->get();
-        
-        // Delivery is MANDATORY - PO cannot be received without delivery
-        if ($deliveries->count() === 0) {
-            return false;
-        }
-
-        // At least one delivery must be in 'delivered' status
-        return $deliveries->where('status', 'delivered')->count() > 0;
-    }
-
-    /**
-     * Check if deliveries can be created for this order.
-     * 
-     * Deliveries can only be created if:
-     * 1. The order status is 'approved' or 'ordered'
-     * 2. The order doesn't have any short-closed receives
-     * 3. The order doesn't already have a delivered delivery
-     */
-    public function canCreateDelivery(): bool
-    {
-        // Check if order status allows delivery creation
-        if (!in_array($this->status, ['approved', 'ordered'])) {
-            return false;
-        }
-
-        // Check if order has been short-closed
-        if ($this->hasShortClosedReceive()) {
-            return false;
-        }
-
-        // Check if order already has a delivered delivery
-        if ($this->hasDeliveredStatus()) {
             return false;
         }
 
@@ -422,15 +378,8 @@ class PurchaseOrder extends Model
             ->exists();
     }
 
-    /**
-     * Check if order has already been delivered.
-     */
-    public function hasDeliveredStatus(): bool
-    {
-        return $this->deliveries()
-            ->where('status', 'delivered')
-            ->exists();
-    }
+    // REMOVED: Delivery status check - no longer needed
+    // public function hasDeliveredStatus(): bool
 
     /**
      * Calculate and update order totals based on items.

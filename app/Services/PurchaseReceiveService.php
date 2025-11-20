@@ -93,7 +93,7 @@ class PurchaseReceiveService
                         'name' => $supplier->supplier_name ?? $supplier->name,
                     ];
                 }),
-            'purchase_orders' => PurchaseOrder::with(['supplier', 'deliveries'])
+            'purchase_orders' => PurchaseOrder::with(['supplier'])
                 ->where('status', 'ordered')
                 ->orderBy('order_number')
                 ->get()
@@ -577,36 +577,6 @@ class PurchaseReceiveService
                             $poItem->update([
                                 'quantity_ordered' => $poItem->quantity_received,
                             ]);
-                        }
-                    }
-
-                    // Complete all pending deliveries for this purchase order
-                    // When a PO is short-closed, any pending deliveries should also be marked as complete
-                    if ($purchaseOrder->deliveries && $purchaseOrder->deliveries->count() > 0) {
-                        foreach ($purchaseOrder->deliveries as $delivery) {
-                            // Only update deliveries that are not yet delivered or cancelled
-                            if (! in_array($delivery->status, ['delivered', 'cancelled', 'failed'])) {
-                                $oldStatus = $delivery->status;
-
-                                // Mark delivery as delivered since PO is short-closed
-                                $delivery->update([
-                                    'status' => 'delivered',
-                                    'actual_delivery_date' => now()->toDateString(),
-                                    'delivered_at' => now(),
-                                    'delivery_notes' => ($delivery->delivery_notes ? $delivery->delivery_notes."\n\n" : '').
-                                        "Auto-completed due to purchase order short close. Original status: {$oldStatus}. ".
-                                        "Reason: {$reason}",
-                                ]);
-
-                                // Add tracking update to delivery history
-                                $delivery->addTrackingUpdate([
-                                    'status' => 'delivered',
-                                    'previous_status' => $oldStatus,
-                                    'notes' => "Delivery automatically completed due to purchase order short close. Reason: {$reason}",
-                                    'timestamp' => now(),
-                                    'short_closed' => true,
-                                ]);
-                            }
                         }
                     }
                 }

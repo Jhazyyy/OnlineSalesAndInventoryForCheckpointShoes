@@ -91,8 +91,8 @@ class PurchaseOrderController extends Controller
      */
     public function show(PurchaseOrder $order)
     {
-        $order->load(['supplier', 'items.product', 'deliveries' => function($query) {
-            $query->orderBy('delivery_date', 'desc');
+        $order->load(['supplier', 'items.product' => function($query) {
+            $query->orderBy('product_name', 'asc');
         }]);
         return view('purchases.purchase-orders.show', compact('order'));
     }

@@ -152,6 +152,15 @@ class UserManagementController extends Controller
         // Assign role using Spatie Permission
         $user->syncRoles([$request->role]);
 
+        // Log activity
+        if (class_exists(Activity::class)) {
+            activity()
+                ->causedBy(Auth::user())
+                ->performedOn($user)
+                ->withProperties(['role' => $request->role, 'status' => $request->status])
+                ->log('created');
+        }
+
         return redirect()->route('user-management.index')
             ->with('success', 'User created successfully and email verified.');
     }
@@ -163,27 +172,87 @@ class UserManagementController extends Controller
     {
         $user = User::findOrFail($userManagement);
 
-
+        // Get user activities from activity log
         if (class_exists(Activity::class)) {
+            // Get activities caused by this user (their actions)
             $activities = Activity::where('causer_id', $user->id)
+                ->orWhere(function($query) use ($user) {
+                    // Also get activities performed ON this user
+                    $query->where('subject_type', User::class)
+                          ->where('subject_id', $user->id);
+                })
+                ->with('causer')
                 ->latest()
-                ->take(10)->get();
+                ->take(20)
+                ->get()
+                ->map(function($activity) use ($user) {
+                    // Format activity for display
+                    $action = $activity->description ?? $activity->event ?? 'unknown';
+                    $description = '';
+                    
+                    // Build description based on activity
+                    if ($activity->causer_id == $user->id) {
+                        // User performed this action
+                        $description = $this->formatUserActivity($activity);
+                    } else {
+                        // Action was performed ON this user
+                        $causerName = $activity->causer ? $activity->causer->name : 'System';
+                        $description = "{$causerName} " . $this->formatActivityOnUser($activity);
+                    }
+                    
+                    return (object)[
+                        'action' => $action,
+                        'description' => $description,
+                        'created_at' => $activity->created_at,
+                    ];
+                });
         } else {
-            // Example placeholder if you don't use activitylog package
-            $activities = collect([
-                (object)[
-                    'action' => 'login',
-                    'description' => 'User logged in',
-                    'created_at' => now()->subMinutes(10),
-                ],
-                (object)[
-                    'action' => 'update_profile',
-                    'description' => 'Updated profile information',
-                    'created_at' => now()->subHours(1),
-                ],
-            ]);
+            // Fallback if activity log package is not available
+            $activities = collect([]);
         }
+        
         return view('user-management.show', compact('user', 'activities'));
+    }
+    
+    /**
+     * Format activity description for user actions
+     */
+    private function formatUserActivity($activity)
+    {
+        $subject = $activity->subject_type ? class_basename($activity->subject_type) : 'item';
+        $event = $activity->event ?? $activity->description;
+        
+        $descriptions = [
+            'created' => "Created a new {$subject}",
+            'updated' => "Updated a {$subject}",
+            'deleted' => "Deleted a {$subject}",
+            'login' => 'Logged into the system',
+            'logout' => 'Logged out of the system',
+            'password_changed' => 'Changed their password',
+            'profile_updated' => 'Updated their profile',
+        ];
+        
+        return $descriptions[$event] ?? ucfirst(str_replace('_', ' ', $event));
+    }
+    
+    /**
+     * Format activity description for actions performed on user
+     */
+    private function formatActivityOnUser($activity)
+    {
+        $event = $activity->event ?? $activity->description;
+        
+        $descriptions = [
+            'created' => 'created this user account',
+            'updated' => 'updated this user\'s information',
+            'deleted' => 'deleted this user account',
+            'status_changed' => 'changed this user\'s status',
+            'role_changed' => 'changed this user\'s role',
+            'suspended' => 'suspended this user account',
+            'activated' => 'activated this user account',
+        ];
+        
+        return $descriptions[$event] ?? str_replace('_', ' ', $event);
     }
 
     /**

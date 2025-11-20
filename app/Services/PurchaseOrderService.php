@@ -23,13 +23,9 @@ use Illuminate\Support\Collection;
  *    - Select supplier and products
  *    - No inventory changes yet
  * 
- * 2. CREATE DELIVERY (optional - PurchaseDeliveryService)
- *    - Track shipment from supplier
- *    - Carrier, tracking number, estimated delivery
- *    - Status updates: scheduled → in_transit → delivered
- *    - Still no inventory changes
+ * 2. REMOVED: CREATE DELIVERY - delivery tracking system no longer used
  * 
- * 3. CREATE RECEIVE (PurchaseReceiveService)
+ * 3. CREATE PURCHASE RECEIVE (PurchaseReceiveService)
  *    - Record actual receipt of goods
  *    - Can link to delivery if tracking was used
  *    - Updates inventory via StockMovement

@@ -41,11 +41,11 @@
                                     <div>
                                         <label for="supplier_id"
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Supplier/Vendor Name <span class="text-red-500">*</span>
+                                            Supplier<span class="text-red-500">*</span>
                                         </label>
                                         <select id="supplier_id" name="supplier_id"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                            <option value="">Select a vendor</option>
+                                            <option value="">Select the PO</option>
                                             @foreach ($suppliers as $supplier)
                                                 <option value="{{ $supplier['id'] }}"
                                                     {{ old('supplier_id') == $supplier['id'] ? 'selected' : '' }}>
@@ -80,32 +80,6 @@
                                         @error('purchase_order_id')
                                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                         @enderror
-                                    </div>
-
-                                    <!-- Related Delivery (Auto-assigned from PO) -->
-                                    <div class="md:col-span-2">
-                                        <label for="delivery_id"
-                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Related Delivery
-                                            <span class="text-red-500">*</span>
-                                        </label>
-                                        <select id="delivery_id" name="delivery_id"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                            <option value="">Select a delivery...</option>
-                                            {{-- Deliveries will be populated via JavaScript based on selected PO --}}
-                                        </select>
-                                        @error('delivery_id')
-                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
-                                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="deliveryHelpText">
-                                            All purchase orders require delivery confirmation before receiving items.
-                                            The most recent delivered shipment will be auto-assigned.
-                                        </p>
-                                        <p class="mt-1 text-xs text-orange-600 dark:text-orange-400"
-                                            id="deliveryWarning" style="display:none;">
-                                            ⚠️ This PO has no delivered shipments yet. Please create and mark a delivery
-                                            as delivered first.
-                                        </p>
                                     </div>
                                 </div>
 
@@ -332,7 +306,7 @@
                 });
         @endphp
         window.availableProducts = @json($products);
-        window.deliveriesData = @json($deliveries ?? []);
+        // REMOVED: deliveriesData - delivery system no longer used
     </script>
 
     @verbatim
@@ -340,7 +314,7 @@
             let itemRowCount = 0;
             // Datasets populated above
             let availableProducts = window.availableProducts || [];
-            const deliveriesData = window.deliveriesData || [];
+            // REMOVED: deliveriesData - delivery system no longer used
 
             document.addEventListener('DOMContentLoaded', function() {
                 // Purchase order change handler - Auto-load items when PO is selected
@@ -355,8 +329,7 @@
                             document.getElementById('supplier_id').value = supplierId;
                         }
 
-                        // Filter and populate deliveries for this PO
-                        updateDeliveriesDropdown(selectedPOId);
+                        // REMOVED: updateDeliveriesDropdown - delivery system no longer used
 
                         // Show the load items section
                         loadItemsSection.style.display = 'block';
@@ -365,8 +338,7 @@
                     } else {
                         // Hide the load items section
                         loadItemsSection.style.display = 'none';
-                        // Clear deliveries
-                        updateDeliveriesDropdown(null);
+                        // REMOVED: updateDeliveriesDropdown - delivery system no longer used
                         // Clear items if no PO is selected
                         document.getElementById('itemsTableBody').innerHTML = '';
                         itemRowCount = 0;
@@ -714,96 +686,6 @@
                     }
                 }
             });
-
-
-            // Update deliveries dropdown based on selected purchase order
-            function updateDeliveriesDropdown(purchaseOrderId) {
-                const deliverySelect = document.getElementById('delivery_id');
-                const deliveryWarning = document.getElementById('deliveryWarning');
-
-                // Clear existing options and show default
-                deliverySelect.innerHTML = '<option value="">Select a delivery...</option>';
-
-                // Always show warning by default when no PO selected
-                if (deliveryWarning) deliveryWarning.style.display = 'none';
-
-                if (!purchaseOrderId) {
-                    return;
-                }
-
-                // Filter deliveries for this PO
-                const relatedDeliveries = deliveriesData.filter(d => d.purchase_order_id == purchaseOrderId);
-
-                // Always show warning if no deliveries exist or none are delivered
-                if (relatedDeliveries.length === 0) {
-                    if (deliveryWarning) {
-                        deliveryWarning.style.display = 'block';
-                        deliveryWarning.innerHTML =
-                            '⚠️ This PO has no deliveries. Please create a delivery first before receiving items.';
-                    }
-                    return;
-                }
-
-                // Find delivered deliveries
-                const deliveredDeliveries = relatedDeliveries.filter(d => d.status === 'delivered');
-
-                // Find delivered deliveries that haven't been received yet
-                const availableDeliveries = deliveredDeliveries.filter(d => !d.has_been_received);
-
-                // Show warning if there are deliveries but none are delivered
-                if (deliveredDeliveries.length === 0) {
-                    if (deliveryWarning) {
-                        deliveryWarning.style.display = 'block';
-                        deliveryWarning.innerHTML =
-                            '⚠️ This PO has no delivered shipments yet. Please mark a delivery as delivered first.';
-                    }
-                } else if (availableDeliveries.length === 0) {
-                    // All delivered deliveries have already been received
-                    if (deliveryWarning) {
-                        deliveryWarning.style.display = 'block';
-                        deliveryWarning.innerHTML =
-                            '⚠️ All delivered shipments for this PO have already been received.';
-                    }
-                }
-
-                relatedDeliveries.forEach(delivery => {
-                    const option = document.createElement('option');
-                    option.value = delivery.id;
-
-                    // Build option text with status indicators
-                    let optionText =
-                        `${delivery.delivery_number} - ${delivery.carrier || 'N/A'}${delivery.tracking_number ? ' (' + delivery.tracking_number + ')' : ''} [${delivery.status}]`;
-
-                    // Add "Already Received" indicator if applicable
-                    if (delivery.has_been_received) {
-                        optionText += ' - Already Received';
-                    }
-
-                    option.textContent = optionText;
-
-                    // Disable non-delivered options OR already received deliveries
-                    if (delivery.status !== 'delivered' || delivery.has_been_received) {
-                        option.disabled = true;
-                        option.style.color = '#999';
-                    }
-                    deliverySelect.appendChild(option);
-                });
-
-                // Auto-select the most recent available delivery (delivered and not received)
-                if (availableDeliveries.length > 0) {
-                    // Sort by actual_delivery_date or delivery_date, most recent first
-                    availableDeliveries.sort((a, b) => {
-                        const dateA = new Date(a.actual_delivery_date || a.delivery_date);
-                        const dateB = new Date(b.actual_delivery_date || b.delivery_date);
-                        return dateB - dateA;
-                    });
-
-                    deliverySelect.value = availableDeliveries[0].id;
-
-                    // Hide warning if we have an available delivery
-                    if (deliveryWarning) deliveryWarning.style.display = 'none';
-                }
-            }
         </script>
     @endverbatim
 </x-app-layout>

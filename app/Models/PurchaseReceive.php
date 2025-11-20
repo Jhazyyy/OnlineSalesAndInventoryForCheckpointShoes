@@ -39,7 +39,6 @@ class PurchaseReceive extends Model
         'receive_number',
         'reference_number',
         'purchase_order_id',
-        'delivery_id',  // Added: Link to delivery
         'supplier_id',
         'receive_date',
         'status',
@@ -80,16 +79,8 @@ class PurchaseReceive extends Model
         return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id', 'order_id');
     }
 
-    /**
-     * Get the delivery that owns the receive.
-     * 
-     * WORKFLOW: A receive can be created from a delivery (optional)
-     * This links the shipment tracking to the inventory receipt.
-     */
-    public function delivery(): BelongsTo
-    {
-        return $this->belongsTo(PurchaseDelivery::class, 'delivery_id', 'delivery_id');
-    }
+    // REMOVED: Delivery relationship - no longer using delivery tracking
+    // public function delivery(): BelongsTo
 
     /**
      * Get the supplier that owns the receive.

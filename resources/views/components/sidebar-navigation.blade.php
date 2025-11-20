@@ -84,8 +84,8 @@
                             title="Purchase Order" size="small" />
 
                         <!-- Delivery -->
-                        <x-nav-item route="purchases.deliveries.index" route-pattern="purchases.deliveries.*"
-                            :icon="App\Helpers\NavigationHelper::getIcon('delivery', 'w-4 h-4 mr-3')" title="Delivery" size="small" />
+                        {{-- <x-nav-item route="purchases.deliveries.index" route-pattern="purchases.deliveries.*"
+                            :icon="App\Helpers\NavigationHelper::getIcon('delivery', 'w-4 h-4 mr-3')" title="Delivery" size="small" /> --}}
 
                         <!-- Goods Received -->
                         <x-nav-item route="purchases.purchase-receives.index"

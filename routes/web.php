@@ -404,14 +404,7 @@ Route::get('dashboard', function() {
         ->selectRaw('SUM(quantity_ordered - quantity_received) as pending_qty')
         ->value('pending_qty') ?? 0;
         
-        // 2. From Purchase Deliveries - items in transit or scheduled
-        $pendingFromDeliveries = \App\Models\PurchaseDeliveryItem::whereHas('delivery', function($query) {
-            $query->whereIn('status', ['scheduled', 'in_transit', 'picked_up']);
-        })
-        ->selectRaw('SUM(quantity_expected - quantity_delivered) as pending_qty')
-        ->value('pending_qty') ?? 0;
-        
-        // 3. From Purchase Receives - items expected but not yet received
+        // 2. From Purchase Receives - items expected but not yet received
         $pendingFromReceives = \App\Models\PurchaseReceiveItem::whereHas('purchaseReceive', function($query) {
             $query->whereIn('status', ['in_transit', 'pending']);
         })
@@ -419,9 +412,8 @@ Route::get('dashboard', function() {
         ->value('pending_qty') ?? 0;
         
         // Add comprehensive pending quantity to stats
-        $purchaseReceiveStats['pending_quantity'] = max(0, $pendingFromPurchaseOrders + $pendingFromDeliveries + $pendingFromReceives);
+        $purchaseReceiveStats['pending_quantity'] = max(0, $pendingFromPurchaseOrders + $pendingFromReceives);
         $purchaseReceiveStats['pending_from_orders'] = max(0, $pendingFromPurchaseOrders);
-        $purchaseReceiveStats['pending_from_deliveries'] = max(0, $pendingFromDeliveries);
         $purchaseReceiveStats['pending_from_receives'] = max(0, $pendingFromReceives);
         
     } catch (\Exception $e) {
@@ -433,33 +425,11 @@ Route::get('dashboard', function() {
             'this_month_receives' => 0,
             'pending_quantity' => 0,
             'pending_from_orders' => 0,
-            'pending_from_deliveries' => 0,
             'pending_from_receives' => 0,
         ];
     }
 
-    // Purchase Deliveries Analytics
-    try {
-        $purchaseDeliveryStats = [
-            'total_deliveries' => \App\Models\PurchaseDelivery::count(),
-            'scheduled' => \App\Models\PurchaseDelivery::where('status', 'scheduled')->count(),
-            'in_transit' => \App\Models\PurchaseDelivery::where('status', 'in_transit')->count(),
-            'delivered' => \App\Models\PurchaseDelivery::where('status', 'delivered')->count(),
-            'delayed' => \App\Models\PurchaseDelivery::where('status', 'delayed')->count(),
-            'this_week_deliveries' => \App\Models\PurchaseDelivery::whereBetween('created_at', [
-                now()->startOfWeek(), now()->endOfWeek()
-            ])->count(),
-        ];
-    } catch (\Exception $e) {
-        $purchaseDeliveryStats = [
-            'total_deliveries' => 0,
-            'scheduled' => 0,
-            'in_transit' => 0,
-            'delivered' => 0,
-            'delayed' => 0,
-            'this_week_deliveries' => 0,
-        ];
-    }
+    // REMOVED: Purchase Deliveries Analytics - delivery system no longer used
 
     // Purchase Payment Analytics
     try {
@@ -507,8 +477,7 @@ Route::get('dashboard', function() {
     $salesActivity = $salesActivity ?? ['total_invoices' => 0, 'paid_invoices' => 0, 'draft_invoices' => 0, 'past_due' => 0];
     $stockStatus = $stockStatus ?? ['in_stock' => 0, 'low_stock' => 0, 'out_of_stock' => 0];
     $purchaseOrderStatus = $purchaseOrderStatus ?? ['pending' => 0, 'approved' => 0, 'ordered' => 0, 'partial_received' => 0, 'received' => 0, 'cancelled' => 0];
-    $purchaseReceiveStats = $purchaseReceiveStats ?? ['total_receives' => 0, 'received_count' => 0, 'in_transit_count' => 0, 'total_value_received' => 0, 'this_month_receives' => 0, 'pending_quantity' => 0, 'pending_from_orders' => 0, 'pending_from_deliveries' => 0, 'pending_from_receives' => 0];
-    $purchaseDeliveryStats = $purchaseDeliveryStats ?? ['total_deliveries' => 0, 'scheduled' => 0, 'in_transit' => 0, 'delivered' => 0, 'delayed' => 0, 'this_week_deliveries' => 0];
+    $purchaseReceiveStats = $purchaseReceiveStats ?? ['total_receives' => 0, 'received_count' => 0, 'in_transit_count' => 0, 'total_value_received' => 0, 'this_month_receives' => 0, 'pending_quantity' => 0, 'pending_from_orders' => 0, 'pending_from_receives' => 0];
     $purchasePaymentStats = $purchasePaymentStats ?? ['total_payments' => 0, 'total_paid' => 0, 'pending_payments' => 0, 'partial_paid' => 0, 'fully_paid' => 0, 'this_month_payments' => 0];
     $last7Days = $last7Days ?? collect();
     $salesOrderData = $salesOrderData ?? collect();
@@ -532,7 +501,7 @@ Route::get('dashboard', function() {
         'stockStatus',
         'purchaseOrderStatus',
         'purchaseReceiveStats',
-        'purchaseDeliveryStats',
+        // REMOVED: 'purchaseDeliveryStats' - delivery system no longer used
         'purchasePaymentStats',
         'last6Months',
         'monthlyRevenue'
@@ -977,27 +946,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/analytics', [\App\Http\Controllers\PurchaseReturnsController::class, 'analytics'])->name('analytics');
     });
 
-    // Purchase Deliveries Management Routes
-    Route::prefix('purchases/deliveries')->name('purchases.deliveries.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\PurchaseDeliveryController::class, 'index'])->name('index');
-        Route::get('/create', [\App\Http\Controllers\PurchaseDeliveryController::class, 'create'])->name('create');
-        
-        // Analytics (must be before {delivery} route)
-        Route::get('/analytics', [\App\Http\Controllers\PurchaseDeliveryController::class, 'analytics'])->name('analytics');
-        
-        // AJAX routes (must be before {delivery} route)
-        Route::get('/purchase-order/{purchaseOrder}/items', [\App\Http\Controllers\PurchaseDeliveryController::class, 'getPurchaseOrderItems'])->name('purchase-order-items');
-        
-        Route::post('/', [\App\Http\Controllers\PurchaseDeliveryController::class, 'store'])->name('store');
-        Route::get('/{delivery}', [\App\Http\Controllers\PurchaseDeliveryController::class, 'show'])->name('show');
-        Route::get('/{delivery}/edit', [\App\Http\Controllers\PurchaseDeliveryController::class, 'edit'])->name('edit');
-        Route::put('/{delivery}', [\App\Http\Controllers\PurchaseDeliveryController::class, 'update'])->name('update');
-        Route::delete('/{delivery}', [\App\Http\Controllers\PurchaseDeliveryController::class, 'destroy'])->name('destroy');
-
-        // Status management routes
-        Route::post('/{delivery}/change-status', [\App\Http\Controllers\PurchaseDeliveryController::class, 'changeStatus'])->name('change-status');
-        Route::post('/{delivery}/update-tracking', [\App\Http\Controllers\PurchaseDeliveryController::class, 'updateTracking'])->name('update-tracking');
-    });
+    // REMOVED: Purchase Deliveries Management Routes - delivery system no longer used
     
     // Purchase Payments Management Routes
     Route::prefix('purchases/payments')->name('purchases.payments.')->group(function () {

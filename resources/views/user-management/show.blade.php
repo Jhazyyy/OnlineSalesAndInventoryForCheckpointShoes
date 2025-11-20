@@ -60,7 +60,7 @@
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                        d="M15 19l-7-7 7-7" />
                                 </svg>
                                 Back to Users
                             </a>
@@ -121,49 +121,49 @@
                 </div>
 
                 <!-- Account Information -->
-                    <div
-                        class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div class="p-6">
-                            <h3
-                                class="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
-                                Account Information
-                            </h3>
-                            <div class="space-y-3">
-                                <div class="flex justify-between">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400">Role:</span>
-                                    <span
-                                        class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->primary_role === 'super_admin' ? 'Super Admin' : ucfirst(str_replace('_', ' ', $user->primary_role)) }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400">Status:</span>
-                                    <span
-                                        class="text-sm font-medium {{ $user->status === 'active' ? 'text-green-600' : ($user->status === 'suspended' ? 'text-red-600' : 'text-gray-600') }}">
-                                        {{ ucfirst($user->status ?? 'Active') }}
-                                    </span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400">Can Login:</span>
-                                    <span
-                                        class="text-sm font-medium {{ $user->is_active ? 'text-green-600' : 'text-red-600' }}">
-                                        {{ $user->is_active ? 'Yes' : 'No' }}
-                                    </span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400">Last Login:</span>
-                                    <span class="text-sm font-medium text-gray-900 dark:text-white">
-                                        {{ $user->last_login_at ? $user->last_login_at->format('M d, Y g:i A') : 'Never' }}
-                                    </span>
-                                </div>
-                                @if (isset($user->login_count))
-                                    <div class="flex justify-between">
-                                        <span class="text-sm text-gray-600 dark:text-gray-400">Login Count:</span>
-                                        <span
-                                            class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->login_count ?? 0 }}</span>
-                                    </div>
-                                @endif
+                <div
+                    class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6">
+                        <h3
+                            class="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
+                            Account Information
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Role:</span>
+                                <span
+                                    class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->primary_role === 'super_admin' ? 'Super Admin' : ucfirst(str_replace('_', ' ', $user->primary_role)) }}</span>
                             </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Status:</span>
+                                <span
+                                    class="text-sm font-medium {{ $user->status === 'active' ? 'text-green-600' : ($user->status === 'suspended' ? 'text-red-600' : 'text-gray-600') }}">
+                                    {{ ucfirst($user->status ?? 'Active') }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Can Login:</span>
+                                <span
+                                    class="text-sm font-medium {{ $user->is_active ? 'text-green-600' : 'text-red-600' }}">
+                                    {{ $user->is_active ? 'Yes' : 'No' }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">Last Login:</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white">
+                                    {{ $user->last_login_at ? $user->last_login_at->format('M d, Y g:i A') : 'Never' }}
+                                </span>
+                            </div>
+                            @if (isset($user->login_count))
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">Login Count:</span>
+                                    <span
+                                        class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->login_count ?? 0 }}</span>
+                                </div>
+                            @endif
                         </div>
                     </div>
+                </div>
 
                 <!-- Work Information -->
                 {{-- <div class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -226,7 +226,7 @@
             @endif
 
             <!-- Activity History -->
-            {{-- <div
+            <div
                 class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <h3
@@ -279,7 +279,7 @@
                         </div>
                     @endif
                 </div>
-            </div> --}}
+            </div>
         </div>
     </div>
 </x-app-layout>

@@ -41,29 +41,9 @@ class PurchaseReceiveController extends Controller
     {
         $filterOptions = $this->receiveService->getFilterOptions();
         
-        // Get deliveries for optional linking (include all non-cancelled deliveries)
-        $deliveries = \App\Models\PurchaseDelivery::with(['purchaseOrder', 'supplier'])
-            ->whereNotIn('status', ['cancelled'])
-            ->orderBy('delivery_date', 'desc')
-            ->get()
-            ->map(function ($delivery) {
-                return [
-                    'id' => $delivery->delivery_id,
-                    'delivery_number' => $delivery->delivery_number,
-                    'purchase_order_id' => $delivery->purchase_order_id,
-                    'carrier' => $delivery->carrier,
-                    'tracking_number' => $delivery->tracking_number,
-                    'status' => $delivery->status,
-                    'delivery_date' => (string) $delivery->delivery_date,
-                    'actual_delivery_date' => (string) $delivery->actual_delivery_date,
-                    'has_been_received' => $delivery->hasBeenReceived(), // Check if already received
-                ];
-            });
-        
         return view('purchases.purchase-receives.create', [
             'suppliers' => $filterOptions['suppliers'],
             'purchase_orders' => $filterOptions['purchase_orders'],
-            'deliveries' => $deliveries,
         ]);
     }
 
@@ -74,8 +54,7 @@ class PurchaseReceiveController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'purchase_order_id' => 'required|exists:purchase_orders,order_id',
-            'delivery_id' => 'nullable|exists:purchase_deliveries,delivery_id', // Added: optional delivery link
-            'supplier_id' => 'nullable|exists:suppliers,supplier_id', // Made optional as it's auto-filled from PO
+            'supplier_id' => 'required|exists:suppliers,supplier_id',
             'receive_date' => 'required|date',
             'status' => 'nullable|in:in_transit,received,partially_received,damaged,cancelled',
             'receiver_name' => 'nullable|string|max:255',
@@ -104,7 +83,7 @@ class PurchaseReceiveController extends Controller
         $data = $validator->validated();
         
         // Check if purchase order can receive items (includes all validations)
-        $purchaseOrder = PurchaseOrder::with(['deliveries', 'receives'])->find($data['purchase_order_id']);
+        $purchaseOrder = PurchaseOrder::with(['receives'])->find($data['purchase_order_id']);
         if ($purchaseOrder && !$purchaseOrder->canReceiveItems()) {
             $errorMessage = 'This purchase order cannot receive items.';
             
@@ -116,13 +95,7 @@ class PurchaseReceiveController extends Controller
             } elseif ($purchaseOrder->status !== 'ordered') {
                 $errorMessage = 'Purchase order status must be "ordered". Current status: ' . $purchaseOrder->status;
             } else {
-                $deliveries = $purchaseOrder->deliveries()->whereNotIn('status', ['cancelled'])->get();
-                
-                if ($deliveries->count() === 0) {
-                    $errorMessage = 'This purchase order requires a delivery to be created first. Please create a delivery for this PO before receiving items.';
-                } elseif ($deliveries->where('status', 'delivered')->count() === 0) {
-                    $errorMessage = 'This purchase order has deliveries that have not been delivered yet. Please wait for delivery confirmation before receiving items.';
-                }
+                $errorMessage = 'This purchase order cannot be received at this time.';
             }
             
             return redirect()->back()
@@ -130,37 +103,7 @@ class PurchaseReceiveController extends Controller
                 ->withInput();
         }
         
-        // Check if the delivery has already been received (if delivery_id is provided)
-        if (!empty($data['delivery_id'])) {
-            $delivery = \App\Models\PurchaseDelivery::find($data['delivery_id']);
-            if ($delivery && $delivery->hasBeenReceived()) {
-                return redirect()->back()
-                    ->withErrors(['delivery_id' => 'This delivery has already been received. Please select a different delivery or create a new one.'])
-                    ->withInput();
-            }
-            
-            // Also check if the delivery status is 'delivered'
-            if ($delivery && $delivery->status !== 'delivered') {
-                return redirect()->back()
-                    ->withErrors(['delivery_id' => 'Only deliveries with "delivered" status can be received. Current status: ' . $delivery->status])
-                    ->withInput();
-            }
-        }
-        
-        // Auto-assign delivered delivery if exists and not provided
-        if ($purchaseOrder && empty($data['delivery_id'])) {
-            // Find a delivered delivery that hasn't been received yet
-            $deliveredDelivery = $purchaseOrder->deliveries()
-                ->where('status', 'delivered')
-                ->get()
-                ->first(function ($delivery) {
-                    return !$delivery->hasBeenReceived();
-                });
-                
-            if ($deliveredDelivery) {
-                $data['delivery_id'] = $deliveredDelivery->delivery_id;
-            }
-        }
+        // REMOVED: Delivery validation - no longer using delivery tracking
         
         $receive = $this->receiveService->createReceive($data);
 

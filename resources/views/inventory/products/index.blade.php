@@ -337,7 +337,7 @@
                                                 @endif
                                             </td> --}}
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                @if ($product->quantity <= 0)
+                                                @if ($product->quantity == 0)
                                                     <span
                                                         class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Out
                                                         of Stock</span>
@@ -386,17 +386,6 @@
                             <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No products found</h3>
                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by adding your first
                                 product.</p>
-                            <div class="mt-6">
-                                <button onclick="openCreateProductModal()" type="button"
-                                    class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 4v16m8-8H4"></path>
-                                    </svg>
-                                    Add Product
-                                </button>
-                            </div>
                         </div>
                     @endif
                 </div>
