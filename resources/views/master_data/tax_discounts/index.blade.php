@@ -146,7 +146,7 @@
                                         Status
                                     </th>
                                     <th scope="col"
-                                        class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Actions
                                     </th>
                                 </tr>
@@ -196,17 +196,17 @@
                                                 {{ $item->isValid() ? 'Active' : 'Inactive' }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
                                             <div class="flex justify-end gap-2">
                                                 <a href="{{ route('master_data.tax_discounts.show', $item) }}"
                                                     class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
                                                     View
                                                 </a>
                                                 <a href="{{ route('master_data.tax_discounts.edit', $item) }}"
-                                                    class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                    class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">
                                                     Edit
                                                 </a>
-                                                <form method="POST"
+                                                {{-- <form method="POST"
                                                     action="{{ route('master_data.tax_discounts.toggle-status', $item) }}"
                                                     class="inline">
                                                     @csrf
@@ -214,7 +214,7 @@
                                                         class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">
                                                         {{ $item->is_active ? 'Deactivate' : 'Activate' }}
                                                     </button>
-                                                </form>
+                                                </form> --}}
                                                 <form method="POST"
                                                     action="{{ route('master_data.tax_discounts.destroy', $item) }}"
                                                     class="inline"

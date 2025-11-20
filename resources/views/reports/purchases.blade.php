@@ -126,7 +126,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
-                        View/Preview Report
+                        Preview Report
                     </button>
 
                     <a href="{{ route('reports.export-pdf', ['reportType' => 'purchases', 'start_date' => request('start_date', $filters['start_date'] ?? ''), 'end_date' => request('end_date', $filters['end_date'] ?? '')]) }}"
@@ -180,15 +180,15 @@
                                             {{ $product->product_brand ?? 'N/A' }}</td>
                                         <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
                                             {{ $product->product_category ?? 'N/A' }}</td>
-                                        <td class="px-4 py-3 sm:px-6 text-right text-gray-800 dark:text-gray-300">
+                                        <td class="px-4 py-3 sm:px-6 text-left text-gray-800 dark:text-gray-300">
                                             {{ number_format($product->total_ordered ?? 0) }}</td>
-                                        <td class="px-4 py-3 sm:px-6 text-right text-gray-800 dark:text-gray-300">
+                                        <td class="px-4 py-3 sm:px-6 text-left text-gray-800 dark:text-gray-300">
                                             {{ number_format($product->total_received ?? 0) }}</td>
-                                        <td class="px-4 py-3 sm:px-6 text-right text-gray-800 dark:text-gray-300">
+                                        <td class="px-4 py-3 sm:px-6 text-left text-gray-800 dark:text-gray-300">
                                             ₱{{ number_format($product->avg_unit_price ?? 0, 2) }}</td>
-                                        <td class="px-4 py-3 sm:px-6 text-right text-gray-800 dark:text-gray-300">
+                                        <td class="px-4 py-3 sm:px-6 text-left text-gray-800 dark:text-gray-300">
                                             ₱{{ number_format($product->total_cost ?? 0, 2) }}</td>
-                                        <td class="px-4 py-3 sm:px-6 text-right text-gray-800 dark:text-gray-300">
+                                        <td class="px-4 py-3 sm:px-6 text-left text-gray-800 dark:text-gray-300">
                                             {{ number_format($product->current_stock ?? 0) }}</td>
                                     </tr>
                                 @endforeach

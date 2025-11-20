@@ -6,8 +6,8 @@
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Product Inventory</h2>
-                            <p class="text-gray-600 dark:text-gray-400">Manage your product catalog</p>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Inventory Management</h2>
+                            {{-- <p class="text-gray-600 dark:text-gray-400">Manage your product catalog</p> --}}
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
                             <button onclick="openCreateProductModal()" type="button"
@@ -16,7 +16,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 4v16m8-8H4"></path>
                                 </svg>
-                                New Product
+                                Add New Product
                             </button>
                         </div>
                     </div>
@@ -281,7 +281,7 @@
                                             <td class="px-6 py-4">
                                                 @if ($product->stock_name)
                                                     <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                                                        <span class="font-medium">Stock:</span>
+                                                        <span class="font-medium">Stock Name:</span>
                                                         {{ $product->stock_name }}
                                                     </div>
                                                 @endif
@@ -678,10 +678,6 @@
                         </button>
                         <button type="submit"
                             class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M5 13l4 4L19 7"></path>
-                            </svg>
                             Create Product
                         </button>
                     </div>
@@ -1075,14 +1071,95 @@
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('view_product_name').textContent = data.product_name;
+                    document.getElementById('view_product_name_detail').textContent = data.product_name;
                     document.getElementById('view_sku').textContent = data.sku || 'N/A';
                     document.getElementById('view_brand').textContent = data.product_brand;
                     document.getElementById('view_category').textContent = data.product_category;
-                    document.getElementById('view_quantity').textContent = new Intl.NumberFormat().format(data
-                        .quantity);
+                    document.getElementById('view_quantity').textContent = new Intl.NumberFormat().format(data.quantity);
                     document.getElementById('view_price').textContent = '₱' + new Intl.NumberFormat('en-PH', {
                         minimumFractionDigits: 2
                     }).format(data.price);
+                    
+                    // Stock Name
+                    if (data.stock_name) {
+                        document.getElementById('view_stock_name_container').style.display = 'block';
+                        document.getElementById('view_stock_name').textContent = data.stock_name;
+                    } else {
+                        document.getElementById('view_stock_name_container').style.display = 'none';
+                    }
+                    
+                    // Size
+                    if (data.size) {
+                        document.getElementById('view_size_container').style.display = 'block';
+                        document.getElementById('view_size').textContent = data.size;
+                    } else {
+                        document.getElementById('view_size_container').style.display = 'none';
+                    }
+                    
+                    // Color
+                    if (data.color) {
+                        document.getElementById('view_color_container').style.display = 'block';
+                        document.getElementById('view_color').textContent = data.color;
+                    } else {
+                        document.getElementById('view_color_container').style.display = 'none';
+                    }
+                    
+                    // Preferred Supplier
+                    if (data.preferred_supplier) {
+                        document.getElementById('view_preferred_supplier_container').style.display = 'block';
+                        document.getElementById('view_preferred_supplier').textContent = data.preferred_supplier.supplier_name || data.preferred_supplier.name;
+                    } else {
+                        document.getElementById('view_preferred_supplier_container').style.display = 'none';
+                    }
+                    
+                    // Inventory Value
+                    const inventoryValue = data.quantity * data.price;
+                    document.getElementById('view_inventory_value').textContent = '₱' + new Intl.NumberFormat('en-PH', {
+                        minimumFractionDigits: 2
+                    }).format(inventoryValue);
+                    
+                    // Last Supplier
+                    if (data.last_supplier) {
+                        document.getElementById('view_last_supplier_container').style.display = 'block';
+                        document.getElementById('view_last_supplier').textContent = data.last_supplier.supplier_name || data.last_supplier.name;
+                        if (data.last_received_at) {
+                            document.getElementById('view_last_received').textContent = 'Last received: ' + new Date(data.last_received_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                        }
+                        document.getElementById('view_no_supplier').style.display = 'none';
+                    } else {
+                        document.getElementById('view_last_supplier_container').style.display = 'none';
+                    }
+                    
+                    // Last Purchase Price
+                    if (data.last_purchase_price) {
+                        document.getElementById('view_last_purchase_price_container').style.display = 'block';
+                        document.getElementById('view_last_purchase_price').textContent = '₱' + new Intl.NumberFormat('en-PH', {
+                            minimumFractionDigits: 2
+                        }).format(data.last_purchase_price);
+                        
+                        if (data.price > data.last_purchase_price) {
+                            const margin = data.price - data.last_purchase_price;
+                            document.getElementById('view_price_margin').style.display = 'block';
+                            document.getElementById('view_price_margin').textContent = 'Margin: ₱' + new Intl.NumberFormat('en-PH', {
+                                minimumFractionDigits: 2
+                            }).format(margin);
+                        } else {
+                            document.getElementById('view_price_margin').style.display = 'none';
+                        }
+                        document.getElementById('view_no_supplier').style.display = 'none';
+                    } else {
+                        document.getElementById('view_last_purchase_price_container').style.display = 'none';
+                    }
+                    
+                    // Show/hide no supplier message
+                    if (!data.last_supplier && !data.preferred_supplier && !data.last_purchase_price) {
+                        document.getElementById('view_no_supplier').style.display = 'block';
+                    }
+                    
+                    // Product Info
+                    document.getElementById('view_product_id').textContent = '#' + data.product_id;
+                    document.getElementById('view_created_at').textContent = new Date(data.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    document.getElementById('view_updated_at').textContent = new Date(data.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
                     if (data.image) {
                         document.getElementById('view_image_container').classList.remove('hidden');
@@ -1182,18 +1259,18 @@
                             <div>
                                 <label for="edit_stock_name"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Stock Name (Base Product) <span class="text-gray-400 text-xs">(Optional)</span>
+                                    Stock Name<span class="text-gray-400 text-xs"></span>
                                 </label>
                                 <div class="mt-1 flex">
                                     <select id="edit_stock_name" name="stock_name"
                                         class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                        <option value="">Select a stock name...</option>
+                                        <option value="">Select a stock name</option>
                                     </select>
                                 </div>
                                 <input type="text" id="edit_custom_stock_name" name="custom_stock_name"
                                     placeholder="Enter new stock name..." style="display: none;"
                                     class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The parent/base product name
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                 </p>
                             </div>
                             <div>
@@ -1283,7 +1360,7 @@
                                         <span class="text-gray-500 sm:text-sm">₱</span>
                                     </div>
                                     <input type="number" id="edit_price" name="price" step="0.01"
-                                        min="0" required
+                                        min="0"
                                         class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 </div>
                             </div>
@@ -1388,8 +1465,9 @@
                 </div>
 
                 <div class="mt-4 max-h-[60vh] overflow-y-auto pr-2">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Left: Image -->
+                        <div class="lg:col-span-1">
                             <div id="view_image_container" class="hidden">
                                 <img id="view_product_image" src="" alt="Product"
                                     class="w-full h-auto object-cover rounded-lg border">
@@ -1408,38 +1486,97 @@
                             </div>
                         </div>
 
-                        <div class="space-y-4">
+                        <!-- Middle: Product Details -->
+                        <div class="lg:col-span-1 space-y-4">
+                            <div id="view_stock_name_container" style="display:none;">
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock Name (Base Product)</label>
+                                <p class="text-lg text-gray-900 dark:text-white" id="view_stock_name"></p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Product Name</label>
+                                <p class="text-lg text-gray-900 dark:text-white" id="view_product_name_detail"></p>
+                            </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">SKU</label>
                                 <p class="text-lg text-gray-900 dark:text-white" id="view_sku"></p>
+                            </div>
+                            <div id="view_size_container" style="display:none;">
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Size</label>
+                                <p class="text-lg text-gray-900 dark:text-white" id="view_size"></p>
+                            </div>
+                            <div id="view_color_container" style="display:none;">
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Color</label>
+                                <p class="text-lg text-gray-900 dark:text-white" id="view_color"></p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Brand</label>
                                 <p class="text-lg text-gray-900 dark:text-white" id="view_brand"></p>
                             </div>
                             <div>
-                                <label
-                                    class="block text-sm font-medium text-gray-500 dark:text-gray-400">Category</label>
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Category</label>
                                 <p class="text-lg text-gray-900 dark:text-white" id="view_category"></p>
+                            </div>
+                            <div id="view_preferred_supplier_container" style="display:none;">
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Preferred Supplier</label>
+                                <p class="text-lg text-gray-900 dark:text-white" id="view_preferred_supplier"></p>
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label
-                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400">Quantity</label>
-                                    <p class="text-lg font-semibold text-gray-900 dark:text-white" id="view_quantity">
-                                    </p>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Quantity</label>
+                                    <p class="text-lg font-semibold text-gray-900 dark:text-white" id="view_quantity"></p>
                                 </div>
                                 <div>
-                                    <label
-                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400">Price</label>
-                                    <p class="text-lg font-semibold text-green-600 dark:text-green-400"
-                                        id="view_price"></p>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Base Price</label>
+                                    <p class="text-lg font-semibold text-green-600 dark:text-green-400" id="view_price"></p>
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
-                                    Status</label>
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock Status</label>
                                 <div id="view_stock_status"></div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Inventory Value</label>
+                                <p class="text-lg font-semibold text-gray-900 dark:text-white" id="view_inventory_value"></p>
+                            </div>
+                        </div>
+
+                        <!-- Right: Supplier & Product Info -->
+                        <div class="lg:col-span-1 space-y-6">
+                            <!-- Supplier Information -->
+                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                                <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Supplier Information</h4>
+                                <div class="space-y-3">
+                                    <div id="view_last_supplier_container" style="display:none;">
+                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400">Last Supplier</label>
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white" id="view_last_supplier"></p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400" id="view_last_received"></p>
+                                    </div>
+                                    <div id="view_last_purchase_price_container" style="display:none;">
+                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400">Last Purchase Price</label>
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white" id="view_last_purchase_price"></p>
+                                        <p class="text-xs text-green-600" id="view_price_margin" style="display:none;"></p>
+                                    </div>
+                                    <div id="view_no_supplier" class="text-sm text-gray-500 dark:text-gray-400">No supplier information available</div>
+                                </div>
+                            </div>
+
+                            <!-- Product Info -->
+                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                                <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Product Info</h4>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs text-gray-500 dark:text-gray-400">Product ID</span>
+                                        <span class="text-sm font-medium text-gray-900 dark:text-white" id="view_product_id"></span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs text-gray-500 dark:text-gray-400">Created</span>
+                                        <span class="text-sm font-medium text-gray-900 dark:text-white" id="view_created_at"></span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs text-gray-500 dark:text-gray-400">Last Updated</span>
+                                        <span class="text-sm font-medium text-gray-900 dark:text-white" id="view_updated_at"></span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

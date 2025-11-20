@@ -351,6 +351,12 @@ class NavigationHelper
                 ['label' => 'Record Goods Received', 'url' => route('purchases.purchase-receives.create')],
             ],
 
+
+            'master_data.stock_names.index' => [
+                ['label' => 'Master Data', 'url' => null],
+                ['label' => 'Stock Names', 'url' => route('master_data.stock_names.index')],
+            ],
+
             // Reports
             'reports.sales' => [
                 ['label' => 'Reports', 'url' => null],

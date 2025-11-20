@@ -14,7 +14,7 @@
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                        d="M15 19l-7-7 7-7" />
                                 </svg>
                                 Back to List
                             </a>
@@ -746,7 +746,7 @@
 
                 // Find delivered deliveries
                 const deliveredDeliveries = relatedDeliveries.filter(d => d.status === 'delivered');
-                
+
                 // Find delivered deliveries that haven't been received yet
                 const availableDeliveries = deliveredDeliveries.filter(d => !d.has_been_received);
 
@@ -769,17 +769,18 @@
                 relatedDeliveries.forEach(delivery => {
                     const option = document.createElement('option');
                     option.value = delivery.id;
-                    
+
                     // Build option text with status indicators
-                    let optionText = `${delivery.delivery_number} - ${delivery.carrier || 'N/A'}${delivery.tracking_number ? ' (' + delivery.tracking_number + ')' : ''} [${delivery.status}]`;
-                    
+                    let optionText =
+                        `${delivery.delivery_number} - ${delivery.carrier || 'N/A'}${delivery.tracking_number ? ' (' + delivery.tracking_number + ')' : ''} [${delivery.status}]`;
+
                     // Add "Already Received" indicator if applicable
                     if (delivery.has_been_received) {
                         optionText += ' - Already Received';
                     }
-                    
+
                     option.textContent = optionText;
-                    
+
                     // Disable non-delivered options OR already received deliveries
                     if (delivery.status !== 'delivered' || delivery.has_been_received) {
                         option.disabled = true;

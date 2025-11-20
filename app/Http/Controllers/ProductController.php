@@ -31,6 +31,16 @@ class ProductController extends Controller
             $query->where('product_brand', 'like', '%'.$request->brand.'%');
         }
 
+        // Filter by category
+        if ($request->has('category') && $request->category) {
+            $query->where('product_category', 'like', '%'.$request->category.'%');
+        }
+
+        // Filter by stock name
+        if ($request->has('stock_names') && $request->stock_names) {
+            $query->where('stock_name', 'like', '%'.$request->stock_names.'%');
+        }
+
         // Filter by stock status
         if ($request->has('stock_status') && $request->stock_status) {
             switch ($request->stock_status) {
@@ -238,6 +248,8 @@ class ProductController extends Controller
     {
         // Check if request wants JSON (AJAX request for modal)
         if (request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+            // Load relationships for modal view
+            $product->load(['lastSupplier', 'preferredSupplier']);
             return response()->json($product);
         }
 

@@ -452,7 +452,7 @@
                         </div>
 
                         <!-- Suppliers Card -->
-                        <div
+                        {{-- <div
                             class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                             <div class="flex items-center">
                                 <div class="p-2 bg-indigo-500 rounded-lg">
@@ -474,7 +474,7 @@
                                     </p>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Customers Card -->
                         {{-- <div

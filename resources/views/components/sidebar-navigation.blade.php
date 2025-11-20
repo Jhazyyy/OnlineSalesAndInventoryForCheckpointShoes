@@ -49,11 +49,11 @@
                     <x-nav-item
                         route-pattern="inventory.products.*|inventory.product_stocks.*|inventory.thresholds.*|inventory.product-movement.*|inventory.product-costing.*"
                         :icon="App\Helpers\NavigationHelper::getIcon('inventory')" title="Inventory" :is-dropdown="true">
-
+                
+                        @hasanyrole('super_admin|admin')
                         <x-nav-item route="master_data.products.index" route-pattern="master_data.products.*"
                             :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Inventory" size="small" />
 
-                        @hasanyrole('super_admin|admin')
                             <!-- Stock Adjustment -->
                             <x-nav-item route="inventory.product_stock_adjustment.index"
                                 route-pattern="inventory.product_stock_adjustment.*" :icon="App\Helpers\NavigationHelper::getIcon('stock_adjustment', 'w-4 h-4 mr-3')"

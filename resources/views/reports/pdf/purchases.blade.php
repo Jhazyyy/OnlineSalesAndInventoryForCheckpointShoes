@@ -68,15 +68,15 @@
         <h2 style="margin: 10px 0 6px;">Purchase Order Master (By Product)</h2>
         <table style="margin-bottom: 14px;">
             <thead>
-                <tr>
+                <tr class="break-words">
                     <th>SKU</th>
                     <th>Product</th>
                     <th>Brand</th>
                     <th>Category</th>
-                    <th class="right">Ordered</th>
-                    <th class="right">Received</th>
-                    <th class="right">Avg. Price</th>
-                    <th class="right">Total Cost</th>
+                    <th class="left">Ordered</th>
+                    <th class="left">Received</th>
+                    <th class="left">Avg. Price</th>
+                    <th class="left">Total Cost</th>
                 </tr>
             </thead>
             <tbody>
@@ -86,10 +86,10 @@
                         <td>{{ $p->product_name ?? 'N/A' }}</td>
                         <td class="small">{{ $p->product_brand ?? 'N/A' }}</td>
                         <td class="small">{{ $p->product_category ?? 'N/A' }}</td>
-                        <td class="right">{{ number_format($p->total_ordered ?? 0) }}</td>
-                        <td class="right">{{ number_format($p->total_received ?? 0) }}</td>
-                        <td class="right">₱{{ number_format($p->avg_unit_price ?? 0, 2) }}</td>
-                        <td class="right">₱{{ number_format($p->total_cost ?? 0, 2) }}</td>
+                        <td class="left">{{ number_format($p->total_ordered ?? 0) }}</td>
+                        <td class="left">{{ number_format($p->total_received ?? 0) }}</td>
+                        <td class="left">₱{{ number_format($p->avg_unit_price ?? 0, 2) }}</td>
+                        <td class="left">₱{{ number_format($p->total_cost ?? 0, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -103,9 +103,9 @@
                 <th>PO Number</th>
                 <th>Supplier</th>
                 <th>Order Date</th>
-                <th class="right">Amount Due</th>
+                <th class="left">Amount Due</th>
                 <th>Due Date</th>
-                <th class="right">Total Paid</th>
+                <th class="left">Total Paid</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -115,9 +115,9 @@
                     <td>{{ $order->order_number ?? 'N/A' }}</td>
                     <td>{{ $order->supplier->supplier_name ?? 'N/A' }}</td>
                     <td>{{ $order->order_date ? date('M d, Y', strtotime($order->order_date)) : 'N/A' }}</td>
-                    <td class="right">₱{{ number_format($order->total_amount ?? 0, 2) }}</td>
+                    <td class="left">₱{{ number_format($order->total_amount ?? 0, 2) }}</td>
                     <td>{{ $order->expected_date ? date('M d, Y', strtotime($order->expected_date)) : 'N/A' }}</td>
-                    <td class="right">₱{{ number_format($order->payments->sum('amount') ?? 0, 2) }}</td>
+                    <td class="left">₱{{ number_format($order->payments->sum('amount') ?? 0, 2) }}</td>
                     <td>{{ ucfirst($order->status ?? 'N/A') }}</td>
                 </tr>
             @empty

@@ -14,7 +14,7 @@
                             class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                    d="M15 19l-7-7 7-7" />
                             </svg>
                             Back to List
                         </a>
@@ -89,16 +89,16 @@
                                         {{-- <option value="both"
                                             {{ old('applicable_for', $taxDiscount->applicable_for ?? 'both') === 'both' ? 'selected' : '' }}>
                                             Both (Supplier & Customer)</option> --}}
-                                        <option value="supplier"
+                                        {{-- <option value="supplier"
                                             {{ old('applicable_for', $taxDiscount->applicable_for) === 'supplier' ? 'selected' : '' }}>
-                                            Supplier (Purchase Orders)</option>
+                                            Supplier (Purchase Orders)</option> --}}
                                         <option value="customer"
                                             {{ old('applicable_for', $taxDiscount->applicable_for) === 'customer' ? 'selected' : '' }}>
                                             Customer (Sales Orders)</option>
                                     </select>
                                     <x-input-error class="mt-2" :messages="$errors->get('applicable_for')" />
-                                    <p class="mt-1 text-sm text-gray-500">Choose whether this applies to suppliers,
-                                        {{-- customers, or both</p> --}}
+                                    {{-- <p class="mt-1 text-sm text-gray-500">Choose whether this applies to suppliers,
+                                        customers, or both</p> --}}
                                 </div>
 
                                 <!-- Calculation Method -->
@@ -138,7 +138,7 @@
                                 </div>
 
                                 <!-- Priority -->
-                                <div>
+                                {{-- <div>
                                     <x-input-label for="priority" :value="__('Priority')" />
                                     <x-text-input id="priority" name="priority" type="number"
                                         class="mt-1 block w-full" :value="old('priority', $taxDiscount->priority)" required min="0"
@@ -146,7 +146,7 @@
                                     <x-input-error class="mt-2" :messages="$errors->get('priority')" />
                                     <p class="mt-1 text-sm text-gray-500">Lower numbers are calculated first (0 is
                                         highest priority)</p>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
 

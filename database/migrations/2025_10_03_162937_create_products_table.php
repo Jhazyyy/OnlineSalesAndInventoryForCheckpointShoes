@@ -28,6 +28,10 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->timestamps();
 
+            //Stock Name
+            $table->unsignedBigInteger('stock_name_id')->nullable();
+            $table->foreign('stock_name_id')->references('id')->on('stock_names')->onDelete('set null');
+
             // Supplier Tracking
             $table->unsignedBigInteger('preferred_supplier_id')->nullable();
             $table->unsignedBigInteger('last_supplier_id')->nullable();
