@@ -72,18 +72,18 @@ class ProductController extends Controller
         $products = $query->with('lastSupplier')->paginate(15)->withQueryString();
 
         // Get unique stock names for filter dropdown
-        $stockNames = StockName::where('is_active', true)->orderBy('name')->pluck('name')->filter()->sort();
+        $stockNames = StockName::where('is_active', true)->orderBy('name')->pluck('name')->filter()->sort()->values();
 
         // Get unique brands for filter dropdown
-        $brands = Product::distinct()->pluck('product_brand')->filter()->sort();
+        $brands = Product::distinct()->pluck('product_brand')->filter()->sort()->values();
 
         // Get unique categories for filter dropdown
-        $categories = Product::distinct()->pluck('product_category')->filter()->sort();
+        $categories = Product::distinct()->pluck('product_category')->filter()->sort()->values();
 
         // Get active suppliers for dropdown
         $suppliers = \App\Models\Supplier::where('status', 'active')->orderBy('supplier_name')->get();
 
-        return view('master_data.products.index', compact('products', 'stockNames', 'brands', 'categories', 'suppliers'));
+        return view('inventory.products.index', compact('products', 'stockNames', 'brands', 'categories', 'suppliers'));
     }
 
     /**
@@ -103,7 +103,7 @@ class ProductController extends Controller
         // Get active suppliers for dropdown
         $suppliers = \App\Models\Supplier::where('status', 'active')->orderBy('supplier_name')->get();
 
-        return view('master_data.products.create', compact('stockNames', 'brands', 'categories', 'suppliers'));
+        return view('inventory.products.create', compact('stockNames', 'brands', 'categories', 'suppliers'));
     }
 
     public function store(Request $request)
@@ -238,7 +238,7 @@ class ProductController extends Controller
         // Create the product
         $product = Product::create($data);
 
-        return redirect()->route('master_data.products.index')->with('success', 'Product created successfully!');
+        return redirect()->route('inventory.products.index')->with('success', 'Product created successfully!');
     }
 
     /**
@@ -261,7 +261,7 @@ class ProductController extends Controller
         $recentSales = $product->sales()->latest()->take(5)->get();
         $recentPurchases = $product->purchases()->latest()->take(5)->get();
 
-        return view('master_data.products.show', compact('product', 'stockMovement', 'recentSales', 'recentPurchases'));
+        return view('inventory.products.show', compact('product', 'stockMovement', 'recentSales', 'recentPurchases'));
     }
 
     /**
@@ -285,7 +285,7 @@ class ProductController extends Controller
             ]);
         }
 
-        return view('master_data.products.edit', compact('product', 'stockNames', 'brands', 'categories', 'suppliers'));
+        return view('inventory.products.edit', compact('product', 'stockNames', 'brands', 'categories', 'suppliers'));
     }
 
     public function update(Request $request, Product $product)
@@ -410,7 +410,7 @@ class ProductController extends Controller
 
         $product->update($data);
 
-        return redirect()->route('master_data.products.index')->with('success', 'Product updated successfully!');
+        return redirect()->route('inventory.products.index')->with('success', 'Product updated successfully!');
     }
 
     /**
@@ -425,7 +425,7 @@ class ProductController extends Controller
 
         $product->delete();
 
-        return redirect()->route('master_data.products.index')
+        return redirect()->route('inventory.products.index')
             ->with('success', 'Product deleted successfully!');
     }
 
@@ -434,7 +434,7 @@ class ProductController extends Controller
      */
     public function showImportForm()
     {
-        return view('master_data.products.import');
+        return view('inventory.products.import');
     }
 
     /**

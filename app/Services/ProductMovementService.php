@@ -191,7 +191,8 @@ class ProductMovementService
             $reasons[] = 'Slow moving product (avg ' . $product->movement_velocity . ' units/day)';
         }
 
-        if ($product->quantity > ($product->ceiling_level ?? PHP_INT_MAX)) {
+        // Remove ceiling_level check since it's been removed
+        if ($product->quantity > 50) { // Simple overstocked check
             $reasons[] = 'Overstocked';
         }
 

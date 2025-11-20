@@ -345,8 +345,9 @@ class StockService
         
         $recentMovements = StockMovement::getRecentMovements(10);
         
-        $lowStockProducts = Product::whereNotNull('reorder_level')
-            ->whereColumn('quantity', '<=', 'reorder_level')
+        // Standard formula: quantity <= 10
+        $lowStockProducts = Product::where('quantity', '<=', 10)
+            ->where('quantity', '>', 0)
             ->get();
         $outOfStockProducts = Product::outOfStock();
 

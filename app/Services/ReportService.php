@@ -187,17 +187,14 @@ class ReportService
             $query->where('product_category', $filters['category']);
         }
 
-        // Only include products that have a reorder level defined and are at/below it
-        $query->whereNotNull('reorder_level')
-              ->whereColumn('quantity', '<=', 'reorder_level');
+        // Standard formula: quantity <= 10
+        $query->where('quantity', '<=', 10);
 
         $products = $query->with(['preferredSupplier'])->orderBy('product_name')->get();
 
         $totalCandidates = $products->count();
         $outOfStock = $products->where('quantity', '<=', 0)->count();
-        $critical = $products->filter(function ($p) {
-            return !is_null($p->critical_level) && $p->quantity <= $p->critical_level;
-        })->count();
+        $critical = $products->where('quantity', '>', 0)->where('quantity', '<=', 5)->count();
 
         // Decorate with suggested order quantity for convenience in views
         $products = $products->map(function ($p) {
@@ -252,8 +249,8 @@ class ReportService
 
         // Calculate additional metrics for each product
         $products = $products->map(function ($p) {
-            // Calculate shortage (difference from reorder level)
-            $p->shortage = ($p->reorder_level ?? $p->critical_level) - $p->quantity;
+            // Calculate shortage (difference from standard threshold of 10)
+            $p->shortage = 10 - $p->quantity;
             
             // Get suggested order quantity
             $p->suggested_order_qty = $p->getSuggestedOrderQuantity();
@@ -556,15 +553,17 @@ class ReportService
                     $query->where('quantity', '<=', 0);
                     break;
                 case 'low_stock':
-                    $query->whereColumn('quantity', '<=', 'reorder_level')
-                        ->where('quantity', '>', 0);
+                    // Standard formula: quantity > 0 AND quantity <= 10
+                    $query->where('quantity', '>', 0)
+                        ->where('quantity', '<=', 10);
                     break;
                 case 'critical':
-                    $query->whereColumn('quantity', '<=', 'critical_level')
-                        ->where('quantity', '>', 0);
+                    // Standard formula: quantity > 0 AND quantity <= 5
+                    $query->where('quantity', '>', 0)
+                        ->where('quantity', '<=', 5);
                     break;
                 case 'overstocked':
-                    $query->whereColumn('quantity', '>', 'ceiling_level');
+                    // Remove overstocked filter since ceiling_level is removed
                     break;
             }
         }
@@ -578,19 +577,17 @@ class ReportService
         });
         $totalQuantity = $products->sum('quantity');
         
-        // Stock status breakdown
+        // Stock status breakdown - Standard formulas
         $outOfStock = Product::where('quantity', '<=', 0)->count();
-        // Low stock: items with stock > 0 but <= reorder_level (excludes out of stock)
-        $lowStock = Product::whereColumn('quantity', '<=', 'reorder_level')
-            ->whereNotNull('reorder_level')
-            ->where('quantity', '>', 0)
+        // Low stock: quantity > 0 AND quantity <= 10
+        $lowStock = Product::where('quantity', '>', 0)
+            ->where('quantity', '<=', 10)
             ->count();
-        $critical = Product::whereColumn('quantity', '<=', 'critical_level')
-            ->whereNotNull('critical_level')
-            ->where('quantity', '>', 0)
+        // Critical: quantity > 0 AND quantity <= 5
+        $critical = Product::where('quantity', '>', 0)
+            ->where('quantity', '<=', 5)
             ->count();
-        $overstocked = Product::whereColumn('quantity', '>', 'ceiling_level')
-            ->whereNotNull('ceiling_level')->count();
+        $overstocked = 0; // No longer tracked
         
         // Movement breakdown
         $fastMoving = Product::where('movement_category', 'fast')->count();
@@ -618,26 +615,20 @@ class ReportService
             (object)[
                 'stock_status' => 'low_stock',
                 'count' => $lowStock,
-                'total_quantity' => Product::whereColumn('quantity', '<=', 'reorder_level')
-                    ->whereNotNull('reorder_level')
-                    ->where('quantity', '>', 0)
+                'total_quantity' => Product::where('quantity', '>', 0)
+                    ->where('quantity', '<=', 10)
                     ->sum('quantity')
             ],
             (object)[
                 'stock_status' => 'in_stock',
-                'count' => Product::where('quantity', '>', 0)
-                    ->whereRaw('(reorder_level IS NULL OR quantity > reorder_level)')
-                    ->count(),
-                'total_quantity' => Product::where('quantity', '>', 0)
-                    ->whereRaw('(reorder_level IS NULL OR quantity > reorder_level)')
-                    ->sum('quantity')
+                'count' => Product::where('quantity', '>', 10)->count(),
+                'total_quantity' => Product::where('quantity', '>', 10)->sum('quantity')
             ]
         ])->filter(fn($item) => $item->count > 0);
         
-        // Low stock products list
-        $lowStockProducts = Product::whereColumn('quantity', '<=', 'reorder_level')
-            ->whereNotNull('reorder_level')
-            ->where('quantity', '>', 0)
+        // Low stock products list - Standard formula: quantity > 0 AND quantity <= 10
+        $lowStockProducts = Product::where('quantity', '>', 0)
+            ->where('quantity', '<=', 10)
             ->orderBy('quantity', 'asc')
             ->get();
         

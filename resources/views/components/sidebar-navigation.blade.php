@@ -47,12 +47,12 @@
 
                     <!-- Inventory Section -->
                     <x-nav-item
-                        route-pattern="inventory.products.*|inventory.product_stocks.*|inventory.thresholds.*|inventory.product-movement.*|inventory.product-costing.*"
+                        route-pattern="inventory.products.*|inventory.product_stocks.*|inventory.product-movement.*|inventory.product-costing.*"
                         :icon="App\Helpers\NavigationHelper::getIcon('inventory')" title="Inventory" :is-dropdown="true">
-                
+
                         @hasanyrole('super_admin|admin')
-                        <x-nav-item route="master_data.products.index" route-pattern="master_data.products.*"
-                            :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Inventory" size="small" />
+                            <x-nav-item route="inventory.products.index" route-pattern="inventory.products.*"
+                                :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Inventory" size="small" />
 
                             <!-- Stock Adjustment -->
                             <x-nav-item route="inventory.product_stock_adjustment.index"
@@ -70,16 +70,8 @@
                             <x-nav-item route="inventory.product-costing.index" route-pattern="inventory.product-costing.*"
                                 icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'
                                 title="Product Costing" size="small" />
-
-                            <!-- Inventory Thresholds -->
-
-                            <x-nav-item route="inventory.thresholds.index" route-pattern="inventory.thresholds.*"
-                                icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>'
-                                title="Inventory Thresholds" size="small" />
                         @endhasanyrole
                     </x-nav-item>
-
-
 
                     <!-- Purchases Section-->
                     <x-nav-item
@@ -111,11 +103,6 @@
                         {{-- <x-nav-item route="purchases.payments.index" route-pattern="purchases.payments.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>'
                             title="Payments Made" size="small" /> --}}
-
-                        <!-- Bills -->
-                        {{-- <x-nav-item href="#"
-                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>'
-                            title="Bills" size="small" /> --}}
                     </x-nav-item>
 
                     <!-- Sales Section-->
@@ -181,12 +168,8 @@
                     <!-- Master Data Section -->
                     @hasanyrole('super_admin|admin')
                         <x-nav-item
-                            route-pattern="master_data.products.*|master_data.categories.*|master_data.brands.*|master_data.suppliers.*|master_data.tax_discounts.*"
+                            route-pattern="master_data.categories.*|master_data.brands.*|master_data.suppliers.*|master_data.tax_discounts.*"
                             :icon="App\Helpers\NavigationHelper::getIcon('master_data')" title="Master Data" :is-dropdown="true">
-
-                            <!-- Products -->
-                            {{-- <x-nav-item route="master_data.products.index" route-pattern="master_data.products.*"
-                                :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Products" size="small" /> --}}
 
                             <!-- Supplier -->
                             <x-nav-item route="master_data.suppliers.index" route-pattern="master_data.suppliers.*"
@@ -194,7 +177,10 @@
 
                             <!-- Stock Name Management -->
                             <x-nav-item route="master_data.stock_names.index" route-pattern="master_data.stock_names.*"
-                                :icon="App\Helpers\NavigationHelper::getIcon('stock-name-management', 'w-4 h-4 mr-3')" title="Stock Name" size="small" />
+                                :icon="App\Helpers\NavigationHelper::getIcon(
+                                    'stock-name-management',
+                                    'w-4 h-4 mr-3',
+                                )" title="Stock Name" size="small" />
 
                             <!-- Categories -->
                             <x-nav-item route="master_data.categories.index" route-pattern="master_data.categories.*"

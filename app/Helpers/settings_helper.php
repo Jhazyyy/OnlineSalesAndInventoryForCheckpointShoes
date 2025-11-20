@@ -125,25 +125,25 @@ if (!function_exists('taxRate')) {
 
 if (!function_exists('lowStockThreshold')) {
     /**
-     * Get low stock threshold setting
+     * Get low stock threshold (standard formula)
      * 
      * @return int
      */
     function lowStockThreshold()
     {
-        return (int) setting('inventory.low_stock_threshold', 10);
+        return 10; // Standard low stock threshold
     }
 }
 
 if (!function_exists('criticalStockLevel')) {
     /**
-     * Get critical stock level setting
+     * Get critical stock level (standard formula)
      * 
      * @return int
      */
     function criticalStockLevel()
     {
-        return (int) setting('inventory.critical_stock_level', 5);
+        return 5; // Standard critical stock level
     }
 }
 

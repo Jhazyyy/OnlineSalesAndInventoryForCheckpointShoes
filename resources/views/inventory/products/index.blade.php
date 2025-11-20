@@ -26,7 +26,7 @@
             <!-- Filters Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
-                    <form method="GET" action="{{ route('master_data.products.index') }}" class="space-y-4">
+                    <form method="GET" action="{{ route('inventory.products.index') }}" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                             <!-- Search -->
                             <div>
@@ -136,7 +136,7 @@
                                     </svg>
                                     Filter
                                 </button>
-                                <a href="{{ route('master_data.products.index') }}"
+                                <a href="{{ route('inventory.products.index') }}"
                                     class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     Clear
                                 </a>
@@ -357,7 +357,7 @@
                                                 <button onclick="openEditProductModal({{ $product->product_id }})"
                                                     class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">Edit</button>
                                                 <form method="POST"
-                                                    action="{{ route('master_data.products.destroy', $product) }}"
+                                                    action="{{ route('inventory.products.destroy', $product) }}"
                                                     class="inline-block"
                                                     onsubmit="return confirm('Are you sure you want to delete this product?')">
                                                     @csrf
@@ -425,7 +425,7 @@
                 </div>
 
                 <!-- Modal Body -->
-                <form id="createProductForm" method="POST" action="{{ route('master_data.products.store') }}"
+                <form id="createProductForm" method="POST" action="{{ route('inventory.products.store') }}"
                     enctype="multipart/form-data">
                     @csrf
                     <div class="mt-4 space-y-6 max-h-[60vh] overflow-y-auto pr-2">
@@ -439,7 +439,7 @@
                                 <div class="mt-1 flex">
                                     <select id="modal_stock_name" name="stock_name"
                                         class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                        <option value="">Select a stock name...</option>
+                                        <option class="bg-slate-300" value="">Select a stock name...</option>
                                         @foreach ($stockNames as $stockName)
                                             <option value="{{ $stockName }}">{{ $stockName }}</option>
                                         @endforeach
@@ -893,7 +893,7 @@
             document.getElementById('editProductModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
 
-            fetch(`/master_data/products/${productId}/edit`, {
+            fetch(`/inventory/products/${productId}/edit`, {
                     headers: {
                         'Accept': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
@@ -901,7 +901,7 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('editProductForm').action = `/master_data/products/${productId}`;
+                    document.getElementById('editProductForm').action = `/inventory/products/${productId}`;
                     document.getElementById('edit_product_name').value = data.product.product_name;
                     document.getElementById('edit_size').value = data.product.size || '';
                     document.getElementById('edit_color').value = data.product.color || '';
@@ -911,7 +911,7 @@
 
                     // Populate stock names dropdown
                     const stockNameSelect = document.getElementById('edit_stock_name');
-                    stockNameSelect.innerHTML = '<option value="">Select a stock name...</option>';
+                    stockNameSelect.innerHTML = '<option class="bg-slate-300" value="">Select a stock name...</option>';
                     data.stockNames.forEach(stockName => {
                         const option = document.createElement('option');
                         option.value = stockName;
@@ -1062,7 +1062,7 @@
             document.getElementById('viewProductModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
 
-            fetch(`/master_data/products/${productId}`, {
+            fetch(`/inventory/products/${productId}`, {
                     headers: {
                         'Accept': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
@@ -1433,11 +1433,7 @@
                             Cancel
                         </button>
                         <button type="submit"
-                            class="inline-flex items-center px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                            </svg>
+                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                             Update Product
                         </button>
                     </div>

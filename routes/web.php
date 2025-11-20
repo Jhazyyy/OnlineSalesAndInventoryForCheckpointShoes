@@ -703,6 +703,25 @@ Route::get('dashboard/top-purchase-items', function (Illuminate\Http\Request $re
 
 
 
+    //Inventory Product Routes
+    Route::prefix('inventory/products')->name('inventory.products.')->group(function () {
+        Route::get('/', [ProductController::class, 'index'])->name('index');
+        Route::get('/create', [ProductController::class, 'create'])->name('create');
+        Route::post('/', [ProductController::class, 'store'])->name('store');
+        Route::get('/{product}', [ProductController::class, 'show'])->name('show');
+        Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
+        Route::put('/{product}', [ProductController::class, 'update'])->name('update');
+        Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
+
+        // Import routes
+        // Route::get('/import/form', [ProductController::class, 'showImportForm'])->name('import');
+        // Route::post('/import', [ProductController::class, 'import'])->name('import');
+        // Route::get('/template/download', [ProductController::class, 'downloadTemplate'])->name('template');
+
+        // API routes
+        Route::post('/bulk-update-stock', [ProductController::class, 'bulkUpdateStock'])->name('bulk-update-stock');
+        Route::get('/alerts', [ProductController::class, 'getAlertsData'])->name('alerts');
+    });
 // CurrentUser UpdateInfo Routes 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
@@ -799,26 +818,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // API route for tax/discount calculation
     Route::post('/api/tax-discounts/calculate', [\App\Http\Controllers\TaxDiscountController::class, 'calculateForOrder'])->name('api.tax-discounts.calculate');
 
-
-    //Master Data Product Routes
-    Route::prefix('master_data/products')->name('master_data.products.')->group(function () {
-        Route::get('/', [ProductController::class, 'index'])->name('index');
-        Route::get('/create', [ProductController::class, 'create'])->name('create');
-        Route::post('/', [ProductController::class, 'store'])->name('store');
-        Route::get('/{product}', [ProductController::class, 'show'])->name('show');
-        Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
-        Route::put('/{product}', [ProductController::class, 'update'])->name('update');
-        Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
-
-        // Import routes
-        // Route::get('/import/form', [ProductController::class, 'showImportForm'])->name('import');
-        // Route::post('/import', [ProductController::class, 'import'])->name('import');
-        // Route::get('/template/download', [ProductController::class, 'downloadTemplate'])->name('template');
-
-        // API routes
-        Route::post('/bulk-update-stock', [ProductController::class, 'bulkUpdateStock'])->name('bulk-update-stock');
-        Route::get('/alerts', [ProductController::class, 'getAlertsData'])->name('alerts');
-    });
 
     // Product Movement Management Routes (Fast/Slow/Non-Moving)
     Route::prefix('inventory/product-movement')->name('inventory.product-movement.')->group(function () {
@@ -1161,31 +1160,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/import/process', [\App\Http\Controllers\ShipmentController::class, 'import'])->name('import.process');
         Route::get('/template/download', [\App\Http\Controllers\ShipmentController::class, 'downloadTemplate'])->name('template');
         Route::get('/export', [\App\Http\Controllers\ShipmentController::class, 'export'])->name('export');
-    });
-
-    // Inventory Threshold Management Routes
-    Route::prefix('inventory/thresholds')->name('inventory.thresholds.')->group(function () {
-        // Main threshold management (products with thresholds)
-        Route::get('/', [\App\Http\Controllers\InventoryThresholdController::class, 'index'])->name('index');
-        
-        // Alert management - must come before /{product} routes to avoid conflicts
-        Route::get('/alerts', [\App\Http\Controllers\InventoryThresholdController::class, 'alerts'])->name('alerts');
-        Route::get('/alerts/{alert}', [\App\Http\Controllers\InventoryThresholdController::class, 'showAlert'])->name('alerts.show');
-        Route::patch('/alerts/{alert}/resolve', [\App\Http\Controllers\InventoryThresholdController::class, 'resolveAlert'])->name('alerts.resolve');
-        Route::post('/alerts/bulk-resolve', [\App\Http\Controllers\InventoryThresholdController::class, 'bulkResolveAlerts'])->name('alerts.bulk-resolve');
-        
-        // Utility routes - must come before /{product} routes
-        Route::post('/run-check', [\App\Http\Controllers\InventoryThresholdController::class, 'runThresholdCheck'])->name('run-check');
-        Route::get('/analytics', [\App\Http\Controllers\InventoryThresholdController::class, 'analytics'])->name('analytics');
-        Route::get('/export', [\App\Http\Controllers\InventoryThresholdController::class, 'export'])->name('export');
-        
-        // Bulk operations
-        Route::post('/bulk-update', [\App\Http\Controllers\InventoryThresholdController::class, 'bulkUpdate'])->name('bulk-update');
-        
-        // Product-specific routes - must come last to avoid route conflicts
-        Route::get('/{product}', [\App\Http\Controllers\InventoryThresholdController::class, 'show'])->name('show');
-        Route::get('/{product}/edit', [\App\Http\Controllers\InventoryThresholdController::class, 'edit'])->name('edit');
-        Route::put('/{product}', [\App\Http\Controllers\InventoryThresholdController::class, 'update'])->name('update');
     });
 
     // Reports Management Routes

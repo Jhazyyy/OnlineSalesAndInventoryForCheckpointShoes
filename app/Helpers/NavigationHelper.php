@@ -260,16 +260,6 @@ class NavigationHelper
 
         // Define breadcrumb mappings
         $breadcrumbMap = [
-            // Master Data
-            'master_data.products.index' => [
-                ['label' => 'Inventory', 'url' => null],
-                ['label' => 'Products', 'url' => null],
-            ],
-            'master_data.products.create' => [
-                ['label' => 'Master Data', 'url' => null],
-                ['label' => 'Products', 'url' => route('master_data.products.index')],
-                ['label' => 'Create Product', 'url' => null],
-            ],
             'master_data.categories.index' => [
                 ['label' => 'Master Data', 'url' => null],
                 ['label' => 'Categories', 'url' => route('master_data.categories.index')],
@@ -289,7 +279,17 @@ class NavigationHelper
 
             'inventory.products.index' => [
                 ['label' => 'Inventory', 'url' => null],
-                ['label' => 'Products', 'url' => route('master_data.products.index')],
+                ['label' => 'Products', 'url' => route('inventory.products.index')],
+            ],
+                        // Master Data
+            'master_data.products.index' => [
+                ['label' => 'Inventory', 'url' => null],
+                ['label' => 'Products', 'url' => null],
+            ],
+            'master_data.products.create' => [
+                ['label' => 'Master Data', 'url' => null],
+                ['label' => 'Products', 'url' => route('inventory.products.index')],
+                ['label' => 'Create Product', 'url' => null],
             ],
 
             // Sales
