@@ -135,8 +135,9 @@
                                             @endif
                                         </a>
                                     </th>
-                                    <th scope="col" class="relative px-6 py-3">
-                                        <span class="sr-only">Actions</span>
+                                        <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Actions
                                     </th>
                                 </tr>
                             </thead>
@@ -153,7 +154,7 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <div class="text-sm text-gray-900 dark:text-white truncate max-w-xs">
+                                            <div class="text-sm text-gray-900 dark:text-white break-words max-w-xs">
                                                 {{ $stockName->description ?? 'N/A' }}
                                             </div>
                                         </td>

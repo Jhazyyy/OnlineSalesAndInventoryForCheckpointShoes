@@ -33,7 +33,7 @@
                                 <label for="search"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>
                                 <input type="text" id="search" name="search" value="{{ request('search') }}"
-                                    placeholder="Name, SKU, Barcode, Brand, Category..."
+                                    placeholder="Name, SKU, Brand, Category..."
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
 
@@ -351,6 +351,7 @@
                                                         Stock</span>
                                                 @endif
                                             </td>
+                                            @hasrole('super_admin')
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                                                 <button onclick="openViewProductModal({{ $product->product_id }})"
                                                     class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">View</button>
@@ -366,6 +367,7 @@
                                                         class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">Delete</button>
                                                 </form>
                                             </td>
+                                            @endhasrole
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -623,7 +625,7 @@
                                             accept="image/*" onchange="previewModalImage(this)">
                                         <!-- Image Preview -->
                                         <img id="modal_previewImg" src="#" alt="Preview"
-                                            class="inset-0 max-w-auto h-auto object-cover rounded-none hidden" />
+                                            class="inset-0 max-w-12 h-12 object-cover rounded-none hidden" />
                                     </div>
                                 </div>
 

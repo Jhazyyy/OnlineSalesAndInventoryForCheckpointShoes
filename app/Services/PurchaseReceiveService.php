@@ -41,7 +41,18 @@ class PurchaseReceiveService
 
         // Apply filters
         if ($status = $request->get('status')) {
-            $query->where('status', $status);
+            if ($status === 'short_closed') {
+                // Filter for short closed items (received status but marked as short closed)
+                $query->where('status', 'received')
+                      ->where('is_short_closed', true);
+            } elseif ($status === 'received') {
+                // Filter for completely received items (received status but NOT short closed)
+                $query->where('status', 'received')
+                      ->where('is_short_closed', false);
+            } else {
+                // Normal status filter
+                $query->where('status', $status);
+            }
         }
 
         if ($supplierId = $request->get('supplier_id')) {
@@ -376,9 +387,14 @@ class PurchaseReceiveService
             if ($receive->purchase_order_id) {
                 $purchaseOrder = PurchaseOrder::find($receive->purchase_order_id);
                 if ($purchaseOrder && $purchaseOrder->status === 'ordered') {
-                    $purchaseOrder->status = 'completed';
-                    $purchaseOrder->received_date = $receive->receive_date ?? now();
-                    $purchaseOrder->save();
+                    // Use DB::table to avoid enum quoting issue with Eloquent
+                    DB::table('purchase_orders')
+                        ->where('order_id', $purchaseOrder->order_id)
+                        ->update([
+                            'status' => 'completed',
+                            'received_date' => $receive->receive_date ? $receive->receive_date->format('Y-m-d') : now()->format('Y-m-d'),
+                            'updated_at' => now(),
+                        ]);
                     
                     // Log activity
                     \App\Models\SupplierActivityLog::log(

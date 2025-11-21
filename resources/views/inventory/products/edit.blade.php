@@ -10,11 +10,11 @@
                             <p class="text-gray-600 dark:text-gray-400">Update product information</p>
                         </div>
                         <div>
-                            <a href="{{ route('master_data.products.index') }}"
+                            <a href="{{ route('inventory.products.index') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                        d="M15 19l-7-7 7-7" />
                                 </svg>
                                 Back to Products
                             </a>
@@ -25,7 +25,7 @@
             <!-- Form Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    <form method="POST" action="{{ route('master_data.products.update', $product) }}"
+                    <form method="POST" action="{{ route('inventory.products.update', $product) }}"
                         enctype="multipart/form-data" class="space-y-6">
                         @csrf
                         @method('PUT')
@@ -39,10 +39,10 @@
                                     Stock Name (Base Product) <span class="text-gray-400 text-xs">(Optional)</span>
                                 </label>
                                 <input type="text" id="stock_name" name="stock_name"
-                                    value="{{ old('stock_name', $product->stock_name) }}"
-                                    placeholder="Ella"
+                                    value="{{ old('stock_name', $product->stock_name) }}" placeholder="Ella"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('stock_name') border-red-500 @enderror">
-                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The parent/base product name that variants are associated with</p>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">The parent/base product name
+                                    that variants are associated with</p>
                                 @error('stock_name')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -74,7 +74,8 @@
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     <option value="">Select a supplier...</option>
                                     @foreach ($suppliers as $supplier)
-                                        <option value="{{ $supplier->supplier_id }}" {{ old('preferred_supplier_id', $product->preferred_supplier_id) == $supplier->supplier_id ? 'selected' : '' }}>
+                                        <option value="{{ $supplier->supplier_id }}"
+                                            {{ old('preferred_supplier_id', $product->preferred_supplier_id) == $supplier->supplier_id ? 'selected' : '' }}>
                                             {{ $supplier->supplier_name }}
                                         </option>
                                     @endforeach
@@ -94,8 +95,7 @@
                                     Size <span class="text-gray-400 text-xs">(Optional)</span>
                                 </label>
                                 <input type="text" id="size" name="size"
-                                    value="{{ old('size', $product->size) }}"
-                                    placeholder="e.g., 42, Large, XL"
+                                    value="{{ old('size', $product->size) }}" placeholder="e.g., 42, Large, XL"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('size') border-red-500 @enderror">
                                 @error('size')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -109,8 +109,7 @@
                                     Color <span class="text-gray-400 text-xs"></span>
                                 </label>
                                 <input type="text" id="color" name="color"
-                                    value="{{ old('color', $product->color) }}"
-                                    placeholder="e.g., Black, Red, Blue"
+                                    value="{{ old('color', $product->color) }}" placeholder="e.g., Black, Red, Blue"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('color') border-red-500 @enderror">
                                 @error('color')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -247,7 +246,8 @@
                                     <a href="{{ route('master_data.categories.create') }}"
                                         class="ml-2 inline-flex items-center px-3 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150"
                                         title="Add New Category">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M12 4v16m8-8H4"></path>
                                         </svg>
@@ -318,8 +318,7 @@
                                     <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Current
                                         Image</label>
                                     <div class="mt-1">
-                                        <img src="{{ $product->image_url }}"
-                                            alt="{{ $product->product_name }}"
+                                        <img src="{{ $product->image_url }}" alt="{{ $product->product_name }}"
                                             class="w-48 h-auto object-cover rounded-lg border">
                                     </div>
                                 </div>
@@ -361,8 +360,8 @@
                                 <div
                                     class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600">
                                     <div class="space-y-1 text-center">
-                                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none"
-                                            viewBox="0 0 48 48">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor"
+                                            fill="none" viewBox="0 0 48 48">
                                             <path
                                                 d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
                                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -384,15 +383,16 @@
                             <!-- URL Input Section -->
                             <div id="urlInputSection" class="mt-2 hidden">
                                 <input type="url" id="image_url" name="image_url"
-                                    value="{{ old('image_url') }}"
-                                    placeholder="https://example.com/image.jpg"
+                                    value="{{ old('image_url') }}" placeholder="https://example.com/image.jpg"
                                     onchange="previewImageFromUrl(this.value)"
                                     class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Enter a direct image URL (must end with .jpg, .jpeg, .png, or .gif)</p>
-                                
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Enter a direct image URL (must
+                                    end with .jpg, .jpeg, .png, or .gif)</p>
+
                                 <!-- URL Image Preview -->
                                 <div id="urlPreviewContainer" class="mt-3 hidden">
-                                    <div class="relative border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600 p-4">
+                                    <div
+                                        class="relative border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600 p-4">
                                         <img id="urlPreviewImg" src="#" alt="URL Preview"
                                             class="max-w-full h-auto object-cover rounded-md" />
                                     </div>
@@ -422,7 +422,7 @@
 
                         <!-- Form Actions -->
                         <div class="flex items-center justify-end space-x-3">
-                            <a href="{{ route('master_data.products.index') }}"
+                            <a href="{{ route('inventory.products.index') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Cancel
                             </a>
@@ -542,7 +542,8 @@
             const urlPreviewContainer = document.getElementById('urlPreviewContainer');
             const urlPreviewImg = document.getElementById('urlPreviewImg');
 
-            if (url && (url.match(/\.(jpeg|jpg|gif|png)$/i) || url.includes('unsplash') || url.includes('imgur') || url.includes('cloudinary'))) {
+            if (url && (url.match(/\.(jpeg|jpg|gif|png)$/i) || url.includes('unsplash') || url.includes('imgur') || url
+                    .includes('cloudinary'))) {
                 urlPreviewImg.src = url;
                 urlPreviewImg.onerror = function() {
                     urlPreviewContainer.classList.add('hidden');

@@ -189,7 +189,9 @@
                                                 @if($order->received_date)
                                                     {{ $order->received_date->format('M d, Y') }}
                                                     @if($order->status === 'completed')
-                                                        <div class="text-xs text-green-600 dark:text-green-400">✓ Completed</div>
+                                                        <div class="text-xs text-green-600 dark:text-green-400">Successfull received</div>
+                                                    @elseif($receive->status === 'received' && $receive->is_short_closed)
+                                                        <div class="text-xs text-orange-600 dark:text-orange-400">Short Closed</div>
                                                     @endif
                                                 @else
                                                     <span class="text-gray-400">-</span>

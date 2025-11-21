@@ -114,7 +114,7 @@
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Products
                                 ({{ $productsCount }})</h3>
-                            <a href="{{ route('master_data.products.index', ['category' => $category->name]) }}"
+                            <a href="{{ route('inventory.products.index', ['category' => $category->name]) }}"
                                 class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium">
                                 View All Products →
                             </a>
@@ -143,7 +143,7 @@
                                         <tr>
                                             <td
                                                 class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                                <a href="{{ route('master_data.products.show', $product) }}"
+                                                <a href="{{ route('inventory.products.show', $product) }}"
                                                     class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
                                                     {{ $product->product_name }}
                                                 </a>
@@ -188,7 +188,7 @@
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white">No Products</h3>
                         <p class="text-gray-500 dark:text-gray-400 mb-4">This category doesn't have any products yet.
                         </p>
-                        <a href="{{ route('master_data.products.create') }}"
+                        <a href="{{ route('inventory.products.create') }}"
                             class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
                             Add Product
                         </a>

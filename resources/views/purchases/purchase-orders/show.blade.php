@@ -92,9 +92,9 @@
                                     <p class="mt-1 text-sm text-gray-900 dark:text-white">
                                         @if($order->received_date)
                                             {{ $order->received_date->format('M d, Y') }}
-                                            @if($order->status === 'completed')
-                                                <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                                    Completed
+                                            @if($order->status === 'cancelled')
+                                                <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                                    Cancelled
                                                 </span>
                                             @endif
                                         @else
@@ -546,7 +546,7 @@
 
                             <div class="space-y-3">
                                 <!-- Status Change -->
-                                @if (count((new \App\Services\PurchaseOrderService())->getValidStatusTransitions($order->status)) > 0)
+                                @if (count((new \App\Services\PurchaseOrderService())->getValidStatusTransitions($order->status)) > 1)
                                     <form method="POST"
                                         action="{{ route('purchases.purchase-orders.change-status', $order->order_id) }}"
                                         class="inline">
@@ -575,6 +575,23 @@
                                                 <h4 class="text-sm font-semibold text-green-800 dark:text-green-300 mb-1">Order Completed</h4>
                                                 <p class="text-sm text-green-700 dark:text-green-400">
                                                     This purchase order has been completed. All items have been received.
+                                                    @if($order->received_date)
+                                                        <br>Received on: {{ $order->received_date->format('M d, Y') }}
+                                                    @endif
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @elseif ($order->status === 'cancelled')
+                                    <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                                        <div class="flex items-start">
+                                            <svg class="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <div>
+                                                <h4 class="text-sm font-semibold text-red-800 dark:text-red-300 mb-1">Order Cancelled</h4>
+                                                <p class="text-sm text-red-700 dark:text-red-400">
+                                                    This purchase order has been cancelled.
                                                     @if($order->received_date)
                                                         <br>Received on: {{ $order->received_date->format('M d, Y') }}
                                                     @endif

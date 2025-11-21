@@ -419,7 +419,7 @@
                 visibility: visible;
             }
             #receipt {
-                position: absolute;
+                position: relative;
                 left: 0;
                 top: 0;
                 width: 100%;

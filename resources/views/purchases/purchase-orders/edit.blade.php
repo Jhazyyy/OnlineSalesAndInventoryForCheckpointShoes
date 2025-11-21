@@ -101,7 +101,7 @@
                             <!-- Payment Method -->
                             <div>
                                 <x-input-label for="payment_method" :value="__('Payment Method')" />
-                                <select id="payment_method" name="payment_method"
+                                <select id="payment_method" name="payment_method" required
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     <option value="">Select Payment Method</option>
                                     <option value="cash"
@@ -227,8 +227,8 @@
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Order Summary</h3>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
+                            {{-- <div class="space-y-4">
                                 <!-- Shipping Amount -->
                                 <div>
                                     <x-input-label for="shipping_amount" :value="__('Shipping Amount')" />
@@ -236,7 +236,7 @@
                                         step="0.01" class="mt-1 block w-full" :value="old('shipping_amount', $order->shipping_amount)" />
                                     <x-input-error :messages="$errors->get('shipping_amount')" class="mt-2" />
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                                 <h4 class="font-medium text-gray-900 dark:text-white mb-2">Order Totals</h4>
@@ -245,11 +245,11 @@
                                         <span>Subtotal:</span>
                                         <span id="subtotal-display">₱{{ number_format($order->subtotal, 2) }}</span>
                                     </div>
-                                    <div class="flex justify-between">
+                                    {{-- <div class="flex justify-between">
                                         <span>Shipping:</span>
                                         <span
                                             id="shipping-display">₱{{ number_format($order->shipping_amount, 2) }}</span>
-                                    </div>
+                                    </div> --}}
                                     <hr class="my-2">
                                     <div class="flex justify-between font-bold text-lg">
                                         <span>Total:</span>

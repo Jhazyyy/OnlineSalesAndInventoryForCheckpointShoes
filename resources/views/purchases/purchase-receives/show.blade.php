@@ -96,11 +96,11 @@
                                             class="mt-1 text-sm text-blue-600 hover:text-blue-900">
                                             {{ $receive->purchaseOrder->order_number }}
                                         </a>
-                                        @if($receive->purchaseOrder->status === 'completed')
+                                        {{-- @if($receive->purchaseOrder->status === 'completed')
                                             <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                                                 PO Completed
                                             </span>
-                                        @endif
+                                        @endif --}}
                                     </div>
                                 @endif
 
