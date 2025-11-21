@@ -12,6 +12,8 @@ use App\Services\PurchaseOrderService;
 
 class PurchaseOrderController extends Controller
 {
+    use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+    
     protected PurchaseOrderService $orderService;
 
     public function __construct(PurchaseOrderService $orderService)
@@ -39,6 +41,8 @@ class PurchaseOrderController extends Controller
      */
     public function create()
     {
+        $this->authorize('create purchases');
+        
         $filterOptions = $this->orderService->getFilterOptions();
         
         return view('purchases.purchase-orders.create', [
@@ -52,6 +56,8 @@ class PurchaseOrderController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create purchases');
+        
         $validator = Validator::make($request->all(), [
             'supplier_id' => 'required|exists:suppliers,supplier_id',
             'order_date' => 'required|date',
@@ -102,6 +108,8 @@ class PurchaseOrderController extends Controller
      */
     public function edit(PurchaseOrder $order)
     {
+        $this->authorize('edit purchases');
+        
         $order->load(['supplier', 'items.product']);
         $filterOptions = $this->orderService->getFilterOptions();
         return view('purchases.purchase-orders.edit', [
@@ -116,6 +124,8 @@ class PurchaseOrderController extends Controller
      */
     public function update(Request $request, PurchaseOrder $order)
     {
+        $this->authorize('edit purchases');
+        
         $validator = Validator::make($request->all(), [
             'supplier_id' => 'required|exists:suppliers,supplier_id',
             'order_date' => 'required|date',
@@ -156,6 +166,8 @@ class PurchaseOrderController extends Controller
      */
     public function destroy(PurchaseOrder $order)
     {
+        $this->authorize('delete purchases');
+        
         try {
             $this->orderService->deleteOrder($order);
             return redirect()->route('purchases.purchase-orders.index')

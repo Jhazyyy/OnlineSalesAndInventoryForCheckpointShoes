@@ -11,6 +11,8 @@ use App\Services\CustomerService;
 
 class CustomerController extends Controller
 {
+    use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+    
     protected CustomerService $customerService;
 
     public function __construct(CustomerService $customerService)
@@ -37,6 +39,8 @@ class CustomerController extends Controller
      */
     public function create()
     {
+        $this->authorize('create customers');
+        
         return view('sales.customers.create');
     }
 
@@ -45,6 +49,8 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create customers');
+        
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -115,6 +121,8 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer)
     {
+        $this->authorize('edit customers');
+        
         return view('sales.customers.edit', compact('customer'));
     }
 
@@ -123,6 +131,8 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
+        $this->authorize('edit customers');
+        
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -174,6 +184,8 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer)
     {
+        $this->authorize('delete customers');
+        
         // Check if customer has sales
         if ($customer->sales()->count() > 0) {
             return redirect()->route('sales.customers.index')

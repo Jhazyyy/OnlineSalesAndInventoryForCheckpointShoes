@@ -8,12 +8,15 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\StockName;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
+    use AuthorizesRequests;
+    
     /**
      * Display a listing of the resource.
      */
@@ -91,6 +94,8 @@ class ProductController extends Controller
      */
     public function create()
     {
+        $this->authorize('create products');
+        
         // Get active stock names for dropdown
         $stockNames = StockName::where('is_active', true)->orderBy('name')->pluck('name', 'name');
 
@@ -108,6 +113,8 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create products');
+        
         $validator = Validator::make($request->all(), [
             'stock_name' => 'nullable|string|max:255',
             'custom_stock_name' => 'nullable|string|max:255',
@@ -269,6 +276,8 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
+        $this->authorize('edit products');
+        
         $stockNames = StockName::pluck('name');  // get stock names as a collection
         $brands = Brand::pluck('name');  // get brand names as a collection
         $categories = Category::pluck('name');  // get category names as a collection
@@ -290,6 +299,8 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
+        $this->authorize('edit products');
+        
         $validator = Validator::make($request->all(), [
             'stock_name' => 'nullable|string|max:255',
             'custom_stock_name' => 'nullable|string|max:255',
@@ -418,6 +429,8 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
+        $this->authorize('delete products');
+        
         // Delete associated image
         if ($product->image && Storage::disk('public')->exists($product->image)) {
             Storage::disk('public')->delete($product->image);

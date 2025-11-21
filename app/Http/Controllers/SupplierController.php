@@ -10,6 +10,8 @@ use App\Services\SupplierService;
 
 class SupplierController extends Controller
 {
+    use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+    
     protected SupplierService $supplierService;
 
     public function __construct(SupplierService $supplierService)
@@ -38,6 +40,8 @@ class SupplierController extends Controller
      */
     public function create()
     {
+        $this->authorize('create suppliers');
+        
         return view('master_data.suppliers.create');
     }
 
@@ -46,6 +50,8 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create suppliers');
+        
         $validator = Validator::make($request->all(), [
             'supplier_name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
@@ -122,6 +128,8 @@ class SupplierController extends Controller
      */
     public function edit(Supplier $supplier)
     {
+        $this->authorize('edit suppliers');
+        
         return view('master_data.suppliers.edit', compact('supplier'));
     }
 
@@ -130,6 +138,8 @@ class SupplierController extends Controller
      */
     public function update(Request $request, Supplier $supplier)
     {
+        $this->authorize('edit suppliers');
+        
         $validator = Validator::make($request->all(), [
             'supplier_name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',

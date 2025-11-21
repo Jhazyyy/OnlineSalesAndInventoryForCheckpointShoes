@@ -18,6 +18,8 @@ use App\Services\SalesOrderService;
  */
 class SalesOrderController extends Controller
 {
+    use \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+    
     protected SalesOrderService $orderService;
 
     public function __construct(SalesOrderService $orderService)
@@ -45,6 +47,8 @@ class SalesOrderController extends Controller
      */
     public function create()
     {
+        $this->authorize('create sales');
+        
         $filterOptions = $this->orderService->getFilterOptions();
         
         // Get categories for filtering
@@ -80,6 +84,8 @@ class SalesOrderController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create sales');
+        
         $validator = Validator::make($request->all(), [
             'customer_id' => 'required|exists:customers,customer_id',
             'order_date' => 'required|date',
