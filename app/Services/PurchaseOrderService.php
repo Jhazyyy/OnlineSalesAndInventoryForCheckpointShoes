@@ -19,7 +19,7 @@ use Illuminate\Support\Collection;
  * PURCHASE WORKFLOW OVERVIEW:
  * ============================
  * 1. CREATE PURCHASE ORDER (this service)
- *    - Status: pending → approved → ordered
+ *    - Status: pending → ordered → completed
  *    - Select supplier and products
  *    - No inventory changes yet
  * 
@@ -265,13 +265,14 @@ class PurchaseOrderService
         }
 
         $oldStatus = $order->status;
-        $order->update(['status' => $status]);
+        $order->status = $status;
+        $order->save();
 
         // Log activity based on status change
         $activityType = match($status) {
-            'approved' => 'purchase_order_approved',
-            // 'received' => 'purchase_order_received',
+            'received' => 'purchase_order_received',
             'cancelled' => 'purchase_order_cancelled',
+            'completed' => 'purchase_order_completed',
             default => 'purchase_order_updated',
         };
 
@@ -291,7 +292,7 @@ class PurchaseOrderService
 
         // Create notification for status change
         $level = match($status) {
-            'approved' => 'success',
+            'completed' => 'success',
             'cancelled' => 'warning',
             'ordered' => 'info',
             default => 'info',
@@ -314,10 +315,10 @@ class PurchaseOrderService
     public function getValidStatusTransitions(string $currentStatus): array
     {
         return match($currentStatus) {
-            'pending' => ['approved', 'cancelled'],
-            'approved' => ['ordered', 'cancelled'],
-            'ordered' => ['cancelled'],
+            'pending' => ['ordered', 'cancelled'],
+            'ordered' => ['completed', 'cancelled'],
             'cancelled' => [],
+            'completed' => [],
             default => [],
         };
     }
@@ -347,8 +348,8 @@ class PurchaseOrderService
     {
         $totalOrders = PurchaseOrder::count();
         $pendingOrders = PurchaseOrder::pending()->count();
-        $approvedOrders = PurchaseOrder::approved()->count();
         $orderedOrders = PurchaseOrder::ordered()->count();
+        $completedOrders = PurchaseOrder::completed()->count();
         $cancelledOrders = PurchaseOrder::cancelled()->count();
 
         // Recent orders (last 30 days)
@@ -402,7 +403,6 @@ class PurchaseOrderService
             'summary' => [
                 'total_orders' => $totalOrders,
                 'pending_orders' => $pendingOrders,
-                'approved_orders' => $approvedOrders,
                 'ordered_orders' => $orderedOrders,
                 'cancelled_orders' => $cancelledOrders,
                 'recent_orders' => $recentOrders,

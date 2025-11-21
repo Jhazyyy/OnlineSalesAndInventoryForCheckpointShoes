@@ -317,7 +317,7 @@
                                             <div
                                                 class="flex items-center space-x-2 p-2 bg-gray-50 dark:bg-gray-700 rounded">
                                                 <div class="flex-1 min-w-0">
-                                                    <p class="text-sm font-medium text-gray-900 dark:text-white truncate"
+                                                    <p class="text-sm font-medium text-gray-900 dark:text-white break-words"
                                                         x-text="item.name"></p>
                                                     <p class="text-xs text-gray-500 dark:text-gray-400"
                                                         x-text="'₱' + parseFloat(item.price).toFixed(2)"></p>

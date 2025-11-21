@@ -158,11 +158,11 @@ class PurchaseOrder extends Model
     }
 
     /**
-     * Scope a query to only include approved orders.
+     * Scope a query to only include completed orders.
      */
-    public function scopeApproved(Builder $query): Builder
+    public function scopeCompleted(Builder $query): Builder
     {
-        return $query->where('status', 'approved');
+        return $query->where('status', 'completed');
     }
 
     /**
@@ -300,10 +300,24 @@ class PurchaseOrder extends Model
 
     /**
      * Check if the order can be cancelled.
+     * Orders cannot be cancelled if:
+     * 1. Already cancelled
+     * 2. Already completed
+     * 3. Has received items (any receive with 'received' or 'partially_received' status)
      */
     public function canBeCancelled(): bool
     {
-        return !in_array($this->status, ['cancelled']);
+        // Cannot cancel if already cancelled or completed
+        if (in_array($this->status, ['cancelled', 'completed'])) {
+            return false;
+        }
+
+        // Cannot cancel if items have been received
+        if ($this->receives()->whereIn('status', ['received', 'partially_received'])->exists()) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -311,15 +325,7 @@ class PurchaseOrder extends Model
      */
     public function canBeEdited(): bool
     {
-        return in_array($this->status, ['pending', 'approved']);
-    }
-
-    /**
-     * Check if the order can be approved.
-     */
-    public function canBeApproved(): bool
-    {
-        return $this->status === 'pending';
+        return in_array($this->status, ['pending']);
     }
 
     /**
@@ -327,7 +333,7 @@ class PurchaseOrder extends Model
      */
     public function canBeOrdered(): bool
     {
-        return $this->status === 'approved';
+        return $this->status === 'pending';
     }
 
     /**
@@ -410,8 +416,8 @@ class PurchaseOrder extends Model
     {
         return match($this->status) {
             'pending' => 'bg-yellow-100 text-yellow-800',
-            'approved' => 'bg-blue-100 text-blue-800',
             'ordered' => 'bg-indigo-100 text-indigo-800',
+            'completed' => 'bg-green-100 text-green-800',
             'cancelled' => 'bg-red-100 text-red-800',
             default => 'bg-gray-100 text-gray-800',
         };

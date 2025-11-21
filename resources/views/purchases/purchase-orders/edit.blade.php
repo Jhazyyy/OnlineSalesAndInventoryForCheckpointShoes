@@ -6,7 +6,7 @@
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Purchase Order
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Purchase Order:
                                 {{ $order->order_number }}</h2>
                             <p class="text-gray-600 dark:text-gray-400">Update purchase order information</p>
                         </div>
@@ -35,7 +35,7 @@
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Order Information</h3>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <!-- Order Number (Read-only) -->
                             <div>
                                 <x-input-label for="order_number" :value="__('Order Number')" />
@@ -124,7 +124,7 @@
                             </div>
 
                             <!-- Reference Number -->
-                            <div class="md:col-span-2">
+                            <div class="md:col-span-1">
                                 <x-input-label for="reference_number" :value="__('Reference Number')" />
                                 <x-text-input id="reference_number" name="reference_number" type="text"
                                     class="mt-1 block w-full" :value="old('reference_number', $order->reference_number)"
@@ -154,7 +154,7 @@
                             @foreach ($order->items as $index => $item)
                                 <!-- Existing item row -->
                                 <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4">
-                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                                         <div class="md:col-span-2">
                                             <label
                                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
@@ -200,19 +200,19 @@
                                                 class="line-total mt-1 block w-full rounded-md border-gray-300 bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white"
                                                 readonly>
                                         </div>
+                                        <div class="mt-4">
+                                            <label
+                                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
+                                            <textarea name="items[{{ $index }}][notes]" rows="2"
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                placeholder="Optional notes for this item">{{ old("items.{$index}.notes", $item->notes) }}</textarea>
+                                        </div>
                                         <div>
                                             <button type="button"
                                                 class="remove-item w-full inline-flex justify-center items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                                 Remove
                                             </button>
                                         </div>
-                                    </div>
-                                    <div class="mt-4">
-                                        <label
-                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
-                                        <textarea name="items[{{ $index }}][notes]" rows="2"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                            placeholder="Optional notes for this item">{{ old("items.{$index}.notes", $item->notes) }}</textarea>
                                     </div>
                                 </div>
                             @endforeach

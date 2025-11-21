@@ -146,7 +146,7 @@ class ReportService
                      ->whereNull('inventories.property_id');
             })
             ->whereBetween('purchase_orders.order_date', [$startDate, $endDate])
-            ->whereIn('purchase_orders.status', ['approved', 'ordered', 'partial_received', 'received'])
+            ->whereIn('purchase_orders.status', ['ordered', 'partial_received', 'received', 'completed'])
             ->select(
                 'products.product_id',
                 'products.product_name',

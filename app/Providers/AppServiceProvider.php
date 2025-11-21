@@ -4,7 +4,12 @@ namespace App\Providers;
 
 use App\Models\Product;
 use App\Observers\ProductObserver;
+use App\Listeners\LogUserActivity;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -40,6 +45,11 @@ class AppServiceProvider extends ServiceProvider
 
         // Register observers
         Product::observe(ProductObserver::class);
+
+        // Register authentication event listeners for activity logging
+        Event::listen(Login::class, [LogUserActivity::class, 'handleLogin']);
+        Event::listen(Logout::class, [LogUserActivity::class, 'handleLogout']);
+        Event::listen(PasswordReset::class, [LogUserActivity::class, 'handlePasswordReset']);
 
         // Register navigation helper as a Blade directive
         Blade::directive('navIcon', function ($expression) {

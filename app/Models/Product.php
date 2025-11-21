@@ -330,15 +330,20 @@ class Product extends Model
     }
 
     /**
-     * Scope a query to search products by name, brand, or category.
+     * Scope a query to search products by name, SKU, barcode, brand, category, and other fields.
      */
     public function scopeSearch(Builder $query, string $search): Builder
     {
         return $query->where(function ($q) use ($search) {
             $q->where('product_name', 'LIKE', "%{$search}%")
+              ->orWhere('sku', 'LIKE', "%{$search}%")
+              ->orWhere('barcode', 'LIKE', "%{$search}%")
               ->orWhere('stock_name', 'LIKE', "%{$search}%")
               ->orWhere('product_brand', 'LIKE', "%{$search}%")
-              ->orWhere('product_category', 'LIKE', "%{$search}%");
+              ->orWhere('product_category', 'LIKE', "%{$search}%")
+              ->orWhere('size', 'LIKE', "%{$search}%")
+              ->orWhere('color', 'LIKE', "%{$search}%")
+              ->orWhere('description', 'LIKE', "%{$search}%");
         });
     }
 
@@ -639,35 +644,19 @@ class Product extends Model
     }
 
     /**
-     * Scope a query to only include products with stock.
+     * Scope a query to only include products with stock (quantity > 10).
      */
     public function scopeInStock(Builder $query): Builder
     {
-        // Products where the latest stock movement shows positive quantity
-        return $query->whereHas('stockMovements', function($q) {
-            $q->where('quantity_after', '>', 0)
-              ->whereIn('movement_id', function($subQ) {
-                  $subQ->selectRaw('MAX(movement_id)')
-                       ->from('stock_movements')
-                       ->groupBy('product_id');
-              });
-        });
+        return $query->where('quantity', '>', 10);
     }
 
     /**
-     * Scope a query to only include out of stock products.
+     * Scope a query to only include out of stock products (quantity = 0).
      */
     public function scopeOutOfStock(Builder $query): Builder
     {
-        // Products where the latest stock movement shows 0 or negative quantity
-        return $query->whereHas('stockMovements', function($q) {
-            $q->where('quantity_after', '<=', 0)
-              ->whereIn('movement_id', function($subQ) {
-                  $subQ->selectRaw('MAX(movement_id)')
-                       ->from('stock_movements')
-                       ->groupBy('product_id');
-              });
-        });
+        return $query->where('quantity', '=', 0);
     }
 
     /**

@@ -210,16 +210,29 @@
                                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Notes (For Internal
                                     Use)</h3>
 
-                                <div>
-                                    <label for="receiving_notes"
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Receiving
-                                        Notes</label>
-                                    <textarea id="receiving_notes" name="receiving_notes" rows="3"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                        placeholder="Any notes about the receiving process...">{{ old('receiving_notes') }}</textarea>
-                                    @error('receiving_notes')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="receiving_notes"
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Receiving
+                                            Notes</label>
+                                        <textarea id="receiving_notes" name="receiving_notes" rows="3"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                            placeholder="Any notes about the receiving process...">{{ old('receiving_notes') }}</textarea>
+                                        @error('receiving_notes')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <div>
+                                        <label for="receiver_name"
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Receiver
+                                            Name</label>
+                                        <input type="text" id="receiver_name" name="receiver_name"
+                                            value="{{ old('receiver_name') }}"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                            placeholder="Name of person who received the items" required>
+                                            <x-input-error class="mt-2" :messages="$errors->get('receiver_name')" />
+                                    </div>
                                 </div>
                             </div>
                         </div>

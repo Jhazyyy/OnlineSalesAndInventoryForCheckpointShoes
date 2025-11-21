@@ -27,13 +27,13 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <form method="GET" action="{{ route('inventory.products.index') }}" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
                             <!-- Search -->
                             <div>
                                 <label for="search"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>
                                 <input type="text" id="search" name="search" value="{{ request('search') }}"
-                                    placeholder="Search products..."
+                                    placeholder="Name, SKU, Barcode, Brand, Category..."
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
 
@@ -257,7 +257,7 @@
                                                 @if ($product->image)
                                                     <img src="{{ $product->image_url }}"
                                                         alt="{{ $product->product_name }}"
-                                                        class="h-24 w-auto object-cover rounded-md">
+                                                        class="h-16 w-16 object-cover rounded-none border border-gray-300 dark:border-gray-200">
                                                 @else
                                                     <div
                                                         class="h-16 w-16 bg-gray-200 dark:bg-gray-600 rounded-none flex items-center justify-center">
@@ -265,7 +265,7 @@
                                                             stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2"
-                                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                                d="M4 16l4.586-4.56a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
                                                             </path>
                                                         </svg>
                                                     </div>
@@ -482,7 +482,7 @@
                             <div>
                                 <label for="modal_sku"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    SKU <span class="text-gray-400 text-xs">(Optional - auto-generated if empty)</span>
+                                    SKU <span class="text-gray-400 text-xs">(Auto-generated if empty)</span>
                                 </label>
                                 <input type="text" id="modal_sku" name="sku" placeholder="e.g., SHOE-001"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
@@ -623,7 +623,7 @@
                                             accept="image/*" onchange="previewModalImage(this)">
                                         <!-- Image Preview -->
                                         <img id="modal_previewImg" src="#" alt="Preview"
-                                            class="inset-0 max-w-auto h-auto object-cover rounded-md hidden" />
+                                            class="inset-0 max-w-auto h-auto object-cover rounded-none hidden" />
                                     </div>
                                 </div>
 
@@ -641,7 +641,7 @@
                                         <div
                                             class="relative border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600 p-4">
                                             <img id="modal_urlPreviewImg" src="#" alt="URL Preview"
-                                                class="max-w-auto h-auto object-cover rounded-md" />
+                                                class="max-w-auto h-auto object-cover rounded-none" />
                                         </div>
                                     </div>
                                 </div>

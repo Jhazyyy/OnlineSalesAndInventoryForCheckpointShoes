@@ -363,10 +363,27 @@ class UserManagementController extends Controller
             $data['profile_photo'] = $imagePath;
         }
 
+        $oldData = $user->only(['status', 'department', 'position']);
+        $oldRole = $user->roles->pluck('name')->first();
+        
         $user->update($data);
         
         // Update role using Spatie Permission
         $user->syncRoles([$request->role]);
+
+        // Log activity
+        if (class_exists(Activity::class)) {
+            $changes = [];
+            if ($oldRole !== $request->role) $changes['role'] = "from {$oldRole} to {$request->role}";
+            if ($oldData['status'] !== $request->status) $changes['status'] = "from {$oldData['status']} to {$request->status}";
+            if ($request->filled('password')) $changes['password'] = 'changed';
+            
+            activity()
+                ->causedBy(Auth::user())
+                ->performedOn($user)
+                ->withProperties(['changes' => $changes])
+                ->log('updated');
+        }
 
         return redirect()->route('user-management.index')
             ->with('success', 'User updated successfully.');
@@ -386,6 +403,15 @@ class UserManagementController extends Controller
                 ->with('error', 'You cannot delete your own account.');
         }
 
+        // Log activity before deletion
+        if (class_exists(Activity::class)) {
+            activity()
+                ->causedBy(Auth::user())
+                ->performedOn($user)
+                ->withProperties(['email' => $user->email, 'role' => $user->roles->pluck('name')->first()])
+                ->log('deleted');
+        }
+        
         // Prevent deleting super admin users
         if ($user->hasRole('super_admin')) {
             return redirect()->route('user-management.index')

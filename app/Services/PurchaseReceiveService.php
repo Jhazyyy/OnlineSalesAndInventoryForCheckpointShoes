@@ -363,6 +363,7 @@ class PurchaseReceiveService
 
     /**
      * Update receive status based on completion percentage.
+     * Also updates the Purchase Order status to 'completed' when fully received.
      */
     protected function updateReceiveStatus(PurchaseReceive $receive): void
     {
@@ -370,6 +371,32 @@ class PurchaseReceiveService
 
         if ($completionPercentage >= 100) {
             $receive->update(['status' => 'received']);
+            
+            // Mark Purchase Order as completed when fully received
+            if ($receive->purchase_order_id) {
+                $purchaseOrder = PurchaseOrder::find($receive->purchase_order_id);
+                if ($purchaseOrder && $purchaseOrder->status === 'ordered') {
+                    $purchaseOrder->status = 'completed';
+                    $purchaseOrder->received_date = $receive->receive_date ?? now();
+                    $purchaseOrder->save();
+                    
+                    // Log activity
+                    \App\Models\SupplierActivityLog::log(
+                        supplierId: $purchaseOrder->supplier_id,
+                        activityType: 'purchase_order_completed',
+                        description: "Purchase Order {$purchaseOrder->order_number} marked as completed - all items received",
+                        relatedId: $purchaseOrder->order_id,
+                        relatedType: 'PurchaseOrder',
+                        amount: $purchaseOrder->total_amount,
+                        metadata: [
+                            'order_number' => $purchaseOrder->order_number,
+                            'receive_number' => $receive->receive_number,
+                            'completed_via' => 'auto_complete_on_receive',
+                            'received_date' => ($receive->receive_date instanceof \Carbon\Carbon) ? $receive->receive_date->format('Y-m-d') : $receive->receive_date,
+                        ]
+                    );
+                }
+            }
         } elseif ($completionPercentage > 0) {
             $receive->update(['status' => 'partially_received']);
         }
@@ -557,7 +584,7 @@ class PurchaseReceiveService
 
             // Update the related Purchase Order
             if ($receive->purchase_order_id) {
-                $purchaseOrder = PurchaseOrder::with(['items', 'deliveries'])->find($receive->purchase_order_id);
+                $purchaseOrder = PurchaseOrder::with(['items'])->find($receive->purchase_order_id);
 
                 if ($purchaseOrder) {
                     // Note: Purchase Order status remains 'ordered'
