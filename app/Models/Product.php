@@ -750,8 +750,27 @@ class Product extends Model
         foreach ($stockUpdates as $productId => $quantity) {
             $product = self::find($productId);
             if ($product) {
+                $oldQuantity = $product->quantity;
                 $product->quantity = $quantity;
                 $results[$productId] = $product->save();
+                
+                // Log stock change to audit trail
+                if ($results[$productId]) {
+                    $difference = $quantity - $oldQuantity;
+                    $action = $difference >= 0 ? 'stock_increase' : 'stock_decrease';
+                    
+                    \App\Models\AuditLog::logAction(
+                        $action,
+                        \App\Models\AuditLog::MODULE_INVENTORY,
+                        "Bulk update: {$product->product_name} stock changed from {$oldQuantity} to {$quantity}",
+                        'Product',
+                        $productId,
+                        $product->product_name,
+                        ['quantity' => $oldQuantity],
+                        ['quantity' => $quantity],
+                        \App\Models\AuditLog::SEVERITY_INFO
+                    );
+                }
             } else {
                 $results[$productId] = false;
             }
@@ -800,8 +819,26 @@ class Product extends Model
      */
     public function markAsOutOfStock(): bool
     {
+        $oldQuantity = $this->quantity;
         $this->quantity = 0;
-        return $this->save();
+        $result = $this->save();
+        
+        // Log to audit trail if stock was changed
+        if ($result && $oldQuantity != 0) {
+            \App\Models\AuditLog::logAction(
+                'stock_decrease',
+                \App\Models\AuditLog::MODULE_INVENTORY,
+                "{$this->product_name} marked as out of stock",
+                'Product',
+                $this->product_id,
+                $this->product_name,
+                ['quantity' => $oldQuantity],
+                ['quantity' => 0],
+                \App\Models\AuditLog::SEVERITY_INFO
+            );
+        }
+        
+        return $result;
     }
 
     /**

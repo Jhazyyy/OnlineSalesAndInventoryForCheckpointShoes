@@ -236,7 +236,7 @@ class StockMovement extends Model
     ): self {
         $totalValue = $unitCost ? ($unitCost * abs($quantityChange)) : null;
         
-        return self::create([
+        $movement = self::create([
             'product_id' => $productId,
             'user_id' => $userId ?? auth()->id(),
             'movement_type' => $movementType,
@@ -254,6 +254,38 @@ class StockMovement extends Model
             'status' => $status,
             'movement_date' => $movementDate ?? now(),
         ]);
+        
+        // Log stock movement to audit trail
+        $product = \App\Models\Product::find($productId);
+        if ($product && $status === self::STATUS_CONFIRMED) {
+            $action = $quantityChange >= 0 ? 'stock_increase' : 'stock_decrease';
+            $description = sprintf(
+                '%s: %s stock changed from %d to %d (%+d)',
+                ucfirst(str_replace('_', ' ', $movementType)),
+                $product->product_name,
+                $quantityBefore,
+                $quantityAfter,
+                $quantityChange
+            );
+            
+            if ($reason) {
+                $description .= " - {$reason}";
+            }
+            
+            \App\Models\AuditLog::logAction(
+                $action,
+                \App\Models\AuditLog::MODULE_INVENTORY,
+                $description,
+                'Product',
+                $productId,
+                $product->product_name,
+                ['quantity' => $quantityBefore, 'movement_type' => $movementType],
+                ['quantity' => $quantityAfter, 'movement_type' => $movementType],
+                \App\Models\AuditLog::SEVERITY_INFO
+            );
+        }
+        
+        return $movement;
     }
 
     /**

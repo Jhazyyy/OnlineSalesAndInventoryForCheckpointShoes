@@ -157,6 +157,19 @@ class StockService
                 'link' => route('inventory.product_stock_adjustment.index'),
             ]);
 
+            // Log the stock adjustment to audit trail
+            \App\Models\AuditLog::logAction(
+                $quantityChange > 0 ? 'stock_increase' : 'stock_decrease',
+                \App\Models\AuditLog::MODULE_INVENTORY,
+                "{$adjustmentType} stock for {$product->product_name}: " . abs($quantityChange) . " units (Old: {$currentInventoryTotal}, New: {$newQuantity}). Reason: " . ($data['reason'] ?? 'Stock adjustment'),
+                Product::class,
+                $product->product_id,
+                $product->product_name,
+                ['quantity' => $currentInventoryTotal],
+                ['quantity' => $newQuantity, 'adjustment' => $quantityChange, 'reason' => $data['reason'] ?? 'Stock adjustment'],
+                \App\Models\AuditLog::SEVERITY_INFO
+            );
+
             return [
                 'success' => true,
                 'message' => 'Stock adjustment recorded successfully',

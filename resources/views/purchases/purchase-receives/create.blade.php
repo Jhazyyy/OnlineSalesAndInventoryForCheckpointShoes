@@ -231,7 +231,7 @@
                                             value="{{ old('receiver_name') }}"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                             placeholder="Name of person who received the items" required>
-                                            <x-input-error class="mt-2" :messages="$errors->get('receiver_name')" />
+                                        <x-input-error class="mt-2" :messages="$errors->get('receiver_name')" />
                                     </div>
                                 </div>
                             </div>
@@ -319,7 +319,6 @@
                 });
         @endphp
         window.availableProducts = @json($products);
-        // REMOVED: deliveriesData - delivery system no longer used
     </script>
 
     @verbatim
@@ -327,7 +326,6 @@
             let itemRowCount = 0;
             // Datasets populated above
             let availableProducts = window.availableProducts || [];
-            // REMOVED: deliveriesData - delivery system no longer used
 
             document.addEventListener('DOMContentLoaded', function() {
                 // Purchase order change handler - Auto-load items when PO is selected
@@ -552,12 +550,12 @@
                     '<div>' +
                     '<label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Expected</label>' +
                     '<input type="number" name="items[' + index +
-                    '][quantity_expected]" min="0" value="0" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" onchange="updateSummary()">' +
+                    '][quantity_expected]" min="0" value="0" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" onchange="updateSummary()" readonly>' +
                     '</div>' +
                     '<div>' +
                     '<label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Received</label>' +
                     '<input type="number" name="items[' + index +
-                    '][quantity_received]" min="0" value="0" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" onchange="updateSummary()">' +
+                    '][quantity_received]" min="0" value="0" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" onchange="checkReceivedLimit(this); updateSummary()">' +
                     '</div>' +
                     '</div>' +
                     '<div class="mt-2">' +
@@ -584,6 +582,18 @@
                     '</td>';
 
                 return row;
+            }
+
+            function checkReceivedLimit(input) {
+                const expectedInput = input.closest('tr').querySelector('input[name*="[quantity_expected]"]');
+                const max = parseInt(expectedInput.value) || 0;
+
+                if (parseInt(input.value) > max) {
+                    input.value = max; // Reset to maximum allowed
+                    alert('Received quantity cannot exceed expected quantity (' + max + ').');
+                } else if (parseInt(input.value) < 0) {
+                    input.value = 0; // Prevent negative
+                }
             }
 
             function removeItemRow(button) {
