@@ -57,12 +57,14 @@ class UserManagementController extends Controller
             'suspended' => User::where('status', 'suspended')->count(),
             'super_admins' => User::byRole('super_admin')->count(),
             'admins' => User::byRole('admin')->count(),
+            'salespersons' => User::byRole('salesperson')->count(),
+            'inventory_clerks' => User::byRole('inventory_clerk')->count(),
             'users' => User::byRole('user')->count(),
             'new_this_month' => User::whereMonth('created_at', now()->month)->count(),
         ];
 
         // Role and status options for filters
-        $roles = ['super admin', 'admin', 'user'];
+        $roles = ['super admin', 'admin', 'salesperson', 'inventory clerk', 'user'];
         $statuses = ['active', 'inactive', 'suspended'];
 
         return view('user-management.index', compact('users', 'stats', 'roles', 'statuses'));
@@ -76,11 +78,11 @@ class UserManagementController extends Controller
         $currentUser = Auth::user();
         
         // Super admin can create any role
-        // Admin can create admin and user roles (not super_admin)
+        // Admin can create admin, salesperson, inventory_clerk, and user roles (not super_admin)
         if ($currentUser->hasRole('super_admin')) {
-            $roles = ['super_admin', 'admin', 'user'];
+            $roles = ['super_admin', 'admin', 'salesperson', 'inventory_clerk', 'user'];
         } elseif ($currentUser->hasRole('admin')) {
-            $roles = ['admin', 'user'];
+            $roles = ['admin', 'salesperson', 'inventory_clerk', 'user'];
         } else {
             $roles = ['user'];
         }
@@ -98,9 +100,9 @@ class UserManagementController extends Controller
         
         // Determine allowed roles based on current user
         if ($currentUser->hasRole('super_admin')) {
-            $allowedRoles = ['super_admin', 'admin', 'user'];
+            $allowedRoles = ['super_admin', 'admin', 'salesperson', 'inventory_clerk', 'user'];
         } elseif ($currentUser->hasRole('admin')) {
-            $allowedRoles = ['admin', 'user'];
+            $allowedRoles = ['admin', 'salesperson', 'inventory_clerk', 'user'];
         } else {
             $allowedRoles = ['user'];
         }
@@ -277,9 +279,9 @@ class UserManagementController extends Controller
         
         // Determine available roles based on current user
         if ($currentUser->hasRole('super_admin')) {
-            $roles = ['super_admin', 'admin', 'user'];
+            $roles = ['super_admin', 'admin', 'salesperson', 'inventory_clerk', 'user'];
         } elseif ($currentUser->hasRole('admin')) {
-            $roles = ['admin', 'user'];
+            $roles = ['admin', 'salesperson', 'inventory_clerk', 'user'];
         } else {
             $roles = ['user'];
         }

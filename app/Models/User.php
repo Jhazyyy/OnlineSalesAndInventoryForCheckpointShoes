@@ -189,12 +189,24 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Get role badge color
-     * Only supports 'admin' and 'user' roles
+     * Supports 'super_admin', 'admin', 'salesperson', 'inventory_clerk', and 'user' roles
      */
     public function getRoleColorAttribute(): string
     {
+        if ($this->hasRole('super_admin')) {
+            return 'red';
+        }
+        
         if ($this->hasRole('admin')) {
             return 'purple';
+        }
+        
+        if ($this->hasRole('salesperson')) {
+            return 'green';
+        }
+        
+        if ($this->hasRole('inventory_clerk')) {
+            return 'yellow';
         }
         
         if ($this->hasRole('user')) {

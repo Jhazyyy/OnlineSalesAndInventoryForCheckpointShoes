@@ -676,13 +676,13 @@ Route::get('dashboard/top-purchase-items', function (Illuminate\Http\Request $re
 
     //Inventory Product Routes
     Route::prefix('inventory/products')->name('inventory.products.')->group(function () {
-        Route::get('/', [ProductController::class, 'index'])->name('index');
-        Route::get('/create', [ProductController::class, 'create'])->name('create');
-        Route::post('/', [ProductController::class, 'store'])->name('store');
-        Route::get('/{product}', [ProductController::class, 'show'])->name('show');
-        Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
-        Route::put('/{product}', [ProductController::class, 'update'])->name('update');
-        Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
+        Route::get('/', [ProductController::class, 'index'])->middleware('permission:view products')->name('index');
+        Route::get('/create', [ProductController::class, 'create'])->middleware('permission:create products')->name('create');
+        Route::post('/', [ProductController::class, 'store'])->middleware('permission:create products')->name('store');
+        Route::get('/{product}', [ProductController::class, 'show'])->middleware('permission:view products')->name('show');
+        Route::get('/{product}/edit', [ProductController::class, 'edit'])->middleware('permission:edit products')->name('edit');
+        Route::put('/{product}', [ProductController::class, 'update'])->middleware('permission:edit products')->name('update');
+        Route::delete('/{product}', [ProductController::class, 'destroy'])->middleware('permission:delete products')->name('destroy');
 
         // Import routes
         // Route::get('/import/form', [ProductController::class, 'showImportForm'])->name('import');
@@ -690,20 +690,22 @@ Route::get('dashboard/top-purchase-items', function (Illuminate\Http\Request $re
         // Route::get('/template/download', [ProductController::class, 'downloadTemplate'])->name('template');
 
         // API routes
-        Route::post('/bulk-update-stock', [ProductController::class, 'bulkUpdateStock'])->name('bulk-update-stock');
-        Route::get('/alerts', [ProductController::class, 'getAlertsData'])->name('alerts');
+        Route::post('/bulk-update-stock', [ProductController::class, 'bulkUpdateStock'])->middleware('permission:manage stock')->name('bulk-update-stock');
+        Route::get('/alerts', [ProductController::class, 'getAlertsData'])->middleware('permission:view products')->name('alerts');
     });
 
     // Stock Adjustment Routes
-    Route::post('/inventory/stock-adjustments', [StockAdjustmentController::class, 'store'])->name('inventory.stock-adjustments.store');
-    Route::get('/inventory/stock-adjustments/{product}/history', [StockAdjustmentController::class, 'history'])->name('inventory.stock-adjustments.history');
+    Route::post('/inventory/stock-adjustments', [StockAdjustmentController::class, 'store'])->middleware('permission:manage stock')->name('inventory.stock-adjustments.store');
+    Route::get('/inventory/stock-adjustments/{product}/history', [StockAdjustmentController::class, 'history'])->middleware('permission:view inventory')->name('inventory.stock-adjustments.history');
 
-    // Audit Log Routes
-    Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
-    Route::get('/audit-logs/{auditLog}', [AuditLogController::class, 'show'])->name('audit-logs.show');
-    Route::get('/audit-logs/module/{module}', [AuditLogController::class, 'moduleLog'])->name('audit-logs.module');
-    Route::get('/audit-logs/statistics', [AuditLogController::class, 'statistics'])->name('audit-logs.statistics');
-    Route::post('/audit-logs/export', [AuditLogController::class, 'export'])->name('audit-logs.export');
+    // Audit Log Routes - Admin only
+    Route::middleware(['role:super_admin,admin'])->group(function () {
+        Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+        Route::get('/audit-logs/{auditLog}', [AuditLogController::class, 'show'])->name('audit-logs.show');
+        Route::get('/audit-logs/module/{module}', [AuditLogController::class, 'moduleLog'])->name('audit-logs.module');
+        Route::get('/audit-logs/statistics', [AuditLogController::class, 'statistics'])->name('audit-logs.statistics');
+        Route::post('/audit-logs/export', [AuditLogController::class, 'export'])->name('audit-logs.export');
+    });
 
 // CurrentUser UpdateInfo Routes 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -730,50 +732,50 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Customer Management Routes
     Route::prefix('sales/customers')->name('sales.customers.')->group(function () {
-        Route::get('/', [CustomerController::class, 'index'])->name('index');
-        Route::get('/create', [CustomerController::class, 'create'])->name('create');
-        Route::post('/', [CustomerController::class, 'store'])->name('store');
-        Route::get('/{customer}', [CustomerController::class, 'show'])->name('show');
-        Route::get('/{customer}/edit', [CustomerController::class, 'edit'])->name('edit');
-        Route::put('/{customer}', [CustomerController::class, 'update'])->name('update');
-        Route::delete('/{customer}', [CustomerController::class, 'destroy'])->name('destroy');
+        Route::get('/', [CustomerController::class, 'index'])->middleware('permission:view customers')->name('index');
+        Route::get('/create', [CustomerController::class, 'create'])->middleware('permission:create customers')->name('create');
+        Route::post('/', [CustomerController::class, 'store'])->middleware('permission:create customers')->name('store');
+        Route::get('/{customer}', [CustomerController::class, 'show'])->middleware('permission:view customers')->name('show');
+        Route::get('/{customer}/edit', [CustomerController::class, 'edit'])->middleware('permission:edit customers')->name('edit');
+        Route::put('/{customer}', [CustomerController::class, 'update'])->middleware('permission:edit customers')->name('update');
+        Route::delete('/{customer}', [CustomerController::class, 'destroy'])->middleware('permission:delete customers')->name('destroy');
 
         // Import and Export routes
-        Route::get('/import/form', [CustomerController::class, 'showImportForm'])->name('import');
-        Route::post('/import/process', [CustomerController::class, 'import'])->name('import.process');
-        Route::get('/template/download', [CustomerController::class, 'downloadTemplate'])->name('template');
-        Route::get('/export', [CustomerController::class, 'export'])->name('export');
+        Route::get('/import/form', [CustomerController::class, 'showImportForm'])->middleware('permission:create customers')->name('import');
+        Route::post('/import/process', [CustomerController::class, 'import'])->middleware('permission:create customers')->name('import.process');
+        Route::get('/template/download', [CustomerController::class, 'downloadTemplate'])->middleware('permission:view customers')->name('template');
+        Route::get('/export', [CustomerController::class, 'export'])->middleware('permission:view customers')->name('export');
 
         // Status toggle and analytics
-        Route::post('/{customer}/toggle-status', [CustomerController::class, 'toggleStatus'])->name('toggle-status');
-        Route::get('/analytics', [CustomerController::class, 'analytics'])->name('analytics');
+        Route::post('/{customer}/toggle-status', [CustomerController::class, 'toggleStatus'])->middleware('permission:edit customers')->name('toggle-status');
+        Route::get('/analytics', [CustomerController::class, 'analytics'])->middleware('permission:view customers')->name('analytics');
     });
 
 
     //Master Data Categories Routes
     Route::prefix('master_data/categories')->name('master_data.categories.')->group(function () {
-        Route::get('/', [CategoryController::class, 'index'])->name('index');
-        Route::get('/create', [CategoryController::class, 'create'])->name('create');
-        Route::post('/', [CategoryController::class, 'store'])->name('store');
-        Route::get('/{category}', [CategoryController::class, 'show'])->name('show');
-        Route::get('/{category}/edit', [CategoryController::class, 'edit'])->name('edit');
-        Route::put('/{category}', [CategoryController::class, 'update'])->name('update');
-        Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('destroy');
+        Route::get('/', [CategoryController::class, 'index'])->middleware('permission:view categories')->name('index');
+        Route::get('/create', [CategoryController::class, 'create'])->middleware('permission:manage categories')->name('create');
+        Route::post('/', [CategoryController::class, 'store'])->middleware('permission:manage categories')->name('store');
+        Route::get('/{category}', [CategoryController::class, 'show'])->middleware('permission:view categories')->name('show');
+        Route::get('/{category}/edit', [CategoryController::class, 'edit'])->middleware('permission:manage categories')->name('edit');
+        Route::put('/{category}', [CategoryController::class, 'update'])->middleware('permission:manage categories')->name('update');
+        Route::delete('/{category}', [CategoryController::class, 'destroy'])->middleware('permission:manage categories')->name('destroy');
     });
 
     //Master Data Brand Routes
     Route::prefix('master_data/brands')->name('master_data.brands.')->group(function () {
-        Route::get('/', [BrandController::class, 'index'])->name('index');
-        Route::get('/create', [BrandController::class, 'create'])->name('create');
-        Route::post('/', [BrandController::class, 'store'])->name('store');
-        Route::get('/{brand}', [BrandController::class, 'show'])->name('show');
-        Route::get('/{brand}/edit', [BrandController::class, 'edit'])->name('edit');
-        Route::put('/{brand}', [BrandController::class, 'update'])->name('update');
-        Route::delete('/{brand}', [BrandController::class, 'destroy'])->name('destroy');
+        Route::get('/', [BrandController::class, 'index'])->middleware('permission:view brands')->name('index');
+        Route::get('/create', [BrandController::class, 'create'])->middleware('permission:manage brands')->name('create');
+        Route::post('/', [BrandController::class, 'store'])->middleware('permission:manage brands')->name('store');
+        Route::get('/{brand}', [BrandController::class, 'show'])->middleware('permission:view brands')->name('show');
+        Route::get('/{brand}/edit', [BrandController::class, 'edit'])->middleware('permission:manage brands')->name('edit');
+        Route::put('/{brand}', [BrandController::class, 'update'])->middleware('permission:manage brands')->name('update');
+        Route::delete('/{brand}', [BrandController::class, 'destroy'])->middleware('permission:manage brands')->name('destroy');
     });
 
-    //Master Data Stock Name Routes
-    Route::prefix('master_data/stock_names')->name('master_data.stock_names.')->group(function () {
+    //Master Data Stock Name Routes (Admin only)
+    Route::prefix('master_data/stock_names')->name('master_data.stock_names.')->middleware('role:super_admin,admin')->group(function () {
         Route::get('/', [\App\Http\Controllers\StockNameController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\StockNameController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\StockNameController::class, 'store'])->name('store');
@@ -783,8 +785,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{stockName}', [\App\Http\Controllers\StockNameController::class, 'destroy'])->name('destroy');
     });
 
-    //Master Data Tax & Discount Routes
-    Route::prefix('master_data/tax_discounts')->name('master_data.tax_discounts.')->group(function () {
+    //Master Data Tax & Discount Routes (Admin only)
+    Route::prefix('master_data/tax_discounts')->name('master_data.tax_discounts.')->middleware('role:super_admin,admin')->group(function () {
         Route::get('/', [\App\Http\Controllers\TaxDiscountController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\TaxDiscountController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\TaxDiscountController::class, 'store'])->name('store');
@@ -803,28 +805,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     // Product Movement Management Routes (Fast/Slow/Non-Moving)
-    Route::prefix('inventory/product-movement')->name('inventory.product-movement.')->group(function () {
+    Route::prefix('inventory/product-movement')->name('inventory.product-movement.')->middleware('permission:view inventory')->group(function () {
         Route::get('/', [\App\Http\Controllers\ProductMovementController::class, 'index'])->name('index');
         Route::get('/fast-moving', [\App\Http\Controllers\ProductMovementController::class, 'fastMoving'])->name('fast-moving');
         Route::get('/slow-moving', [\App\Http\Controllers\ProductMovementController::class, 'slowMoving'])->name('slow-moving');
         Route::get('/non-moving', [\App\Http\Controllers\ProductMovementController::class, 'nonMoving'])->name('non-moving');
         Route::get('/promotional', [\App\Http\Controllers\ProductMovementController::class, 'promotional'])->name('promotional');
         
-        // Movement calculation
-        Route::post('/calculate-all', [\App\Http\Controllers\ProductMovementController::class, 'calculateMovements'])->name('calculate-all');
-        Route::post('/{product}/calculate', [\App\Http\Controllers\ProductMovementController::class, 'calculateSingleMovement'])->name('calculate-single');
+        // Movement calculation - requires edit permission
+        Route::post('/calculate-all', [\App\Http\Controllers\ProductMovementController::class, 'calculateMovements'])->middleware('permission:edit inventory')->name('calculate-all');
+        Route::post('/{product}/calculate', [\App\Http\Controllers\ProductMovementController::class, 'calculateSingleMovement'])->middleware('permission:edit inventory')->name('calculate-single');
         
-        // Promotional management
-        Route::post('/mark-for-promotion', [\App\Http\Controllers\ProductMovementController::class, 'markForPromotion'])->name('mark-for-promotion');
-        Route::post('/unmark-from-promotion', [\App\Http\Controllers\ProductMovementController::class, 'unmarkFromPromotion'])->name('unmark-from-promotion');
+        // Promotional management - requires edit permission
+        Route::post('/mark-for-promotion', [\App\Http\Controllers\ProductMovementController::class, 'markForPromotion'])->middleware('permission:edit inventory')->name('mark-for-promotion');
+        Route::post('/unmark-from-promotion', [\App\Http\Controllers\ProductMovementController::class, 'unmarkFromPromotion'])->middleware('permission:edit inventory')->name('unmark-from-promotion');
         
         // Analytics and export
         Route::get('/analytics', [\App\Http\Controllers\ProductMovementController::class, 'analytics'])->name('analytics');
         Route::get('/export', [\App\Http\Controllers\ProductMovementController::class, 'export'])->name('export');
     });
 
-    // Product Costing Management Routes
-    Route::prefix('inventory/product-costing')->name('inventory.product-costing.')->group(function () {
+    // Product Costing Management Routes (Admin only - affects pricing)
+    Route::prefix('inventory/product-costing')->name('inventory.product-costing.')->middleware('role:super_admin,admin')->group(function () {
         Route::get('/', [\App\Http\Controllers\ProductCostingController::class, 'index'])->name('index');
         Route::get('/{product}/edit', [\App\Http\Controllers\ProductCostingController::class, 'edit'])->name('edit');
         Route::put('/{product}', [\App\Http\Controllers\ProductCostingController::class, 'update'])->name('update');
@@ -844,100 +846,100 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Supplier Management Routes
     Route::prefix('master_data/suppliers')->name('master_data.suppliers.')->group(function () {
-        Route::get('/', [SupplierController::class, 'index'])->name('index');
-        Route::get('/create', [SupplierController::class, 'create'])->name('create');
-        Route::post('/', [SupplierController::class, 'store'])->name('store');
-        Route::get('/{supplier}', [SupplierController::class, 'show'])->name('show');
-        Route::get('/{supplier}/edit', [SupplierController::class, 'edit'])->name('edit');
-        Route::put('/{supplier}', [SupplierController::class, 'update'])->name('update');
-        Route::delete('/{supplier}', [SupplierController::class, 'destroy'])->name('destroy');
+        Route::get('/', [SupplierController::class, 'index'])->middleware('permission:view suppliers')->name('index');
+        Route::get('/create', [SupplierController::class, 'create'])->middleware('permission:create suppliers')->name('create');
+        Route::post('/', [SupplierController::class, 'store'])->middleware('permission:create suppliers')->name('store');
+        Route::get('/{supplier}', [SupplierController::class, 'show'])->middleware('permission:view suppliers')->name('show');
+        Route::get('/{supplier}/edit', [SupplierController::class, 'edit'])->middleware('permission:edit suppliers')->name('edit');
+        Route::put('/{supplier}', [SupplierController::class, 'update'])->middleware('permission:edit suppliers')->name('update');
+        Route::delete('/{supplier}', [SupplierController::class, 'destroy'])->middleware('permission:delete suppliers')->name('destroy');
 
         // Import and Export routes
-        Route::get('/import/form', [SupplierController::class, 'showImportForm'])->name('import');
-        Route::post('/import/process', [SupplierController::class, 'import'])->name('import.process');
-        Route::get('/template/download', [SupplierController::class, 'downloadTemplate'])->name('template');
-        Route::get('/export', [SupplierController::class, 'export'])->name('export');
+        Route::get('/import/form', [SupplierController::class, 'showImportForm'])->middleware('permission:create suppliers')->name('import');
+        Route::post('/import/process', [SupplierController::class, 'import'])->middleware('permission:create suppliers')->name('import.process');
+        Route::get('/template/download', [SupplierController::class, 'downloadTemplate'])->middleware('permission:view suppliers')->name('template');
+        Route::get('/export', [SupplierController::class, 'export'])->middleware('permission:view suppliers')->name('export');
 
         // Status toggle and analytics
-        Route::post('/{supplier}/toggle-status', [SupplierController::class, 'toggleStatus'])->name('toggle-status');
-        Route::get('/analytics', [SupplierController::class, 'analytics'])->name('analytics');
-        Route::get('/alerts', [SupplierController::class, 'getAlertsData'])->name('alerts');
+        Route::post('/{supplier}/toggle-status', [SupplierController::class, 'toggleStatus'])->middleware('permission:edit suppliers')->name('toggle-status');
+        Route::get('/analytics', [SupplierController::class, 'analytics'])->middleware('permission:view suppliers')->name('analytics');
+        Route::get('/alerts', [SupplierController::class, 'getAlertsData'])->middleware('permission:view suppliers')->name('alerts');
     });
 
     // Stock Management Routes
     Route::prefix('inventory/product_stock_adjustment')->name('inventory.product_stock_adjustment.')->group(function () {
-        Route::get('/', [StockController::class, 'index'])->name('index');
-        Route::get('/create', [StockController::class, 'create'])->name('create');
-        Route::post('/', [StockController::class, 'store'])->name('store');
-        Route::get('/{product_stock_adjustment}', [StockController::class, 'show'])->name('show');
-        Route::get('/{product_stock_adjustment}/edit', [StockController::class, 'edit'])->name('edit');
-        Route::put('/{product_stock_adjustment}', [StockController::class, 'update'])->name('update');
-        Route::delete('/{product_stock_adjustment}', [StockController::class, 'destroy'])->name('destroy');
+        Route::get('/', [StockController::class, 'index'])->middleware('permission:view inventory')->name('index');
+        Route::get('/create', [StockController::class, 'create'])->middleware('permission:create inventory')->name('create');
+        Route::post('/', [StockController::class, 'store'])->middleware('permission:create inventory')->name('store');
+        Route::get('/{product_stock_adjustment}', [StockController::class, 'show'])->middleware('permission:view inventory')->name('show');
+        Route::get('/{product_stock_adjustment}/edit', [StockController::class, 'edit'])->middleware('permission:edit inventory')->name('edit');
+        Route::put('/{product_stock_adjustment}', [StockController::class, 'update'])->middleware('permission:edit inventory')->name('update');
+        Route::delete('/{product_stock_adjustment}', [StockController::class, 'destroy'])->middleware('permission:delete inventory')->name('destroy');
 
         // Stock movement operations
-        Route::post('/{product_stocks}/confirm', [StockController::class, 'confirm'])->name('confirm');
+        Route::post('/{product_stocks}/confirm', [StockController::class, 'confirm'])->middleware('permission:manage stock')->name('confirm');
         
         // Transfer operations
-        Route::get('/transfer/form', [StockController::class, 'showTransferForm'])->name('transfer.form');
-        Route::post('/transfer/process', [StockController::class, 'processTransfer'])->name('transfer.process');
+        Route::get('/transfer/form', [StockController::class, 'showTransferForm'])->middleware('permission:manage stock')->name('transfer.form');
+        Route::post('/transfer/process', [StockController::class, 'processTransfer'])->middleware('permission:manage stock')->name('transfer.process');
         
         // Waste/damage operations
-        Route::get('/waste/form', [StockController::class, 'showWasteForm'])->name('waste.form');
-        Route::post('/waste/process', [StockController::class, 'processWaste'])->name('waste.process');
+        Route::get('/waste/form', [StockController::class, 'showWasteForm'])->middleware('permission:manage stock')->name('waste.form');
+        Route::post('/waste/process', [StockController::class, 'processWaste'])->middleware('permission:manage stock')->name('waste.process');
         
         // Import and Export routes
-        Route::get('/import/form', [StockController::class, 'showImportForm'])->name('import');
-        Route::post('/import/process', [StockController::class, 'import'])->name('import.process');
-        Route::get('/template/download', [StockController::class, 'downloadTemplate'])->name('template');
-        Route::get('/export', [StockController::class, 'export'])->name('export');
+        Route::get('/import/form', [StockController::class, 'showImportForm'])->middleware('permission:create inventory')->name('import');
+        Route::post('/import/process', [StockController::class, 'import'])->middleware('permission:create inventory')->name('import.process');
+        Route::get('/template/download', [StockController::class, 'downloadTemplate'])->middleware('permission:view inventory')->name('template');
+        Route::get('/export', [StockController::class, 'export'])->middleware('permission:view inventory')->name('export');
         
         // Analytics and reporting
-        Route::get('/analytics', [StockController::class, 'analytics'])->name('analytics');
-        Route::get('/product/{product}/history', [StockController::class, 'productHistory'])->name('product.history');
-        Route::get('/alerts', [StockController::class, 'getAlertsData'])->name('alerts');
+        Route::get('/analytics', [StockController::class, 'analytics'])->middleware('permission:view inventory')->name('analytics');
+        Route::get('/product/{product}/history', [StockController::class, 'productHistory'])->middleware('permission:view inventory')->name('product.history');
+        Route::get('/alerts', [StockController::class, 'getAlertsData'])->middleware('permission:view inventory')->name('alerts');
     });
 
     // Purchase Order Management Routes
     Route::prefix('purchases/purchase-orders')->name('purchases.purchase-orders.')->group(function () {
-        Route::get('/', [PurchaseOrderController::class, 'index'])->name('index');
-        Route::get('/create', [PurchaseOrderController::class, 'create'])->name('create');
-        Route::post('/', [PurchaseOrderController::class, 'store'])->name('store');
-        Route::get('/{order}', [PurchaseOrderController::class, 'show'])->name('show');
-        Route::get('/{order}/edit', [PurchaseOrderController::class, 'edit'])->name('edit');
-        Route::put('/{order}', [PurchaseOrderController::class, 'update'])->name('update');
-        Route::delete('/{order}', [PurchaseOrderController::class, 'destroy'])->name('destroy');
+        Route::get('/', [PurchaseOrderController::class, 'index'])->middleware('permission:view purchases')->name('index');
+        Route::get('/create', [PurchaseOrderController::class, 'create'])->middleware('permission:create purchases')->name('create');
+        Route::post('/', [PurchaseOrderController::class, 'store'])->middleware('permission:create purchases')->name('store');
+        Route::get('/{order}', [PurchaseOrderController::class, 'show'])->middleware('permission:view purchases')->name('show');
+        Route::get('/{order}/edit', [PurchaseOrderController::class, 'edit'])->middleware('permission:edit purchases')->name('edit');
+        Route::put('/{order}', [PurchaseOrderController::class, 'update'])->middleware('permission:edit purchases')->name('update');
+        Route::delete('/{order}', [PurchaseOrderController::class, 'destroy'])->middleware('permission:delete purchases')->name('destroy');
 
         // Status management routes
-        Route::post('/{order}/change-status', [PurchaseOrderController::class, 'changeStatus'])->name('change-status');
+        Route::post('/{order}/change-status', [PurchaseOrderController::class, 'changeStatus'])->middleware('permission:edit purchases')->name('change-status');
 
         // Analytics and Reports
-        Route::get('/analytics', [PurchaseOrderController::class, 'analytics'])->name('analytics');
-        Route::get('/receiving-report', [PurchaseOrderController::class, 'receivingReport'])->name('receiving-report');
+        Route::get('/analytics', [PurchaseOrderController::class, 'analytics'])->middleware('permission:view purchases')->name('analytics');
+        Route::get('/receiving-report', [PurchaseOrderController::class, 'receivingReport'])->middleware('permission:view purchases')->name('receiving-report');
     });
 
     // Purchase Receive Management Routes
     Route::prefix('purchases/purchase-receives')->name('purchases.purchase-receives.')->group(function () {
-        Route::get('/', [PurchaseReceiveController::class, 'index'])->name('index');
-        Route::get('/create', [PurchaseReceiveController::class, 'create'])->name('create');
-        Route::post('/', [PurchaseReceiveController::class, 'store'])->name('store');
-        Route::get('/{receive}', [PurchaseReceiveController::class, 'show'])->name('show');
-        Route::get('/{receive}/edit', [PurchaseReceiveController::class, 'edit'])->name('edit');
-        Route::put('/{receive}', [PurchaseReceiveController::class, 'update'])->name('update');
-        Route::delete('/{receive}', [PurchaseReceiveController::class, 'destroy'])->name('destroy');
+        Route::get('/', [PurchaseReceiveController::class, 'index'])->middleware('permission:view purchases')->name('index');
+        Route::get('/create', [PurchaseReceiveController::class, 'create'])->middleware('permission:create purchases')->name('create');
+        Route::post('/', [PurchaseReceiveController::class, 'store'])->middleware('permission:create purchases')->name('store');
+        Route::get('/{receive}', [PurchaseReceiveController::class, 'show'])->middleware('permission:view purchases')->name('show');
+        Route::get('/{receive}/edit', [PurchaseReceiveController::class, 'edit'])->middleware('permission:edit purchases')->name('edit');
+        Route::put('/{receive}', [PurchaseReceiveController::class, 'update'])->middleware('permission:edit purchases')->name('update');
+        Route::delete('/{receive}', [PurchaseReceiveController::class, 'destroy'])->middleware('permission:delete purchases')->name('destroy');
 
         // Status management routes
-        Route::post('/{receive}/change-status', [PurchaseReceiveController::class, 'changeStatus'])->name('change-status');
-        Route::post('/{receive}/short-close', [PurchaseReceiveController::class, 'shortClose'])->name('short-close');
+        Route::post('/{receive}/change-status', [PurchaseReceiveController::class, 'changeStatus'])->middleware('permission:edit purchases')->name('change-status');
+        Route::post('/{receive}/short-close', [PurchaseReceiveController::class, 'shortClose'])->middleware('permission:edit purchases')->name('short-close');
         
         // AJAX routes
-        Route::get('/purchase-order/{purchaseOrder}/items', [PurchaseReceiveController::class, 'getPurchaseOrderItems'])->name('purchase-order-items');
+        Route::get('/purchase-order/{purchaseOrder}/items', [PurchaseReceiveController::class, 'getPurchaseOrderItems'])->middleware('permission:view purchases')->name('purchase-order-items');
         
         // Analytics
-        Route::get('/analytics', [PurchaseReceiveController::class, 'analytics'])->name('analytics');
+        Route::get('/analytics', [PurchaseReceiveController::class, 'analytics'])->middleware('permission:view purchases')->name('analytics');
     });
 
     // Purchase Returns Management Routes
-    Route::prefix('purchases/purchase-returns')->name('purchases.purchase-returns.')->group(function () {
+    Route::prefix('purchases/purchase-returns')->name('purchases.purchase-returns.')->middleware('role:super_admin,admin')->group(function () {
         Route::get('/', [\App\Http\Controllers\PurchaseReturnsController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\PurchaseReturnsController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\PurchaseReturnsController::class, 'store'])->name('store');
@@ -959,11 +961,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Analytics
         Route::get('/analytics', [\App\Http\Controllers\PurchaseReturnsController::class, 'analytics'])->name('analytics');
     });
-
-    // REMOVED: Purchase Deliveries Management Routes - delivery system no longer used
     
-    // Purchase Payments Management Routes
-    Route::prefix('purchases/payments')->name('purchases.payments.')->group(function () {
+    // Purchase Payments Management Routes (Admin only - financial)
+    Route::prefix('purchases/payments')->name('purchases.payments.')->middleware('role:super_admin,admin')->group(function () {
         Route::get('/', [\App\Http\Controllers\PurchasePaymentController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\PurchasePaymentController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\PurchasePaymentController::class, 'store'])->name('store');
@@ -983,31 +983,31 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Sales Order Management Routes
     Route::prefix('sales/orders')->name('sales.orders.')->group(function () {
-        Route::get('/', [SalesOrderController::class, 'index'])->name('index');
-        Route::get('/create', [SalesOrderController::class, 'create'])->name('create');
-        Route::post('/', [SalesOrderController::class, 'store'])->name('store');
+        Route::get('/', [SalesOrderController::class, 'index'])->middleware('permission:view sales')->name('index');
+        Route::get('/create', [SalesOrderController::class, 'create'])->middleware('permission:create sales')->name('create');
+        Route::post('/', [SalesOrderController::class, 'store'])->middleware('permission:create sales')->name('store');
         
         // Analytics (before wildcard route)
-        Route::get('/analytics', [SalesOrderController::class, 'analytics'])->name('analytics');
+        Route::get('/analytics', [SalesOrderController::class, 'analytics'])->middleware('permission:view sales')->name('analytics');
         
         // Wildcard route should be last
-        Route::get('/{order}', [SalesOrderController::class, 'show'])->name('show');
+        Route::get('/{order}', [SalesOrderController::class, 'show'])->middleware('permission:view sales')->name('show');
     });
 
     // POS (Point of Sale) - In-Store Purchase Routes
     Route::prefix('pos')->name('pos.')->group(function () {
-        Route::get('/', [POSController::class, 'index'])->name('index');
-        Route::get('/create', [POSController::class, 'create'])->name('create');
-        Route::post('/', [POSController::class, 'store'])->name('store');
-        Route::get('/{order}', [POSController::class, 'show'])->name('show');
-        Route::patch('/{order}/complete-payment', [POSController::class, 'completePayment'])->name('complete-payment');
+        Route::get('/', [POSController::class, 'index'])->middleware('permission:create sales')->name('index');
+        Route::get('/create', [POSController::class, 'create'])->middleware('permission:create sales')->name('create');
+        Route::post('/', [POSController::class, 'store'])->middleware('permission:create sales')->name('store');
+        Route::get('/{order}', [POSController::class, 'show'])->middleware('permission:view sales')->name('show');
+        Route::patch('/{order}/complete-payment', [POSController::class, 'completePayment'])->middleware('permission:edit sales')->name('complete-payment');
         
         // AJAX endpoints
-        Route::get('/search/customers', [POSController::class, 'searchCustomers'])->name('search.customers');
+        Route::get('/search/customers', [POSController::class, 'searchCustomers'])->middleware('permission:view customers')->name('search.customers');
     });
 
-    // Returns Management Routes
-    Route::prefix('sales/returns')->name('sales.returns.')->group(function () {
+    // Returns Management Routes (Admin only - requires approval)
+    Route::prefix('sales/returns')->name('sales.returns.')->middleware('role:super_admin,admin')->group(function () {
         Route::get('/', [ReturnsController::class, 'index'])->name('index');
         Route::get('/create', [ReturnsController::class, 'create'])->name('create');
         Route::post('/', [ReturnsController::class, 'store'])->name('store');
@@ -1032,8 +1032,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/search/sales-orders', [ReturnsController::class, 'searchSalesOrders'])->name('search.sales-orders');
     });
 
-    // Payment Management Routes
-    Route::prefix('sales/payments')->name('sales.payments.')->group(function () {
+    // Payment Management Routes (Admin only - financial)
+    Route::prefix('sales/payments')->name('sales.payments.')->middleware('role:super_admin,admin')->group(function () {
         Route::get('/', [\App\Http\Controllers\PaymentController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\PaymentController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\PaymentController::class, 'store'])->name('store');

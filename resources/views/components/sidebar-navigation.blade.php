@@ -166,102 +166,130 @@
 
 
                     <!-- Master Data Section -->
-                    @hasanyrole('super_admin|admin')
+                    @can('view categories')
                         <x-nav-item
                             route-pattern="master_data.categories.*|master_data.brands.*|master_data.suppliers.*|master_data.tax_discounts.*"
                             :icon="App\Helpers\NavigationHelper::getIcon('master_data')" title="Master Data" :is-dropdown="true">
 
                             <!-- Supplier -->
-                            <x-nav-item route="master_data.suppliers.index" route-pattern="master_data.suppliers.*"
-                                :icon="App\Helpers\NavigationHelper::getIcon('suppliers', 'w-4 h-4 mr-3')" title="Supplier" size="small" />
+                            @can('view suppliers')
+                                <x-nav-item route="master_data.suppliers.index" route-pattern="master_data.suppliers.*"
+                                    :icon="App\Helpers\NavigationHelper::getIcon('suppliers', 'w-4 h-4 mr-3')" title="Supplier" size="small" />
+                            @endcan
 
-                            <!-- Stock Name Management -->
-                            <x-nav-item route="master_data.stock_names.index" route-pattern="master_data.stock_names.*"
-                                :icon="App\Helpers\NavigationHelper::getIcon(
-                                    'stock-name-management',
-                                    'w-4 h-4 mr-3',
-                                )" title="Stock Name" size="small" />
+                            <!-- Stock Name Management (Admin Only) -->
+                            @hasanyrole('super_admin|admin')
+                                <x-nav-item route="master_data.stock_names.index" route-pattern="master_data.stock_names.*"
+                                    :icon="App\Helpers\NavigationHelper::getIcon(
+                                        'stock-name-management',
+                                        'w-4 h-4 mr-3',
+                                    )" title="Stock Name" size="small" />
+                            @endhasanyrole
 
                             <!-- Categories -->
-                            <x-nav-item route="master_data.categories.index" route-pattern="master_data.categories.*"
-                                :icon="App\Helpers\NavigationHelper::getIcon('categories', 'w-4 h-4 mr-3')" title="Categories" size="small" />
+                            @can('view categories')
+                                <x-nav-item route="master_data.categories.index" route-pattern="master_data.categories.*"
+                                    :icon="App\Helpers\NavigationHelper::getIcon('categories', 'w-4 h-4 mr-3')" title="Categories" size="small" />
+                            @endcan
 
                             <!-- Brands -->
-                            <x-nav-item route="master_data.brands.index" route-pattern="master_data.brands.*"
-                                :icon="App\Helpers\NavigationHelper::getIcon('brands', 'w-4 h-4 mr-3')" title="Brands" size="small" />
+                            @can('view brands')
+                                <x-nav-item route="master_data.brands.index" route-pattern="master_data.brands.*"
+                                    :icon="App\Helpers\NavigationHelper::getIcon('brands', 'w-4 h-4 mr-3')" title="Brands" size="small" />
+                            @endcan
 
-                            <!-- Tax & Discount -->
-                            <x-nav-item route="master_data.tax_discounts.index"
-                                route-pattern="master_data.tax_discounts.*" :icon="App\Helpers\NavigationHelper::getIcon('tax_and_discount', 'w-5 h-5 mr-3')" title="Tax & Discount"
-                                size="small" />
-                        @endhasanyrole
-                    </x-nav-item>
+                            <!-- Tax & Discount (Admin Only) -->
+                            @hasanyrole('super_admin|admin')
+                                <x-nav-item route="master_data.tax_discounts.index"
+                                    route-pattern="master_data.tax_discounts.*" :icon="App\Helpers\NavigationHelper::getIcon('tax_and_discount', 'w-5 h-5 mr-3')" title="Tax & Discount"
+                                    size="small" />
+                            @endhasanyrole
+                        </x-nav-item>
+                    @endcan
 
 
                     <!-- Reports Section -->
-                    <x-nav-item route-pattern="reports.*" :icon="App\Helpers\NavigationHelper::getIcon('reports')" title="Reports" :is-dropdown="true">
+                    @can('view reports')
+                        <x-nav-item route-pattern="reports.*" :icon="App\Helpers\NavigationHelper::getIcon('reports')" title="Reports" :is-dropdown="true">
 
-                        <!-- Reports Dashboard -->
-                        {{-- <x-nav-item route="reports.index" route-pattern="reports.index"
-                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>'
-                            title="Reports Dashboard" size="small" /> --}}
+                            <!-- Reports Dashboard -->
+                            {{-- <x-nav-item route="reports.index" route-pattern="reports.index"
+                                icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>'
+                                title="Reports Dashboard" size="small" /> --}}
 
-                        <!-- Sales Order Master -->
-                        <x-nav-item route="reports.sales" route-pattern="reports.sales" :icon="App\Helpers\NavigationHelper::getIcon('sales_order_master', 'w-4 h-4 mr-3')"
-                            title="Sales Order Master" size="small" />
+                            <!-- Sales Order Master -->
+                            @can('view sales')
+                                <x-nav-item route="reports.sales" route-pattern="reports.sales" :icon="App\Helpers\NavigationHelper::getIcon('sales_order_master', 'w-4 h-4 mr-3')"
+                                    title="Sales Order Master" size="small" />
+                            @endcan
 
-                        <!-- Purchase Order Master -->
-                        <x-nav-item route="reports.purchases" route-pattern="reports.purchases" :icon="App\Helpers\NavigationHelper::getIcon('purchase_order_master', 'w-4 h-4 mr-3')"
-                            title="Purchase Order Master" size="small" />
+                            <!-- Purchase Order Master -->
+                            @can('view purchases')
+                                <x-nav-item route="reports.purchases" route-pattern="reports.purchases" :icon="App\Helpers\NavigationHelper::getIcon('purchase_order_master', 'w-4 h-4 mr-3')"
+                                    title="Purchase Order Master" size="small" />
+                            @endcan
 
-                        <!-- Inventory Report -->
-                        <x-nav-item route="reports.inventory" route-pattern="reports.inventory" :icon="App\Helpers\NavigationHelper::getIcon('inventory_report', 'w-4 h-4 mr-3')"
-                            title="Inventory Report" size="small" />
+                            <!-- Inventory Report -->
+                            @can('view inventory')
+                                <x-nav-item route="reports.inventory" route-pattern="reports.inventory" :icon="App\Helpers\NavigationHelper::getIcon('inventory_report', 'w-4 h-4 mr-3')"
+                                    title="Inventory Report" size="small" />
+                            @endcan
 
-                        {{-- Product Movement --}}
-                        <x-nav-item route="reports.product-movement" route-pattern="reports.product-movement"
-                            :icon="App\Helpers\NavigationHelper::getIcon(
-                                'product_movement_analysis',
-                                'w-4 h-4 mr-3',
-                            )" title="Product Movement" size="small" />
+                            {{-- Product Movement --}}
+                            @can('view inventory')
+                                <x-nav-item route="reports.product-movement" route-pattern="reports.product-movement"
+                                    :icon="App\Helpers\NavigationHelper::getIcon(
+                                        'product_movement_analysis',
+                                        'w-4 h-4 mr-3',
+                                    )" title="Product Movement" size="small" />
+                            @endcan
 
-                        <!-- Reorder Items -->
-                        <x-nav-item route="reports.reorder" route-pattern="reports.reorder" :icon="App\Helpers\NavigationHelper::getIcon('reorder_items', 'w-4 h-4 mr-3')"
-                            title="Reorder Items" size="small" />
+                            <!-- Reorder Items -->
+                            @can('view inventory')
+                                <x-nav-item route="reports.reorder" route-pattern="reports.reorder" :icon="App\Helpers\NavigationHelper::getIcon('reorder_items', 'w-4 h-4 mr-3')"
+                                    title="Reorder Items" size="small" />
+                            @endcan
 
-                        <!-- Critical Level Items -->
-                        <x-nav-item route="reports.critical" route-pattern="reports.critical" :icon="App\Helpers\NavigationHelper::getIcon('critical_level_items', 'w-4 h-4 mr-3')"
-                            title="Critical Level Items" size="small" />
+                            <!-- Critical Level Items -->
+                            @can('view inventory')
+                                <x-nav-item route="reports.critical" route-pattern="reports.critical" :icon="App\Helpers\NavigationHelper::getIcon('critical_level_items', 'w-4 h-4 mr-3')"
+                                    title="Critical Level Items" size="small" />
+                            @endcan
 
-                        <!-- Financial Report (P&L) -->
-                        {{-- <x-nav-item route="reports.financial" route-pattern="reports.financial" :icon="App\Helpers\NavigationHelper::getIcon('financial_report', 'w-4 h-4 mr-3')"
-                            title="Financial Report (P&L)" size="small" /> --}}
+                            <!-- Financial Report (P&L) -->
+                            {{-- <x-nav-item route="reports.financial" route-pattern="reports.financial" :icon="App\Helpers\NavigationHelper::getIcon('financial_report', 'w-4 h-4 mr-3')"
+                                title="Financial Report (P&L)" size="small" /> --}}
 
-                        <!-- Supplier Cost -->
-                        {{-- <x-nav-item route="reports.financial" route-pattern="reports.financial" :icon="App\Helpers\NavigationHelper::getIcon('supplier_cost', 'w-4 h-4 mr-3')"
-                            title="Supplier Cost" size="small" /> --}}
+                            <!-- Supplier Cost -->
+                            {{-- <x-nav-item route="reports.financial" route-pattern="reports.financial" :icon="App\Helpers\NavigationHelper::getIcon('supplier_cost', 'w-4 h-4 mr-3')"
+                                title="Supplier Cost" size="small" /> --}}
 
-                        <!-- Stock Movement Report -->
-                        {{-- <x-nav-item route="reports.movement" route-pattern="reports.movement"
-                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>'
-                            title="Stock Movement" size="small" /> --}}
+                            <!-- Stock Movement Report -->
+                            {{-- <x-nav-item route="reports.movement" route-pattern="reports.movement"
+                                icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>'
+                                title="Stock Movement" size="small" /> --}}
 
 
-                        {{-- Block Items --}}
-                        <x-nav-item route="reports.blocked" route-pattern="reports.blocked" :icon="App\Helpers\NavigationHelper::getIcon('block_items', 'w-4 h-4 mr-3')"
-                            title="Block Items" size="small" />
+                            {{-- Block Items --}}
+                            @can('view inventory')
+                                <x-nav-item route="reports.blocked" route-pattern="reports.blocked" :icon="App\Helpers\NavigationHelper::getIcon('block_items', 'w-4 h-4 mr-3')"
+                                    title="Block Items" size="small" />
+                            @endcan
 
-                        <!-- Expense Report -->
-                        {{-- <x-nav-item href="#"
-                            icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>'
-                            title="Expense Report" size="small" /> --}}
-                    </x-nav-item>
+                            <!-- Expense Report -->
+                            {{-- <x-nav-item href="#"
+                                icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>'
+                                title="Expense Report" size="small" /> --}}
+                        </x-nav-item>
+                    @endcan
 
                     <!-- Integration -->
                     {{-- <x-nav-item href="#" :icon="App\Helpers\NavigationHelper::getIcon('integration')" title="Integration" /> --}}
 
-                    {{-- Audit Trail --}}
-                    <x-nav-item route="audit-logs.index" route-pattern="audit-logs.*" :icon="App\Helpers\NavigationHelper::getIcon('audit_trail', 'w-5 h-6 mr-1')" title="Audit Logs" />
+                    {{-- Audit Trail (Admin Only) --}}
+                    @hasanyrole('super_admin|admin')
+                        <x-nav-item route="audit-logs.index" route-pattern="audit-logs.*" :icon="App\Helpers\NavigationHelper::getIcon('audit_trail', 'w-5 h-6 mr-1')" title="Audit Logs" />
+                    @endhasanyrole
 
                     <!-- User Management (Super Admin and Admin Only) -->
                     @hasanyrole('super_admin|admin')

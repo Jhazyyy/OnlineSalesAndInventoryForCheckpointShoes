@@ -133,6 +133,43 @@ class RolesAndPermissionsSeeder extends Seeder
             'manage brands',
         ]);
 
+        // Create Salesperson role with sales-focused permissions
+        $salespersonRole = Role::firstOrCreate(['name' => 'salesperson']);
+        $salespersonRole->syncPermissions([
+            'view products',
+            'view inventory',
+            'view sales',
+            'create sales',
+            'edit sales',
+            'view customers',
+            'create customers',
+            'edit customers',
+            'view reports',
+            'view categories',
+            'view brands',
+        ]);
+
+        // Create Inventory Clerk role with inventory-focused permissions
+        $inventoryClerkRole = Role::firstOrCreate(['name' => 'inventory_clerk']);
+        $inventoryClerkRole->syncPermissions([
+            'view products',
+            'create products',
+            'edit products',
+            'view inventory',
+            'create inventory',
+            'edit inventory',
+            'manage stock',
+            'view suppliers',
+            'create suppliers',
+            'edit suppliers',
+            'view purchases',
+            'create purchases',
+            'edit purchases',
+            'view reports',
+            'view categories',
+            'view brands',
+        ]);
+
         // Create User role with limited permissions
         $userRole = Role::firstOrCreate(['name' => 'user']);
         $userRole->syncPermissions([
@@ -151,6 +188,8 @@ class RolesAndPermissionsSeeder extends Seeder
         $this->command->info('Roles and permissions created successfully!');
         $this->command->info('Super Admin role has all permissions (including managing admins).');
         $this->command->info('Admin role has all permissions except managing other admins.');
+        $this->command->info('Salesperson role has sales and customer management permissions.');
+        $this->command->info('Inventory Clerk role has inventory and purchase management permissions.');
         $this->command->info('User role has limited view and create permissions.');
     }
 }

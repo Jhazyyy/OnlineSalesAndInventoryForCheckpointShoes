@@ -28,6 +28,11 @@ class CheckPermission
 
         $user = $request->user();
 
+        // Super admin has all permissions
+        if ($user->hasRole('super_admin')) {
+            return $next($request);
+        }
+
         // Check if user has any of the specified permissions
         foreach ($permissions as $permission) {
             if ($user->hasPermissionTo($permission)) {
