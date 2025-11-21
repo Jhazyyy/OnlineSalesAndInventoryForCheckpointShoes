@@ -163,6 +163,27 @@ class SalesOrderService
             $this->addItemsToOrder($order, $data['items']);
         }
 
+        // Log to audit trail
+        \App\Models\AuditLog::logAction(
+            \App\Models\AuditLog::ACTION_CREATE,
+            \App\Models\AuditLog::MODULE_SALES,
+            "Sales Order {$order->order_number} created with " . count($data['items'] ?? []) . " items for total amount of " . number_format((float)$order->total_amount, 2),
+            'SalesOrder',
+            $order->order_id,
+            $order->order_number,
+            null,
+            [
+                'order_number' => $order->order_number,
+                'customer_id' => $order->customer_id,
+                'status' => $order->status,
+                'priority' => $order->priority,
+                'purchase_type' => $order->purchase_type,
+                'total_amount' => $order->total_amount,
+                'items_count' => count($data['items'] ?? []),
+            ],
+            \App\Models\AuditLog::SEVERITY_INFO
+        );
+
         // Create notification for new order
         Notification::create([
             'title' => 'New Sales Order Created',
@@ -180,6 +201,15 @@ class SalesOrderService
      */
     public function updateOrder(SalesOrder $order, array $data): SalesOrder
     {
+        // Capture old values
+        $oldValues = [
+            'customer_id' => $order->customer_id,
+            'status' => $order->status,
+            'priority' => $order->priority,
+            'payment_status' => $order->payment_status,
+            'total_amount' => $order->total_amount,
+        ];
+
         // Update order details
         $order->update($data);
 
@@ -187,6 +217,29 @@ class SalesOrderService
         if (isset($data['items']) && is_array($data['items'])) {
             $this->updateOrderItems($order, $data['items']);
         }
+
+        // Capture new values
+        $order->refresh();
+        $newValues = [
+            'customer_id' => $order->customer_id,
+            'status' => $order->status,
+            'priority' => $order->priority,
+            'payment_status' => $order->payment_status,
+            'total_amount' => $order->total_amount,
+        ];
+
+        // Log to audit trail
+        \App\Models\AuditLog::logAction(
+            \App\Models\AuditLog::ACTION_UPDATE,
+            \App\Models\AuditLog::MODULE_SALES,
+            "Sales Order {$order->order_number} updated",
+            'SalesOrder',
+            $order->order_id,
+            $order->order_number,
+            $oldValues,
+            $newValues,
+            \App\Models\AuditLog::SEVERITY_INFO
+        );
 
         // Create notification for updated sales order
         Notification::create([
@@ -318,10 +371,38 @@ class SalesOrderService
             throw new \Exception('Cannot delete order that is already processed.');
         }
 
+        // Capture order details before deletion
+        $orderNumber = $order->order_number;
+        $orderId = $order->order_id;
+        $orderData = [
+            'order_number' => $order->order_number,
+            'customer_id' => $order->customer_id,
+            'status' => $order->status,
+            'total_amount' => $order->total_amount,
+            'items_count' => $order->items()->count(),
+        ];
+
         // Delete order items first (cascade should handle this, but being explicit)
         $order->items()->delete();
 
-        return $order->delete();
+        $deleted = $order->delete();
+
+        // Log to audit trail
+        if ($deleted) {
+            \App\Models\AuditLog::logAction(
+                \App\Models\AuditLog::ACTION_DELETE,
+                \App\Models\AuditLog::MODULE_SALES,
+                "Sales Order {$orderNumber} deleted",
+                'SalesOrder',
+                $orderId,
+                $orderNumber,
+                $orderData,
+                null,
+                \App\Models\AuditLog::SEVERITY_WARNING
+            );
+        }
+
+        return $deleted;
     }
 
     /**
@@ -337,6 +418,19 @@ class SalesOrderService
 
         $oldStatus = $order->status;
         $order->update(['status' => $status]);
+
+        // Log to audit trail
+        \App\Models\AuditLog::logAction(
+            \App\Models\AuditLog::ACTION_UPDATE,
+            \App\Models\AuditLog::MODULE_SALES,
+            "Sales Order {$order->order_number} status changed from {$oldStatus} to {$status}",
+            'SalesOrder',
+            $order->order_id,
+            $order->order_number,
+            ['status' => $oldStatus],
+            ['status' => $status],
+            \App\Models\AuditLog::SEVERITY_INFO
+        );
 
         // If order is cancelled or returned, restore inventory for items that were previously deducted
         if (in_array($status, ['cancelled', 'returned'])) {

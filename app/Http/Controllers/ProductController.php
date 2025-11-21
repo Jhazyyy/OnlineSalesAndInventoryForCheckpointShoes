@@ -245,6 +245,26 @@ class ProductController extends Controller
         // Create the product
         $product = Product::create($data);
 
+        // Log to audit trail
+        \App\Models\AuditLog::logAction(
+            \App\Models\AuditLog::ACTION_CREATE,
+            \App\Models\AuditLog::MODULE_INVENTORY,
+            "Product {$product->product_name} (SKU: {$product->sku}) created",
+            'Product',
+            $product->product_id,
+            $product->product_name,
+            null,
+            [
+                'product_name' => $product->product_name,
+                'sku' => $product->sku,
+                'product_brand' => $product->product_brand,
+                'product_category' => $product->product_category,
+                'price' => $product->price,
+                'quantity' => $product->quantity,
+            ],
+            \App\Models\AuditLog::SEVERITY_INFO
+        );
+
         return redirect()->route('inventory.products.index')->with('success', 'Product created successfully!');
     }
 
@@ -419,7 +439,41 @@ class ProductController extends Controller
             }
         }
 
+        // Capture old values before update
+        $oldValues = [
+            'product_name' => $product->product_name,
+            'sku' => $product->sku,
+            'product_brand' => $product->product_brand,
+            'product_category' => $product->product_category,
+            'price' => $product->price,
+            'quantity' => $product->quantity,
+        ];
+
         $product->update($data);
+
+        // Capture new values after update
+        $product->refresh();
+        $newValues = [
+            'product_name' => $product->product_name,
+            'sku' => $product->sku,
+            'product_brand' => $product->product_brand,
+            'product_category' => $product->product_category,
+            'price' => $product->price,
+            'quantity' => $product->quantity,
+        ];
+
+        // Log to audit trail
+        \App\Models\AuditLog::logAction(
+            \App\Models\AuditLog::ACTION_UPDATE,
+            \App\Models\AuditLog::MODULE_INVENTORY,
+            "Product {$product->product_name} (SKU: {$product->sku}) updated",
+            'Product',
+            $product->product_id,
+            $product->product_name,
+            $oldValues,
+            $newValues,
+            \App\Models\AuditLog::SEVERITY_INFO
+        );
 
         return redirect()->route('inventory.products.index')->with('success', 'Product updated successfully!');
     }
@@ -431,12 +485,37 @@ class ProductController extends Controller
     {
         $this->authorize('delete products');
         
+        // Capture product details before deletion
+        $productName = $product->product_name;
+        $productId = $product->product_id;
+        $productData = [
+            'product_name' => $product->product_name,
+            'sku' => $product->sku,
+            'product_brand' => $product->product_brand,
+            'product_category' => $product->product_category,
+            'price' => $product->price,
+            'quantity' => $product->quantity,
+        ];
+
         // Delete associated image
         if ($product->image && Storage::disk('public')->exists($product->image)) {
             Storage::disk('public')->delete($product->image);
         }
 
         $product->delete();
+
+        // Log to audit trail
+        \App\Models\AuditLog::logAction(
+            \App\Models\AuditLog::ACTION_DELETE,
+            \App\Models\AuditLog::MODULE_INVENTORY,
+            "Product {$productName} (SKU: {$productData['sku']}) deleted",
+            'Product',
+            $productId,
+            $productName,
+            $productData,
+            null,
+            \App\Models\AuditLog::SEVERITY_WARNING
+        );
 
         return redirect()->route('inventory.products.index')
             ->with('success', 'Product deleted successfully!');

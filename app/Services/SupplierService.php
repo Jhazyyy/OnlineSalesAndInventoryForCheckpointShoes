@@ -89,7 +89,27 @@ class SupplierService
         $data['country'] = $data['country'] ?? 'Philippines';
         $data['supplier_type'] = $data['supplier_type'] ?? 'local';
 
-        return Supplier::create($data);
+        $supplier = Supplier::create($data);
+
+        // Log to audit trail
+        \App\Models\AuditLog::logAction(
+            \App\Models\AuditLog::ACTION_CREATE,
+            \App\Models\AuditLog::MODULE_SUPPLIERS,
+            "Supplier {$supplier->supplier_name} created",
+            'Supplier',
+            $supplier->supplier_id,
+            $supplier->supplier_name,
+            null,
+            [
+                'supplier_name' => $supplier->supplier_name,
+                'email' => $supplier->email,
+                'supplier_type' => $supplier->supplier_type,
+                'status' => $supplier->status,
+            ],
+            \App\Models\AuditLog::SEVERITY_INFO
+        );
+
+        return $supplier;
     }
 
     /**
@@ -97,8 +117,39 @@ class SupplierService
      */
     public function updateSupplier(Supplier $supplier, array $data): Supplier
     {
+        // Capture old values
+        $oldValues = [
+            'supplier_name' => $supplier->supplier_name,
+            'email' => $supplier->email,
+            'supplier_type' => $supplier->supplier_type,
+            'status' => $supplier->status,
+        ];
+
         $supplier->update($data);
-        return $supplier->fresh();
+        $supplier->refresh();
+
+        // Capture new values
+        $newValues = [
+            'supplier_name' => $supplier->supplier_name,
+            'email' => $supplier->email,
+            'supplier_type' => $supplier->supplier_type,
+            'status' => $supplier->status,
+        ];
+
+        // Log to audit trail
+        \App\Models\AuditLog::logAction(
+            \App\Models\AuditLog::ACTION_UPDATE,
+            \App\Models\AuditLog::MODULE_SUPPLIERS,
+            "Supplier {$supplier->supplier_name} updated",
+            'Supplier',
+            $supplier->supplier_id,
+            $supplier->supplier_name,
+            $oldValues,
+            $newValues,
+            \App\Models\AuditLog::SEVERITY_INFO
+        );
+
+        return $supplier;
     }
 
     /**
@@ -111,7 +162,34 @@ class SupplierService
             throw new \Exception('Cannot delete supplier with existing purchase records. Consider deactivating instead.');
         }
 
-        return $supplier->delete();
+        // Capture supplier details before deletion
+        $supplierName = $supplier->supplier_name;
+        $supplierId = $supplier->supplier_id;
+        $supplierData = [
+            'supplier_name' => $supplier->supplier_name,
+            'email' => $supplier->email,
+            'supplier_type' => $supplier->supplier_type,
+            'status' => $supplier->status,
+        ];
+
+        $deleted = $supplier->delete();
+
+        // Log to audit trail
+        if ($deleted) {
+            \App\Models\AuditLog::logAction(
+                \App\Models\AuditLog::ACTION_DELETE,
+                \App\Models\AuditLog::MODULE_SUPPLIERS,
+                "Supplier {$supplierName} deleted",
+                'Supplier',
+                $supplierId,
+                $supplierName,
+                $supplierData,
+                null,
+                \App\Models\AuditLog::SEVERITY_WARNING
+            );
+        }
+
+        return $deleted;
     }
 
     /**

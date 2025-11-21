@@ -174,6 +174,26 @@ class PurchaseReceiveService
             );
         }
 
+        // Log to audit trail
+        \App\Models\AuditLog::logAction(
+            \App\Models\AuditLog::ACTION_CREATE,
+            \App\Models\AuditLog::MODULE_PURCHASES,
+            "Purchase Receive {$receive->receive_number} created with " . count($data['items'] ?? []) . " items",
+            'PurchaseReceive',
+            $receive->receive_id,
+            $receive->receive_number,
+            null,
+            [
+                'receive_number' => $receive->receive_number,
+                'purchase_order_id' => $receive->purchase_order_id,
+                'supplier_id' => $receive->supplier_id,
+                'status' => $receive->status,
+                'total_amount_received' => $receive->total_amount_received,
+                'items_count' => count($data['items'] ?? []),
+            ],
+            \App\Models\AuditLog::SEVERITY_INFO
+        );
+
         // Create notification for new purchase receive
         Notification::create([
             'title' => 'Goods Receipt Created',
@@ -191,6 +211,12 @@ class PurchaseReceiveService
      */
     public function updateReceive(PurchaseReceive $receive, array $data): PurchaseReceive
     {
+        // Capture old values
+        $oldValues = [
+            'status' => $receive->status,
+            'total_amount_received' => $receive->total_amount_received,
+        ];
+
         // Update receive details
         $receive->update($data);
 
@@ -198,6 +224,26 @@ class PurchaseReceiveService
         if (isset($data['items']) && is_array($data['items'])) {
             $this->updateReceiveItems($receive, $data['items']);
         }
+
+        // Capture new values
+        $receive->refresh();
+        $newValues = [
+            'status' => $receive->status,
+            'total_amount_received' => $receive->total_amount_received,
+        ];
+
+        // Log to audit trail
+        \App\Models\AuditLog::logAction(
+            \App\Models\AuditLog::ACTION_UPDATE,
+            \App\Models\AuditLog::MODULE_PURCHASES,
+            "Purchase Receive {$receive->receive_number} updated",
+            'PurchaseReceive',
+            $receive->receive_id,
+            $receive->receive_number,
+            $oldValues,
+            $newValues,
+            \App\Models\AuditLog::SEVERITY_INFO
+        );
 
         // Create notification for updated purchase receive
         Notification::create([

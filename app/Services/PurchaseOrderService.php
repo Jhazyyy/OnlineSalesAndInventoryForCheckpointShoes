@@ -157,6 +157,26 @@ class PurchaseOrderService
             ]
         );
 
+        // Log to audit trail
+        \App\Models\AuditLog::logAction(
+            \App\Models\AuditLog::ACTION_CREATE,
+            \App\Models\AuditLog::MODULE_PURCHASES,
+            "Purchase Order {$order->order_number} created with " . count($data['items'] ?? []) . " items for total amount of " . number_format((float)$order->total_amount, 2),
+            'PurchaseOrder',
+            $order->order_id,
+            $order->order_number,
+            null,
+            [
+                'order_number' => $order->order_number,
+                'supplier_id' => $order->supplier_id,
+                'status' => $order->status,
+                'priority' => $order->priority,
+                'total_amount' => $order->total_amount,
+                'items_count' => count($data['items'] ?? []),
+            ],
+            \App\Models\AuditLog::SEVERITY_INFO
+        );
+
         // Create notification for new purchase order
         Notification::create([
             'title' => 'New Purchase Order Created',
@@ -174,6 +194,15 @@ class PurchaseOrderService
      */
     public function updateOrder(PurchaseOrder $order, array $data): PurchaseOrder
     {
+        // Capture old values
+        $oldValues = [
+            'supplier_id' => $order->supplier_id,
+            'status' => $order->status,
+            'priority' => $order->priority,
+            'total_amount' => $order->total_amount,
+            'payment_status' => $order->payment_status,
+        ];
+
         // Update order details
         $order->update($data);
 
@@ -181,6 +210,29 @@ class PurchaseOrderService
         if (isset($data['items']) && is_array($data['items'])) {
             $this->updateOrderItems($order, $data['items']);
         }
+
+        // Capture new values
+        $order->refresh();
+        $newValues = [
+            'supplier_id' => $order->supplier_id,
+            'status' => $order->status,
+            'priority' => $order->priority,
+            'total_amount' => $order->total_amount,
+            'payment_status' => $order->payment_status,
+        ];
+
+        // Log to audit trail
+        \App\Models\AuditLog::logAction(
+            \App\Models\AuditLog::ACTION_UPDATE,
+            \App\Models\AuditLog::MODULE_PURCHASES,
+            "Purchase Order {$order->order_number} updated",
+            'PurchaseOrder',
+            $order->order_id,
+            $order->order_number,
+            $oldValues,
+            $newValues,
+            \App\Models\AuditLog::SEVERITY_INFO
+        );
 
         // Create notification for updated purchase order
         Notification::create([
@@ -247,10 +299,38 @@ class PurchaseOrderService
             throw new \Exception('Cannot delete order that is already processed.');
         }
 
+        // Capture order details before deletion
+        $orderNumber = $order->order_number;
+        $orderId = $order->order_id;
+        $orderData = [
+            'order_number' => $order->order_number,
+            'supplier_id' => $order->supplier_id,
+            'status' => $order->status,
+            'total_amount' => $order->total_amount,
+            'items_count' => $order->items()->count(),
+        ];
+
         // Delete order items first (cascade should handle this, but being explicit)
         $order->items()->delete();
 
-        return $order->delete();
+        $deleted = $order->delete();
+
+        // Log to audit trail
+        if ($deleted) {
+            \App\Models\AuditLog::logAction(
+                \App\Models\AuditLog::ACTION_DELETE,
+                \App\Models\AuditLog::MODULE_PURCHASES,
+                "Purchase Order {$orderNumber} deleted",
+                'PurchaseOrder',
+                $orderId,
+                $orderNumber,
+                $orderData,
+                null,
+                \App\Models\AuditLog::SEVERITY_WARNING
+            );
+        }
+
+        return $deleted;
     }
 
     /**
@@ -267,6 +347,19 @@ class PurchaseOrderService
         $oldStatus = $order->status;
         $order->status = $status;
         $order->save();
+
+        // Log to audit trail
+        \App\Models\AuditLog::logAction(
+            \App\Models\AuditLog::ACTION_UPDATE,
+            \App\Models\AuditLog::MODULE_PURCHASES,
+            "Purchase Order {$order->order_number} status changed from {$oldStatus} to {$status}",
+            'PurchaseOrder',
+            $order->order_id,
+            $order->order_number,
+            ['status' => $oldStatus],
+            ['status' => $status],
+            \App\Models\AuditLog::SEVERITY_INFO
+        );
 
         // Log activity based on status change
         $activityType = match($status) {

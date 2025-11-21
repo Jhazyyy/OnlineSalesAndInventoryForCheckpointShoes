@@ -86,7 +86,24 @@ class CustomerController extends Controller
             $data['avatar'] = $avatarPath;
         }
 
-        Customer::create($data);
+        $customer = Customer::create($data);
+
+        // Log to audit trail
+        \App\Models\AuditLog::logAction(
+            \App\Models\AuditLog::ACTION_CREATE,
+            \App\Models\AuditLog::MODULE_CUSTOMERS,
+            "Customer {$customer->full_name} created",
+            'Customer',
+            $customer->customer_id,
+            $customer->full_name,
+            null,
+            [
+                'name' => $customer->full_name,
+                'email' => $customer->email,
+                'phone' => $customer->phone,
+            ],
+            \App\Models\AuditLog::SEVERITY_INFO
+        );
 
         return redirect()->route('sales.customers.index')
             ->with('success', 'Customer created successfully!');
@@ -173,7 +190,35 @@ class CustomerController extends Controller
             $data['avatar'] = $avatarPath;
         }
 
+        // Capture old values
+        $oldValues = [
+            'name' => $customer->full_name,
+            'email' => $customer->email,
+            'phone' => $customer->phone,
+        ];
+
         $customer->update($data);
+
+        // Capture new values
+        $customer->refresh();
+        $newValues = [
+            'name' => $customer->full_name,
+            'email' => $customer->email,
+            'phone' => $customer->phone,
+        ];
+
+        // Log to audit trail
+        \App\Models\AuditLog::logAction(
+            \App\Models\AuditLog::ACTION_UPDATE,
+            \App\Models\AuditLog::MODULE_CUSTOMERS,
+            "Customer {$customer->full_name} updated",
+            'Customer',
+            $customer->customer_id,
+            $customer->full_name,
+            $oldValues,
+            $newValues,
+            \App\Models\AuditLog::SEVERITY_INFO
+        );
 
         return redirect()->route('sales.customers.index')
             ->with('success', 'Customer updated successfully!');
@@ -192,12 +237,34 @@ class CustomerController extends Controller
                 ->with('error', 'Cannot delete customer with existing sales records.');
         }
 
+        // Capture customer details before deletion
+        $customerName = $customer->full_name;
+        $customerId = $customer->customer_id;
+        $customerData = [
+            'name' => $customer->full_name,
+            'email' => $customer->email,
+            'phone' => $customer->phone,
+        ];
+
         // Delete associated avatar
         if ($customer->avatar && Storage::disk('public')->exists($customer->avatar)) {
             Storage::disk('public')->delete($customer->avatar);
         }
 
         $customer->delete();
+
+        // Log to audit trail
+        \App\Models\AuditLog::logAction(
+            \App\Models\AuditLog::ACTION_DELETE,
+            \App\Models\AuditLog::MODULE_CUSTOMERS,
+            "Customer {$customerName} deleted",
+            'Customer',
+            $customerId,
+            $customerName,
+            $customerData,
+            null,
+            \App\Models\AuditLog::SEVERITY_WARNING
+        );
 
         return redirect()->route('sales.customers.index')
             ->with('success', 'Customer deleted successfully!');
