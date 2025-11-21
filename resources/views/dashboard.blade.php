@@ -241,7 +241,7 @@
 
                             <!-- Top Purchase Items Section -->
                             <div
-                                class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col">
+                                class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col break-words">
                                 <div
                                     class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 flex-shrink-0">
                                     <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">

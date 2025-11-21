@@ -180,11 +180,10 @@ class NavigationHelper
                                 <path d="M2.25 7.5V17.25A1.5 1.5 0 003.75 18.75H5.25M2.25 7.5L6.75 3H17.25A1.5 1.5 0 0118.75 4.5V6.75M2.25 7.5H18.75M18.75 6.75H20.25A1.5 1.5 0 0121.75 8.25V14.25A1.5 1.5 0 0120.25 15.75H19.5M5.25 18.75A1.5 1.5 0 006.75 20.25H8.25A1.5 1.5 0 009.75 18.75H5.25ZM14.25 18.75A1.5 1.5 0 0015.75 20.25H17.25A1.5 1.5 0 0018.75 18.75H14.25Z" />
                                 </svg>',
 
-            'user_accounts_control' => '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M16 14c1.656 0 3 1.344 3 3v3H5v-3c0-1.656 1.344-3 3-3h8z" />
-                                            <circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-                                        </svg>',
+            'user_accounts_control' => '<svg class=" '.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>',
 
             'stock_adjustment' => '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <!-- Box / Inventory base -->
@@ -207,7 +206,10 @@ class NavigationHelper
                                     <circle cx="9" cy="15" r="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
                                     <circle cx="15" cy="9" r="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
                                 </svg>',
-
+            'audit_trail' => '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12h6m-6 4h6M7 4h10a2 2 0 012 2v12a2 2 0 01-2 2H9l-2 2V6a2 2 0 012-2z" />
+            </svg>',
         ];
 
         return $icons[$iconName] ?? '<svg class="'.$size.'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>';
@@ -336,7 +338,6 @@ class NavigationHelper
                 ['label' => 'Goods Received', 'url' => route('purchases.purchase-receives.index')],
                 ['label' => 'Record Goods Received', 'url' => route('purchases.purchase-receives.create')],
             ],
-
 
             'master_data.stock_names.index' => [
                 ['label' => 'Master Data', 'url' => null],

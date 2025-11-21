@@ -18,6 +18,8 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BankTransferPaymentController;
+use App\Http\Controllers\StockAdjustmentController;
+use App\Http\Controllers\AuditLogController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Contracts\Auth as ContractsAuth;
 use Illuminate\Support\Facades\Auth;
@@ -691,6 +693,18 @@ Route::get('dashboard/top-purchase-items', function (Illuminate\Http\Request $re
         Route::post('/bulk-update-stock', [ProductController::class, 'bulkUpdateStock'])->name('bulk-update-stock');
         Route::get('/alerts', [ProductController::class, 'getAlertsData'])->name('alerts');
     });
+
+    // Stock Adjustment Routes
+    Route::post('/inventory/stock-adjustments', [StockAdjustmentController::class, 'store'])->name('inventory.stock-adjustments.store');
+    Route::get('/inventory/stock-adjustments/{product}/history', [StockAdjustmentController::class, 'history'])->name('inventory.stock-adjustments.history');
+
+    // Audit Log Routes
+    Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+    Route::get('/audit-logs/{auditLog}', [AuditLogController::class, 'show'])->name('audit-logs.show');
+    Route::get('/audit-logs/module/{module}', [AuditLogController::class, 'moduleLog'])->name('audit-logs.module');
+    Route::get('/audit-logs/statistics', [AuditLogController::class, 'statistics'])->name('audit-logs.statistics');
+    Route::post('/audit-logs/export', [AuditLogController::class, 'export'])->name('audit-logs.export');
+
 // CurrentUser UpdateInfo Routes 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');

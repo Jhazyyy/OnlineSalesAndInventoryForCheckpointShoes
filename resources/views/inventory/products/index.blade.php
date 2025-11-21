@@ -357,6 +357,10 @@
                                                     class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">View</button>
                                                 <button onclick="openEditProductModal({{ $product->product_id }})"
                                                     class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">Edit</button>
+                                                <button onclick="openStockAdjustmentModal({{ $product->product_id }}, '{{ $product->product_name }}', {{ $product->quantity }})"
+                                                    class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">Adjust Stock</button>
+                                                <button onclick="openAdjustmentHistoryModal({{ $product->product_id }}, '{{ $product->product_name }}')"
+                                                    class="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300">History</button>
                                                 <form method="POST"
                                                     action="{{ route('inventory.products.destroy', $product) }}"
                                                     class="inline-block"
@@ -995,6 +999,155 @@
             document.getElementById('edit_urlPreviewContainer').classList.add('hidden');
         }
 
+        // STOCK ADJUSTMENT MODAL
+        let currentProductStock = 0;
+
+        function openStockAdjustmentModal(productId, productName, currentStock) {
+            currentProductStock = currentStock;
+            document.getElementById('adj_product_id').value = productId;
+            document.getElementById('adj_product_name').textContent = productName;
+            document.getElementById('adj_current_stock').textContent = currentStock;
+            document.getElementById('stockAdjustmentModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeStockAdjustmentModal() {
+            document.getElementById('stockAdjustmentModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            document.getElementById('stockAdjustmentForm').reset();
+            document.getElementById('new_stock_preview').style.display = 'none';
+            document.getElementById('custom_reason_div').style.display = 'none';
+            document.getElementById('increase_reasons').style.display = 'none';
+            document.getElementById('decrease_reasons').style.display = 'none';
+        }
+
+        function updateAdjustmentUI() {
+            const type = document.getElementById('adj_type').value;
+            const increaseReasons = document.getElementById('increase_reasons');
+            const decreaseReasons = document.getElementById('decrease_reasons');
+            const reasonSelect = document.getElementById('adj_reason');
+
+            // Reset reason
+            reasonSelect.value = '';
+            document.getElementById('custom_reason_div').style.display = 'none';
+
+            // Show appropriate reasons
+            if (type === 'increase') {
+                increaseReasons.style.display = 'block';
+                decreaseReasons.style.display = 'none';
+            } else if (type === 'decrease') {
+                increaseReasons.style.display = 'none';
+                decreaseReasons.style.display = 'block';
+            } else {
+                increaseReasons.style.display = 'none';
+                decreaseReasons.style.display = 'none';
+            }
+
+            calculateNewStock();
+        }
+
+        function toggleCustomReason() {
+            const reason = document.getElementById('adj_reason').value;
+            const customDiv = document.getElementById('custom_reason_div');
+            const customInput = document.getElementById('adj_custom_reason');
+
+            if (reason === 'Other') {
+                customDiv.style.display = 'block';
+                customInput.required = true;
+            } else {
+                customDiv.style.display = 'none';
+                customInput.required = false;
+                customInput.value = '';
+            }
+        }
+
+        function calculateNewStock() {
+            const type = document.getElementById('adj_type').value;
+            const quantity = parseInt(document.getElementById('adj_quantity').value) || 0;
+            const preview = document.getElementById('new_stock_preview');
+            const newStockSpan = document.getElementById('preview_new_stock');
+            const changeSpan = document.getElementById('preview_change');
+
+            if (!type || quantity === 0) {
+                preview.style.display = 'none';
+                return;
+            }
+
+            let newStock = currentProductStock;
+            let changeText = '';
+
+            if (type === 'increase') {
+                newStock = currentProductStock + quantity;
+                changeText = `<span class="text-green-600 dark:text-green-400">(+${quantity})</span>`;
+            } else if (type === 'decrease') {
+                newStock = currentProductStock - quantity;
+                changeText = `<span class="text-red-600 dark:text-red-400">(-${quantity})</span>`;
+            }
+
+            newStockSpan.textContent = newStock;
+            changeSpan.innerHTML = changeText;
+            preview.style.display = 'block';
+
+            // Warn if stock will be negative
+            if (newStock < 0) {
+                newStockSpan.classList.add('text-red-600', 'dark:text-red-400');
+            } else {
+                newStockSpan.classList.remove('text-red-600', 'dark:text-red-400');
+                newStockSpan.classList.add('text-green-600', 'dark:text-green-400');
+            }
+        }
+
+        // Adjustment History Modal Functions
+        function openAdjustmentHistoryModal(productId, productName) {
+            const modal = document.getElementById('adjustmentHistoryModal');
+            const productNameSpan = document.getElementById('history_product_name');
+            const contentDiv = document.getElementById('historyModalContent');
+
+            productNameSpan.textContent = productName;
+            modal.classList.remove('hidden');
+
+            // Show loading spinner
+            contentDiv.innerHTML = `
+                <div class="flex justify-center items-center py-12">
+                    <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+            `;
+
+            // Fetch history data
+            fetch(`/inventory/stock-adjustments/${productId}/history`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'text/html'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                contentDiv.innerHTML = html;
+            })
+            .catch(error => {
+                contentDiv.innerHTML = `
+                    <div class="text-center py-12">
+                        <p class="text-red-600 dark:text-red-400">Error loading history: ${error.message}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function closeAdjustmentHistoryModal() {
+            const modal = document.getElementById('adjustmentHistoryModal');
+            modal.classList.add('hidden');
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeAdjustmentHistoryModal();
+            }
+        });
+
         function previewEditImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -1429,6 +1582,164 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Adjustment Modal -->
+    <div id="stockAdjustmentModal"
+        class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div
+            class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="mt-3">
+                <div class="flex items-center justify-between pb-3 border-b dark:border-gray-700">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Stock Adjustment</h3>
+                    <button onclick="closeStockAdjustmentModal()"
+                        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <form id="stockAdjustmentForm" method="POST" action="{{ route('inventory.stock-adjustments.store') }}">
+                    @csrf
+                    <input type="hidden" id="adj_product_id" name="product_id">
+                    
+                    <div class="mt-4 space-y-4">
+                        <!-- Product Info -->
+                        <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Product: <span id="adj_product_name" class="font-semibold text-gray-900 dark:text-white"></span></p>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Current Stock: <span id="adj_current_stock" class="font-semibold text-gray-900 dark:text-white"></span></p>
+                        </div>
+
+                        <!-- Adjustment Type -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Adjustment Type <span class="text-red-500">*</span>
+                            </label>
+                            <select id="adj_type" name="adjustment_type" required
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                                onchange="updateAdjustmentUI()">
+                                <option value="">Select Type</option>
+                                <option value="increase">Increase Stock</option>
+                                <option value="decrease">Decrease Stock</option>
+                            </select>
+                        </div>
+
+                        <!-- Reason -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Reason <span class="text-red-500">*</span>
+                            </label>
+                            <select id="adj_reason" name="reason" required
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                                onchange="toggleCustomReason()">
+                                <option value="">Select Reason</option>
+                                <optgroup label="Increase Stock" id="increase_reasons" style="display:none;">
+                                    <option value="Found Stock">Found Stock</option>
+                                    <option value="Return from Customer">Return from Customer</option>
+                                    <option value="Return from Production">Return from Production</option>
+                                    <option value="Correction">Inventory Correction</option>
+                                    <option value="Recount">Physical Recount</option>
+                                    <option value="Other">Other (Specify)</option>
+                                </optgroup>
+                                <optgroup label="Decrease Stock" id="decrease_reasons" style="display:none;">
+                                    <option value="Damaged">Damaged Goods</option>
+                                    <option value="Expired">Expired</option>
+                                    <option value="Lost">Lost/Missing</option>
+                                    <option value="Stolen">Stolen</option>
+                                    <option value="Waste">Waste/Scrapped</option>
+                                    <option value="Sample">Sample/Demo</option>
+                                    <option value="Correction">Inventory Correction</option>
+                                    <option value="Recount">Physical Recount</option>
+                                    <option value="Other">Other (Specify)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <!-- Custom Reason (shown when "Other" is selected) -->
+                        <div id="custom_reason_div" style="display:none;">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Specify Reason <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="adj_custom_reason" name="custom_reason"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                                placeholder="Enter custom reason">
+                        </div>
+
+                        <!-- Quantity -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Quantity <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" id="adj_quantity" name="quantity" required min="1"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                                placeholder="Enter quantity to adjust"
+                                oninput="calculateNewStock()">
+                        </div>
+
+                        <!-- New Stock Preview -->
+                        <div id="new_stock_preview" class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg" style="display:none;">
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                New Stock Level: 
+                                <span id="preview_new_stock" class="font-bold text-lg"></span>
+                                <span id="preview_change" class="ml-2 text-sm"></span>
+                            </p>
+                        </div>
+
+                        <!-- Notes -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Additional Notes
+                            </label>
+                            <textarea id="adj_notes" name="notes" rows="3"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                                placeholder="Enter any additional notes..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 mt-6 pt-4 border-t dark:border-gray-700">
+                        <button type="button" onclick="closeStockAdjustmentModal()"
+                            class="flex-1 px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            Adjust Stock
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adjustment History Modal -->
+    <div id="adjustmentHistoryModal"
+        class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-10 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white dark:bg-gray-800 mb-10">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center pb-4 border-b dark:border-gray-700">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                    Stock Adjustment History - <span id="history_product_name"></span>
+                </h3>
+                <button onclick="closeAdjustmentHistoryModal()"
+                    class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div id="historyModalContent" class="mt-4 max-h-[70vh] overflow-y-auto">
+                <div class="flex justify-center items-center py-12">
+                    <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
             </div>
         </div>
     </div>

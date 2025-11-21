@@ -1,9 +1,9 @@
 <x-app-layout>
-    <div class="py-6">
+    <div class="py-2">
         <div class="w-full mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
             <div
-                class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -25,7 +25,7 @@
             </div>
 
             <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
                 <div
                     class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <div class="flex items-center justify-between">
@@ -124,7 +124,7 @@
 
             <!-- Search and Filters -->
             <div
-                class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <form method="GET" action="{{ route('user-management.index') }}" class="space-y-4">
                         <!-- Inputs Row -->
