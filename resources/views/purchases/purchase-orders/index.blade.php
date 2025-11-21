@@ -189,7 +189,7 @@
                                                 @if($order->received_date)
                                                     {{ $order->received_date->format('M d, Y') }}
                                                     @if($order->status === 'completed')
-                                                        <div class="text-xs text-green-600 dark:text-green-400">Successfull received</div>
+                                                        <div class="text-xs text-green-600 dark:text-green-400">Successfully received</div>
                                                     @elseif($receive->status === 'received' && $receive->is_short_closed)
                                                         <div class="text-xs text-orange-600 dark:text-orange-400">Short Closed</div>
                                                     @endif
@@ -232,8 +232,7 @@
                                                             </svg>
                                                         </a>
                                                     @endif
-                                                    
-                                                    @if($order->canBeCancelled())
+                                                    {{-- @if($order->canBeCancelled())
                                                         <form action="{{ route('purchases.purchase-orders.destroy', $order->order_id) }}" 
                                                               method="POST" class="inline"
                                                               onsubmit="return confirm('Are you sure you want to delete this purchase order?')">
@@ -245,7 +244,7 @@
                                                                 </svg>
                                                             </button>
                                                         </form>
-                                                    @endif
+                                                    @endif --}}
                                                 </div>
                                             </td>
                                         </tr>

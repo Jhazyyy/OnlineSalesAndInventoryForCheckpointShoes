@@ -316,7 +316,7 @@ class PurchaseOrderService
     {
         return match($currentStatus) {
             'pending' => ['ordered', 'cancelled'],
-            'ordered' => ['completed', 'cancelled'],
+            'ordered' => ['cancelled'],
             'cancelled' => [],
             'completed' => [],
             default => [],
@@ -442,7 +442,7 @@ class PurchaseOrderService
     /**
      * Calculate order summary.
      */
-    public function calculateOrderSummary(array $items, float $taxRate = 0, float $shippingAmount = 0, float $discountAmount = 0): array
+    public function calculateOrderSummary(array $items, float $taxRate = 0, float $discountAmount = 0): array
     {
         $subtotal = 0;
         
@@ -452,12 +452,11 @@ class PurchaseOrderService
         }
 
         $taxAmount = $subtotal * ($taxRate / 100);
-        $totalAmount = $subtotal + $taxAmount + $shippingAmount - $discountAmount;
+        $totalAmount = $subtotal + $taxAmount - $discountAmount;
 
         return [
             'subtotal' => round($subtotal, 2),
             'tax_amount' => round($taxAmount, 2),
-            'shipping_amount' => round($shippingAmount, 2),
             'discount_amount' => round($discountAmount, 2),
             'total_amount' => round($totalAmount, 2),
         ];

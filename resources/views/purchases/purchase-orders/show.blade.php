@@ -310,14 +310,6 @@
                                         class="text-gray-900 dark:text-white">₱{{ number_format($order->subtotal, 2) }}</span>
                                 </div>
 
-                                @if ($order->shipping_amount > 0)
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600 dark:text-gray-400">Shipping:</span>
-                                        <span
-                                            class="text-gray-900 dark:text-white">₱{{ number_format($order->shipping_amount, 2) }}</span>
-                                    </div>
-                                @endif
-
                                 <div class="border-t pt-3">
                                     <div class="flex justify-between text-lg font-semibold">
                                         <span class="text-gray-900 dark:text-white">Total:</span>
@@ -546,7 +538,7 @@
 
                             <div class="space-y-3">
                                 <!-- Status Change -->
-                                @if (count((new \App\Services\PurchaseOrderService())->getValidStatusTransitions($order->status)) > 1)
+                                @if (count((new \App\Services\PurchaseOrderService())->getValidStatusTransitions($order->status)) > 0)
                                     <form method="POST"
                                         action="{{ route('purchases.purchase-orders.change-status', $order->order_id) }}"
                                         class="inline">

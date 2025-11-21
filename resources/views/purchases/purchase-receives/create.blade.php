@@ -351,7 +351,6 @@
                     } else {
                         // Hide the load items section
                         loadItemsSection.style.display = 'none';
-                        // REMOVED: updateDeliveriesDropdown - delivery system no longer used
                         // Clear items if no PO is selected
                         document.getElementById('itemsTableBody').innerHTML = '';
                         itemRowCount = 0;

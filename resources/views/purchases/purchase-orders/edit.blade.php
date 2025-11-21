@@ -228,16 +228,6 @@
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Order Summary</h3>
 
                         <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
-                            {{-- <div class="space-y-4">
-                                <!-- Shipping Amount -->
-                                <div>
-                                    <x-input-label for="shipping_amount" :value="__('Shipping Amount')" />
-                                    <x-text-input id="shipping_amount" name="shipping_amount" type="number"
-                                        step="0.01" class="mt-1 block w-full" :value="old('shipping_amount', $order->shipping_amount)" />
-                                    <x-input-error :messages="$errors->get('shipping_amount')" class="mt-2" />
-                                </div>
-                            </div> --}}
-
                             <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                                 <h4 class="font-medium text-gray-900 dark:text-white mb-2">Order Totals</h4>
                                 <div class="space-y-2 text-sm">
@@ -245,11 +235,6 @@
                                         <span>Subtotal:</span>
                                         <span id="subtotal-display">₱{{ number_format($order->subtotal, 2) }}</span>
                                     </div>
-                                    {{-- <div class="flex justify-between">
-                                        <span>Shipping:</span>
-                                        <span
-                                            id="shipping-display">₱{{ number_format($order->shipping_amount, 2) }}</span>
-                                    </div> --}}
                                     <hr class="my-2">
                                     <div class="flex justify-between font-bold text-lg">
                                         <span>Total:</span>
@@ -434,9 +419,6 @@
                             }
                         });
                     });
-
-                    // Update summary on additional field changes
-                    document.getElementById('shipping_amount').addEventListener('input', updateOrderSummary);
                 }
 
                 function calculateLineTotal(row) {
@@ -458,12 +440,9 @@
                         subtotal += (quantity * price);
                     });
 
-                    const shipping = parseFloat(document.getElementById('shipping_amount').value) || 0;
-
-                    const total = subtotal + shipping;
+                    const total = subtotal;
 
                     document.getElementById('subtotal-display').textContent = '₱' + subtotal.toFixed(2);
-                    document.getElementById('shipping-display').textContent = '₱' + shipping.toFixed(2);
                     document.getElementById('total-display').textContent = '₱' + total.toFixed(2);
                 }
             });

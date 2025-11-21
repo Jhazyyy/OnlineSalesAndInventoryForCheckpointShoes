@@ -603,8 +603,14 @@ class PurchaseReceiveService
                 $purchaseOrder = PurchaseOrder::with(['items'])->find($receive->purchase_order_id);
 
                 if ($purchaseOrder) {
-                    // Note: Purchase Order status remains 'ordered'
-                    // We only mark the receive as short-closed and complete the deliveries
+                    // Update PO status to completed and set received date when short closing
+                    DB::table('purchase_orders')
+                        ->where('order_id', $purchaseOrder->order_id)
+                        ->update([
+                            'status' => 'completed',
+                            'received_date' => $receive->receive_date ? $receive->receive_date->format('Y-m-d') : now()->format('Y-m-d'),
+                            'updated_at' => now(),
+                        ]);
 
                     // Update PO items - mark them as fully received with the actual quantities
                     // This ensures no more receipts can be created for this PO
@@ -622,10 +628,27 @@ class PurchaseReceiveService
                             ]);
                         }
                     }
+                    
+                    // Log activity for purchase order completion via short close
+                    \App\Models\SupplierActivityLog::log(
+                        supplierId: $purchaseOrder->supplier_id,
+                        activityType: 'purchase_order_completed',
+                        description: "Purchase Order {$purchaseOrder->order_number} marked as completed via short close",
+                        relatedId: $purchaseOrder->order_id,
+                        relatedType: 'PurchaseOrder',
+                        amount: $purchaseOrder->total_amount,
+                        metadata: [
+                            'order_number' => $purchaseOrder->order_number,
+                            'receive_number' => $receive->receive_number,
+                            'completed_via' => 'short_close',
+                            'received_date' => $receive->receive_date ? $receive->receive_date->format('Y-m-d') : now()->format('Y-m-d'),
+                            'short_close_reason' => $reason,
+                        ]
+                    );
                 }
             }
 
-            // Log activity
+            // Log activity for the receive
             if ($receive->supplier_id) {
                 \App\Models\SupplierActivityLog::log(
                     supplierId: $receive->supplier_id,

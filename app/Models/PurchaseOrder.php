@@ -44,7 +44,6 @@ class PurchaseOrder extends Model
         'status',
         'priority',
         'subtotal',
-        'shipping_amount',
         'total_amount',
         'paid_amount',
         'payment_status',
@@ -65,7 +64,6 @@ class PurchaseOrder extends Model
         'expected_date' => 'date',
         'received_date' => 'date',
         'subtotal' => 'decimal:2',
-        'shipping_amount' => 'decimal:2',
         'total_amount' => 'decimal:2',
         'paid_amount' => 'decimal:2',
         'created_at' => 'datetime',
@@ -402,10 +400,8 @@ class PurchaseOrder extends Model
         
         $this->subtotal = $subtotal;
         
-        // Calculate total (subtotal + shipping)
-        $shippingAmount = (float) ($this->shipping_amount ?? 0);
-        
-        $this->total_amount = $subtotal + $shippingAmount;
+        // Calculate total
+        $this->total_amount = $subtotal;
         $this->save();
     }
 
