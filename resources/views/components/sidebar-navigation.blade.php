@@ -52,14 +52,14 @@
 
                         @hasanyrole('super_admin|admin')
                             <x-nav-item route="inventory.products.index" route-pattern="inventory.products.*"
-                                :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Inventory" size="small" />
+                                :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Inventory List" size="small" />
 
                             <!-- Stock Adjustment -->
-                            <x-nav-item route="inventory.product_stock_adjustment.index"
+                            {{-- <x-nav-item route="inventory.product_stock_adjustment.index"
                                 route-pattern="inventory.product_stock_adjustment.*" :icon="App\Helpers\NavigationHelper::getIcon('stock_adjustment', 'w-4 h-4 mr-3')"
-                                title="Stock Adjustment" size="small" />
+                                title="Stock Adjustment" size="small" /> --}}
 
-                            <!-- Product Movement (Fast/Slow/Non-Moving) -->
+                            {{-- <!-- Product Movement (Fast/Slow/Non-Moving) --> --}}
                             {{-- <x-nav-item route="inventory.product-movement.index"
                             route-pattern="inventory.product-movement.*"
                             icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>'
@@ -67,9 +67,9 @@
 
 
                             <!-- Product Costing -->
-                            <x-nav-item route="inventory.product-costing.index" route-pattern="inventory.product-costing.*"
+                            {{-- <x-nav-item route="inventory.product-costing.index" route-pattern="inventory.product-costing.*"
                                 icon='<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'
-                                title="Product Costing" size="small" />
+                                title="Product Costing" size="small" /> --}}
                         @endhasanyrole
                     </x-nav-item>
 
@@ -251,10 +251,10 @@
                             @endcan
 
                             <!-- Critical Level Items -->
-                            @can('view inventory')
+                            {{-- @can('view inventory')
                                 <x-nav-item route="reports.critical" route-pattern="reports.critical" :icon="App\Helpers\NavigationHelper::getIcon('critical_level_items', 'w-4 h-4 mr-3')"
                                     title="Critical Level Items" size="small" />
-                            @endcan
+                            @endcan --}}
 
                             <!-- Financial Report (P&L) -->
                             {{-- <x-nav-item route="reports.financial" route-pattern="reports.financial" :icon="App\Helpers\NavigationHelper::getIcon('financial_report', 'w-4 h-4 mr-3')"
@@ -271,10 +271,10 @@
 
 
                             {{-- Block Items --}}
-                            @can('view inventory')
+                            {{-- @can('view inventory')
                                 <x-nav-item route="reports.blocked" route-pattern="reports.blocked" :icon="App\Helpers\NavigationHelper::getIcon('block_items', 'w-4 h-4 mr-3')"
                                     title="Block Items" size="small" />
-                            @endcan
+                            @endcan --}}
 
                             <!-- Expense Report -->
                             {{-- <x-nav-item href="#"

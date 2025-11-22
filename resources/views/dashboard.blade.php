@@ -178,13 +178,13 @@
                                     </div>
 
                                     <div id="topSellingItemsContainer" class="space-y-3 overflow-y-auto flex-1" style="max-height: 600px;">
-                                    @forelse($topSellingItems->take(10) ?? [] as $item)
+                                    @forelse($topSellingItems->take(5) ?? [] as $item)
                                         <div
                                             class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex-shrink-0">
-                                            <div class="flex items-center space-x-3 flex-1 min-w-0">
+                                            <div class="flex items-center space-x-2 flex-1 min-w-0">
                                                 <!-- Product Image -->
                                                 <div
-                                                    class="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
+                                                    class="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
                                                     @if (!empty($item['image']))
                                                         @php
                                                             $imageUrl = (str_starts_with($item['image'], 'http://') || str_starts_with($item['image'], 'https://'))
@@ -248,7 +248,7 @@
                                         Top Purchase Items
                                     </h3>
                                     <select id="topPurchasePeriod"
-                                        class="appearance-none w-full sm:w-auto text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        class="appearance-none w-full sm:w-auto text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent break-words">
                                         <option value="today">Today</option>
                                         <option value="yesterday">Yesterday</option>
                                         <option value="this_week">This Week</option>
@@ -261,13 +261,13 @@
                                 </div>
 
                                 <div id="topPurchaseItemsContainer" class="space-y-3 overflow-y-auto flex-1" style="max-height: 600px;">
-                                    @forelse($topPurchaseItems->take(10) ?? [] as $item)
+                                    @forelse($topPurchaseItems->take(5) ?? [] as $item)
                                         <div
                                             class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex-shrink-0">
                                             <div class="flex items-center space-x-3 flex-1 min-w-0">
                                                 <!-- Product Image -->
                                                 <div
-                                                    class="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center overflow-hidden">
+                                                    class="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center overflow-hidden">
                                                     @if (!empty($item['image']))
                                                         @php
                                                             $imageUrl = (str_starts_with($item['image'], 'http://') || str_starts_with($item['image'], 'https://'))
@@ -276,7 +276,7 @@
                                                         @endphp
                                                         <img src="{{ $imageUrl }}"
                                                             alt="{{ $item['name'] ?? 'Product' }}"
-                                                            class="w-full h-full object-cover"
+                                                            class="w-5 h-5 object-cover"
                                                             onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\'w-8 h-8 text-white\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\'></path></svg>';">
                                                     @else
                                                         <svg class="w-8 h-8 text-white" fill="none"
@@ -310,7 +310,7 @@
                                         </div>
                                     @empty
                                         <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                                            <svg class="w-12 h-12 mx-auto mb-2 opacity-50" fill="none"
+                                            <svg class="w-5 h-5 mx-auto mb-2 opacity-50" fill="none"
                                                 stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8.5m-8.5 0a2 2 0 11-4 0 2 2 0 014 0zm8.5 0a2 2 0 11-4 0 2 2 0 014 0z">
@@ -335,7 +335,7 @@
                                 <!-- Quantity in Hand -->
                                 <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
                                     <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
-                                        QUANTITY IN HAND
+                                    Quantity In Hand
                                     </div>
                                     <div class="text-5xl font-bold text-gray-800 dark:text-gray-100">
                                         {{ number_format(\App\Models\Product::sum('quantity') ?? 0) }}
@@ -345,7 +345,7 @@
                                 <!-- Quantity to be Received -->
                                 <div>
                                     <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
-                                        QUANTITY TO BE RECEIVED
+                                        Quantity to be Received
                                     </div>
                                     <div class="text-5xl font-bold text-blue-600 dark:text-blue-400">
                                         {{ number_format($purchaseReceiveStats['pending_quantity'] ?? 0) }}
@@ -552,7 +552,7 @@
                             </div>
 
                             <!-- Quick Links -->
-                            <div
+                            {{-- <div
                                 class="hidden md:flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
                                 <a href="#"
                                     class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</a>
@@ -562,7 +562,7 @@
                                     class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Documentation</a>
                                 <a href="#"
                                     class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy</a>
-                            </div>
+                            </div> --}}
                         </div>
 
                         <div
@@ -690,9 +690,9 @@
                                                 ${item.image 
                                                     ? `<img src="/storage/${item.image}" 
                                                                alt="${item.name}" 
-                                                               class="w-full h-full object-cover"
-                                                               onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-8 h-8 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
-                                                    : `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                               class="w-5 h-5 object-cover"
+                                                               onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
+                                                    : `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                                            </svg>`
                                                 }
@@ -748,7 +748,7 @@
                     // Show loading state
                     container.innerHTML = `
                         <div class="flex justify-center items-center py-8">
-                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-600"></div>
+                            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-yellow-600"></div>
                         </div>
                     `;
 
@@ -760,19 +760,19 @@
                                 container.innerHTML = data.items.map(item => `
                                     <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex-shrink-0">
                                         <div class="flex items-center space-x-3 flex-1 min-w-0">
-                                            <div class="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center overflow-hidden">
+                                            <div class="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center overflow-hidden">
                                                 ${item.image 
                                                     ? `<img src="/storage/${item.image}" 
                                                                alt="${item.name}" 
-                                                               class="w-full h-full object-cover"
-                                                               onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-8 h-8 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
-                                                    : `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                               class="w-5 h-5 object-cover"
+                                                               onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
+                                                    : `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                                            </svg>`
                                                 }
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate" title="${item.name}">
+                                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 break-words" title="${item.name}">
                                                     ${item.name}
                                                 </div>
                                                 <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
@@ -791,7 +791,7 @@
                             } else {
                                 container.innerHTML = `
                                     <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                                        <svg class="w-12 h-12 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-5 h-5 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8.5m-8.5 0a2 2 0 11-4 0 2 2 0 014 0zm8.5 0a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                         </svg>
                                         <p class="text-sm">No purchase data available for this period</p>

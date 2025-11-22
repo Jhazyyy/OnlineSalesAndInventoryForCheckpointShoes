@@ -171,9 +171,9 @@
                                                         {{ $order->order_number }}
                                                     </a>
                                                 </div>
-                                                @if($order->is_overdue)
+                                                {{-- @if($order->is_overdue)
                                                     <div class="text-xs text-red-600">OVERDUE</div>
-                                                @endif
+                                                @endif --}}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm text-gray-900 dark:text-white">{{ $order->supplier->supplier_name ?? $order->supplier->name ?? 'N/A' }}</div>

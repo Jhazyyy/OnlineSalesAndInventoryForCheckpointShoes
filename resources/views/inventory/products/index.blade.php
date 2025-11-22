@@ -99,6 +99,9 @@
                                     <option value="low_stock"
                                         {{ request('stock_status') == 'low_stock' ? 'selected' : '' }}>Low Stock
                                     </option>
+                                    <option value="critical_stock"
+                                        {{ request('stock_status') == 'critical_stock' ? 'selected' : '' }}>Critical Stock
+                                    </option>
                                     <option value="out_of_stock"
                                         {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>Out of Stock
                                     </option>

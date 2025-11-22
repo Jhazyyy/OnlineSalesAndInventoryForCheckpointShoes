@@ -46,11 +46,11 @@
                             <div class="flex flex-wrap gap-2 sm:justify-end sm:items-end">
                                 <button type="submit"
                                     class="inline-flex items-center justify-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs uppercase rounded-md transition w-auto">
-                                    Apply
+                                    Apply Filter
                                 </button>
                                 <a href="{{ route('reports.sales') }}"
                                     class="inline-flex items-center justify-center px-3 py-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-semibold text-xs uppercase rounded-md transition w-auto">
-                                    Reset
+                                    Clear
                                 </a>
                             </div>
                         </div>

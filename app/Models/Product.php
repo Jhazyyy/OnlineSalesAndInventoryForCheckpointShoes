@@ -320,13 +320,20 @@ class Product extends Model
 
     /**
      * Scope a query to only include products that need reordering.
-     * Standard formula: quantity <= 10
+     * 
+     * Uses calculated reorder point based on:
+     * ROP = (Average Daily Demand × Lead Time) + Safety Stock
+     * 
+     * For performance, checks against reorder_level field if set,
+     * otherwise uses default threshold of 10.
      */
     public function scopeNeedsReordering(Builder $query): Builder
     {
-        $threshold = 10; // Standard reorder threshold
-        
-        return $query->where('quantity', '<=', $threshold);
+        // For query efficiency, use reorder_level field if set, otherwise default to 10
+        return $query->where(function ($q) {
+            $q->whereRaw('quantity <= COALESCE(reorder_level, 10)')
+              ->orWhereNull('reorder_level')->where('quantity', '<=', 10);
+        });
     }
 
     /**
@@ -359,10 +366,7 @@ class Product extends Model
     /**
      * Get current stock quantity from the latest stock movement.
      * This is the primary way to get product quantity now.
-     * 
-     * NOTE: This accessor has been commented out because the products table now has
-     * a quantity column that is kept in sync with stock movements. The accessor was
-     * causing conflicts with increment/decrement operations in PurchaseReceiveService.
+     * .
      * 
      * If you need to get quantity from stock movements directly, use:
      * $product->getQuantityFromStockMovements()
@@ -396,9 +400,9 @@ class Product extends Model
 
     /**
      * Check if the product is low in stock.
-     * Standard formula: quantity > 0 AND quantity <= 10
+     * Standard formula: quantity > 5 AND quantity <= 10
      */
-    public function isLowStock(int $threshold = null): bool
+    public function isLowStock(int $threshold): bool
     {
         $available = $this->getAvailableQuantity();
         $lowThreshold = $threshold ?? 10; // Standard low stock threshold
@@ -408,24 +412,164 @@ class Product extends Model
 
     /**
      * Check if the product is at critical stock level.
-     * Standard formula: quantity > 0 AND quantity <= 5
+     * 
+     * Standard Formula: 
+     * Critical Level = Average Daily Demand × Lead Time Days
+     * If no sales data: uses critical_level field or defaults to 5
+     * 
+     * Critical condition: current stock <= critical level
      */
     public function isCriticalStock(): bool
     {
         $available = $this->getAvailableQuantity();
-        $criticalThreshold = 5; // Standard critical stock threshold
+        $criticalLevel = $this->calculateCriticalLevel();
         
-        return $available > 0 && $available <= $criticalThreshold;
+        return $available > 0 && $available <= $criticalLevel;
     }
 
     /**
-     * Check if product needs reordering.
-     * Standard formula: quantity <= 10
+     * Calculate critical stock level based on demand and lead time.
+     * 
+     * Formula: Average Daily Demand × Lead Time Days
+     * 
+     * @return int
+     */
+    public function calculateCriticalLevel(): int
+    {
+        // Use predefined critical level if set
+        if ($this->critical_level && $this->critical_level > 0) {
+            return $this->critical_level;
+        }
+
+        $averageDailyDemand = $this->getAverageDailyDemand();
+        $leadTimeDays = $this->lead_time_days ?? 7; // Default 7 days if not set
+
+        // If no sales data, use default critical level
+        if ($averageDailyDemand <= 0) {
+            return 5; // Default critical level
+        }
+
+        return (int) ceil($averageDailyDemand * $leadTimeDays);
+    }
+
+    /**
+     * Check if product needs reordering based on Reorder Point (ROP).
+     * 
+     * Standard Formula:
+     * ROP = (Average Daily Demand × Lead Time Days) + Safety Stock
+     * Safety Stock = (Max Daily Demand - Avg Daily Demand) × Lead Time
+     * 
+     * @return bool
      */
     public function needsReordering(): bool
     {
         $available = $this->getAvailableQuantity();
-        return $available <= 10; // Standard reorder point
+        $reorderPoint = $this->calculateReorderPoint();
+        
+        return $available <= $reorderPoint;
+    }
+
+    /**
+     * Calculate Reorder Point (ROP) using standard formula.
+     * 
+     * Formula: ROP = (Average Daily Demand × Lead Time) + Safety Stock
+     * 
+     * @return int
+     */
+    public function calculateReorderPoint(): int
+    {
+        // Use predefined reorder level if set
+        if ($this->reorder_level && $this->reorder_level > 0) {
+            return $this->reorder_level;
+        }
+
+        $averageDailyDemand = $this->getAverageDailyDemand();
+        $leadTimeDays = $this->lead_time_days ?? 7;
+        $safetyStock = $this->calculateSafetyStock();
+
+        // If no sales data, use default reorder level
+        if ($averageDailyDemand <= 0) {
+            return 10; // Default reorder level
+        }
+
+        return (int) ceil(($averageDailyDemand * $leadTimeDays) + $safetyStock);
+    }
+
+    /**
+     * Calculate Safety Stock using standard formula.
+     * 
+     * Formula: Safety Stock = (Max Daily Demand - Avg Daily Demand) × Lead Time
+     * 
+     * @return float
+     */
+    public function calculateSafetyStock(): float
+    {
+        $averageDailyDemand = $this->getAverageDailyDemand();
+        $maxDailyDemand = $this->getMaxDailyDemand();
+        $leadTimeDays = $this->lead_time_days ?? 7;
+
+        if ($averageDailyDemand <= 0) {
+            return 0;
+        }
+
+        return ($maxDailyDemand - $averageDailyDemand) * $leadTimeDays;
+    }
+
+    /**
+     * Get average daily demand from sales data.
+     * 
+     * @param int $days Number of days to analyze (default 30)
+     * @return float
+     */
+    public function getAverageDailyDemand(int $days = 30): float
+    {
+        // Use movement_velocity if available and recent
+        if ($this->movement_velocity && $this->last_movement_check) {
+            $hoursSinceCheck = now()->diffInHours($this->last_movement_check);
+            if ($hoursSinceCheck < 24) {
+                return (float) $this->movement_velocity;
+            }
+        }
+
+        // Calculate from sales data
+        $startDate = now()->subDays($days);
+        $totalSold = $this->salesItems()
+            ->whereHas('salesOrder', function ($query) use ($startDate) {
+                $query->where('order_date', '>=', $startDate)
+                      ->whereIn('status', ['confirmed', 'processing', 'ready', 'shipped', 'delivered']);
+            })
+            ->sum('quantity');
+
+        return $totalSold > 0 ? $totalSold / $days : 0;
+    }
+
+    /**
+     * Get maximum daily demand from sales data.
+     * 
+     * @param int $days Number of days to analyze (default 30)
+     * @return float
+     */
+    public function getMaxDailyDemand(int $days = 30): float
+    {
+        $startDate = now()->subDays($days);
+        
+        $maxDaily = $this->salesItems()
+            ->whereHas('salesOrder', function ($query) use ($startDate) {
+                $query->where('order_date', '>=', $startDate)
+                      ->whereIn('status', ['confirmed', 'processing', 'ready', 'shipped', 'delivered']);
+            })
+            ->selectRaw('DATE(order_date) as sale_date, SUM(quantity) as daily_total')
+            ->groupBy('sale_date')
+            ->orderByDesc('daily_total')
+            ->first();
+
+        if ($maxDaily) {
+            return (float) $maxDaily->daily_total;
+        }
+
+        // If no data, use 150% of average as estimate
+        $avgDemand = $this->getAverageDailyDemand($days);
+        return $avgDemand * 1.5;
     }
 
     /**
@@ -438,33 +582,36 @@ class Product extends Model
     }
 
     /**
-     * Get stock status with standard formula.
+     * Get stock status with dynamic formula-based thresholds.
      * 
-     * Standard Formula:
+     * Standard Formulas:
+     * - Critical Level = Average Daily Demand × Lead Time
+     * - Reorder Point = (Average Daily Demand × Lead Time) + Safety Stock
      * - Out of Stock: quantity <= 0
-     * - Critical: quantity > 0 AND quantity <= 5
-     * - Low: quantity > 5 AND quantity <= 10
-     * - In Stock: quantity > 10
+     * - Critical: quantity > 0 AND quantity <= critical level
+     * - Low: quantity > critical level AND quantity <= reorder point
+     * - In Stock: quantity > reorder point
      */
     public function getStockStatus(): array
     {
         $available = $this->getAvailableQuantity();
-        $lowThreshold = 10; // Standard low stock threshold
-        $criticalThreshold = 5; // Standard critical threshold
+        $criticalLevel = $this->calculateCriticalLevel();
+        $reorderPoint = $this->calculateReorderPoint();
+        $safetyStock = $this->calculateSafetyStock();
         
-        // Determine status based on standard formula
+        // Determine status based on calculated thresholds
         if ($available <= 0) {
             $status = 'Out of Stock';
             $statusClass = 'red';
             $percentage = 0;
-        } elseif ($available <= $criticalThreshold) {
+        } elseif ($available <= $criticalLevel) {
             $status = 'Critical';
             $statusClass = 'red';
-            $percentage = ($available / $criticalThreshold) * 100;
-        } elseif ($available <= $lowThreshold) {
+            $percentage = ($available / max($criticalLevel, 1)) * 100;
+        } elseif ($available <= $reorderPoint) {
             $status = 'Low';
             $statusClass = 'yellow';
-            $percentage = ($available / $lowThreshold) * 100;
+            $percentage = ($available / max($reorderPoint, 1)) * 100;
         } else {
             $status = 'In Stock';
             $statusClass = 'green';
@@ -477,7 +624,11 @@ class Product extends Model
             'reserved' => $this->quantity - $available,
             'status' => $status,
             'status_class' => $statusClass,
-            'percentage' => round($percentage, 2)
+            'percentage' => round($percentage, 2),
+            'critical_level' => $criticalLevel,
+            'reorder_point' => $reorderPoint,
+            'safety_stock' => round($safetyStock, 2),
+            'average_daily_demand' => round($this->getAverageDailyDemand(), 2),
         ];
     }
 

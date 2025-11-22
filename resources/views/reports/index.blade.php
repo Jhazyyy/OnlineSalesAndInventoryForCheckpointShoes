@@ -187,7 +187,7 @@
                         </div>
 
                         <!-- Critical Level Items Report Card -->
-                        <div
+                        {{-- <div
                             class="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900 dark:to-orange-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition">
                             <div class="flex items-center justify-between mb-4">
                                 <div class="p-3 bg-orange-500 rounded-lg">
@@ -210,10 +210,10 @@
                                     View Critical Items
                                 </a>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Blocked Items Report Card -->
-                        <div
+                        {{-- <div
                             class="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900 dark:to-red-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition">
                             <div class="flex items-center justify-between mb-4">
                                 <div class="p-3 bg-red-500 rounded-lg">
@@ -235,10 +235,10 @@
                                     View Report
                                 </a>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Custom Reports (Coming Soon) -->
-                        <div
+                        {{-- <div
                             class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-lg shadow-lg p-6 hover:shadow-xl transition opacity-75">
                             <div class="flex items-center justify-between mb-4">
                                 <div class="p-3 bg-gray-400 rounded-lg">
@@ -261,7 +261,7 @@
                                     Coming Soon
                                 </button>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
 
                     <!-- Quick Stats -->

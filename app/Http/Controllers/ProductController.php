@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Imports\ProductsImport;
 use App\Models\Brand;
 use App\Models\Category;
@@ -16,7 +15,7 @@ use Illuminate\Support\Facades\Validator;
 class ProductController extends Controller
 {
     use AuthorizesRequests;
-    
+
     /**
      * Display a listing of the resource.
      */
@@ -52,6 +51,9 @@ class ProductController extends Controller
                     break;
                 case 'low_stock':
                     $query->lowStock();
+                    break;
+                case 'critical_stock':
+                    $query->criticalStock();
                     break;
                 case 'out_of_stock':
                     $query->outOfStock();
@@ -95,7 +97,7 @@ class ProductController extends Controller
     public function create()
     {
         $this->authorize('create products');
-        
+
         // Get active stock names for dropdown
         $stockNames = StockName::where('is_active', true)->orderBy('name')->pluck('name', 'name');
 
@@ -114,7 +116,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $this->authorize('create products');
-        
+
         $validator = Validator::make($request->all(), [
             'stock_name' => 'nullable|string|max:255',
             'custom_stock_name' => 'nullable|string|max:255',
@@ -147,7 +149,7 @@ class ProductController extends Controller
         $stockNameId = null;
         if ($request->stock_name) {
             $stockNameValue = $request->stock_name === 'custom' ? $request->custom_stock_name : $request->stock_name;
-            
+
             if ($stockNameValue) {
                 // Create stock name if it doesn't exist
                 $stockName = StockName::firstOrCreate(
@@ -212,7 +214,7 @@ class ProductController extends Controller
             $namePrefix = strtoupper(substr(str_replace([' ', '-'], '', $request->product_name), 0, 3));
             $randomSuffix = strtoupper(substr(md5(uniqid()), 0, length: 6));
             $data['sku'] = "{$stockNamePrefix}-{$namePrefix}-{$randomSuffix}";
-            
+
             // Ensure uniqueness
             $counter = 1;
             $originalSku = $data['sku'];
@@ -277,6 +279,7 @@ class ProductController extends Controller
         if (request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
             // Load relationships for modal view
             $product->load(['lastSupplier', 'preferredSupplier']);
+
             return response()->json($product);
         }
 
@@ -297,7 +300,7 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $this->authorize('edit products');
-        
+
         $stockNames = StockName::pluck('name');  // get stock names as a collection
         $brands = Brand::pluck('name');  // get brand names as a collection
         $categories = Category::pluck('name');  // get category names as a collection
@@ -320,13 +323,13 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $this->authorize('edit products');
-        
+
         $validator = Validator::make($request->all(), [
             'stock_name' => 'nullable|string|max:255',
             'custom_stock_name' => 'nullable|string|max:255',
             'product_name' => 'required|string|max:255',
-            'sku' => 'nullable|string|max:255|unique:products,sku,' . $product->product_id . ',product_id',
-            'barcode' => 'nullable|string|max:255|unique:products,barcode,' . $product->product_id . ',product_id',
+            'sku' => 'nullable|string|max:255|unique:products,sku,'.$product->product_id.',product_id',
+            'barcode' => 'nullable|string|max:255|unique:products,barcode,'.$product->product_id.',product_id',
             'size' => 'nullable|string|max:50',
             'color' => 'nullable|string|max:50',
             'preferred_supplier_id' => 'nullable|exists:suppliers,supplier_id',
@@ -352,7 +355,7 @@ class ProductController extends Controller
         $stockNameId = null;
         if ($request->stock_name) {
             $stockNameValue = $request->stock_name === 'custom' ? $request->custom_stock_name : $request->stock_name;
-            
+
             if ($stockNameValue) {
                 // Create stock name if it doesn't exist
                 $stockName = StockName::firstOrCreate(
@@ -412,7 +415,7 @@ class ProductController extends Controller
 
         // Handle image upload from file
         if ($request->hasFile('image')) {
-            if ($product->image && !filter_var($product->image, FILTER_VALIDATE_URL) && Storage::disk('public')->exists($product->image)) {
+            if ($product->image && ! filter_var($product->image, FILTER_VALIDATE_URL) && Storage::disk('public')->exists($product->image)) {
                 Storage::disk('public')->delete($product->image);
             }
 
@@ -424,10 +427,10 @@ class ProductController extends Controller
         // Handle image from URL - store the URL directly
         elseif ($request->filled('image_url')) {
             // Delete old local image if exists (but not if it's a URL)
-            if ($product->image && !filter_var($product->image, FILTER_VALIDATE_URL) && Storage::disk('public')->exists($product->image)) {
+            if ($product->image && ! filter_var($product->image, FILTER_VALIDATE_URL) && Storage::disk('public')->exists($product->image)) {
                 Storage::disk('public')->delete($product->image);
             }
-            
+
             // Validate that it's a proper URL
             $imageUrl = $request->image_url;
             if (filter_var($imageUrl, FILTER_VALIDATE_URL)) {
@@ -484,7 +487,7 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $this->authorize('delete products');
-        
+
         // Capture product details before deletion
         $productName = $product->product_name;
         $productId = $product->product_id;

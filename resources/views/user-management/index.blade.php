@@ -148,7 +148,7 @@
                                     @foreach ($roles as $role)
                                         <option value="{{ $role }}"
                                             {{ request('role') == $role ? 'selected' : '' }}>
-                                            {{ ucfirst($role) }}
+                                            {{ ucwords(str_replace('_', ' ', $role)) }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -297,7 +297,7 @@
                                                     </div>
                                                     @if ($user->username)
                                                         <div class="text-sm text-gray-500 dark:text-gray-400">
-                                                            @{{ $user - > username }}
+                                                            {{ $user->username }}
                                                         </div>
                                                     @endif
                                                 </div>
@@ -314,7 +314,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span
                                                 class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $user->role_color }}-100 text-{{ $user->role_color }}-800">
-                                                {{ $user->primary_role === 'super_admin' ? 'Super Admin' : ucfirst(str_replace('_', ' ', $user->primary_role)) }}
+                                                {{ $user->primary_role === 'super_admin' ? 'Super Admin' : ucwords(str_replace('_', ' ', $user->primary_role)) }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">

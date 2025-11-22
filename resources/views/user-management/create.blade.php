@@ -185,7 +185,7 @@
                                         @foreach ($roles as $role)
                                             <option value="{{ $role }}"
                                                 {{ old('role') == $role ? 'selected' : '' }}>
-                                                {{ $role === 'super_admin' ? 'Super Admin' : ucfirst(str_replace('_', ' ', $role)) }}
+                                                {{ $role === 'super_admin' ? 'Super Admin' : ucwords(str_replace('_', ' ', $role)) }}
                                             </option>
                                         @endforeach
                                     </select>

@@ -77,12 +77,12 @@
                                         Date</label>
                                     <p class="mt-1 text-sm text-gray-900 dark:text-white">
                                         {{ $order->expected_date ? $order->expected_date->format('M d, Y') : 'Not specified' }}
-                                        @if ($order->is_overdue)
+                                        {{-- @if ($order->is_overdue)
                                             <span
                                                 class="ml-2 px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
                                                 OVERDUE
                                             </span>
-                                        @endif
+                                        @endif --}}
                                     </p>
                                 </div>
 
