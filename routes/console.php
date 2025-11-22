@@ -8,6 +8,12 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
+// Schedule stock level checks (creates alerts based on formulas)
+Schedule::command('stock:check-levels')
+    ->hourly()
+    ->withoutOverlapping()
+    ->runInBackground();
+
 // Schedule inventory threshold checks
 Schedule::command('inventory:check-thresholds --silent')
     ->everyThirtyMinutes()

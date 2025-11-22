@@ -202,6 +202,14 @@ class Product extends Model
     }
 
     /**
+     * Get the sales order items for the product.
+     */
+    public function salesItems(): HasMany
+    {
+        return $this->hasMany(SalesOrderItem::class, 'product_id', 'product_id');
+    }
+
+    /**
      * Get the purchases for the product.
      */
     public function purchases(): HasMany
@@ -534,7 +542,7 @@ class Product extends Model
         // Calculate from sales data
         $startDate = now()->subDays($days);
         $totalSold = $this->salesItems()
-            ->whereHas('salesOrder', function ($query) use ($startDate) {
+            ->whereHas('order', function ($query) use ($startDate) {
                 $query->where('order_date', '>=', $startDate)
                       ->whereIn('status', ['confirmed', 'processing', 'ready', 'shipped', 'delivered']);
             })
@@ -554,11 +562,10 @@ class Product extends Model
         $startDate = now()->subDays($days);
         
         $maxDaily = $this->salesItems()
-            ->whereHas('salesOrder', function ($query) use ($startDate) {
-                $query->where('order_date', '>=', $startDate)
-                      ->whereIn('status', ['confirmed', 'processing', 'ready', 'shipped', 'delivered']);
-            })
-            ->selectRaw('DATE(order_date) as sale_date, SUM(quantity) as daily_total')
+            ->join('sales_orders', 'sales_order_items.order_id', '=', 'sales_orders.order_id')
+            ->where('sales_orders.order_date', '>=', $startDate)
+            ->whereIn('sales_orders.status', ['confirmed', 'processing', 'ready', 'shipped', 'delivered'])
+            ->selectRaw('DATE(sales_orders.order_date) as sale_date, SUM(sales_order_items.quantity) as daily_total')
             ->groupBy('sale_date')
             ->orderByDesc('daily_total')
             ->first();
