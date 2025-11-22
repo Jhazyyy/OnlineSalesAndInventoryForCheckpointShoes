@@ -80,7 +80,17 @@ class POSController extends Controller
                                      ->sum('total_amount'),
         ];
 
-        return view('pos.index', compact('orders', 'todaySummary'));
+
+        $totalOrderSummary = [
+            'total_sales' => SalesOrder::sum('total_amount'),
+
+            'total_orders' => SalesOrder::count(),
+
+            'cash_sales' => SalesOrder::where('payment_method', 'cash')->sum('total_amount'),
+        ];
+
+
+        return view('pos.index', compact('orders', 'todaySummary', 'totalOrderSummary'));
     }
 
     /**

@@ -1,43 +1,25 @@
 <x-app-layout>
-    <div class="py-6">
+    <div class="py-6" x-data="{ showToast: false, toastMessage: '', toastType: 'success' }" x-init="
+        @if(session('success'))
+            showToast = true;
+            toastMessage = '{{ session('success') }}';
+            toastType = 'success';
+            setTimeout(() => showToast = false, 5000);
+        @elseif(session('info'))
+            showToast = true;
+            toastMessage = '{{ session('info') }}';
+            toastType = 'info';
+            setTimeout(() => showToast = false, 5000);
+        @elseif($errors->any())
+            showToast = true;
+            toastMessage = '{{ $errors->first() }}';
+            toastType = 'error';
+            setTimeout(() => showToast = false, 5000);
+        @endif
+    ">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <!-- Success Message -->
-            @if(session('success'))
-            <div class="bg-green-50 dark:bg-green-900 border-l-4 border-green-500 p-4 mb-6 rounded">
-                <div class="flex items-center">
-                    <svg class="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <p class="text-green-700 dark:text-green-300 font-medium">{{ session('success') }}</p>
-                </div>
-            </div>
-            @endif
 
-            <!-- Info Message -->
-            @if(session('info'))
-            <div class="bg-blue-50 dark:bg-blue-900 border-l-4 border-blue-500 p-4 mb-6 rounded">
-                <div class="flex items-center">
-                    <svg class="w-6 h-6 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <p class="text-blue-700 dark:text-blue-300 font-medium">{{ session('info') }}</p>
-                </div>
-            </div>
-            @endif
-
-            <!-- Error Messages -->
-            @if($errors->any())
-            <div class="bg-red-50 dark:bg-red-900 border-l-4 border-red-500 p-4 mb-6 rounded">
-                <div class="flex items-start">
-                    <svg class="w-6 h-6 text-red-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <div class="flex-1">
-                        <p class="text-red-700 dark:text-red-300 font-medium">{{ $errors->first() }}</p>
-                    </div>
-                </div>
-            </div>
-            @endif
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
 
             <!-- Receipt -->
             <div id="receipt" class="bg-white dark:bg-gray-800 shadow-lg sm:rounded-lg overflow-hidden">
@@ -365,9 +347,9 @@
                     <!-- Order Status -->
                     <div class="text-center mb-6">
                         <div class="inline-flex items-center px-4 py-2 bg-green-100 dark:bg-green-900 rounded-lg">
-                            <svg class="w-5 h-5 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            {{-- <svg class="w-5 h-5 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
+                            </svg> --}}
                             <span class="text-sm font-semibold text-green-800 dark:text-green-300">
                                 Order Status: {{ $order->status === 'delivered' ? 'Completed' : ucfirst($order->status) }}
                             </span>
@@ -407,10 +389,82 @@
                     Sales History
                 </a>
             </div>
+
+            <!-- Toast Notification -->
+            <div x-show="showToast" 
+                 x-cloak
+                 x-transition:enter="transform ease-out duration-300 transition"
+                 x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+                 x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
+                 x-transition:leave="transition ease-in duration-100"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed top-4 right-4 z-50 max-w-sm w-full shadow-lg rounded-lg pointer-events-auto overflow-hidden print:hidden"
+                 :class="{
+                    'bg-green-50 dark:bg-green-900': toastType === 'success',
+                    'bg-red-50 dark:bg-red-900': toastType === 'error',
+                    'bg-yellow-50 dark:bg-yellow-900': toastType === 'warning',
+                    'bg-blue-50 dark:bg-blue-900': toastType === 'info'
+                 }">
+                <div class="p-4">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <template x-if="toastType === 'success'">
+                                <svg class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </template>
+                            <template x-if="toastType === 'error'">
+                                <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </template>
+                            <template x-if="toastType === 'warning'">
+                                <svg class="h-6 w-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </template>
+                            <template x-if="toastType === 'info'">
+                                <svg class="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </template>
+                        </div>
+                        <div class="ml-3 w-0 flex-1 pt-0.5">
+                            <p class="text-sm font-medium" 
+                               :class="{
+                                  'text-green-800 dark:text-green-200': toastType === 'success',
+                                  'text-red-800 dark:text-red-200': toastType === 'error',
+                                  'text-yellow-800 dark:text-yellow-200': toastType === 'warning',
+                                  'text-blue-800 dark:text-blue-200': toastType === 'info'
+                               }"
+                               x-text="toastMessage"></p>
+                        </div>
+                        <div class="ml-4 flex-shrink-0 flex">
+                            <button @click="showToast = false" 
+                                    class="inline-flex rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2"
+                                    :class="{
+                                       'text-green-500 hover:text-green-600 focus:ring-green-500': toastType === 'success',
+                                       'text-red-500 hover:text-red-600 focus:ring-red-500': toastType === 'error',
+                                       'text-yellow-500 hover:text-yellow-600 focus:ring-yellow-500': toastType === 'warning',
+                                       'text-blue-500 hover:text-blue-600 focus:ring-blue-500': toastType === 'info'
+                                    }">
+                                <span class="sr-only">Close</span>
+                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <style>
+        [x-cloak] {
+            display: none !important;
+        }
         @media print {
             body * {
                 visibility: hidden;

@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="py-6" x-data="posSystem()" x-init="init()">
-        <div class="w-full mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <!-- Success/Error Messages -->
             @if (session('success'))
                 <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
@@ -30,11 +30,11 @@
             @endif
 
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Create Sales Order</h2>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Create Sales</h2>
                             <p class="text-gray-600 dark:text-gray-400">Quick in-store purchase</p>
                         </div>
                         <div class="flex space-x-3 mt-4 sm:mt-0">
@@ -45,7 +45,7 @@
                                         d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
                                     </path>
                                 </svg>
-                                Sales History
+                                Sales List
                             </a>
                         </div>
                     </div>
@@ -54,22 +54,22 @@
 
             <form method="POST" action="{{ route('pos.store') }}" id="posForm" enctype="multipart/form-data">
                 @csrf
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 mb-2">
                     <!-- Products Section (Left - 2 columns) -->
-                    <div class="lg:col-span-2">
+                    <div class="lg:col-span-2 mt-2">
                         <!-- Product Search & Filter -->
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-4">
+                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm mb-2">
                             <div class="p-4 space-y-3">
                                 <!-- Search Input -->
                                 <input type="text" x-model="productSearch" @input="filterProducts"
                                     placeholder="Search products by name or SKU..."
                                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                
+
                                 <!-- Category Filter -->
                                 <div class="flex items-center gap-2">
-                                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                                    {{-- <label class="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
                                         Category:
-                                    </label>
+                                    </label> --}}
                                     <select x-model="selectedCategory" @change="filterProducts"
                                         class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
                                         <option value="">All Categories</option>
@@ -82,48 +82,67 @@
                         </div>
 
                         <!-- Products Grid -->
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
                             <div class="p-4">
                                 <div class="flex items-center justify-between mb-3">
                                     <h3 class="text-lg font-medium text-gray-900 dark:text-white">Products</h3>
-                                    <span class="text-sm text-gray-600 dark:text-gray-400" x-text="filteredProducts.length + ' items'"></span>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400"
+                                        x-text="filteredProducts.length + ' items'"></span>
                                 </div>
-                                
+
                                 <!-- No Products Message -->
-                                <div x-show="filteredProducts.length === 0" 
-                                     class="flex flex-col items-center justify-center py-16 text-center">
-                                    <svg class="w-20 h-20 text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                              d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+                                <div x-show="filteredProducts.length === 0"
+                                    class="flex flex-col items-center justify-center py-16 text-center">
+                                    <svg class="w-20 h-20 text-gray-400 dark:text-gray-500 mb-4" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
                                         </path>
                                     </svg>
-                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Products Found</h3>
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Products
+                                        Found</h3>
                                     <p class="text-gray-600 dark:text-gray-400 mb-4 max-w-md">
                                         <template x-if="productSearch || selectedCategory">
-                                            <span>No products match your current filters. Try adjusting your search or category selection.</span>
+                                            <span>No products match your current filters. Try adjusting your search or
+                                                category selection.</span>
                                         </template>
                                         <template x-if="!productSearch && !selectedCategory">
                                             <span>There are no products available in the inventory at the moment.</span>
                                         </template>
                                     </p>
-                                    <button type="button" 
-                                            x-show="productSearch || selectedCategory"
-                                            @click="productSearch = ''; selectedCategory = ''; filterProducts();"
-                                            class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 transition">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    <button type="button" x-show="productSearch || selectedCategory"
+                                        @click="productSearch = ''; selectedCategory = ''; filterProducts();"
+                                        class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 transition">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                            </path>
                                         </svg>
                                         Clear All Filters
                                     </button>
                                 </div>
-                                
+
                                 <div x-show="filteredProducts.length > 0"
-                                    class="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 max-h-[600px] overflow-y-auto">
+                                    class="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 min-h-screen overflow-y-auto">
                                     <template x-for="product in filteredProducts" :key="product.id">
                                         <div class="relative" x-data="{ showTooltip: false }" @mouseenter="showTooltip = true"
                                             @mouseleave="showTooltip = false">
                                             <div @click="addToCart(product.id, product.name, product.price, product.stock, product.image || '')"
-                                                class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all">
+                                                class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all"
+                                                :class="{ 'opacity-60 cursor-not-allowed': !product.price || product.price ===
+                                                    0 }">
+
+                                                <!-- No Price Warning Badge -->
+                                                <template x-if="!product.price || product.price === 0">
+                                                    <div class="absolute top-1 left-1 z-10">
+                                                        <span
+                                                            class="inline-flex items-center px-1.5 py-0.5 text-xs font-bold rounded bg-red-600 text-white">
+                                                            No Price
+                                                        </span>
+                                                    </div>
+                                                </template>
+
                                                 <div
                                                     class="aspect-square bg-gray-100 dark:bg-gray-600 flex items-center justify-center">
                                                     <template x-if="product.image">
@@ -147,18 +166,26 @@
                                                             :class="{
                                                                 'text-green-700 bg-green-100 dark:bg-green-900 dark:text-green-300': product
                                                                     .stock > 10,
-                                                                'text-yellow-700 bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-300': product
-                                                                    .stock <= 10 && product.stock > 0,
+                                                                'text-yellow-700 bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-300': product.stock <= 10 && product.stock > 5,
                                                                 'text-red-700 bg-red-100 dark:bg-red-900 dark:text-red-300': product
-                                                                    .stock === 0
+                                                                    .stock <= 5
                                                             }"
                                                             x-text="product.stock"></span>
                                                     </div>
                                                     <h4 class="font-semibold text-xs text-gray-900 dark:text-white line-clamp-2 mb-1 min-h-[2rem]"
                                                         x-text="product.name" :title="product.name"></h4>
                                                     <div class="flex justify-between items-center">
-                                                        <span class="text-sm font-bold text-gray-900 dark:text-white"
-                                                            x-text="'₱' + parseFloat(product.price).toFixed(2)"></span>
+                                                        <template x-if="product.price && product.price > 0">
+                                                            <span
+                                                                class="text-sm font-bold text-gray-900 dark:text-white"
+                                                                x-text="'₱' + parseFloat(product.price).toFixed(2)"></span>
+                                                        </template>
+                                                        <template x-if="!product.price || product.price === 0">
+                                                            <span
+                                                                class="text-xs font-semibold text-red-600 dark:text-red-400">
+                                                                No Price Set
+                                                            </span>
+                                                        </template>
                                                     </div>
                                                 </div>
                                             </div>
@@ -178,7 +205,7 @@
                                                     <!-- Product Image -->
                                                     <template x-if="product.image">
                                                         <div
-                                                            class="w-full h-20 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
+                                                            class="w-full h-15 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
                                                             <img :src="product.image" :alt="product.name"
                                                                 class="w-full h-full object-cover">
                                                         </div>
@@ -200,7 +227,7 @@
                                                             <span
                                                                 class="text-gray-600 dark:text-gray-400">Category:</span>
                                                             <span
-                                                                class="font-medium text-gray-900 dark:text-white truncate ml-2"
+                                                                class="font-medium text-gray-900 dark:text-white break-words ml-2"
                                                                 x-text="product.category"></span>
                                                         </div>
                                                         <div class="flex justify-between">
@@ -218,9 +245,9 @@
                                                                     'text-green-600 dark:text-green-400': product
                                                                         .stock > 10,
                                                                     'text-yellow-600 dark:text-yellow-400': product
-                                                                        .stock <= 10 && product.stock > 0,
-                                                                    'text-red-600 dark:text-red-400': product.stock ===
-                                                                        0
+                                                                        .stock <= 10 && product.stock > 5,
+                                                                    'text-red-600 dark:text-red-400': product.stock <=
+                                                                        5
                                                                 }"
                                                                 x-text="product.stock + ' ' + product.unit">
                                                             </span>
@@ -244,8 +271,8 @@
                     </div>
 
                     <!-- Cart & Checkout Section (Right - 1 column) -->
-                    <div class="lg:col-span-1">
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="lg:col-span-1 mt-2">
+                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
                             <div class="p-6">
                                 <!-- Customer Selection/Creation -->
                                 <div class="mb-6">
@@ -257,14 +284,13 @@
                                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white mb-2">
                                             <option value="">Select existing customer...</option>
                                             <template x-for="customer in customers" :key="customer.id">
-                                                <option :value="customer.id"
-                                                    x-text="customer.name"></option>
+                                                <option :value="customer.id" x-text="customer.name"></option>
                                             </template>
                                         </select>
                                         <button type="button"
                                             @click="showNewCustomerForm = true; selectedCustomerId = ''"
                                             class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400">
-                                            + Add New Customer
+                                            Add New Customer
                                         </button>
                                     </div>
 
@@ -293,8 +319,8 @@
                                         </div>
                                         <button type="button"
                                             @click="showNewCustomerForm = false; clearNewCustomer()"
-                                            class="text-sm text-gray-600 hover:text-gray-700 dark:text-gray-400">
-                                            ← Use Existing Customer
+                                            class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400">
+                                            Use Existing Customer
                                         </button>
                                     </div>
                                 </div>
@@ -327,17 +353,15 @@
                                                         class="w-7 h-7 flex items-center justify-center bg-gray-200 dark:bg-gray-600 rounded hover:bg-gray-300">
                                                         <span class="text-sm">-</span>
                                                     </button>
-                                                    <input type="number" 
-                                                        :value="item.quantity"
+                                                    <input type="number" :value="item.quantity"
                                                         @input="setQuantity(index, $event.target.value)"
-                                                        @focus="$event.target.select()"
-                                                        min="1"
+                                                        @focus="$event.target.select()" min="1"
                                                         :max="item.stock"
                                                         class="w-20 text-center text-sm font-medium border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 py-1">
-                                                        <button type="button" @click="updateQuantity(index, 1)"
-                                                            class="w-7 h-7 flex items-center justify-center bg-blue-100 dark:bg-blue-900 rounded hover:bg-blue-200">
-                                                            <span class="text-sm">+</span>
-                                                        </button>
+                                                    <button type="button" @click="updateQuantity(index, 1)"
+                                                        class="w-7 h-7 flex items-center justify-center bg-blue-100 dark:bg-blue-900 rounded hover:bg-blue-200">
+                                                        <span class="text-sm">+</span>
+                                                    </button>
                                                 </div>
                                                 <button type="button" @click="removeFromCart(index)"
                                                     class="text-red-600 hover:text-red-700">
@@ -370,9 +394,9 @@
                                                 class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                                 <span class="flex items-center justify-between">
                                                     <span>Tax Rule</span>
-                                                    <span x-show="selectedTaxRule"
+                                                    {{-- <span x-show="selectedTaxRule"
                                                         class="text-indigo-600 dark:text-indigo-400"
-                                                        x-text="'₱' + taxAmount.toFixed(2)"></span>
+                                                        x-text="'₱' + taxAmount.toFixed(2)"></span> --}}
                                                 </span>
                                             </label>
                                             <select x-model="selectedTaxRule"
@@ -402,9 +426,9 @@
                                                 class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                                                 <span class="flex items-center justify-between">
                                                     <span>Discount</span>
-                                                    <span x-show="selectedDiscountRule"
+                                                    {{-- <span x-show="selectedDiscountRule"
                                                         class="text-green-600 dark:text-green-400"
-                                                        x-text="'₱' + discountAmount.toFixed(2)"></span>
+                                                        x-text="'₱' + discountAmount.toFixed(2)"></span> --}}
                                                 </span>
                                             </label>
                                             <select x-model="selectedDiscountRule"
@@ -435,20 +459,26 @@
                                                 x-text="'₱' + subtotal.toFixed(2)"></span>
                                         </div>
                                         <!-- Tax Line - Always Visible -->
-                                        <div class="flex justify-between text-sm border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
+                                        <div
+                                            class="flex justify-between text-sm border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
                                             <div class="flex flex-col">
                                                 <span class="font-medium text-gray-700 dark:text-gray-300">Tax</span>
-                                                <span class="text-xs text-gray-500 dark:text-gray-500" x-show="selectedTaxRule" x-text="getTaxRuleName()"></span>
-                                                <span class="text-xs text-gray-400 dark:text-gray-600" x-show="!selectedTaxRule">No tax applied</span>
+                                                <span class="text-xs text-gray-500 dark:text-gray-500"
+                                                    x-show="selectedTaxRule" x-text="getTaxRuleName()"></span>
+                                                <span class="text-xs text-gray-400 dark:text-gray-600"
+                                                    x-show="!selectedTaxRule">No tax applied</span>
                                             </div>
-                                            <span class="font-semibold" 
-                                                :class="taxAmount > 0 ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-500'"
+                                            <span class="font-semibold"
+                                                :class="taxAmount > 0 ? 'text-indigo-600 dark:text-indigo-400' :
+                                                    'text-gray-500 dark:text-gray-500'"
                                                 x-text="'₱' + taxAmount.toFixed(2)"></span>
                                         </div>
                                         <div class="flex justify-between text-sm" x-show="discountAmount > 0">
                                             <div class="flex flex-col">
                                                 <span class="text-gray-600 dark:text-gray-400">Discount</span>
-                                                <span class="text-xs text-gray-500 dark:text-gray-500" x-show="selectedDiscountRule" x-text="getDiscountRuleName()"></span>
+                                                <span class="text-xs text-gray-500 dark:text-gray-500"
+                                                    x-show="selectedDiscountRule"
+                                                    x-text="getDiscountRuleName()"></span>
                                             </div>
                                             <span class="font-medium text-green-600 dark:text-green-400"
                                                 x-text="'-₱' + discountAmount.toFixed(2)"></span>
@@ -486,7 +516,8 @@
                                         <option value="paid">Paid</option>
                                         <option value="pending">Pending</option>
                                     </select>
-                                    <p x-show="isPaymentInsufficient" class="mt-1 text-xs text-yellow-600 dark:text-yellow-400">
+                                    <p x-show="isPaymentInsufficient"
+                                        class="mt-1 text-xs text-yellow-600 dark:text-yellow-400">
                                         Status locked to 'Pending' - insufficient payment amount
                                     </p>
                                 </div>
@@ -497,37 +528,43 @@
                                         class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount
                                         Received</label>
                                     <input type="number" x-model.number="amountReceived" name="amount_received"
-                                        @input="checkPaymentAmount"
-                                        step="0.01" min="0" :placeholder="'₱' + total.toFixed(2)"
+                                        @input="checkPaymentAmount" step="0.01" min="0"
+                                        :placeholder="'₱' + total.toFixed(2)"
                                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <p x-show="change >= 0 && amountReceived > 0" class="mt-1 text-sm text-green-600 dark:text-green-400">
+                                    <p x-show="change >= 0 && amountReceived > 0"
+                                        class="mt-1 text-sm text-green-600 dark:text-green-400">
                                         Change: <span class="font-bold" x-text="'₱' + change.toFixed(2)"></span>
                                     </p>
                                     <p x-show="amountReceived > 0 && change < 0"
                                         class="mt-1 text-sm text-red-600 dark:text-red-400">
-                                        <strong>Insufficient amount!</strong> Short by <span class="font-bold" x-text="'₱' + Math.abs(change).toFixed(2)"></span>. Status set to Pending.
+                                        <strong>Insufficient amount!</strong> Short by <span class="font-bold"
+                                            x-text="'₱' + Math.abs(change).toFixed(2)"></span>. Status set to Pending.
                                     </p>
                                 </div>
 
                                 <!-- Bank Transfer Fields -->
-                                <div x-show="paymentMethod === 'bank_transfer'" class="mt-4 space-y-4 p-4 bg-blue-50 dark:bg-blue-900 rounded-md border border-blue-200 dark:border-blue-700">
+                                <div x-show="paymentMethod === 'bank_transfer'"
+                                    class="mt-4 space-y-4 p-4 bg-blue-50 dark:bg-blue-900 rounded-md border border-blue-200 dark:border-blue-700">
                                     <div class="flex items-start">
-                                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2 mt-0.5"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                         <p class="text-xs text-blue-700 dark:text-blue-300">
-                                            Customer will need to upload bank transfer proof after order creation. Order will be marked as pending until proof is submitted and confirmed by admin.
+                                            Customer will need to upload bank transfer proof after order creation. Order
+                                            will be marked as pending until proof is submitted and confirmed by admin.
                                         </p>
                                     </div>
-                                    
+
                                     <!-- Bank Name -->
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Bank Name <span class="text-red-500">*</span>
                                         </label>
-                                        <select x-model="bankName" name="bank_name" 
-                                                :required="paymentMethod === 'bank_transfer'"
-                                                class="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                        <select x-model="bankName" name="bank_name"
+                                            :required="paymentMethod === 'bank_transfer'"
+                                            class="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                             <option value="">Select Bank</option>
                                             <option value="BDO">BDO (Banco de Oro)</option>
                                             <option value="BPI">BPI (Bank of the Philippine Islands)</option>
@@ -548,9 +585,9 @@
                                             Reference Number <span class="text-red-500">*</span>
                                         </label>
                                         <input type="text" x-model="referenceNo" name="reference_no"
-                                               :required="paymentMethod === 'bank_transfer'"
-                                               placeholder="Enter transaction reference"
-                                               class="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                            :required="paymentMethod === 'bank_transfer'"
+                                            placeholder="Enter transaction reference"
+                                            class="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     </div>
 
                                     <!-- Proof Upload -->
@@ -558,16 +595,16 @@
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Proof of Payment <span class="text-red-500">*</span>
                                         </label>
-                                        <input type="file" name="payment_proof" 
-                                               :required="paymentMethod === 'bank_transfer'"
-                                               accept="image/*,.pdf"
-                                               @change="handleProofUpload($event)"
-                                               class="w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400">
+                                        <input type="file" name="payment_proof"
+                                            :required="paymentMethod === 'bank_transfer'" accept="image/*,.pdf"
+                                            @change="handleProofUpload($event)"
+                                            class="w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400">
                                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                             Upload bank transfer receipt (JPG, PNG, PDF, max 5MB)
                                         </p>
-                                        <div x-show="proofFileName" class="mt-2 text-xs text-green-600 dark:text-green-400">
-                                            ✓ File selected: <span x-text="proofFileName"></span>
+                                        <div x-show="proofFileName"
+                                            class="mt-2 text-xs text-green-600 dark:text-green-400">
+                                            File selected: <span x-text="proofFileName"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -576,21 +613,29 @@
                                 <div x-show="paymentMethod === 'gcash'" class="mt-4">
                                     <button type="button" @click="showGcashModal = true"
                                         class="w-full inline-flex items-center justify-center px-4 py-3 bg-blue-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-blue-700 transition">
-                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z">
+                                            </path>
                                         </svg>
                                         Show GCash QR Code
                                     </button>
-                                    
+
                                     <!-- Show reference number if entered -->
-                                    <div x-show="gcashReferenceNo" class="mt-3 p-3 bg-green-50 dark:bg-green-900 rounded-md border border-green-200 dark:border-green-700">
+                                    <div x-show="gcashReferenceNo"
+                                        class="mt-3 p-3 bg-green-50 dark:bg-green-900 rounded-md border border-green-200 dark:border-green-700">
                                         <div class="flex items-center">
-                                            <svg class="w-5 h-5 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            <svg class="w-5 h-5 text-green-600 dark:text-green-400 mr-2"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                             </svg>
                                             <div>
-                                                <p class="text-sm font-medium text-green-800 dark:text-green-200">GCash Reference Number Entered</p>
-                                                <p class="text-xs text-green-600 dark:text-green-400" x-text="gcashReferenceNo"></p>
+                                                <p class="text-sm font-medium text-green-800 dark:text-green-200">GCash
+                                                    Reference Number Entered</p>
+                                                <p class="text-xs text-green-600 dark:text-green-400"
+                                                    x-text="gcashReferenceNo"></p>
                                             </div>
                                         </div>
                                     </div>
@@ -603,9 +648,12 @@
                                 <!-- Hidden Fields -->
                                 <input type="hidden" name="order_date"
                                     :value="new Date().toISOString().split('T')[0]">
-                                <input type="hidden" name="tax_rule_id" :value="selectedTaxRule ? selectedTaxRule : ''">
-                                <input type="hidden" name="tax_amount" :value="selectedTaxRule ? taxAmount.toFixed(2) : 0">
-                                <input type="hidden" name="discount_rule_id" :value="selectedDiscountRule ? selectedDiscountRule : ''">
+                                <input type="hidden" name="tax_rule_id"
+                                    :value="selectedTaxRule ? selectedTaxRule : ''">
+                                <input type="hidden" name="tax_amount"
+                                    :value="selectedTaxRule ? taxAmount.toFixed(2) : 0">
+                                <input type="hidden" name="discount_rule_id"
+                                    :value="selectedDiscountRule ? selectedDiscountRule : ''">
                                 <input type="hidden" name="discount_amount"
                                     :value="selectedDiscountRule ? discountAmount.toFixed(2) : 0">
                                 <input type="hidden" name="subtotal_amount" :value="subtotal.toFixed(2)">
@@ -614,7 +662,9 @@
                                 <!-- Action Buttons -->
                                 <div class="mt-6 space-y-2">
                                     <button type="submit"
-                                        :disabled="cart.length === 0 || (!selectedCustomerId && !newCustomer.first_name) || (paymentMethod === 'cash' && paymentStatus === 'paid' && amountReceived > 0 && amountReceived < total)"
+                                        :disabled="cart.length === 0 || (!selectedCustomerId && !newCustomer.first_name) || (
+                                            paymentMethod === 'cash' && paymentStatus === 'paid' &&
+                                            amountReceived > 0 && amountReceived < total)"
                                         @click="validatePayment($event)"
                                         class="w-full inline-flex items-center justify-center px-4 py-3 bg-green-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
@@ -635,35 +685,38 @@
                 </div>
 
                 <!-- GCash Scan-to-Pay Modal -->
-                <div x-show="showGcashModal" 
-                     x-cloak
-                     class="fixed inset-0 z-50 overflow-y-auto" 
-                     aria-labelledby="modal-title" 
-                     role="dialog" 
-                     aria-modal="true"
-                     @keydown.escape.window="showGcashModal = false">
-                    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div x-show="showGcashModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto"
+                    aria-labelledby="modal-title" role="dialog" aria-modal="true"
+                    @keydown.escape.window="showGcashModal = false">
+                    <div
+                        class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                         <!-- Background overlay -->
-                        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
-                             @click="showGcashModal = false"
-                             aria-hidden="true"></div>
+                        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                            @click="showGcashModal = false" aria-hidden="true"></div>
 
                         <!-- Modal panel -->
-                        <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                        <div
+                            class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                             <!-- Header -->
                             <div class="bg-blue-600 px-6 py-4">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center">
-                                        <svg class="w-8 h-8 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                                        <svg class="w-8 h-8 text-white mr-3" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z">
+                                            </path>
                                         </svg>
                                         <h3 class="text-xl font-bold text-white" id="modal-title">
                                             GCash Scan-to-Pay
                                         </h3>
                                     </div>
-                                    <button type="button" @click="showGcashModal = false" class="text-white hover:text-gray-200">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    <button type="button" @click="showGcashModal = false"
+                                        class="text-white hover:text-gray-200">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12"></path>
                                         </svg>
                                     </button>
                                 </div>
@@ -672,9 +725,11 @@
                             <!-- Body -->
                             <div class="bg-white dark:bg-gray-800 px-6 py-6">
                                 <!-- Instructions -->
-                                <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg border border-blue-200 dark:border-blue-700">
+                                <div
+                                    class="mb-6 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg border border-blue-200 dark:border-blue-700">
                                     <h4 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">How to Pay:</h4>
-                                    <ol class="text-sm text-blue-700 dark:text-blue-300 space-y-1 list-decimal list-inside">
+                                    <ol
+                                        class="text-sm text-blue-700 dark:text-blue-300 space-y-1 list-decimal list-inside">
                                         <li>Open your GCash app</li>
                                         <li>Tap "Scan QR" on your app</li>
                                         <li>Scan the QR code below</li>
@@ -686,17 +741,18 @@
                                 <!-- Amount Display -->
                                 <div class="mb-6 text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Amount to Pay</p>
-                                    <p class="text-3xl font-bold text-gray-900 dark:text-white" x-text="'₱' + total.toFixed(2)"></p>
+                                    <p class="text-3xl font-bold text-gray-900 dark:text-white"
+                                        x-text="'₱' + total.toFixed(2)"></p>
                                 </div>
 
                                 <!-- QR Code Display -->
                                 <div class="mb-6 flex justify-center">
-                                    <div class="p-4 bg-white dark:bg-gray-900 rounded-lg shadow-inner border-2 border-dashed border-gray-300 dark:border-gray-600">
+                                    <div
+                                        class="p-4 bg-white dark:bg-gray-900 rounded-lg shadow-inner border-2 border-dashed border-gray-300 dark:border-gray-600">
                                         <!-- Replace this with your actual QR code image -->
-                                        <img src="{{ asset('gcash_qr.jpg') }}" 
-                                             alt="GCash QR Code" 
-                                             class="w-64 h-64 object-contain"
-                                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'256\' height=\'256\' viewBox=\'0 0 256 256\'%3E%3Crect width=\'256\' height=\'256\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'monospace\' font-size=\'16\' fill=\'%236b7280\'%3EGCASH QR%3C/text%3E%3C/svg%3E'">
+                                        <img src="{{ asset('gcash_qr.jpg') }}" alt="GCash QR Code"
+                                            class="w-64 h-64 object-contain"
+                                            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'256\' height=\'256\' viewBox=\'0 0 256 256\'%3E%3Crect width=\'256\' height=\'256\' fill=\'%23f3f4f6\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-family=\'monospace\' font-size=\'16\' fill=\'%236b7280\'%3EGCASH QR%3C/text%3E%3C/svg%3E'">
                                         <p class="text-center text-xs text-gray-500 dark:text-gray-400 mt-2">
                                             Scan with GCash app
                                         </p>
@@ -708,24 +764,26 @@
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                         GCash Reference Number <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" 
-                                           x-model="gcashReferenceNo" 
-                                           placeholder="Enter 13-digit reference number"
-                                           maxlength="20"
-                                           class="w-full px-4 py-3 text-lg font-mono border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                                    <input type="text" x-model="gcashReferenceNo"
+                                        placeholder="Enter 13-digit reference number" maxlength="20"
+                                        class="w-full px-4 py-3 text-lg font-mono border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                         You can find this in your GCash app after completing the payment
                                     </p>
                                 </div>
 
                                 <!-- Payment Verification Notice -->
-                                <div class="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900 rounded-md border border-yellow-200 dark:border-yellow-700">
+                                <div
+                                    class="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900 rounded-md border border-yellow-200 dark:border-yellow-700">
                                     <div class="flex items-start">
-                                        <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400 mr-2 mt-0.5"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                         <p class="text-xs text-yellow-700 dark:text-yellow-300">
-                                            The sale will be marked as "Paid via GCash" once you confirm. Please ensure the reference number is correct.
+                                            The sale will be marked as "Paid via GCash" once you confirm. Please ensure
+                                            the reference number is correct.
                                         </p>
                                     </div>
                                 </div>
@@ -733,17 +791,17 @@
 
                             <!-- Footer -->
                             <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 flex space-x-3">
-                                <button type="button" 
-                                        @click="showGcashModal = false"
-                                        class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-gray-700 transition">
+                                <button type="button" @click="showGcashModal = false"
+                                    class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-gray-700 transition">
                                     Cancel
                                 </button>
-                                <button type="button" 
-                                        @click="confirmGcashPayment()"
-                                        :disabled="!gcashReferenceNo || gcashReferenceNo.length < 10"
-                                        class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                <button type="button" @click="confirmGcashPayment()"
+                                    :disabled="!gcashReferenceNo || gcashReferenceNo.length < 10"
+                                    class="flex-1 inline-flex justify-center items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                     Confirm Payment
                                 </button>
@@ -752,6 +810,84 @@
                     </div>
                 </div>
             </form>
+
+            <!-- Toast Notification -->
+            <div x-show="toast.show" x-cloak x-transition:enter="transform ease-out duration-300 transition"
+                x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+                x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
+                x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed top-4 right-4 z-50 max-w-sm w-full shadow-lg rounded-lg pointer-events-auto overflow-hidden"
+                :class="{
+                    'bg-green-50 dark:bg-green-900': toast.type === 'success',
+                    'bg-red-50 dark:bg-red-900': toast.type === 'error',
+                    'bg-yellow-50 dark:bg-yellow-900': toast.type === 'warning',
+                    'bg-blue-50 dark:bg-blue-900': toast.type === 'info'
+                }">
+                <div class="p-4">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <template x-if="toast.type === 'success'">
+                                <svg class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </template>
+                            <template x-if="toast.type === 'error'">
+                                <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </template>
+                            <template x-if="toast.type === 'warning'">
+                                <svg class="h-6 w-6 text-yellow-400" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </template>
+                            <template x-if="toast.type === 'info'">
+                                <svg class="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </template>
+                        </div>
+                        <div class="ml-3 w-0 flex-1 pt-0.5">
+                            <p class="text-sm font-medium"
+                                :class="{
+                                    'text-green-800 dark:text-green-200': toast.type === 'success',
+                                    'text-red-800 dark:text-red-200': toast.type === 'error',
+                                    'text-yellow-800 dark:text-yellow-200': toast.type === 'warning',
+                                    'text-blue-800 dark:text-blue-200': toast.type === 'info'
+                                }"
+                                x-text="toast.message"></p>
+                        </div>
+                        <div class="ml-4 flex-shrink-0 flex">
+                            <button @click="toast.show = false"
+                                class="inline-flex rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2"
+                                :class="{
+                                    'text-green-500 hover:text-green-600 focus:ring-green-500': toast
+                                        .type === 'success',
+                                    'text-red-500 hover:text-red-600 focus:ring-red-500': toast.type === 'error',
+                                    'text-yellow-500 hover:text-yellow-600 focus:ring-yellow-500': toast
+                                        .type === 'warning',
+                                    'text-blue-500 hover:text-blue-600 focus:ring-blue-500': toast.type === 'info'
+                                }">
+                                <span class="sr-only">Close</span>
+                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -767,7 +903,7 @@
                 categories: [],
                 cart: [],
                 selectedCustomerId: '',
-                selectedTaxRule: '{{ $defaultTax ? $defaultTax->id : "" }}',
+                selectedTaxRule: '{{ $defaultTax ? $defaultTax->id : '' }}',
                 selectedDiscountRule: '',
                 showNewCustomerForm: false,
                 newCustomer: {
@@ -779,7 +915,7 @@
                 paymentMethod: 'cash',
                 paymentStatus: 'paid',
                 amountReceived: 0,
-                
+
                 // Bank Transfer fields
                 bankName: '',
                 referenceNo: '',
@@ -788,6 +924,13 @@
                 // GCash fields
                 showGcashModal: false,
                 gcashReferenceNo: '',
+
+                // Toast notification
+                toast: {
+                    show: false,
+                    message: '',
+                    type: 'info' // success, error, warning, info
+                },
 
                 // Computed
                 get subtotal() {
@@ -848,7 +991,7 @@
                 init() {
                     // Extract unique categories from products
                     this.categories = [...new Set(this.products.map(p => p.category))].sort();
-                    
+
                     this.filteredProducts = this.products;
                     // Watch for payment amount changes
                     this.$watch('amountReceived', () => this.checkPaymentAmount());
@@ -858,17 +1001,17 @@
 
                 filterProducts() {
                     const search = this.productSearch.toLowerCase();
-                    
+
                     this.filteredProducts = this.products.filter(product => {
                         // Filter by search term
-                        const matchesSearch = !search || 
+                        const matchesSearch = !search ||
                             product.name.toLowerCase().includes(search) ||
                             product.sku.toLowerCase().includes(search);
-                        
+
                         // Filter by category
-                        const matchesCategory = !this.selectedCategory || 
+                        const matchesCategory = !this.selectedCategory ||
                             product.category === this.selectedCategory;
-                        
+
                         return matchesSearch && matchesCategory;
                     });
                 },
@@ -886,12 +1029,19 @@
                 },
 
                 addToCart(id, name, price, stock, image = '') {
+                    // Validate if product has a price
+                    if (!price || price === 0 || price === '0' || price === null || price === '') {
+                        this.showToast('Cannot add product: Price not set for "' + name +
+                            '". Please update the product price first.', 'error');
+                        return;
+                    }
+
                     const existing = this.cart.find(item => item.id === id);
                     if (existing) {
                         if (existing.quantity < stock) {
                             existing.quantity++;
                         } else {
-                            alert('Cannot add more. Stock limit reached.');
+                            this.showToast('Cannot add more. Stock limit reached.', 'warning');
                         }
                     } else {
                         if (stock > 0) {
@@ -903,8 +1053,9 @@
                                 stock: stock,
                                 image: image
                             });
+                            this.showToast('Product added to cart', 'success');
                         } else {
-                            alert('Product is out of stock');
+                            this.showToast('Product is out of stock', 'error');
                         }
                     }
                 },
@@ -975,17 +1126,20 @@
 
                 validatePayment(event) {
                     // Prevent form submission if payment is insufficient but marked as paid
-                    if (this.paymentMethod === 'cash' && this.paymentStatus === 'paid' && this.amountReceived > 0 && this.amountReceived < this.total) {
+                    if (this.paymentMethod === 'cash' && this.paymentStatus === 'paid' && this.amountReceived > 0 && this
+                        .amountReceived < this.total) {
                         event.preventDefault();
-                        alert('Cannot complete as PAID with insufficient payment amount. Please enter the full amount or mark as PENDING.');
+                        alert(
+                            'Cannot complete as PAID with insufficient payment amount. Please enter the full amount or mark as PENDING.');
                         return false;
                     }
-                    
+
                     // Validate bank transfer fields
                     if (this.paymentMethod === 'bank_transfer') {
                         if (!this.bankName || !this.referenceNo || !this.proofFileName) {
                             event.preventDefault();
-                            alert('Please fill in all bank transfer details: Bank Name, Reference Number, and upload Proof of Payment.');
+                            alert(
+                                'Please fill in all bank transfer details: Bank Name, Reference Number, and upload Proof of Payment.');
                             return false;
                         }
                     }
@@ -998,11 +1152,11 @@
                             return false;
                         }
                     }
-                    
+
                     // Confirm submission
-                    console.log('Submitting POS form', { 
-                        cart: this.cart, 
-                        customerId: this.selectedCustomerId, 
+                    console.log('Submitting POS form', {
+                        cart: this.cart,
+                        customerId: this.selectedCustomerId,
                         newCustomer: this.newCustomer,
                         paymentStatus: this.paymentStatus,
                         paymentMethod: this.paymentMethod,
@@ -1019,13 +1173,13 @@
                         alert('Please enter a valid GCash reference number (at least 10 characters)');
                         return;
                     }
-                    
+
                     // Set payment status to paid for GCash
                     this.paymentStatus = 'paid';
-                    
+
                     // Close the modal
                     this.showGcashModal = false;
-                    
+
                     // Show success message
                     alert('GCash payment confirmed! Reference: ' + this.gcashReferenceNo);
                 },
@@ -1040,7 +1194,7 @@
                             this.proofFileName = '';
                             return;
                         }
-                        
+
                         // Validate file type
                         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
                         if (!allowedTypes.includes(file.type)) {
@@ -1049,7 +1203,7 @@
                             this.proofFileName = '';
                             return;
                         }
-                        
+
                         this.proofFileName = file.name;
                     } else {
                         this.proofFileName = '';
@@ -1070,6 +1224,17 @@
                     if (!select) return '';
                     const selectedOption = select.options[select.selectedIndex];
                     return selectedOption ? selectedOption.text : '';
+                },
+
+                showToast(message, type = 'info') {
+                    this.toast.message = message;
+                    this.toast.type = type;
+                    this.toast.show = true;
+
+                    // Auto-hide after 5 seconds
+                    setTimeout(() => {
+                        this.toast.show = false;
+                    }, 5000);
                 }
             }
         }

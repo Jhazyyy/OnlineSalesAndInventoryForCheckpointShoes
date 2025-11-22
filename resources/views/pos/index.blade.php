@@ -61,7 +61,7 @@
                             <div class="ml-4">
                                 <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Orders</p>
                                 <p class="text-2xl font-bold text-gray-900 dark:text-white">
-                                    {{ $todaySummary['total_orders'] }}</p>
+                                    {{ $totalOrderSummary['total_orders'] }}</p>
                             </div>
                         </div>
                     </div>

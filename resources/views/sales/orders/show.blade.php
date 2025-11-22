@@ -82,7 +82,6 @@
                 </div>
             </div> --}}
 
-            <!-- Order Status Actions - REMOVED -->
             {{-- Order actions are managed by the e-commerce application --}}
             @if (false)
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
@@ -219,10 +218,10 @@
                                                         {{ $item->product->name }}</div>
                                                     <div class="text-sm text-gray-500 dark:text-gray-400">SKU:
                                                         {{ $item->product->sku }}</div>
-                                                    @if ($item->hasStockShortage())
+                                                    {{-- @if ($item->hasStockShortage())
                                                         <div class="text-xs text-red-600">Stock shortage:
                                                             {{ $item->stock_shortage }} units</div>
-                                                    @endif
+                                                    @endif --}}
                                                 </td>
                                                 <td
                                                     class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
