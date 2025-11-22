@@ -313,7 +313,7 @@
                                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Actions</h3>
 
                                 <div class="space-y-3">
-                                    @if ($receive->canBeEdited())
+                                    {{-- @if ($receive->canBeEdited())
                                         <a href="{{ route('purchases.purchase-receives.edit', $receive->receive_id) }}"
                                             class="w-full inline-flex justify-center items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:bg-yellow-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
@@ -324,7 +324,7 @@
                                             </svg>
                                             Edit Receive
                                         </a>
-                                    @endif
+                                    @endif --}}
 
                                     @if ($receive->canBeShortClosed())
                                         <button type="button" onclick="openShortCloseModal()"
@@ -339,7 +339,7 @@
                                         </button>
                                     @endif
 
-                                    @if ($receive->canBeCancelled())
+                                    {{-- @if ($receive->canBeCancelled())
                                         <form
                                             action="{{ route('purchases.purchase-receives.destroy', $receive->receive_id) }}"
                                             method="POST" class="w-full"
@@ -358,7 +358,7 @@
                                                 Delete Receive
                                             </button>
                                         </form>
-                                    @endif
+                                    @endif --}}
                                 </div>
                             </div>
                         </div>

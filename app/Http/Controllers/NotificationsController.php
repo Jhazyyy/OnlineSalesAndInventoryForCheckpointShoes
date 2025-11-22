@@ -249,9 +249,23 @@ class NotificationsController extends Controller
         
         $notifications = $query->latest()
             ->limit($limit)
-            ->get();
+            ->get()
+            ->map(function($notification) {
+                return [
+                    'id' => $notification->id,
+                    'title' => $notification->title,
+                    'message' => $notification->message,
+                    'level' => $notification->level,
+                    'type' => $notification->type,
+                    'link' => $notification->link,
+                    'read_at' => $notification->read_at,
+                    'created_at' => $notification->created_at,
+                    'time_ago' => $notification->created_at->diffForHumans(),
+                ];
+            });
         
         return response()->json([
+            'success' => true,
             'notifications' => $notifications,
             'unread_count' => $this->getUnreadCount()
         ]);
