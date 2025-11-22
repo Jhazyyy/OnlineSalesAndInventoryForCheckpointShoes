@@ -392,9 +392,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                             </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No products found</h3>
-                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by adding your first
-                                product.</p>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No records found</h3>
                         </div>
                     @endif
                 </div>
@@ -432,11 +430,11 @@
                             <div>
                                 <label for="modal_stock_name"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Stock Name (Base Product) <span class="text-gray-400 text-xs">(Optional)</span>
+                                    Stock Name (Base Product) <span class="text-gray-400 text-xs"></span>
                                 </label>
                                 <div class="mt-1 flex">
                                     <select id="modal_stock_name" name="stock_name"
-                                        class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                        class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
                                         <option class="bg-slate-300" value="">Select a stock name...</option>
                                         @foreach ($stockNames as $stockName)
                                             <option value="{{ $stockName }}">{{ $stockName }}</option>

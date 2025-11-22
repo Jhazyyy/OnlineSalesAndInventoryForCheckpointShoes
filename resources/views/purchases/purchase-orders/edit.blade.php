@@ -153,8 +153,24 @@
                         <div id="orderItems" class="max-h-[600px] overflow-y-auto pr-2" style="scrollbar-width: thin; scrollbar-color: #9ca3af #f3f4f6;">
                             @foreach ($order->items as $index => $item)
                                 <!-- Existing item row -->
-                                <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4">
-                                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                                <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg mb-4">
+                                    <!-- Toggle Header -->
+                                    <div class="toggle-item-header flex items-center justify-between p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                        <div class="flex items-center space-x-3">
+                                            <svg class="toggle-item-icon w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-300" 
+                                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                            <span class="item-product-name font-medium text-gray-700 dark:text-gray-300">
+                                                {{ $item->product->product_name ?? 'Not selected' }}
+                                            </span>
+                                            <span class="item-summary text-sm text-gray-500 dark:text-gray-400" style="display: none;"></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Item Content (Collapsible) -->
+                                    <div class="item-content p-4" style="max-height: 1000px; opacity: 1; overflow: hidden; transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;">
+                                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                                         <div class="md:col-span-2">
                                             <label
                                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
@@ -200,13 +216,6 @@
                                                 class="line-total mt-1 block w-full rounded-md border-gray-300 bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white"
                                                 readonly>
                                         </div>
-                                        <div class="mt-4">
-                                            <label
-                                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
-                                            <textarea name="items[{{ $index }}][notes]" rows="2"
-                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                placeholder="Optional notes for this item">{{ old("items.{$index}.notes", $item->notes) }}</textarea>
-                                        </div>
                                         <div>
                                             <button type="button"
                                                 class="remove-item w-full inline-flex justify-center items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
@@ -214,7 +223,15 @@
                                             </button>
                                         </div>
                                     </div>
+                                    <div class="mt-4">
+                                        <label
+                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
+                                        <textarea name="items[{{ $index }}][notes]" rows="2"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                            placeholder="Optional notes for this item">{{ old("items.{$index}.notes", $item->notes) }}</textarea>
+                                    </div>
                                 </div>
+                            </div>
                             @endforeach
                         </div>
 
@@ -229,6 +246,11 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
                             <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h4 class="font-medium text-gray-900 dark:text-white mb-3">Selected Items</h4>
+                                <div id="summary-items" class="space-y-2 mb-4">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">No items selected yet</p>
+                                </div>
+                                <hr class="my-3 border-gray-300 dark:border-gray-600">
                                 <h4 class="font-medium text-gray-900 dark:text-white mb-2">Order Totals</h4>
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between">
@@ -409,6 +431,11 @@
                     }
                 });
 
+                // Calculate line totals for existing items on page load
+                document.querySelectorAll('.item-row').forEach(row => {
+                    calculateLineTotal(row);
+                });
+
                 // Initial calculation
                 updateOrderSummary();
 
@@ -514,12 +541,38 @@
 
                 function updateOrderSummary() {
                     let subtotal = 0;
+                    const summaryItemsContainer = document.getElementById('summary-items');
+                    let itemsHtml = '';
 
-                    document.querySelectorAll('.item-row').forEach(row => {
+                    document.querySelectorAll('.item-row').forEach((row, index) => {
+                        const productSelect = row.querySelector('.product-select');
                         const quantity = parseFloat(row.querySelector('.quantity-input').value) || 0;
                         const price = parseFloat(row.querySelector('.unit-price-input').value) || 0;
-                        subtotal += (quantity * price);
+                        const lineTotal = quantity * price;
+                        subtotal += lineTotal;
+
+                        // Get selected product name
+                        const productName = productSelect.selectedOptions[0]?.text || 'Not selected';
+                        
+                        if (quantity > 0 && price > 0 && productSelect.value) {
+                            itemsHtml += `
+                                <div class="flex justify-between items-start text-sm">
+                                    <div class="flex-1">
+                                        <span class="font-medium text-gray-700 dark:text-gray-300">${productName}</span>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">Qty: ${quantity} × ₱${price.toFixed(2)}</div>
+                                    </div>
+                                    <span class="font-medium text-gray-900 dark:text-white">₱${lineTotal.toFixed(2)}</span>
+                                </div>
+                            `;
+                        }
                     });
+
+                    // Update summary items display
+                    if (itemsHtml) {
+                        summaryItemsContainer.innerHTML = itemsHtml;
+                    } else {
+                        summaryItemsContainer.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400">No items selected yet</p>';
+                    }
 
                     const total = subtotal;
 

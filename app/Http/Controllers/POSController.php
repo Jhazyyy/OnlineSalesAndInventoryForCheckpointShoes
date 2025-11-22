@@ -30,6 +30,20 @@ class POSController extends Controller
                           ->where('purchase_type', 'in_store')
                           ->orderBy('created_at', 'desc');
 
+        // Search functionality
+        if ($search = $request->get('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('order_number', 'like', "%{$search}%")
+                  ->orWhere('payment_method', 'like', "%{$search}%")
+                  ->orWhereHas('customer', function($customerQuery) use ($search) {
+                      $customerQuery->where('first_name', 'like', "%{$search}%")
+                                   ->orWhere('last_name', 'like', "%{$search}%")
+                                   ->orWhere('email', 'like', "%{$search}%")
+                                   ->orWhere('phone', 'like', "%{$search}%");
+                  });
+            });
+        }
+
         // Filter by date range (no default dates - show all)
         $startDate = $request->get('start_date');
         $endDate = $request->get('end_date');

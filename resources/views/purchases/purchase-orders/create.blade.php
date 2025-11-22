@@ -197,6 +197,11 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
                             <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h4 class="font-medium text-gray-900 dark:text-white mb-3">Selected Items</h4>
+                                <div id="summary-items" class="space-y-2 mb-4">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">No items selected yet</p>
+                                </div>
+                                <hr class="my-3 border-gray-300 dark:border-gray-600">
                                 <h4 class="font-medium text-gray-900 dark:text-white mb-2">Order Totals</h4>
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between">
@@ -460,12 +465,38 @@
 
                 function updateOrderSummary() {
                     let subtotal = 0;
+                    const summaryItemsContainer = document.getElementById('summary-items');
+                    let itemsHtml = '';
 
-                    document.querySelectorAll('.item-row').forEach(row => {
+                    document.querySelectorAll('.item-row').forEach((row, index) => {
+                        const productSelect = row.querySelector('.product-select');
                         const quantity = parseFloat(row.querySelector('.quantity-input').value) || 0;
                         const price = parseFloat(row.querySelector('.unit-price-input').value) || 0;
-                        subtotal += (quantity * price);
+                        const lineTotal = quantity * price;
+                        subtotal += lineTotal;
+
+                        // Get selected product name
+                        const productName = productSelect.selectedOptions[0]?.text || 'Not selected';
+                        
+                        if (quantity > 0 && price > 0 && productSelect.value) {
+                            itemsHtml += `
+                                <div class="flex justify-between items-start text-sm">
+                                    <div class="flex-1">
+                                        <span class="font-medium text-gray-700 dark:text-gray-300">${productName}</span>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">Qty: ${quantity} × ₱${price.toFixed(2)}</div>
+                                    </div>
+                                    <span class="font-medium text-gray-900 dark:text-white">₱${lineTotal.toFixed(2)}</span>
+                                </div>
+                            `;
+                        }
                     });
+
+                    // Update summary items display
+                    if (itemsHtml) {
+                        summaryItemsContainer.innerHTML = itemsHtml;
+                    } else {
+                        summaryItemsContainer.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400">No items selected yet</p>';
+                    }
 
                     const total = subtotal;
 

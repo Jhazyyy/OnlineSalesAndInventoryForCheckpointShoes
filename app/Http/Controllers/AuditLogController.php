@@ -55,7 +55,7 @@ class AuditLogController extends Controller
         // Get filter options
         $modules = AuditLog::select('module')->distinct()->pluck('module');
         $actions = AuditLog::select('action')->distinct()->pluck('action');
-        $users = User::select('id', 'name')->get();
+        $users = User::orderBy('first_name')->orderBy('last_name')->get(['id', 'first_name', 'last_name']);
 
         // Get statistics
         $stats = [
