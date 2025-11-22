@@ -150,7 +150,7 @@
                             </button>
                         </div>
 
-                        <div id="orderItems">
+                        <div id="orderItems" class="max-h-[600px] overflow-y-auto pr-2" style="scrollbar-width: thin; scrollbar-color: #9ca3af #f3f4f6;">
                             @foreach ($order->items as $index => $item)
                                 <!-- Existing item row -->
                                 <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4">
@@ -323,12 +323,93 @@
                     const itemsContainer = document.getElementById('orderItems');
                     const newItem = createItemRow(itemIndex);
                     itemsContainer.insertAdjacentHTML('beforeend', newItem);
-                    attachItemEvents();
+
+                    // Focus on the product select in the newly added row
+                    const newRow = itemsContainer.lastElementChild;
+                    const productSelect = newRow.querySelector('.product-select');
+                    if (productSelect) {
+                        productSelect.focus();
+                    }
+
                     itemIndex++;
                 });
 
-                // Initial event attachment and calculation
-                attachItemEvents();
+                // Use event delegation for better performance
+                const orderItemsContainer = document.getElementById('orderItems');
+
+                // Event delegation for individual item toggle
+                orderItemsContainer.addEventListener('click', function(e) {
+                    const header = e.target.closest('.toggle-item-header');
+                    if (header) {
+                        const itemRow = header.closest('.item-row');
+                        const itemContent = itemRow.querySelector('.item-content');
+                        const toggleIcon = itemRow.querySelector('.toggle-item-icon');
+                        const itemSummary = itemRow.querySelector('.item-summary');
+
+                        if (itemContent.style.maxHeight && itemContent.style.maxHeight !== '0px') {
+                            // Collapse
+                            itemContent.style.maxHeight = '0px';
+                            itemContent.style.opacity = '0';
+                            toggleIcon.style.transform = 'rotate(-90deg)';
+                            
+                            // Show summary
+                            const productName = itemRow.querySelector('.item-product-name').textContent || 'Not selected';
+                            const quantity = itemRow.querySelector('.quantity-input').value || '0';
+                            const unitPrice = itemRow.querySelector('.unit-price-input').value || '0';
+                            const lineTotal = (parseFloat(quantity) * parseFloat(unitPrice)).toFixed(2);
+                            itemSummary.textContent = `Qty: ${quantity} × ₱${parseFloat(unitPrice).toFixed(2)} = ₱${lineTotal}`;
+                            itemSummary.style.display = 'inline';
+                        } else {
+                            // Expand
+                            itemContent.style.maxHeight = itemContent.scrollHeight + 'px';
+                            itemContent.style.opacity = '1';
+                            toggleIcon.style.transform = 'rotate(0deg)';
+                            itemSummary.style.display = 'none';
+                        }
+                    }
+                });
+
+                // Event delegation for product selection
+                orderItemsContainer.addEventListener('change', function(e) {
+                    if (e.target.classList.contains('product-select')) {
+                        const option = e.target.selectedOptions[0];
+                        const price = option.dataset.price || '';
+                        const productName = option.text || 'Not selected';
+                        const row = e.target.closest('.item-row');
+                        const priceInput = row.querySelector('.unit-price-input');
+                        const productNameDisplay = row.querySelector('.item-product-name');
+                        
+                        priceInput.value = price;
+                        if (productNameDisplay) {
+                            productNameDisplay.textContent = productName;
+                        }
+                        calculateLineTotal(row);
+                    }
+                });
+
+                // Event delegation for quantity, price inputs
+                orderItemsContainer.addEventListener('input', function(e) {
+                    if (e.target.classList.contains('quantity-input') ||
+                        e.target.classList.contains('unit-price-input')) {
+                        calculateLineTotal(e.target.closest('.item-row'));
+                    }
+                });
+
+                // Event delegation for remove button
+                orderItemsContainer.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('remove-item') || e.target.closest('.remove-item')) {
+                        const button = e.target.classList.contains('remove-item') ? e.target : e.target.closest('.remove-item');
+                        const itemRows = document.querySelectorAll('.item-row');
+                        if (itemRows.length > 1) {
+                            button.closest('.item-row').remove();
+                            updateOrderSummary();
+                        } else {
+                            alert('At least one item is required.');
+                        }
+                    }
+                });
+
+                // Initial calculation
                 updateOrderSummary();
 
                 function createItemRow(index) {

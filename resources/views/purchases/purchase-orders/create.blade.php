@@ -115,9 +115,22 @@
                             </button>
                         </div>
 
-                        <div id="orderItems">
+                        <div id="orderItems" class="max-h-[600px] overflow-y-auto pr-2" style="scrollbar-width: thin; scrollbar-color: #9ca3af #f3f4f6;">
                             <!-- Initial item row -->
                             <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-2">
+                                <!-- Toggle Header -->
+                                <div class="flex justify-between items-center mb-3 cursor-pointer toggle-item-header">
+                                    <div class="flex items-center">
+                                        <svg class="toggle-item-icon w-5 h-5 mr-2 transition-transform duration-200 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                        <span class="item-product-name text-sm font-semibold text-gray-700 dark:text-gray-300">Product Item #1</span>
+                                    </div>
+                                    <span class="item-summary text-xs text-gray-500 dark:text-gray-400"></span>
+                                </div>
+
+                                <!-- Collapsible Content -->
+                                <div class="item-content transition-all duration-300 ease-in-out overflow-hidden">
                                 <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                                     <div class="md:col-span-2">
                                         <label
@@ -149,7 +162,7 @@
                                             class="unit-price-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Line
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity
                                             Total</label>
                                         <input type="text"
                                             class="line-total mt-1 block w-full rounded-md border-gray-300 bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white"
@@ -168,6 +181,7 @@
                                     <textarea name="items[0][notes]" rows="2"
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                         placeholder="Optional notes for this item"></textarea>
+                                </div>
                                 </div>
                             </div>
                         </div>
@@ -277,9 +291,15 @@
                     if (e.target.classList.contains('product-select')) {
                         const option = e.target.selectedOptions[0];
                         const price = option.dataset.price || '';
+                        const productName = option.text || 'Not selected';
                         const row = e.target.closest('.item-row');
                         const priceInput = row.querySelector('.unit-price-input');
+                        const productNameDisplay = row.querySelector('.item-product-name');
+                        
                         priceInput.value = price;
+                        if (productNameDisplay) {
+                            productNameDisplay.textContent = productName;
+                        }
                         calculateLineTotal(row);
                     }
                 });
@@ -303,6 +323,38 @@
                             updateOrderSummary();
                         } else {
                             alert('At least one item is required.');
+                        }
+                    }
+                });
+
+                // Event delegation for individual item toggle
+                orderItemsContainer.addEventListener('click', function(e) {
+                    const header = e.target.closest('.toggle-item-header');
+                    if (header) {
+                        const itemRow = header.closest('.item-row');
+                        const itemContent = itemRow.querySelector('.item-content');
+                        const toggleIcon = itemRow.querySelector('.toggle-item-icon');
+                        const itemSummary = itemRow.querySelector('.item-summary');
+
+                        if (itemContent.style.maxHeight && itemContent.style.maxHeight !== '0px') {
+                            // Collapse
+                            itemContent.style.maxHeight = '0px';
+                            itemContent.style.opacity = '0';
+                            toggleIcon.style.transform = 'rotate(-90deg)';
+                            
+                            // Show summary
+                            const productName = itemRow.querySelector('.item-product-name').textContent || 'Not selected';
+                            const quantity = itemRow.querySelector('.quantity-input').value || '0';
+                            const unitPrice = itemRow.querySelector('.unit-price-input').value || '0';
+                            const lineTotal = (parseFloat(quantity) * parseFloat(unitPrice)).toFixed(2);
+                            itemSummary.textContent = `Qty: ${quantity} × ₱${parseFloat(unitPrice).toFixed(2)} = ₱${lineTotal}`;
+                            itemSummary.style.display = 'inline';
+                        } else {
+                            // Expand
+                            itemContent.style.maxHeight = itemContent.scrollHeight + 'px';
+                            itemContent.style.opacity = '1';
+                            toggleIcon.style.transform = 'rotate(0deg)';
+                            itemSummary.style.display = 'none';
                         }
                     }
                 });
@@ -337,45 +389,60 @@
                     });
 
                     return `
-                            <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-4">
-                                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                                    <div class="md:col-span-2">
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
-                                        <select name="items[${index}][product_id]"
-                                            class="product-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                            required>
-                                            ${productOptions}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
-                                        <input type="number" name="items[${index}][quantity_ordered]"
-                                            class="quantity-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                            min="1" required>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit Price</label>
-                                        <input type="number" name="items[${index}][unit_price]" step="0.01"
-                                            class="unit-price-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Line Total</label>
-                                        <input type="text"
-                                            class="line-total mt-1 block w-full rounded-md border-gray-300 bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white"
-                                            readonly>
-                                    </div>
-                                    <div>
-                                        <button type="button"
-                                            class="remove-item w-full inline-flex justify-center items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                            Remove
-                                        </button>
+                            <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg mb-4">
+                                <!-- Toggle Header -->
+                                <div class="toggle-item-header flex items-center justify-between p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                    <div class="flex items-center space-x-3">
+                                        <svg class="toggle-item-icon w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-300" 
+                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                        <span class="item-product-name font-medium text-gray-700 dark:text-gray-300">Not selected</span>
+                                        <span class="item-summary text-sm text-gray-500 dark:text-gray-400" style="display: none;"></span>
                                     </div>
                                 </div>
-                                <div class="mt-4">
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
-                                    <textarea name="items[${index}][notes]" rows="2"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                        placeholder="Optional notes for this item"></textarea>
+                                
+                                <!-- Item Content (Collapsible) -->
+                                <div class="item-content p-4" style="max-height: 1000px; opacity: 1; overflow: hidden; transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;">
+                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
+                                            <select name="items[${index}][product_id]"
+                                                class="product-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                required>
+                                                ${productOptions}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
+                                            <input type="number" name="items[${index}][quantity_ordered]"
+                                                class="quantity-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                min="1" required>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit Price</label>
+                                            <input type="number" name="items[${index}][unit_price]" step="0.01"
+                                                class="unit-price-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Line Total</label>
+                                            <input type="text"
+                                                class="line-total mt-1 block w-full rounded-md border-gray-300 bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white"
+                                                readonly>
+                                        </div>
+                                        <div>
+                                            <button type="button"
+                                                class="remove-item w-full inline-flex justify-center items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4">
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
+                                        <textarea name="items[${index}][notes]" rows="2"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                            placeholder="Optional notes for this item"></textarea>
+                                    </div>
                                 </div>
                             </div>
                         `;
