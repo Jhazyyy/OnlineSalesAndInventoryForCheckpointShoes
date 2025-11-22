@@ -147,25 +147,25 @@
                                     <div>
                                         <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
                                             Status</label>
-                                        @if ($product->quantity <= 0)
-                                            <span
-                                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                                                <span class="w-2 h-2 mr-1 bg-red-500 rounded-full"></span>
-                                                Out of Stock
-                                            </span>
-                                        @elseif($product->quantity <= 10)
-                                            <span
-                                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-                                                <span class="w-2 h-2 mr-1 bg-yellow-500 rounded-full"></span>
-                                                Low Stock
-                                            </span>
-                                        @else
-                                            <span
-                                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                                <span class="w-2 h-2 mr-1 bg-green-500 rounded-full"></span>
-                                                In Stock
-                                            </span>
-                                        @endif
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            @if ($product->quantity == 0)
+                                                <span
+                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Out
+                                                    of Stock</span>
+                                            @elseif($product->quantity <= 10 && $product->quantity > 5)
+                                                <span
+                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Low
+                                                    Stock</span>
+                                            @elseif($product->quantity <= 5)
+                                                <span
+                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-600">Critical
+                                                    Stock</span>
+                                            @else
+                                                <span
+                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">In
+                                                    Stock</span>
+                                            @endif
+                                        </td>
                                     </div>
 
                                     <div>

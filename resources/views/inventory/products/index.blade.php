@@ -41,7 +41,8 @@
                             <!-- Stock Name Filter -->
                             <div>
                                 <label for="stock_names"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Stock Name</label>
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Stock
+                                    Name</label>
                                 <select id="stock_names" name="stock_names"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     <option value="">All Stock Names</option>
@@ -100,7 +101,8 @@
                                         {{ request('stock_status') == 'low_stock' ? 'selected' : '' }}>Low Stock
                                     </option>
                                     <option value="critical_stock"
-                                        {{ request('stock_status') == 'critical_stock' ? 'selected' : '' }}>Critical Stock
+                                        {{ request('stock_status') == 'critical_stock' ? 'selected' : '' }}>Critical
+                                        Stock
                                     </option>
                                     <option value="out_of_stock"
                                         {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>Out of Stock
@@ -344,9 +346,13 @@
                                                     <span
                                                         class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Out
                                                         of Stock</span>
-                                                @elseif($product->quantity <= 10)
+                                                @elseif($product->quantity <= 10 && $product->quantity > 5)
                                                     <span
                                                         class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Low
+                                                        Stock</span>
+                                                @elseif($product->quantity <= 5)
+                                                    <span
+                                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-600">Critical
                                                         Stock</span>
                                                 @else
                                                     <span
@@ -355,25 +361,28 @@
                                                 @endif
                                             </td>
                                             @hasrole('super_admin')
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                                <button onclick="openViewProductModal({{ $product->product_id }})"
-                                                    class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">View</button>
-                                                <button onclick="openEditProductModal({{ $product->product_id }})"
-                                                    class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">Edit</button>
-                                                <button onclick="openStockAdjustmentModal({{ $product->product_id }}, '{{ $product->product_name }}', {{ $product->quantity }})"
-                                                    class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">Adjust Stock</button>
-                                                <button onclick="openAdjustmentHistoryModal({{ $product->product_id }}, '{{ $product->product_name }}')"
-                                                    class="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300">History</button>
-                                                <form method="POST"
-                                                    action="{{ route('inventory.products.destroy', $product) }}"
-                                                    class="inline-block"
-                                                    onsubmit="return confirm('Are you sure you want to delete this product?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                        class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">Delete</button>
-                                                </form>
-                                            </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                                    <button onclick="openViewProductModal({{ $product->product_id }})"
+                                                        class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">View</button>
+                                                    <button onclick="openEditProductModal({{ $product->product_id }})"
+                                                        class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">Edit</button>
+                                                    <button
+                                                        onclick="openStockAdjustmentModal({{ $product->product_id }}, '{{ $product->product_name }}', {{ $product->quantity }})"
+                                                        class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">Adjust
+                                                        Stock</button>
+                                                    <button
+                                                        onclick="openAdjustmentHistoryModal({{ $product->product_id }}, '{{ $product->product_name }}')"
+                                                        class="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300">History</button>
+                                                    <form method="POST"
+                                                        action="{{ route('inventory.products.destroy', $product) }}"
+                                                        class="inline-block"
+                                                        onsubmit="return confirm('Are you sure you want to delete this product?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">Delete</button>
+                                                    </form>
+                                                </td>
                                             @endhasrole
                                         </tr>
                                     @endforeach
@@ -434,7 +443,8 @@
                                 </label>
                                 <div class="mt-1 flex">
                                     <select id="modal_stock_name" name="stock_name"
-                                        class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                                        class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        required>
                                         <option class="bg-slate-300" value="">Select a stock name...</option>
                                         @foreach ($stockNames as $stockName)
                                             <option value="{{ $stockName }}">{{ $stockName }}</option>
@@ -824,7 +834,8 @@
             const createForm = document.getElementById('createProductForm');
             if (createForm) {
                 createForm.addEventListener('submit', function(e) {
-                    if (stockNameSelect && stockNameSelect.value === 'custom' && !customStockNameInput.value.trim()) {
+                    if (stockNameSelect && stockNameSelect.value === 'custom' && !customStockNameInput.value
+                        .trim()) {
                         e.preventDefault();
                         alert('Please enter a custom stock name.');
                         return false;
@@ -1119,22 +1130,22 @@
 
             // Fetch history data
             fetch(`/inventory/stock-adjustments/${productId}/history`, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'text/html'
-                }
-            })
-            .then(response => response.text())
-            .then(html => {
-                contentDiv.innerHTML = html;
-            })
-            .catch(error => {
-                contentDiv.innerHTML = `
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'text/html'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    contentDiv.innerHTML = html;
+                })
+                .catch(error => {
+                    contentDiv.innerHTML = `
                     <div class="text-center py-12">
                         <p class="text-red-600 dark:text-red-400">Error loading history: ${error.message}</p>
                     </div>
                 `;
-            });
+                });
         }
 
         function closeAdjustmentHistoryModal() {
@@ -1220,11 +1231,12 @@
                     document.getElementById('view_sku').textContent = data.sku || 'N/A';
                     document.getElementById('view_brand').textContent = data.product_brand;
                     document.getElementById('view_category').textContent = data.product_category;
-                    document.getElementById('view_quantity').textContent = new Intl.NumberFormat().format(data.quantity);
+                    document.getElementById('view_quantity').textContent = new Intl.NumberFormat().format(data
+                    .quantity);
                     document.getElementById('view_price').textContent = '₱' + new Intl.NumberFormat('en-PH', {
                         minimumFractionDigits: 2
                     }).format(data.price);
-                    
+
                     // Stock Name
                     if (data.stock_name) {
                         document.getElementById('view_stock_name_container').style.display = 'block';
@@ -1232,7 +1244,7 @@
                     } else {
                         document.getElementById('view_stock_name_container').style.display = 'none';
                     }
-                    
+
                     // Size
                     if (data.size) {
                         document.getElementById('view_size_container').style.display = 'block';
@@ -1240,7 +1252,7 @@
                     } else {
                         document.getElementById('view_size_container').style.display = 'none';
                     }
-                    
+
                     // Color
                     if (data.color) {
                         document.getElementById('view_color_container').style.display = 'block';
@@ -1248,46 +1260,55 @@
                     } else {
                         document.getElementById('view_color_container').style.display = 'none';
                     }
-                    
+
                     // Preferred Supplier
                     if (data.preferred_supplier) {
                         document.getElementById('view_preferred_supplier_container').style.display = 'block';
-                        document.getElementById('view_preferred_supplier').textContent = data.preferred_supplier.supplier_name || data.preferred_supplier.name;
+                        document.getElementById('view_preferred_supplier').textContent = data.preferred_supplier
+                            .supplier_name || data.preferred_supplier.name;
                     } else {
                         document.getElementById('view_preferred_supplier_container').style.display = 'none';
                     }
-                    
+
                     // Inventory Value
                     const inventoryValue = data.quantity * data.price;
                     document.getElementById('view_inventory_value').textContent = '₱' + new Intl.NumberFormat('en-PH', {
                         minimumFractionDigits: 2
                     }).format(inventoryValue);
-                    
+
                     // Last Supplier
                     if (data.last_supplier) {
                         document.getElementById('view_last_supplier_container').style.display = 'block';
-                        document.getElementById('view_last_supplier').textContent = data.last_supplier.supplier_name || data.last_supplier.name;
+                        document.getElementById('view_last_supplier').textContent = data.last_supplier.supplier_name ||
+                            data.last_supplier.name;
                         if (data.last_received_at) {
-                            document.getElementById('view_last_received').textContent = 'Last received: ' + new Date(data.last_received_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                            document.getElementById('view_last_received').textContent = 'Last received: ' + new Date(
+                                data.last_received_at).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric'
+                            });
                         }
                         document.getElementById('view_no_supplier').style.display = 'none';
                     } else {
                         document.getElementById('view_last_supplier_container').style.display = 'none';
                     }
-                    
+
                     // Last Purchase Price
                     if (data.last_purchase_price) {
                         document.getElementById('view_last_purchase_price_container').style.display = 'block';
-                        document.getElementById('view_last_purchase_price').textContent = '₱' + new Intl.NumberFormat('en-PH', {
-                            minimumFractionDigits: 2
-                        }).format(data.last_purchase_price);
-                        
+                        document.getElementById('view_last_purchase_price').textContent = '₱' + new Intl.NumberFormat(
+                            'en-PH', {
+                                minimumFractionDigits: 2
+                            }).format(data.last_purchase_price);
+
                         if (data.price > data.last_purchase_price) {
                             const margin = data.price - data.last_purchase_price;
                             document.getElementById('view_price_margin').style.display = 'block';
-                            document.getElementById('view_price_margin').textContent = 'Margin: ₱' + new Intl.NumberFormat('en-PH', {
-                                minimumFractionDigits: 2
-                            }).format(margin);
+                            document.getElementById('view_price_margin').textContent = 'Margin: ₱' + new Intl
+                                .NumberFormat('en-PH', {
+                                    minimumFractionDigits: 2
+                                }).format(margin);
                         } else {
                             document.getElementById('view_price_margin').style.display = 'none';
                         }
@@ -1295,16 +1316,26 @@
                     } else {
                         document.getElementById('view_last_purchase_price_container').style.display = 'none';
                     }
-                    
+
                     // Show/hide no supplier message
                     if (!data.last_supplier && !data.preferred_supplier && !data.last_purchase_price) {
                         document.getElementById('view_no_supplier').style.display = 'block';
                     }
-                    
+
                     // Product Info
                     document.getElementById('view_product_id').textContent = '#' + data.product_id;
-                    document.getElementById('view_created_at').textContent = new Date(data.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                    document.getElementById('view_updated_at').textContent = new Date(data.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    document.getElementById('view_created_at').textContent = new Date(data.created_at)
+                        .toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                        });
+                    document.getElementById('view_updated_at').textContent = new Date(data.updated_at)
+                        .toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                        });
 
                     if (data.image) {
                         document.getElementById('view_image_container').classList.remove('hidden');
@@ -1330,9 +1361,12 @@
                     if (data.quantity <= 0) {
                         statusHTML =
                             '<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800"><span class="w-2 h-2 mr-1 bg-red-500 rounded-full"></span>Out of Stock</span>';
-                    } else if (data.quantity <= 10) {
+                    } else if (data.quantity <= 10 && data.quantity > 5) {
                         statusHTML =
                             '<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800"><span class="w-2 h-2 mr-1 bg-yellow-500 rounded-full"></span>Low Stock</span>';
+                    } else if (data.quantity <= 5) {
+                        statusHTML =
+                            '<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-600"><span class="w-2 h-2 mr-1 bg-red-500 rounded-full"></span>Critical Stock</span>';
                     } else {
                         statusHTML =
                             '<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"><span class="w-2 h-2 mr-1 bg-green-500 rounded-full"></span>In Stock</span>';
@@ -1604,15 +1638,19 @@
                     </button>
                 </div>
 
-                <form id="stockAdjustmentForm" method="POST" action="{{ route('inventory.stock-adjustments.store') }}">
+                <form id="stockAdjustmentForm" method="POST"
+                    action="{{ route('inventory.stock-adjustments.store') }}">
                     @csrf
                     <input type="hidden" id="adj_product_id" name="product_id">
-                    
+
                     <div class="mt-4 space-y-4">
                         <!-- Product Info -->
                         <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
-                            <p class="text-sm text-gray-600 dark:text-gray-300">Product: <span id="adj_product_name" class="font-semibold text-gray-900 dark:text-white"></span></p>
-                            <p class="text-sm text-gray-600 dark:text-gray-300">Current Stock: <span id="adj_current_stock" class="font-semibold text-gray-900 dark:text-white"></span></p>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Product: <span id="adj_product_name"
+                                    class="font-semibold text-gray-900 dark:text-white"></span></p>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Current Stock: <span
+                                    id="adj_current_stock" class="font-semibold text-gray-900 dark:text-white"></span>
+                            </p>
                         </div>
 
                         <!-- Adjustment Type -->
@@ -1677,14 +1715,14 @@
                             </label>
                             <input type="number" id="adj_quantity" name="quantity" required min="1"
                                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                placeholder="Enter quantity to adjust"
-                                oninput="calculateNewStock()">
+                                placeholder="Enter quantity to adjust" oninput="calculateNewStock()">
                         </div>
 
                         <!-- New Stock Preview -->
-                        <div id="new_stock_preview" class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg" style="display:none;">
+                        <div id="new_stock_preview" class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg"
+                            style="display:none;">
                             <p class="text-sm text-gray-600 dark:text-gray-300">
-                                New Stock Level: 
+                                New Stock Level:
                                 <span id="preview_new_stock" class="font-bold text-lg"></span>
                                 <span id="preview_change" class="ml-2 text-sm"></span>
                             </p>
@@ -1719,7 +1757,8 @@
     <!-- Adjustment History Modal -->
     <div id="adjustmentHistoryModal"
         class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative top-10 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white dark:bg-gray-800 mb-10">
+        <div
+            class="relative top-10 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white dark:bg-gray-800 mb-10">
             <!-- Modal Header -->
             <div class="flex justify-between items-center pb-4 border-b dark:border-gray-700">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
@@ -1728,7 +1767,8 @@
                 <button onclick="closeAdjustmentHistoryModal()"
                     class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
             </div>
@@ -1736,9 +1776,13 @@
             <!-- Modal Content -->
             <div id="historyModalContent" class="mt-4 max-h-[70vh] overflow-y-auto">
                 <div class="flex justify-center items-center py-12">
-                    <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                            stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
                     </svg>
                 </div>
             </div>
@@ -1788,11 +1832,13 @@
                         <!-- Middle: Product Details -->
                         <div class="lg:col-span-1 space-y-4">
                             <div id="view_stock_name_container" style="display:none;">
-                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock Name (Base Product)</label>
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock Name
+                                    (Base Product)</label>
                                 <p class="text-lg text-gray-900 dark:text-white" id="view_stock_name"></p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Product Name</label>
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Product
+                                    Name</label>
                                 <p class="text-lg text-gray-900 dark:text-white" id="view_product_name_detail"></p>
                             </div>
                             <div>
@@ -1812,30 +1858,39 @@
                                 <p class="text-lg text-gray-900 dark:text-white" id="view_brand"></p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Category</label>
+                                <label
+                                    class="block text-sm font-medium text-gray-500 dark:text-gray-400">Category</label>
                                 <p class="text-lg text-gray-900 dark:text-white" id="view_category"></p>
                             </div>
                             <div id="view_preferred_supplier_container" style="display:none;">
-                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Preferred Supplier</label>
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Preferred
+                                    Supplier</label>
                                 <p class="text-lg text-gray-900 dark:text-white" id="view_preferred_supplier"></p>
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Quantity</label>
-                                    <p class="text-lg font-semibold text-gray-900 dark:text-white" id="view_quantity"></p>
+                                    <label
+                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400">Quantity</label>
+                                    <p class="text-lg font-semibold text-gray-900 dark:text-white" id="view_quantity">
+                                    </p>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Base Price</label>
-                                    <p class="text-lg font-semibold text-green-600 dark:text-green-400" id="view_price"></p>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Base
+                                        Price</label>
+                                    <p class="text-lg font-semibold text-green-600 dark:text-green-400"
+                                        id="view_price"></p>
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock Status</label>
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
+                                    Status</label>
                                 <div id="view_stock_status"></div>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Inventory Value</label>
-                                <p class="text-lg font-semibold text-gray-900 dark:text-white" id="view_inventory_value"></p>
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Inventory
+                                    Value</label>
+                                <p class="text-lg font-semibold text-gray-900 dark:text-white"
+                                    id="view_inventory_value"></p>
                             </div>
                         </div>
 
@@ -1843,19 +1898,27 @@
                         <div class="lg:col-span-1 space-y-6">
                             <!-- Supplier Information -->
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                                <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Supplier Information</h4>
+                                <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Supplier Information
+                                </h4>
                                 <div class="space-y-3">
                                     <div id="view_last_supplier_container" style="display:none;">
-                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400">Last Supplier</label>
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white" id="view_last_supplier"></p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400" id="view_last_received"></p>
+                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400">Last
+                                            Supplier</label>
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white"
+                                            id="view_last_supplier"></p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400" id="view_last_received">
+                                        </p>
                                     </div>
                                     <div id="view_last_purchase_price_container" style="display:none;">
-                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400">Last Purchase Price</label>
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white" id="view_last_purchase_price"></p>
-                                        <p class="text-xs text-green-600" id="view_price_margin" style="display:none;"></p>
+                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400">Last
+                                            Purchase Price</label>
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white"
+                                            id="view_last_purchase_price"></p>
+                                        <p class="text-xs text-green-600" id="view_price_margin"
+                                            style="display:none;"></p>
                                     </div>
-                                    <div id="view_no_supplier" class="text-sm text-gray-500 dark:text-gray-400">No supplier information available</div>
+                                    <div id="view_no_supplier" class="text-sm text-gray-500 dark:text-gray-400">No
+                                        supplier information available</div>
                                 </div>
                             </div>
 
@@ -1865,15 +1928,18 @@
                                 <div class="space-y-3">
                                     <div class="flex items-center justify-between">
                                         <span class="text-xs text-gray-500 dark:text-gray-400">Product ID</span>
-                                        <span class="text-sm font-medium text-gray-900 dark:text-white" id="view_product_id"></span>
+                                        <span class="text-sm font-medium text-gray-900 dark:text-white"
+                                            id="view_product_id"></span>
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <span class="text-xs text-gray-500 dark:text-gray-400">Created</span>
-                                        <span class="text-sm font-medium text-gray-900 dark:text-white" id="view_created_at"></span>
+                                        <span class="text-sm font-medium text-gray-900 dark:text-white"
+                                            id="view_created_at"></span>
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <span class="text-xs text-gray-500 dark:text-gray-400">Last Updated</span>
-                                        <span class="text-sm font-medium text-gray-900 dark:text-white" id="view_updated_at"></span>
+                                        <span class="text-sm font-medium text-gray-900 dark:text-white"
+                                            id="view_updated_at"></span>
                                     </div>
                                 </div>
                             </div>

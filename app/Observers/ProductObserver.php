@@ -184,7 +184,7 @@ class ProductObserver
                     'title' => 'Product Out of Stock',
                     'message' => "Product '{$productName}' (SKU: {$sku}) is OUT OF STOCK. Immediate restocking required!",
                     'level' => 'danger',
-                    'link' => url('/master-data/products/' . $product->product_id),
+                    'link' => url('/inventory/products/' . $product->product_id),
                 ];
                 
             case 'critical_stock':
@@ -193,7 +193,7 @@ class ProductObserver
                     'title' => 'Critical Stock Level',
                     'message' => "Product '{$productName}' (SKU: {$sku}) has reached CRITICAL level with only {$currentQuantity} units remaining (Critical threshold: {$criticalLevel}). Urgent action required!",
                     'level' => 'danger',
-                    'link' => url('/master-data/products/' . $product->product_id),
+                    'link' => url('/inventory/products/' . $product->product_id),
                 ];
                 
             case 'low_stock':
@@ -202,7 +202,7 @@ class ProductObserver
                     'title' => 'Low Stock Alert',
                     'message' => "Product '{$productName}' (SKU: {$sku}) is running LOW with {$currentQuantity} units remaining (Low stock threshold: {$lowStockLevel}). Please reorder soon.",
                     'level' => 'warning',
-                    'link' => url('/master-data/products/' . $product->product_id),
+                    'link' => url('/inventory/products/' . $product->product_id),
                 ];
                 
             case 'reorder_needed':
@@ -211,7 +211,7 @@ class ProductObserver
                     'title' => 'Reorder Recommended',
                     'message' => "Product '{$productName}' (SKU: {$sku}) has {$currentQuantity} units remaining. Reorder level ({$reorderLevel}) reached. Consider placing a purchase order.",
                     'level' => 'info',
-                    'link' => url('/master-data/products/' . $product->product_id),
+                    'link' => url('/inventory/products/' . $product->product_id),
                 ];
                 
             default:

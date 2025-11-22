@@ -210,7 +210,7 @@
 
 
                         <!-- Business Hours Section -->
-                        <div
+                        {{-- <div
                             class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
                             <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor"
@@ -271,7 +271,7 @@
                                     </div>
                                 @endforeach
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Submit Button -->
                         <div class="flex items-center justify-between">

@@ -327,6 +327,16 @@ class Product extends Model
     }
 
     /**
+     * Scope a query to only include critical stock products.
+     * Critical stock: quantity > 0 AND quantity <= 5
+     */
+    public function scopeCriticalStock(Builder $query, int $threshold = 5): Builder
+    {
+        return $query->where('quantity', '>', 0)
+                     ->where('quantity', '<=', $threshold);
+    }
+
+    /**
      * Scope a query to only include products that need reordering.
      * 
      * Uses calculated reorder point based on:

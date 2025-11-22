@@ -10,87 +10,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                         <!-- Left Column: Sales Activity & Item Details -->
-                        <div class="lg:col-span-2 space-y-6">
-
-                            <!-- Sales Activity Section -->
-                            {{-- <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                                <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Sales Activity</h3>
-                                
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    <!-- To be Packed -->
-                                    <div class="text-center">
-                                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 mb-2">
-                                            <svg class="w-6 h-6 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                                            {{ $salesOrderData->sum('draft') ?? 0 }}
-                                        </div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wide">
-                                            <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"/>
-                                            </svg>
-                                            To be Packed
-                                        </div>
-                                    </div>
-
-                                    <!-- To be Shipped -->
-                                    <div class="text-center">
-                                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 dark:bg-red-900 mb-2">
-                                            <svg class="w-6 h-6 text-red-600 dark:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="text-3xl font-bold text-red-600 dark:text-red-400">
-                                            {{ $salesOrderData->sum('packed') ?? 0 }}
-                                        </div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wide">
-                                            <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"/>
-                                            </svg>
-                                            To be Shipped
-                                        </div>
-                                    </div>
-
-                                    <!-- To be Delivered -->
-                                    <div class="text-center">
-                                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-100 dark:bg-green-900 mb-2">
-                                            <svg class="w-6 h-6 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="text-3xl font-bold text-green-600 dark:text-green-400">
-                                            {{ $salesOrderData->sum('shipped') ?? 0 }}
-                                        </div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wide">
-                                            <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"/>
-                                            </svg>
-                                            To be Delivered
-                                        </div>
-                                    </div>
-
-                                    <!-- To be Invoiced -->
-                                    <div class="text-center">
-                                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-yellow-100 dark:bg-yellow-900 mb-2">
-                                            <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
-                                            {{ $salesOrderData->sum('confirmed') ?? 0 }}
-                                        </div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wide">
-                                            <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"/>
-                                            </svg>
-                                            To be Invoiced
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> --}}
+                        <div class="lg:col-span-2 space-y-4">
 
                             <!-- Item Details Section -->
                             <div
@@ -103,7 +23,7 @@
                                     <div class="text-left">
                                         <div class="text-sm text-red-600 dark:text-red-400 font-medium mb-2">Low Stock
                                             Items</div>
-                                        <div class="text-4xl font-bold text-gray-800 dark:text-gray-100">
+                                        <div class="text-2xl font-bold text-gray-800 dark:text-gray-100">
                                             {{ $inventoryStats['low_stock_products'] ?? 0 }}
                                         </div>
                                     </div>
@@ -112,7 +32,7 @@
                                     <div class="text-left">
                                         <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">All Item
                                             Groups</div>
-                                        <div class="text-4xl font-bold text-gray-800 dark:text-gray-100">
+                                        <div class="text-2xl font-bold text-gray-800 dark:text-gray-100">
                                             {{ \App\Models\Product::distinct('product_category')->count('category') }}
                                         </div>
                                     </div>
@@ -121,7 +41,7 @@
                                     <div class="text-left">
                                         <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">All Items
                                         </div>
-                                        <div class="text-4xl font-bold text-gray-800 dark:text-gray-100">
+                                        <div class="text-2xl font-bold text-gray-800 dark:text-gray-100">
                                             {{ $inventoryStats['total_products'] ?? 0 }}
                                         </div>
                                     </div>
@@ -130,7 +50,7 @@
                                 <!-- Active Items Donut Chart -->
                                 <div class="mt-6">
                                     <div class="flex items-center">
-                                        <div class="relative" style="width: 120px; height: 120px;">
+                                        <div class="relative" style="width: 90px; height: 90px;">
                                             <canvas id="activeItemsChart"></canvas>
                                             <div class="absolute inset-0 flex items-center justify-center">
                                                 <div class="text-center">
@@ -155,7 +75,7 @@
                             </div>
 
                             <!-- Top Selling & Purchase Items Section (Grid Layout) -->
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="grid grid-cols-2 lg:grid-cols-2 gap-2">
                                 <!-- Top Selling Items Section -->
                                 <div
                                     class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col">
@@ -165,7 +85,7 @@
                                             Top Selling Items
                                         </h3>
                                         <select id="topSellingPeriod"
-                                            class="appearance-none w-full sm:w-auto text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            class="appearance-none lg:w-32 w-full sm:w-auto text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                             <option value="today">Today</option>
                                             <option value="yesterday">Yesterday</option>
                                             <option value="this_week">This Week</option>
@@ -177,152 +97,162 @@
                                         </select>
                                     </div>
 
-                                    <div id="topSellingItemsContainer" class="space-y-3 overflow-y-auto flex-1" style="max-height: 600px;">
-                                    @forelse($topSellingItems->take(5) ?? [] as $item)
-                                        <div
-                                            class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex-shrink-0">
-                                            <div class="flex items-center space-x-2 flex-1 min-w-0">
-                                                <!-- Product Image -->
-                                                <div
-                                                    class="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
-                                                    @if (!empty($item['image']))
-                                                        @php
-                                                            $imageUrl = (str_starts_with($item['image'], 'http://') || str_starts_with($item['image'], 'https://'))
-                                                                ? $item['image']
-                                                                : asset('storage/' . $item['image']);
-                                                        @endphp
-                                                        <img src="{{ $imageUrl }}"
-                                                            alt="{{ $item['name'] ?? 'Product' }}"
-                                                            class="w-full h-full object-cover"
-                                                            onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\'w-8 h-8 text-white\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\'></path></svg>';">
-                                                    @else
-                                                        <svg class="w-8 h-8 text-white" fill="none"
-                                                            stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4">
-                                                            </path>
-                                                        </svg>
-                                                    @endif
-                                                </div>
-
-                                                <div class="flex-1 min-w-0">
+                                    <div id="topSellingItemsContainer" class="space-y-3 overflow-y-auto flex-1"
+                                        style="max-height: 300px;">
+                                        @forelse($topSellingItems->take(10) ?? [] as $item)
+                                            <div
+                                                class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex-shrink-0">
+                                                <div class="flex items-center space-x-2 flex-1 min-w-0">
+                                                    <!-- Product Image -->
                                                     <div
-                                                        class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate"
-                                                        title="{{ $item['name'] ?? 'Unknown Product' }}">
-                                                        {{ $item['name'] ?? 'Unknown Product' }}
+                                                        class="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
+                                                        @if (!empty($item['image']))
+                                                            @php
+                                                                $imageUrl =
+                                                                    str_starts_with($item['image'], 'http://') ||
+                                                                    str_starts_with($item['image'], 'https://')
+                                                                        ? $item['image']
+                                                                        : asset('storage/' . $item['image']);
+                                                            @endphp
+                                                            <img src="{{ $imageUrl }}"
+                                                                alt="{{ $item['name'] ?? 'Product' }}"
+                                                                class="w-5 h-5 object-cover"
+                                                                onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\'w-5 h-5 text-white\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\'></path></svg>';">
+                                                        @else
+                                                            <svg class="w-5 h-5 text-white" fill="none"
+                                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4">
+                                                                </path>
+                                                            </svg>
+                                                        @endif
                                                     </div>
-                                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
-                                                        Sold: {{ number_format($item['quantity'] ?? 0) }} units
-                                                    </div>
-                                                </div>
-                                            </div>
 
-                                            <div class="text-right ml-3 flex-shrink-0">
-                                                <div class="text-base font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
-                                                    {{ number_format($item['quantity'] ?? 0) }}
+                                                    <div class="flex-1 min-w-0">
+                                                        <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 break-words"
+                                                            title="{{ $item['name'] ?? 'Unknown Product' }}">
+                                                            {{ $item['name'] ?? 'Unknown Product' }}
+                                                        </div>
+                                                        <div
+                                                            class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
+                                                            Sold: {{ number_format($item['quantity'] ?? 0) }} units
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="text-xs text-gray-500 dark:text-gray-400">PCS</div>
+
+                                                <div class="text-right ml-3 flex-shrink-0">
+                                                    <div
+                                                        class="text-base font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
+                                                        {{ number_format($item['quantity'] ?? 0) }}
+                                                    </div>
+                                                    <div class="text-xs text-gray-500 dark:text-gray-400">PCS</div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    @empty
-                                        <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                                            <svg class="w-12 h-12 mx-auto mb-2 opacity-50" fill="none"
-                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
-                                                </path>
-                                            </svg>
-                                            <p class="text-sm">No sales data available</p>
-                                        </div>
-                                    @endforelse
+                                        @empty
+                                            <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                                                <svg class="w-5 h-5 mx-auto mb-2 opacity-50" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+                                                    </path>
+                                                </svg>
+                                                <p class="text-sm">No sales data available</p>
+                                            </div>
+                                        @endforelse
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Top Purchase Items Section -->
-                            <div
-                                class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col break-words">
+                                <!-- Top Purchase Items Section -->
                                 <div
-                                    class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 flex-shrink-0">
-                                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                                        Top Purchase Items
-                                    </h3>
-                                    <select id="topPurchasePeriod"
-                                        class="appearance-none w-full sm:w-auto text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent break-words">
-                                        <option value="today">Today</option>
-                                        <option value="yesterday">Yesterday</option>
-                                        <option value="this_week">This Week</option>
-                                        <option value="last_week">Last Week</option>
-                                        <option value="this_month" selected>This Month</option>
-                                        <option value="last_month">Last Month</option>
-                                        <option value="this_year">This Year</option>
-                                        <option value="all_time">All Time</option>
-                                    </select>
-                                </div>
+                                    class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col break-words">
+                                    <div
+                                        class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 flex-shrink-0">
+                                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                                            Top Purchase Items
+                                        </h3>
+                                        <select id="topPurchasePeriod"
+                                            class="appearance-none lg:w-32 w-full sm:w-auto text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent break-words">
+                                            <option value="today">Today</option>
+                                            <option value="yesterday">Yesterday</option>
+                                            <option value="this_week">This Week</option>
+                                            <option value="last_week">Last Week</option>
+                                            <option value="this_month" selected>This Month</option>
+                                            <option value="last_month">Last Month</option>
+                                            <option value="this_year">This Year</option>
+                                            <option value="all_time">All Time</option>
+                                        </select>
+                                    </div>
 
-                                <div id="topPurchaseItemsContainer" class="space-y-3 overflow-y-auto flex-1" style="max-height: 600px;">
-                                    @forelse($topPurchaseItems->take(5) ?? [] as $item)
-                                        <div
-                                            class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex-shrink-0">
-                                            <div class="flex items-center space-x-3 flex-1 min-w-0">
-                                                <!-- Product Image -->
-                                                <div
-                                                    class="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center overflow-hidden">
-                                                    @if (!empty($item['image']))
-                                                        @php
-                                                            $imageUrl = (str_starts_with($item['image'], 'http://') || str_starts_with($item['image'], 'https://'))
-                                                                ? $item['image']
-                                                                : asset('storage/' . $item['image']);
-                                                        @endphp
-                                                        <img src="{{ $imageUrl }}"
-                                                            alt="{{ $item['name'] ?? 'Product' }}"
-                                                            class="w-5 h-5 object-cover"
-                                                            onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\'w-8 h-8 text-white\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\'></path></svg>';">
-                                                    @else
-                                                        <svg class="w-8 h-8 text-white" fill="none"
-                                                            stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4">
-                                                            </path>
-                                                        </svg>
-                                                    @endif
-                                                </div>
-
-                                                <div class="flex-1 min-w-0">
+                                    <div id="topPurchaseItemsContainer" class="space-y-3 overflow-y-auto flex-1"
+                                        style="max-height: 300px;">
+                                        @forelse($topPurchaseItems->take(5) ?? [] as $item)
+                                            <div
+                                                class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex-shrink-0">
+                                                <div class="flex items-center space-x-3 flex-1 min-w-0">
+                                                    <!-- Product Image -->
                                                     <div
-                                                        class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate"
-                                                        title="{{ $item['name'] ?? 'Unknown Product' }}">
-                                                        {{ $item['name'] ?? 'Unknown Product' }}
+                                                        class="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center overflow-hidden">
+                                                        @if (!empty($item['image']))
+                                                            @php
+                                                                $imageUrl =
+                                                                    str_starts_with($item['image'], 'http://') ||
+                                                                    str_starts_with($item['image'], 'https://')
+                                                                        ? $item['image']
+                                                                        : asset('storage/' . $item['image']);
+                                                            @endphp
+                                                            <img src="{{ $imageUrl }}"
+                                                                alt="{{ $item['name'] ?? 'Product' }}"
+                                                                class="w-5 h-5 object-cover"
+                                                                onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\'w-8 h-8 text-white\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\'></path></svg>';">
+                                                        @else
+                                                            <svg class="w-8 h-8 text-white" fill="none"
+                                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4">
+                                                                </path>
+                                                            </svg>
+                                                        @endif
                                                     </div>
-                                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
-                                                        Purchased: {{ number_format($item['quantity'] ?? 0) }} units
-                                                    </div>
-                                                </div>
-                                            </div>
 
-                                            <div class="text-right ml-3 flex-shrink-0">
-                                                <div class="text-base font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
-                                                    {{ number_format($item['quantity'] ?? 0) }}
+                                                    <div class="flex-1 min-w-0">
+                                                        <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate"
+                                                            title="{{ $item['name'] ?? 'Unknown Product' }}">
+                                                            {{ $item['name'] ?? 'Unknown Product' }}
+                                                        </div>
+                                                        <div
+                                                            class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
+                                                            Purchased: {{ number_format($item['quantity'] ?? 0) }}
+                                                            units
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="text-xs text-gray-500 dark:text-gray-400">PCS</div>
+
+                                                <div class="text-right ml-3 flex-shrink-0">
+                                                    <div
+                                                        class="text-base font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
+                                                        {{ number_format($item['quantity'] ?? 0) }}
+                                                    </div>
+                                                    <div class="text-xs text-gray-500 dark:text-gray-400">PCS</div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    @empty
-                                        <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                                            <svg class="w-5 h-5 mx-auto mb-2 opacity-50" fill="none"
-                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8.5m-8.5 0a2 2 0 11-4 0 2 2 0 014 0zm8.5 0a2 2 0 11-4 0 2 2 0 014 0z">
-                                                </path>
-                                            </svg>
-                                            <p class="text-sm">No purchase data available</p>
-                                        </div>
-                                    @endforelse
+                                        @empty
+                                            <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                                                <svg class="w-5 h-5 mx-auto mb-2 opacity-50" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8.5m-8.5 0a2 2 0 11-4 0 2 2 0 014 0zm8.5 0a2 2 0 11-4 0 2 2 0 014 0z">
+                                                    </path>
+                                                </svg>
+                                                <p class="text-sm">No purchase data available</p>
+                                            </div>
+                                        @endforelse
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
                         </div>
 
                         <!-- Right Column: Inventory Summary -->
@@ -335,9 +265,9 @@
                                 <!-- Quantity in Hand -->
                                 <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
                                     <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
-                                    Quantity In Hand
+                                        Quantity In Hand
                                     </div>
-                                    <div class="text-5xl font-bold text-gray-800 dark:text-gray-100">
+                                    <div class="text-2xl font-bold text-gray-800 dark:text-gray-100">
                                         {{ number_format(\App\Models\Product::sum('quantity') ?? 0) }}
                                     </div>
                                 </div>
@@ -347,7 +277,7 @@
                                     <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
                                         Quantity to be Received
                                     </div>
-                                    <div class="text-5xl font-bold text-blue-600 dark:text-blue-400">
+                                    <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
                                         {{ number_format($purchaseReceiveStats['pending_quantity'] ?? 0) }}
                                     </div>
 
@@ -502,7 +432,7 @@
                         </div> --}}
 
                         <!-- Revenue Card -->
-                        {{-- <div
+                        <div
                             class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                             <div class="flex items-center">
                                 <div class="p-2 bg-green-500 rounded-lg">
@@ -524,7 +454,7 @@
                                     </p>
                                 </div>
                             </div>
-                        </div> --}}
+                        </div>
                     </div>
 
                 </div>
@@ -552,7 +482,7 @@
                             </div>
 
                             <!-- Quick Links -->
-                            {{-- <div
+                            <div
                                 class="hidden md:flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
                                 <a href="#"
                                     class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</a>
@@ -562,7 +492,7 @@
                                     class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Documentation</a>
                                 <a href="#"
                                     class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy</a>
-                            </div> --}}
+                            </div>
                         </div>
 
                         <div
@@ -686,15 +616,15 @@
                                 container.innerHTML = data.items.map(item => `
                                     <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex-shrink-0">
                                         <div class="flex items-center space-x-3 flex-1 min-w-0">
-                                            <div class="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
+                                            <div class="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
                                                 ${item.image 
                                                     ? `<img src="/storage/${item.image}" 
-                                                               alt="${item.name}" 
-                                                               class="w-5 h-5 object-cover"
-                                                               onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
+                                                                   alt="${item.name}" 
+                                                                   class="w-5 h-5 object-cover"
+                                                                   onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
                                                     : `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                                           </svg>`
+                                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                               </svg>`
                                                 }
                                             </div>
                                             <div class="flex-1 min-w-0">
@@ -763,12 +693,12 @@
                                             <div class="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center overflow-hidden">
                                                 ${item.image 
                                                     ? `<img src="/storage/${item.image}" 
-                                                               alt="${item.name}" 
-                                                               class="w-5 h-5 object-cover"
-                                                               onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
+                                                                   alt="${item.name}" 
+                                                                   class="w-5 h-5 object-cover"
+                                                                   onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
                                                     : `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                                           </svg>`
+                                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                               </svg>`
                                                 }
                                             </div>
                                             <div class="flex-1 min-w-0">

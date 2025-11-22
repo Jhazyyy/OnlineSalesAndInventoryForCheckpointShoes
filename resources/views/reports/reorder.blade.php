@@ -145,7 +145,7 @@
                                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase w-12">
                                         <span class="sr-only">Select</span>
                                     </th>
-                                    @foreach(['SKU / Product', 'Category', 'Qty', 'Reorder Level', 'Suggested', 'Supplier', 'Reorder Action'] as $header)
+                                    @foreach(['SKU / Product', 'Category', 'Current Qty', 'Suggested', 'Supplier', 'Reorder Action'] as $header)
                                         <th class="px-4 py-3 sm:px-6 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">{{ $header }}</th>
                                     @endforeach
                                 </tr>
@@ -175,7 +175,6 @@
                                                 {{ $product->quantity }}
                                             </span>
                                         </td>
-                                        <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">{{ $product->reorder_level ?? '-' }}</td>
                                         <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">{{ $product->suggested_order_qty ?? 1 }}</td>
                                         <td class="px-4 py-3 sm:px-6">
                                             <span class="text-sm text-gray-700 dark:text-gray-300">
