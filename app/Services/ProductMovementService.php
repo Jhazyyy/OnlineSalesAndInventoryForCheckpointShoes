@@ -76,9 +76,9 @@ class ProductMovementService
 
         // Get sales data from sales_order_items
         $salesData = SalesOrderItem::where('product_id', $product->product_id)
-            ->whereHas('salesOrder', function ($query) use ($startDate, $endDate) {
+            ->whereHas('order', function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('order_date', [$startDate, $endDate])
-                      ->whereIn('order_status', ['confirmed', 'processing', 'shipped', 'delivered']);
+                      ->whereIn('status', ['confirmed', 'processing', 'shipped', 'delivered']);
             })
             ->selectRaw('SUM(quantity) as total_quantity, MAX(created_at) as last_sale')
             ->first();

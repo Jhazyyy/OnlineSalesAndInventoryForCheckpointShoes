@@ -25,6 +25,30 @@
             <!-- Filter Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
+                        <div>
+                            @if($report['summary']['uncategorized'] > 0)
+                                <div class="flex items-center gap-2 text-sm text-yellow-600 dark:text-yellow-400">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    <span>{{ $report['summary']['uncategorized'] }} product(s) need movement analysis</span>
+                                </div>
+                            @endif
+                        </div>
+                        <form method="POST" action="{{ route('inventory.product-movement.calculate-all') }}" class="flex-shrink-0">
+                            @csrf
+                            <input type="hidden" name="days" value="{{ request('days', 90) }}">
+                            <button type="submit"
+                                    class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-md transition">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                Calculate Movement
+                            </button>
+                        </form>
+                    </div>
+                    
                     <form method="GET" action="{{ route('reports.product-movement') }}" class="space-y-4">
                         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
                             <div>
@@ -73,6 +97,26 @@
                             </div>
                         </div>
                     </form>
+                </div>
+            </div>
+
+            <!-- Analysis Info Banner -->
+            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+                <div class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-1">Movement Analysis Information</h4>
+                        <div class="text-sm text-blue-800 dark:text-blue-300 space-y-1">
+                            <p><strong>Last Analysis:</strong> {{ $report['summary']['last_analysis'] }}</p>
+                            <p><strong>Analysis Period:</strong> {{ $report['summary']['analysis_period'] }}</p>
+                            <p><strong>Criteria:</strong> Fast Moving (≥5 units/day) • Slow Moving (1-5 units/day) • Non-Moving (0 sales in 30+ days)</p>
+                            @if($report['summary']['uncategorized'] > 0)
+                                <p class="text-yellow-700 dark:text-yellow-400 font-semibold">⚠️ {{ $report['summary']['uncategorized'] }} product(s) haven't been analyzed yet. Click "Calculate Movement" to update.</p>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -326,12 +370,12 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                         {{ $product->days_since_last_sale ?? 'N/A' }} days
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    {{-- <td class="px-6 py-4 whitespace-nowrap text-sm">
                                         <a href="{{ route('inventory.product-movement.promotional') }}"
                                            class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
                                             Mark Promotional
                                         </a>
-                                    </td>
+                                    </td> --}}
                                 </tr>
                                 @empty
                                 <tr>

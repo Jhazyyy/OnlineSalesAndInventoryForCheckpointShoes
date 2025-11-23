@@ -14,14 +14,21 @@ Schedule::command('stock:check-levels')
     ->withoutOverlapping()
     ->runInBackground();
 
-// Schedule inventory threshold checks
-Schedule::command('inventory:check-thresholds --silent')
-    ->everyThirtyMinutes()
-    ->between('06:00', '22:00')
-    ->weekdays()
+// Schedule product movement calculations (fast/slow/non-moving analysis)
+Schedule::command('products:calculate-movements --days=30')
+    ->daily()
+    ->at('02:00')
     ->withoutOverlapping()
-    ->runInBackground()
-    ->emailOutputOnFailure(config('app.admin_email', 'admin@example.com'));
+    ->runInBackground();
+
+// Schedule inventory threshold checks
+// Schedule::command('inventory:check-thresholds --silent')
+//     ->everyThirtyMinutes()
+//     ->between('06:00', '22:00')
+//     ->weekdays()
+//     ->withoutOverlapping()
+//     ->runInBackground()
+//     ->emailOutputOnFailure(config('app.admin_email', 'admin@example.com'));
 
 // Daily comprehensive threshold check
 Schedule::command('inventory:check-thresholds --force')

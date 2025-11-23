@@ -1092,6 +1092,10 @@ class ReportService
             ->limit(20)
             ->get();
         
+        // Get last movement analysis time
+        $lastAnalysis = Product::whereNotNull('last_movement_check')
+            ->max('last_movement_check');
+        
         return [
             'summary' => [
                 'total_products' => $totalProducts,
@@ -1104,6 +1108,7 @@ class ReportService
                 'uncategorized' => $uncategorized,
                 'uncategorized_percentage' => $totalProducts > 0 ? round(($uncategorized / $totalProducts) * 100, 1) : 0,
                 'analysis_period' => $days . ' days',
+                'last_analysis' => $lastAnalysis ? \Carbon\Carbon::parse($lastAnalysis)->diffForHumans() : 'Never',
             ],
             'value_analysis' => [
                 'fast_moving_value' => $valueByMovement->get('fast')->total_value ?? 0,
