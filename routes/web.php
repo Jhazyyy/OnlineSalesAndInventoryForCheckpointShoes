@@ -85,17 +85,33 @@ Route::get('dashboard', function() {
             'low_stock_products' => \App\Models\Product::where('quantity', '>', 0)
                                                        ->where('quantity', '<=', $lowStockThreshold)
                                                        ->count(),
-            // Out of stock: items with 0 or negative quantity
-            'out_of_stock_products' => \App\Models\Product::where('quantity', '<=', 0)->count(),
+            // Out of stock: items with 0
+            'out_of_stock_products' => \App\Models\Product::where('quantity', '=', 0)->count(),
+            'critical_stock_products' => \App\Models\Product::where('quantity', '<=', ($lowStockThreshold / 2))->count(),
             'total_inventory_value' => \App\Models\Product::selectRaw('SUM(quantity * price) as total')->value('total') ?? 0,
+            // 'total_units' => \App\Models\Product::sum('quantity') ?? 0,
         ];
     } catch (\Exception $e) {
+        Log::error('Error fetching inventory stats: ' . $e->getMessage());
         $inventoryStats = [
             'total_products' => 0,
             'active_products' => 0,
             'low_stock_products' => 0,
             'out_of_stock_products' => 0,
+            'critical_stock_products' => 0,
             'total_inventory_value' => 0,
+            'total_units' => 0,
+        ];
+    } catch (\Exception $e) {
+        Log::error('Error fetching inventory stats: ' . $e->getMessage());
+        $inventoryStats = [
+            'total_products' => 0,
+            'active_products' => 0,
+            'low_stock_products' => 0,
+            'out_of_stock_products' => 0,
+            'critical_stock_products' => 0,
+            'total_inventory_value' => 0,
+            'total_units' => 0,
         ];
     }
 
@@ -987,7 +1003,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/create', [SalesOrderController::class, 'create'])->middleware('permission:create sales')->name('create');
         Route::post('/', [SalesOrderController::class, 'store'])->middleware('permission:create sales')->name('store');
         
-        // Analytics (before wildcard route)
         Route::get('/analytics', [SalesOrderController::class, 'analytics'])->middleware('permission:view sales')->name('analytics');
         
         // Wildcard route should be last
@@ -1007,7 +1022,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Returns Management Routes (Admin only - requires approval)
-    Route::prefix('sales/returns')->name('sales.returns.')->middleware('role:super_admin,admin')->group(function () {
+    Route::prefix('sales/returns')->name('sales.returns.')->middleware('role:super_admin,admin,salesperson')->group(function () {
         Route::get('/', [ReturnsController::class, 'index'])->name('index');
         Route::get('/create', [ReturnsController::class, 'create'])->name('create');
         Route::post('/', [ReturnsController::class, 'store'])->name('store');

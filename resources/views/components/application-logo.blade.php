@@ -1,1 +1,1 @@
-<img src="{{ companyLogoUrl(asset('welcome.png')) }}" alt="{{ setting('general.company_name', config('app.name')) }} Logo" {{ $attributes->merge(['class' => 'rounded-full object-contain bg-white dark:bg-gray-800']) }} />
+<img src="{{ companyLogoUrl(asset('checkpointlogo.jpg')) }}" alt="{{ setting('general.company_name', config('app.name')) }} Logo" {{ $attributes->merge(['class' => 'rounded-full object-contain']) }} />

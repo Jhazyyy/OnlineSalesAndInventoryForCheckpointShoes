@@ -6,14 +6,16 @@
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Return #{{ $return->return_id }}</h2>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Return
+                                #{{ $return->return_id }}</h2>
                             <p class="text-gray-600 dark:text-gray-400">Update return information</p>
                         </div>
                         <div>
-                            <a href="{{ route('sales.returns.show', $return) }}" 
-                               class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            <a href="{{ route('sales.returns.show', $return) }}"
+                                class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
                                 </svg>
                                 Back to Return
                             </a>
@@ -23,11 +25,11 @@
             </div>
 
             <!-- Error Messages -->
-            @if($errors->any())
+            @if ($errors->any())
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
                     <strong class="font-bold">Please fix the following errors:</strong>
                     <ul class="mt-2 list-disc list-inside">
-                        @foreach($errors->all() as $error)
+                        @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
                     </ul>
@@ -35,35 +37,42 @@
             @endif
 
             <!-- Sales Order Information (if linked) -->
-            @if($return->salesOrder)
+            @if ($return->salesOrder)
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
                             <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                </path>
                             </svg>
                             Linked Sales Order
                         </h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Order Number</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Order
+                                    Number</label>
                                 <div class="mt-1 text-sm text-gray-900 dark:text-white">
-                                    <a href="{{ $return->salesOrder->purchase_type === 'in_store' ? route('pos.show', $return->salesOrder) : route('sales.orders.show', $return->salesOrder) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">
+                                    <a href="{{ $return->salesOrder->purchase_type === 'in_store' ? route('pos.show', $return->salesOrder) : route('sales.orders.show', $return->salesOrder) }}"
+                                        class="text-blue-600 hover:text-blue-800 dark:text-blue-400">
                                         {{ $return->salesOrder->order_number }}
                                     </a>
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Order Date</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Order
+                                    Date</label>
                                 <div class="mt-1 text-sm text-gray-900 dark:text-white">
                                     {{ $return->salesOrder->order_date ? $return->salesOrder->order_date->format('M d, Y') : 'N/A' }}
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Order Status</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Order
+                                    Status</label>
                                 <div class="mt-1">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                        @if($return->salesOrder->status === 'delivered') bg-green-100 text-green-800
+                                    <span
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                        @if ($return->salesOrder->status === 'delivered') bg-green-100 text-green-800
                                         @elseif($return->salesOrder->status === 'cancelled') bg-red-100 text-red-800
                                         @else bg-blue-100 text-blue-800 @endif">
                                         {{ ucfirst($return->salesOrder->status) }}
@@ -76,12 +85,13 @@
             @endif
 
             <!-- Customer Information (if linked) -->
-            @if($return->customer)
+            @if ($return->customer)
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
                             <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
                             Customer Information
                         </h3>
@@ -117,35 +127,35 @@
                         @method('PUT')
 
                         <!-- Hidden fields for sales_order_id and customer_id -->
-                        <input type="hidden" name="sales_order_id" value="{{ old('sales_order_id', $return->sales_order_id) }}">
-                        <input type="hidden" name="customer_id" value="{{ old('customer_id', $return->customer_id) }}">
+                        <input type="hidden" name="sales_order_id"
+                            value="{{ old('sales_order_id', $return->sales_order_id) }}">
+                        <input type="hidden" name="customer_id"
+                            value="{{ old('customer_id', $return->customer_id) }}">
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Product Selection -->
                             <div>
-                                <label for="product_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="product_id"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Product <span class="text-red-500">*</span>
                                 </label>
                                 <select id="product_id" name="product_id" required
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white break-words">
                                     <option value="">Select a product...</option>
-                                    @foreach($products as $product)
-                                        <option value="{{ $product->product_id }}" 
-                                                data-price="{{ $product->selling_price }}"
-                                                data-stock="{{ $product->stock_quantity }}"
-                                                {{ old('product_id', $return->product_id) == $product->product_id ? 'selected' : '' }}>
+                                    @foreach ($products as $product)
+                                        <option value="{{ $product->product_id }}"
+                                            data-price="{{ $product->selling_price }}"
+                                            data-stock="{{ $product->stock_quantity }}"
+                                            {{ old('product_id', $return->product_id) == $product->product_id ? 'selected' : '' }}>
                                             {{ $product->product_name }} (SKU: {{ $product->sku }})
-                                            @if($product->stock_quantity <= 0)
-                                                - OUT OF STOCK
-                                            @else
-                                                - Stock: {{ $product->stock_quantity }}
-                                            @endif
                                         </option>
                                     @endforeach
                                 </select>
                                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                                     <svg class="inline w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                        <path fill-rule="evenodd"
+                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                            clip-rule="evenodd" />
                                     </svg>
                                     You can return products even if they are currently out of stock.
                                 </p>
@@ -156,13 +166,14 @@
 
                             <!-- Return Date -->
                             <div>
-                                <label for="return_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="return_date"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Return Date <span class="text-red-500">*</span>
                                 </label>
-                                <input type="date" id="return_date" name="return_date" 
-                                       value="{{ old('return_date', $return->return_date->toDateString()) }}" required
-                                       max="{{ now()->toDateString() }}"
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <input type="date" id="return_date" name="return_date"
+                                    value="{{ old('return_date', $return->return_date->toDateString()) }}" required
+                                    max="{{ now()->toDateString() }}"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 @error('return_date')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -170,12 +181,13 @@
 
                             <!-- Quantity -->
                             <div>
-                                <label for="quantity" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="quantity"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Quantity <span class="text-red-500">*</span>
                                 </label>
-                                <input type="number" id="quantity" name="quantity" 
-                                       value="{{ old('quantity', $return->quantity) }}" required min="1"
-                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <input type="number" id="quantity" name="quantity"
+                                    value="{{ old('quantity', $return->quantity) }}" required min="1"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 @error('quantity')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -184,16 +196,18 @@
 
                             <!-- Price -->
                             <div>
-                                <label for="price" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="price"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Unit Price <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative rounded-md shadow-sm">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <span class="text-gray-500 sm:text-sm">₱</span>
                                     </div>
-                                    <input type="number" id="price" name="price" 
-                                           value="{{ old('price', $return->price) }}" required min="0" step="0.01"
-                                           class="mt-1 block w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <input type="number" id="price" name="price"
+                                        value="{{ old('price', $return->price) }}" required min="0"
+                                        step="0.01"
+                                        class="mt-1 block w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 </div>
                                 @error('price')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -202,14 +216,15 @@
 
                             <!-- Return Status -->
                             <div>
-                                <label for="return_status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="return_status"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Status <span class="text-red-500">*</span>
                                 </label>
                                 <select id="return_status" name="return_status" required
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    @foreach($statuses as $status)
-                                        <option value="{{ $status }}" 
-                                                {{ old('return_status', $return->return_status) == $status ? 'selected' : '' }}>
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    @foreach ($statuses as $status)
+                                        <option value="{{ $status }}"
+                                            {{ old('return_status', $return->return_status) == $status ? 'selected' : '' }}>
                                             {{ ucfirst($status) }}
                                         </option>
                                     @endforeach
@@ -224,8 +239,10 @@
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Total Amount
                                 </label>
-                                <div class="mt-1 p-3 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-300 dark:border-gray-600">
-                                    <span class="text-lg font-semibold text-gray-900 dark:text-white" id="total-amount">
+                                <div
+                                    class="mt-1 p-3 bg-gray-50 dark:bg-gray-700 rounded-md border border-gray-300 dark:border-gray-600">
+                                    <span class="text-lg font-semibold text-gray-900 dark:text-white"
+                                        id="total-amount">
                                         ₱{{ number_format($return->total_amount, 2) }}
                                     </span>
                                 </div>
@@ -237,20 +254,22 @@
                             <label for="reason" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Return Reason
                             </label>
-                            <textarea id="reason" name="reason" rows="3" 
-                                      placeholder="Enter the reason for this return..."
-                                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">{{ old('reason', $return->reason) }}</textarea>
+                            <textarea id="reason" name="reason" rows="3" placeholder="Enter the reason for this return..."
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">{{ old('reason', $return->reason) }}</textarea>
                             @error('reason')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <!-- Current Status Information -->
-                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-4">
+                        <div
+                            class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-4">
                             <div class="flex">
                                 <div class="flex-shrink-0">
                                     <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                        <path fill-rule="evenodd"
+                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                            clip-rule="evenodd"></path>
                                     </svg>
                                 </div>
                                 <div class="ml-3">
@@ -258,10 +277,11 @@
                                         Current Status: {{ ucfirst($return->return_status) }}
                                     </h3>
                                     <div class="mt-2 text-sm text-blue-700 dark:text-blue-300">
-                                        @if($return->isPending())
+                                        @if ($return->isPending())
                                             <p>This return is currently pending approval. You can modify all fields.</p>
                                         @else
-                                            <p>This return has been {{ $return->return_status }}. Some restrictions may apply to editing.</p>
+                                            <p>This return has been {{ $return->return_status }}. Some restrictions may
+                                                apply to editing.</p>
                                         @endif
                                     </div>
                                 </div>
@@ -269,17 +289,18 @@
                         </div>
 
                         <!-- Form Actions -->
-                        <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-                            <a href="{{ route('sales.returns.show', $return) }}" 
-                               class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                        <div
+                            class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                            <a href="{{ route('sales.returns.show', $return) }}"
+                                class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Cancel
                             </a>
-                            <button type="submit" 
-                                    class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <button type="submit"
+                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                                    </svg>
+                                </svg>
                                 Update Return
                             </button>
                         </div>

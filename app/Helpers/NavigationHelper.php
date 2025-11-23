@@ -298,15 +298,11 @@ class NavigationHelper
             //     ['label' => 'Sales', 'url' => null],
             //     ['label' => 'Orders', 'url' => null],
             // ],
-            // 'sales.orders.create' => [
-            //     ['label' => 'Sales', 'url' => null],
-            //     ['label' => 'Orders', 'url' => route('sales.orders.index')],
-            //     ['label' => 'Create Order', 'url' => null],
-            // ],
-            // 'sales.invoices.index' => [
-            //     ['label' => 'Sales', 'url' => null],
-            //     ['label' => 'Invoices', 'url' => null],
-            // ],
+            'sales.orders.create' => [
+                ['label' => 'Sales', 'url' => null],
+                ['label' => 'Orders', 'url' => route('sales.orders.index')],
+                ['label' => 'Create Order', 'url' => null],
+            ],
 
             // Purchases
             'purchases.purchase-orders.index' => [
@@ -349,6 +345,12 @@ class NavigationHelper
                 ['label' => 'Reports', 'url' => null],
                 ['label' => 'Sales Report', 'url' => null],
             ],
+
+            'reports.purchases' => [
+                ['label' => 'Reports', 'url' => null],
+                ['label' => 'Purchase Report', 'url' => null],
+            ],
+
             'reports.inventory' => [
                 ['label' => 'Reports', 'url' => null],
                 ['label' => 'Inventory Report', 'url' => null],

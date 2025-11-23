@@ -14,6 +14,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
                         <!-- Sales Report Card -->
+                        @hasanyrole('super_admin|admin|salesperson')
                         <div
                             class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition">
                             <div class="flex items-center justify-between mb-4">
@@ -37,8 +38,10 @@
                                 </a>
                             </div>
                         </div>
+                        @endhasanyrole
 
                         <!-- Purchase Report Card -->
+                        @hasanyrole('super_admin|admin|inventory_clerk')
                         <div
                             class="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition">
                             <div class="flex items-center justify-between mb-4">
@@ -62,6 +65,7 @@
                                 </a>
                             </div>
                         </div>
+                        @endhasanyrole
 
                         <!-- Inventory Report Card -->
                         <div
@@ -162,6 +166,7 @@
 
 
                         <!-- Reorder Items Report Card -->
+                        @hasanyrole('super_admin|admin|inventory_clerk')
                         <div
                             class="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900 dark:to-rose-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition">
                             <div class="flex items-center justify-between mb-4">
@@ -185,6 +190,7 @@
                                 </a>
                             </div>
                         </div>
+                        @endhasanyrole
 
                         <!-- Critical Level Items Report Card -->
                         {{-- <div

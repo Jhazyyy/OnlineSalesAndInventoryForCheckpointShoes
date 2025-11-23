@@ -14,7 +14,7 @@
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                        d="M15 19l-7-7 7-7" />
                                 </svg>
                                 Back to Returns
                             </a>
@@ -157,7 +157,8 @@
                                 <input type="date" id="return_date" name="return_date"
                                     value="{{ old('return_date', now()->toDateString()) }}" required
                                     max="{{ now()->toDateString() }}"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    min="{{ date('Y-m-d') }}">
                                 @error('return_date')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -251,10 +252,6 @@
                             </a>
                             <button type="submit"
                                 class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg>
                                 Create Return
                             </button>
                         </div>
@@ -296,7 +293,7 @@
                 searchTimeout = setTimeout(function() {
                     fetch(
                             `{{ route('sales.returns.search.sales-orders') }}?search=${encodeURIComponent(searchTerm)}`
-                            )
+                        )
                         .then(response => response.json())
                         .then(data => {
                             if (data.success && data.sales_orders.length > 0) {

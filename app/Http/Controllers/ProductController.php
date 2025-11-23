@@ -84,7 +84,7 @@ class ProductController extends Controller
 
         // Get unique categories for filter dropdown
         $categories = Product::distinct()->pluck('product_category')->filter()->sort()->values();
-
+        
         // Get active suppliers for dropdown
         $suppliers = \App\Models\Supplier::where('status', 'active')->orderBy('supplier_name')->get();
 
@@ -553,7 +553,7 @@ class ProductController extends Controller
 
             $importedCount = $import->getRowCount();
 
-            return redirect()->route('master_data.products.index')
+            return redirect()->route('inventory.products.index')
                 ->with('success', "Successfully imported {$importedCount} products!");
 
         } catch (\Exception $e) {

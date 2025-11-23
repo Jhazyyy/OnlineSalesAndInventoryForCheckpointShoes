@@ -196,7 +196,7 @@
                                     </div>
                                     <div class="text-right">
                                         <p class="font-bold text-orange-600 dark:text-orange-400">{{ $product->quantity ?? 0 }} units</p>
-                                        <p class="text-xs text-gray-500">Min: {{ $product->reorder_level ?? 0 }}</p>
+                                        {{-- <p class="text-xs text-gray-500">Min: {{ $product->reorder_level ?? 0 }}</p> --}}
                                     </div>
                                 </div>
                                 @empty
@@ -216,7 +216,7 @@
                                         <p class="text-xs text-gray-500">SKU: {{ $product->sku ?? 'N/A' }}</p>
                                     </div>
                                     <div class="text-right">
-                                        <span class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded text-xs font-bold">
+                                        <span class="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded text-xs font-bold truncate">
                                             OUT OF STOCK
                                         </span>
                                     </div>

@@ -81,7 +81,7 @@
 
     <!-- Hero Section with Harvard-style banner -->
     <div class="relative min-h-[70vh] bg-cover bg-center"
-        style="background-image: url('{{ asset('https://scontent.fmnl9-4.fna.fbcdn.net/v/t39.30808-6/548295753_1379218370874128_4776008243320392307_n.jpg?stp=dst-jpg_s960x960_tt6&_nc_cat=105&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=lCKVxuADvScQ7kNvwH2i4Dw&_nc_oc=AdmOHxmw21FQkJQovrquAlVAgeBB-OJs5a2IG03hrGGtjWWllK7v5-OO0RX6SmpTmDQ&_nc_zt=23&_nc_ht=scontent.fmnl9-4.fna&_nc_gid=18HLZsE6_gAD9X6Zd2jFkQ&oh=00_AfiB93ayfBI9fAJmoNlHHaZ1bCCX-9K175rUqVV59RXwXg&oe=69225EDF') }}');">
+        style="background-image: url('{{ asset('background.jpg') }}');">
         <div class="absolute inset-0 gradient-overlay"></div>
         <div class="relative hero min-h-[70vh]">
             <div class="hero-content text-center text-white p-4 md:p-8">

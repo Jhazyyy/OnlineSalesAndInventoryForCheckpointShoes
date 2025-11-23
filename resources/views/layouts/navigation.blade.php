@@ -49,6 +49,7 @@
                 </a> --}}
 
                 <!-- Settings Icon -->
+                @hasanyrole('super_admin|admin')
                 <a href="{{ route('settings.index') }}"
                     class="flex items-center justify-center w-6 h-6 rounded-full text-black dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200 focus:outline-none focus:ring-1"
                     title="System Settings">
@@ -60,6 +61,7 @@
                             d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                     </svg>
                 </a>
+                @endhasanyrole
 
                 <!-- Notifications Modal -->
                 <div x-data="notificationModal()" @click.away="closeModal()" class="relative">

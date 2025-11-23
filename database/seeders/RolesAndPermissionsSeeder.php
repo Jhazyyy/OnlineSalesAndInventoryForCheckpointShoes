@@ -54,6 +54,13 @@ class RolesAndPermissionsSeeder extends Seeder
             'edit customers',
             'delete customers',
             
+
+            //Returns Management
+            'view returns',
+            'create returns',
+            'edit returns',
+            'delete returns',
+
             // Supplier management
             'view suppliers',
             'create suppliers',
@@ -115,6 +122,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'create customers',
             'edit customers',
             'delete customers',
+            'view returns',
+            'create returns',
+            'edit returns',
+            'delete returns',
             'view suppliers',
             'create suppliers',
             'edit suppliers',
@@ -141,12 +152,13 @@ class RolesAndPermissionsSeeder extends Seeder
             'view sales',
             'create sales',
             'edit sales',
+            'view returns',
+            'create returns',
+            'edit returns',
             'view customers',
             'create customers',
             'edit customers',
             'view reports',
-            'view categories',
-            'view brands',
         ]);
 
         // Create Inventory Clerk role with inventory-focused permissions
@@ -188,7 +200,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $this->command->info('Roles and permissions created successfully!');
         $this->command->info('Super Admin role has all permissions (including managing admins).');
         $this->command->info('Admin role has all permissions except managing other admins.');
-        $this->command->info('Salesperson role has sales and customer management permissions.');
+        $this->command->info('Salesperson role has sales, customer, and return management permissions.');
         $this->command->info('Inventory Clerk role has inventory and purchase management permissions.');
         $this->command->info('User role has limited view and create permissions.');
     }

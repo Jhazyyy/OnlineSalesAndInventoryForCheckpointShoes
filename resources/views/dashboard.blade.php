@@ -7,10 +7,10 @@
                     {{-- <h2 class="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">Dashboard</h2> --}}
 
                     <!-- Main Dashboard Grid -->
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
 
-                        <!-- Left Column: Sales Activity & Item Details -->
-                        <div class="lg:col-span-2 space-y-4">
+                        <!-- Left Column:Item Details -->
+                        <div class="lg:col-span-2 space-y-2">
 
                             <!-- Item Details Section -->
                             <div
@@ -18,13 +18,22 @@
                                 <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Product Details
                                 </h3>
 
-                                <div class="grid grid-cols-3 gap-6">
+                                <div class="grid grid-cols-4 gap-6">
                                     <!-- Low Stock Items -->
                                     <div class="text-left">
-                                        <div class="text-sm text-red-600 dark:text-red-400 font-medium mb-2">Low Stock
+                                        <div class="text-sm text-yellow-600 dark:text-yellow-400 font-medium mb-2">Low Stock
                                             Items</div>
                                         <div class="text-2xl font-bold text-gray-800 dark:text-gray-100">
                                             {{ $inventoryStats['low_stock_products'] ?? 0 }}
+                                        </div>
+                                    </div>
+
+                                    <!-- Low Stock Items -->
+                                    <div class="text-left">
+                                        <div class="text-sm text-red-600 dark:text-red-400 font-medium mb-2">Out of Stock
+                                            Items</div>
+                                        <div class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                                            {{ $inventoryStats['out_of_stock_products'] ?? 0 }}
                                         </div>
                                     </div>
 
@@ -66,16 +75,16 @@
                                             <div class="text-2xl font-bold text-green-600 dark:text-green-400">
                                                 {{ $inventoryStats['active_products'] ?? 0 }}
                                             </div>
-                                            <div class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                                            {{-- <div class="text-xs text-gray-500 dark:text-gray-500 mt-1">
                                                 Out of {{ $inventoryStats['total_products'] ?? 0 }} total items
-                                            </div>
+                                            </div> --}}
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Top Selling & Purchase Items Section (Grid Layout) -->
-                            <div class="grid grid-cols-2 lg:grid-cols-2 gap-2">
+                            <div class="grid grid-cols-3 lg:grid-cols-2 gap-1">
                                 <!-- Top Selling Items Section -->
                                 <div
                                     class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col">
@@ -351,13 +360,12 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
 
                     <!-- Additional Quick Stats (Optional Secondary Row) -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-6">
                         <!-- Purchases Card -->
-                        <div
+                        {{-- <div
                             class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                             <div class="flex items-center">
                                 <div class="p-2 bg-yellow-500 rounded-lg">
@@ -379,7 +387,7 @@
                                     </p>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Suppliers Card -->
                         {{-- <div
@@ -432,7 +440,7 @@
                         </div> --}}
 
                         <!-- Revenue Card -->
-                        <div
+                        {{-- <div
                             class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                             <div class="flex items-center">
                                 <div class="p-2 bg-green-500 rounded-lg">
@@ -454,7 +462,7 @@
                                     </p>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
 
                 </div>
@@ -482,7 +490,7 @@
                             </div>
 
                             <!-- Quick Links -->
-                            <div
+                            {{-- <div
                                 class="hidden md:flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
                                 <a href="#"
                                     class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</a>
@@ -492,7 +500,7 @@
                                     class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Documentation</a>
                                 <a href="#"
                                     class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy</a>
-                            </div>
+                            </div> --}}
                         </div>
 
                         <div
@@ -619,12 +627,12 @@
                                             <div class="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
                                                 ${item.image 
                                                     ? `<img src="/storage/${item.image}" 
-                                                                   alt="${item.name}" 
-                                                                   class="w-5 h-5 object-cover"
-                                                                   onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
+                                                                               alt="${item.name}" 
+                                                                               class="w-5 h-5 object-cover"
+                                                                               onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
                                                     : `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                                               </svg>`
+                                                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                                           </svg>`
                                                 }
                                             </div>
                                             <div class="flex-1 min-w-0">
@@ -693,12 +701,12 @@
                                             <div class="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center overflow-hidden">
                                                 ${item.image 
                                                     ? `<img src="/storage/${item.image}" 
-                                                                   alt="${item.name}" 
-                                                                   class="w-5 h-5 object-cover"
-                                                                   onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
+                                                                               alt="${item.name}" 
+                                                                               class="w-5 h-5 object-cover"
+                                                                               onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
                                                     : `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                                               </svg>`
+                                                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                                           </svg>`
                                                 }
                                             </div>
                                             <div class="flex-1 min-w-0">
