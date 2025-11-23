@@ -215,7 +215,7 @@
                                                         {{ $item->is_active ? 'Deactivate' : 'Activate' }}
                                                     </button>
                                                 </form> --}}
-                                                <form method="POST"
+                                                {{-- <form method="POST"
                                                     action="{{ route('master_data.tax_discounts.destroy', $item) }}"
                                                     class="inline"
                                                     onsubmit="return confirm('Are you sure you want to delete this {{ $item->type }}?');">
@@ -225,7 +225,7 @@
                                                         class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
                                                         Delete
                                                     </button>
-                                                </form>
+                                                </form> --}}
                                             </div>
                                         </td>
                                     </tr>

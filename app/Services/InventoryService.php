@@ -79,8 +79,8 @@ class InventoryService
             $before = (int) $inventory->quantity_on_hand;
             $after = $before + (int) $quantityChange;
 
-            // Persist inventory change
-            $inventory->quantity_on_hand = $after;
+            // Persist inventory change with protection against negative values
+            $inventory->quantity_on_hand = max(0, $after);
             $inventory->last_movement_at = now();
             // Optionally unit_cost could be tracked via a costing service; skipping assignment here for compatibility
             $inventory->save();
@@ -102,7 +102,12 @@ class InventoryService
             // Back-compat: keep products.quantity in sync as total of all inventory rows
             if ($syncProductQuantity) {
                 $total = Inventory::where('product_id', $productId)->sum('quantity_on_hand');
-                Product::where('product_id', $productId)->update(['quantity' => $total]);
+                // Use model to trigger mutators and prevent negative values
+                $product = Product::find($productId);
+                if ($product) {
+                    $product->quantity = max(0, $total); // Ensure non-negative
+                    $product->save();
+                }
             }
 
             return $inventory->refresh();

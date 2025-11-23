@@ -208,13 +208,13 @@
                                                         {{ $customer->status === 'active' ? 'Deactivate' : 'Activate' }}
                                                     </button>
                                                 </form> --}}
-                                                <form method="POST" action="{{ route('sales.customers.destroy', $customer) }}" 
+                                                {{-- <form method="POST" action="{{ route('sales.customers.destroy', $customer) }}" 
                                                       class="inline-block" 
                                                       onsubmit="return confirm('Are you sure you want to delete this customer? This action cannot be undone.')">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">Delete</button>
-                                                </form>
+                                                </form> --}}
                                             </td>
                                         </tr>
                                     @endforeach

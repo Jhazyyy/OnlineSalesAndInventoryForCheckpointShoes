@@ -206,6 +206,23 @@ class ReportController extends Controller
             $filters['days'] = 90;
         }
         
+        // Automatically calculate movements when filters are applied or when accessing the report
+        $movementService = app(\App\Services\ProductMovementService::class);
+        
+        // Only recalculate if:
+        // 1. Days filter changed from default OR
+        // 2. There are uncategorized products OR
+        // 3. Last check was more than 1 hour ago
+        $lastCheck = \App\Models\Product::max('last_movement_check');
+        $shouldRecalculate = 
+            $request->has('days') || // User changed the period
+            \App\Models\Product::whereNull('movement_category')->count() > 0 || // Uncategorized products exist
+            (!$lastCheck || now()->diffInHours($lastCheck) > 1); // Last check was over 1 hour ago
+        
+        if ($shouldRecalculate) {
+            $movementService->calculateAllProductMovements((int) $filters['days']);
+        }
+        
         $report = $this->reportService->generateProductMovementReport($filters);
         
         return view('reports.product-movement', compact('report', 'filters'));

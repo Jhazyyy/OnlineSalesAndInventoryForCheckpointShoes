@@ -326,6 +326,9 @@ Route::get('dashboard', function() {
             ->map(function ($item) {
                 return [
                     'name' => $item->product->name ?? 'Unknown Product',
+                    'sku' => $item->product->sku ?? 'N/A',
+                    'size' => $item->product->size ?? null,
+                    'color' => $item->product->color ?? null,
                     'quantity' => (int) $item->total_quantity,
                     'revenue' => (float) $item->total_revenue,
                     'image' => $item->product->image ?? null,
@@ -358,6 +361,9 @@ Route::get('dashboard', function() {
             ->map(function ($item) {
                 return [
                     'name' => $item->product->name ?? 'Unknown Product',
+                    'sku' => $item->product->sku ?? 'N/A',
+                    'size' => $item->product->size ?? null,
+                    'color' => $item->product->color ?? null,
                     'quantity' => (int) $item->total_quantity,
                     'cost' => (float) $item->total_cost,
                     'image' => $item->product->image ?? null,
@@ -589,7 +595,7 @@ Route::get('dashboard/top-selling-items', function (Illuminate\Http\Request $req
         ->with('product')
         ->groupBy('product_id')
         ->orderByDesc('total_quantity')
-        ->limit(10)
+        ->limit(100)
         ->get()
         ->filter(function ($item) {
             return $item->product !== null;
@@ -597,6 +603,9 @@ Route::get('dashboard/top-selling-items', function (Illuminate\Http\Request $req
         ->map(function ($item) {
             return [
                 'name' => $item->product->name ?? 'Unknown Product',
+                'sku' => $item->product->sku ?? 'N/A',
+                'size' => $item->product->size ?? null,
+                'color' => $item->product->color ?? null,
                 'quantity' => (int) $item->total_quantity,
                 'revenue' => (float) $item->total_revenue,
                 'image' => $item->product->image ?? null,
@@ -678,6 +687,9 @@ Route::get('dashboard/top-purchase-items', function (Illuminate\Http\Request $re
         ->map(function ($item) {
             return [
                 'name' => $item->product->name ?? 'Unknown Product',
+                'sku' => $item->product->sku ?? 'N/A',
+                'size' => $item->product->size ?? null,
+                'color' => $item->product->color ?? null,
                 'quantity' => (int) $item->total_quantity,
                 'cost' => (float) $item->total_cost,
                 'image' => $item->product->image ?? null,
@@ -1002,7 +1014,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [SalesOrderController::class, 'index'])->middleware('permission:view sales')->name('index');
         Route::get('/create', [SalesOrderController::class, 'create'])->middleware('permission:create sales')->name('create');
         Route::post('/', [SalesOrderController::class, 'store'])->middleware('permission:create sales')->name('store');
-        
         Route::get('/analytics', [SalesOrderController::class, 'analytics'])->middleware('permission:view sales')->name('analytics');
         
         // Wildcard route should be last

@@ -21,7 +21,8 @@
                                 <div class="grid grid-cols-4 gap-6">
                                     <!-- Low Stock Items -->
                                     <div class="text-left">
-                                        <div class="text-sm text-yellow-600 dark:text-yellow-400 font-medium mb-2">Low Stock
+                                        <div class="text-sm text-yellow-600 dark:text-yellow-400 font-medium mb-2">Low
+                                            Stock
                                             Items</div>
                                         <div class="text-2xl font-bold text-gray-800 dark:text-gray-100">
                                             {{ $inventoryStats['low_stock_products'] ?? 0 }}
@@ -30,7 +31,8 @@
 
                                     <!-- Low Stock Items -->
                                     <div class="text-left">
-                                        <div class="text-sm text-red-600 dark:text-red-400 font-medium mb-2">Out of Stock
+                                        <div class="text-sm text-red-600 dark:text-red-400 font-medium mb-2">Out of
+                                            Stock
                                             Items</div>
                                         <div class="text-2xl font-bold text-gray-800 dark:text-gray-100">
                                             {{ $inventoryStats['out_of_stock_products'] ?? 0 }}
@@ -107,8 +109,8 @@
                                     </div>
 
                                     <div id="topSellingItemsContainer" class="space-y-3 overflow-y-auto flex-1"
-                                        style="max-height: 300px;">
-                                        @forelse($topSellingItems->take(10) ?? [] as $item)
+                                        style="max-height: 400px;">
+                                        @forelse($topSellingItems->take(100) ?? [] as $item)
                                             <div
                                                 class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex-shrink-0">
                                                 <div class="flex items-center space-x-2 flex-1 min-w-0">
@@ -139,24 +141,37 @@
                                                     </div>
 
                                                     <div class="flex-1 min-w-0">
-                                                        <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 break-words"
+                                                        <div class="text-xs font-semibold text-gray-800 dark:text-gray-100 break-words"
                                                             title="{{ $item['name'] ?? 'Unknown Product' }}">
                                                             {{ $item['name'] ?? 'Unknown Product' }}
                                                         </div>
+                                                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                            {{ $item['sku'] ?? '' }}
+                                                            @if(!empty($item['size']) || !empty($item['color']))
+                                                                <span class="mx-1">|</span>
+                                                                @if(!empty($item['size']))
+                                                                    <span>{{ $item['size'] }}</span>
+                                                                @endif
+                                                                @if(!empty($item['color']))
+                                                                    @if(!empty($item['size']))<span class="mx-1">|</span>@endif
+                                                                    <span>{{ $item['color'] }}</span>
+                                                                @endif
+                                                            @endif
+                                                        </div>
                                                         <div
                                                             class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
-                                                            Sold: {{ number_format($item['quantity'] ?? 0) }} units
+                                                            Qty Sold: {{ number_format($item['quantity'] ?? 0) }}
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                <div class="text-right ml-3 flex-shrink-0">
+                                                {{-- <div class="text-right ml-3 flex-shrink-0">
                                                     <div
                                                         class="text-base font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
                                                         {{ number_format($item['quantity'] ?? 0) }}
                                                     </div>
                                                     <div class="text-xs text-gray-500 dark:text-gray-400">PCS</div>
-                                                </div>
+                                                </div> --}}
                                             </div>
                                         @empty
                                             <div class="text-center py-8 text-gray-500 dark:text-gray-400">
@@ -175,7 +190,7 @@
 
                                 <!-- Top Purchase Items Section -->
                                 <div
-                                    class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col break-words">
+                                    class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col ">
                                     <div
                                         class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 flex-shrink-0">
                                         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
@@ -195,8 +210,8 @@
                                     </div>
 
                                     <div id="topPurchaseItemsContainer" class="space-y-3 overflow-y-auto flex-1"
-                                        style="max-height: 300px;">
-                                        @forelse($topPurchaseItems->take(5) ?? [] as $item)
+                                        style="max-height: 400px;">
+                                        @forelse($topPurchaseItems->take(100) ?? [] as $item)
                                             <div
                                                 class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors flex-shrink-0">
                                                 <div class="flex items-center space-x-3 flex-1 min-w-0">
@@ -227,25 +242,37 @@
                                                     </div>
 
                                                     <div class="flex-1 min-w-0">
-                                                        <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate"
+                                                        <div class="text-xs font-semibold text-gray-800 dark:text-gray-100 break-words"
                                                             title="{{ $item['name'] ?? 'Unknown Product' }}">
                                                             {{ $item['name'] ?? 'Unknown Product' }}
                                                         </div>
+                                                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                            {{ $item['sku'] ?? '' }}
+                                                            @if(!empty($item['size']) || !empty($item['color']))
+                                                                <span class="mx-1">|</span>
+                                                                @if(!empty($item['size']))
+                                                                    <span>{{ $item['size'] }}</span>
+                                                                @endif
+                                                                @if(!empty($item['color']))
+                                                                    @if(!empty($item['size']))<span class="mx-1">|</span>@endif
+                                                                    <span>{{ $item['color'] }}</span>
+                                                                @endif
+                                                            @endif
+                                                        </div>
                                                         <div
-                                                            class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
-                                                            Purchased: {{ number_format($item['quantity'] ?? 0) }}
-                                                            units
+                                                            class="text-xs text-gray-500 dark:text-gray-400 mt-1 break-words">
+                                                            Qty Purchased: {{ number_format($item['quantity'] ?? 0) }}
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                <div class="text-right ml-3 flex-shrink-0">
+                                                {{-- <div class="text-right ml-3 flex-shrink-0">
                                                     <div
                                                         class="text-base font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
                                                         {{ number_format($item['quantity'] ?? 0) }}
                                                     </div>
                                                     <div class="text-xs text-gray-500 dark:text-gray-400">PCS</div>
-                                                </div>
+                                                </div> --}}
                                             </div>
                                         @empty
                                             <div class="text-center py-8 text-gray-500 dark:text-gray-400">
@@ -335,7 +362,6 @@
                                                     </span>
                                                 </div>
                                             @endif
-
                                             @if (($purchaseReceiveStats['pending_from_receives'] ?? 0) > 0)
                                                 <div
                                                     class="flex items-center justify-between p-2 bg-green-50 dark:bg-green-900/20 rounded">
@@ -627,20 +653,27 @@
                                             <div class="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
                                                 ${item.image 
                                                     ? `<img src="/storage/${item.image}" 
-                                                                               alt="${item.name}" 
-                                                                               class="w-5 h-5 object-cover"
-                                                                               onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
+                                                                                   alt="${item.name}" 
+                                                                                   class="w-5 h-5 object-cover"
+                                                                                   onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
                                                     : `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                                                           </svg>`
+                                                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                                               </svg>`
                                                 }
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate" title="${item.name}">
+                                                <div class="text-xs font-semibold text-gray-800 dark:text-gray-100 break-words" title="${item.name}">
                                                     ${item.name}
                                                 </div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                    ${item.sku || 'N/A'}
+                                                    ${(item.size || item.color) ? '<span class="mx-1">•</span>' : ''}
+                                                    ${item.size ? item.size : ''}
+                                                    ${(item.size && item.color) ? '<span class="mx-1">/</span>' : ''}
+                                                    ${item.color ? item.color : ''}
+                                                </div>
                                                 <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
-                                                    Sold: ${item.quantity.toLocaleString()} units
+                                                    Qty Sold: ${item.quantity.toLocaleString()}
                                                 </div>
                                             </div>
                                         </div>
@@ -701,20 +734,27 @@
                                             <div class="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center overflow-hidden">
                                                 ${item.image 
                                                     ? `<img src="/storage/${item.image}" 
-                                                                               alt="${item.name}" 
-                                                                               class="w-5 h-5 object-cover"
-                                                                               onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
+                                                                                   alt="${item.name}" 
+                                                                                   class="w-5 h-5 object-cover"
+                                                                                   onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
                                                     : `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                                                           </svg>`
+                                                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                                               </svg>`
                                                 }
                                             </div>
                                             <div class="flex-1 min-w-0">
-                                                <div class="text-sm font-semibold text-gray-800 dark:text-gray-100 break-words" title="${item.name}">
+                                                <div class="text-xs font-semibold text-gray-800 dark:text-gray-100 break-words" title="${item.name}">
                                                     ${item.name}
                                                 </div>
-                                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
-                                                    Purchased: ${item.quantity.toLocaleString()} units
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                    ${item.sku || 'N/A'}
+                                                    ${(item.size || item.color) ? '<span class="mx-1">|</span>' : ''}
+                                                    ${item.size ? item.size : ''}
+                                                    ${(item.size && item.color) ? '<span class="mx-1">|</span>' : ''}
+                                                    ${item.color ? item.color : ''}
+                                                </div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 break-words">
+                                                    Qty Purchased: ${item.quantity.toLocaleString()}
                                                 </div>
                                             </div>
                                         </div>

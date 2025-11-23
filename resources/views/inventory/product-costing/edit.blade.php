@@ -232,7 +232,7 @@
                 </div>
 
                 <!-- Pricing -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                     <div class="p-6">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Pricing</h3>
 
@@ -249,7 +249,7 @@
                             </div>
 
                             <!-- Calculation Method -->
-                            <div>
+                            {{-- <div>
                                 <label for="cost_calculation_method"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Calculation Method
@@ -269,7 +269,7 @@
                                         {{ old('cost_calculation_method', $product->cost_calculation_method) == 'lifo' ? 'selected' : '' }}>
                                         LIFO</option>
                                 </select>
-                            </div>
+                            </div> --}}
                         </div>
 
                         <!-- Price Suggestion -->

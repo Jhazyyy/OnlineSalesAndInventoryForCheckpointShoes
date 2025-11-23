@@ -186,7 +186,7 @@
             </div>
 
             <!-- Delete Account Section -->
-            @if (!auth()->user()->hasAnyRole(['super_admin', 'admin']))
+            @if (!auth()->user()->hasAnyRole(['super_admin', 'admin', 'salesperson', 'inventory_clerk']))
             <div class="mt-6 bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <div class="p-8">
                     @include('profile.partials.delete-user-form')

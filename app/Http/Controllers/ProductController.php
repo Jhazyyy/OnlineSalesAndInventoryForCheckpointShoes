@@ -337,6 +337,7 @@ class ProductController extends Controller
             'property_value' => 'nullable|string|max:255',
             'product_category' => 'nullable|string|max:255',
             'custom_category' => 'nullable|string|max:255',
+            'quantity' => 'nullable|integer|min:0',
             'price' => 'nullable|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image_url' => 'nullable|url|max:500',

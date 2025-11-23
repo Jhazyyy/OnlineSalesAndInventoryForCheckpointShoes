@@ -26,27 +26,14 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
                     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
-                        <div>
-                            @if($report['summary']['uncategorized'] > 0)
-                                <div class="flex items-center gap-2 text-sm text-yellow-600 dark:text-yellow-400">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                    </svg>
-                                    <span>{{ $report['summary']['uncategorized'] }} product(s) need movement analysis</span>
-                                </div>
-                            @endif
-                        </div>
-                        <form method="POST" action="{{ route('inventory.product-movement.calculate-all') }}" class="flex-shrink-0">
-                            @csrf
-                            <input type="hidden" name="days" value="{{ request('days', 90) }}">
-                            <button type="submit"
-                                    class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-md transition">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        <div class="flex items-center gap-3">
+                            {{-- <div class="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                Calculate Movement
-                            </button>
-                        </form>
+                                <span>Auto-updates when filters change</span>
+                            </div> --}}
+                        </div>
                     </div>
                     
                     <form method="GET" action="{{ route('reports.product-movement') }}" class="space-y-4">
@@ -86,9 +73,12 @@
                             </div>
 
                             <div class="flex flex-wrap gap-2 sm:justify-end sm:items-end">
-                                <button type="submit"
+                                <button type="submit" id="filterBtn"
                                         class="inline-flex items-center justify-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs uppercase rounded-md transition w-auto">
-                                    Apply Filter
+                                    <svg class="w-4 h-4 mr-2 hidden" id="loadingIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                    <span id="filterBtnText">Apply Filter</span>
                                 </button>
                                 <a href="{{ route('reports.product-movement') }}"
                                    class="inline-flex items-center justify-center px-3 py-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-semibold text-xs uppercase rounded-md transition w-auto">
@@ -97,6 +87,20 @@
                             </div>
                         </div>
                     </form>
+                    
+                    <script>
+                        document.querySelector('form').addEventListener('submit', function() {
+                            const btn = document.getElementById('filterBtn');
+                            const btnText = document.getElementById('filterBtnText');
+                            const loadingIcon = document.getElementById('loadingIcon');
+                            
+                            btn.disabled = true;
+                            btn.classList.add('opacity-75', 'cursor-not-allowed');
+                            btnText.textContent = 'Analyzing...';
+                            loadingIcon.classList.remove('hidden');
+                            loadingIcon.classList.add('animate-spin');
+                        });
+                    </script>
                 </div>
             </div>
 
@@ -111,24 +115,22 @@
                         <div class="text-sm text-blue-800 dark:text-blue-300 space-y-1">
                             <p><strong>Last Analysis:</strong> {{ $report['summary']['last_analysis'] }}</p>
                             <p><strong>Analysis Period:</strong> {{ $report['summary']['analysis_period'] }}</p>
-                            <p><strong>Criteria:</strong> Fast Moving (≥5 units/day) • Slow Moving (1-5 units/day) • Non-Moving (0 sales in 30+ days)</p>
-                            @if($report['summary']['uncategorized'] > 0)
-                                <p class="text-yellow-700 dark:text-yellow-400 font-semibold">⚠️ {{ $report['summary']['uncategorized'] }} product(s) haven't been analyzed yet. Click "Calculate Movement" to update.</p>
-                            @endif
+                            <p><strong>Criteria:</strong> Fast Moving (≥2 units/day) • Slow Moving (0.5-2 units/day) • Non-Moving (0 sales in 30+ days)</p>
+                            <p class="text-green-700 dark:text-green-400 font-semibold">✓ Automatically recalculates when you change the analysis period or hourly for fresh data</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Summary Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 <!-- Fast Moving -->
                 <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg shadow-lg p-5 transform hover:scale-[1.03] transition duration-300 ease-in-out">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-xs sm:text-sm opacity-90">Fast Moving</p>
                             <p class="text-2xl sm:text-3xl font-bold mt-1">{{ number_format($report['summary']['fast_moving']) }}</p>
-                            <p class="text-xs opacity-75 mt-1">{{ $report['summary']['fast_moving_percentage'] }}% of total</p>
+                            {{-- <p class="text-xs opacity-75 mt-1">{{ $report['summary']['fast_moving_percentage'] }}% of total</p> --}}
                         </div>
                         <svg class="w-8 h-8 sm:w-10 sm:h-10 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -142,7 +144,7 @@
                         <div>
                             <p class="text-xs sm:text-sm opacity-90">Slow Moving</p>
                             <p class="text-2xl sm:text-3xl font-bold mt-1">{{ number_format($report['summary']['slow_moving']) }}</p>
-                            <p class="text-xs opacity-75 mt-1">{{ $report['summary']['slow_moving_percentage'] }}% of total</p>
+                            {{-- <p class="text-xs opacity-75 mt-1">{{ $report['summary']['slow_moving_percentage'] }}% of total</p> --}}
                         </div>
                         <svg class="w-8 h-8 sm:w-10 sm:h-10 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
@@ -156,7 +158,7 @@
                         <div>
                             <p class="text-xs sm:text-sm opacity-90">Non-Moving</p>
                             <p class="text-2xl sm:text-3xl font-bold mt-1">{{ number_format($report['summary']['non_moving']) }}</p>
-                            <p class="text-xs opacity-75 mt-1">{{ $report['summary']['non_moving_percentage'] }}% of total</p>
+                            {{-- <p class="text-xs opacity-75 mt-1">{{ $report['summary']['non_moving_percentage'] }}% of total</p> --}}
                         </div>
                         <svg class="w-8 h-8 sm:w-10 sm:h-10 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -165,7 +167,7 @@
                 </div>
 
                 <!-- Uncategorized -->
-                <div class="bg-gradient-to-br from-gray-200 to-gray-600 text-black dark:text-white rounded-lg shadow-lg p-5 transform hover:scale-[1.03] transition duration-300 ease-in-out">
+                {{-- <div class="bg-gradient-to-br from-gray-200 to-gray-600 text-black dark:text-white rounded-lg shadow-lg p-5 transform hover:scale-[1.03] transition duration-300 ease-in-out">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-xs sm:text-sm opacity-90">Uncategorized</p>
@@ -176,7 +178,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                </div>
+                </div> --}}
             </div>
 
             <!-- Export Buttons -->
@@ -336,8 +338,8 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Movement</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stock Qty</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stock Value</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Days Since Sale</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Action</th>
+                                    {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Days Since Sale</th> --}}
+                                    {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Action</th> --}}
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -367,9 +369,9 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">
                                         ₱{{ number_format($product->stock_value, 2) }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                    {{-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                         {{ $product->days_since_last_sale ?? 'N/A' }} days
-                                    </td>
+                                    </td> --}}
                                     {{-- <td class="px-6 py-4 whitespace-nowrap text-sm">
                                         <a href="{{ route('inventory.product-movement.promotional') }}"
                                            class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">

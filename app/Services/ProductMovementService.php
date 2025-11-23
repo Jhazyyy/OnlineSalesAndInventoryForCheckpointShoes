@@ -12,8 +12,8 @@ class ProductMovementService
     /**
      * Movement category thresholds (sales per day)
      */
-    const FAST_MOVING_THRESHOLD = 5;      // 5+ units per day
-    const SLOW_MOVING_THRESHOLD = 1;      // 1-5 units per day
+    const FAST_MOVING_THRESHOLD = 3;      // 3+ units per day
+    const SLOW_MOVING_THRESHOLD = 1;      // 1-3 units per day
     const NON_MOVING_DAYS = 30;           // No sales in 30+ days
 
     /**

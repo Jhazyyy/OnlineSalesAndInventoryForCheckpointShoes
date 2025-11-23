@@ -49,4 +49,20 @@ class Inventory extends Model
     {
         return max(0, (int) $this->quantity_on_hand - (int) $this->quantity_reserved);
     }
+
+    /**
+     * Mutator to prevent negative quantity_on_hand
+     */
+    public function setQuantityOnHandAttribute($value): void
+    {
+        $this->attributes['quantity_on_hand'] = max(0, (int) $value);
+    }
+
+    /**
+     * Mutator to prevent negative quantity_reserved
+     */
+    public function setQuantityReservedAttribute($value): void
+    {
+        $this->attributes['quantity_reserved'] = max(0, (int) $value);
+    }
 }

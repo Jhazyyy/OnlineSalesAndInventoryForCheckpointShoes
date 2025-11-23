@@ -377,7 +377,7 @@
                                                             onclick="openAdjustmentHistoryModal({{ $product->product_id }}, '{{ $product->product_name }}')"
                                                             class="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300">History</button>
                                                     @endhasanyrole
-                                                        <form method="POST"
+                                                        {{-- <form method="POST"
                                                             action="{{ route('inventory.products.destroy', $product) }}"
                                                             class="inline-block"
                                                             onsubmit="return confirm('Are you sure you want to delete this product?')">
@@ -385,7 +385,7 @@
                                                             @method('DELETE')
                                                             <button type="submit"
                                                                 class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">Delete</button>
-                                                        </form>
+                                                        </form> --}}
                                                     </td>
                                                 @endhasanyrole
                                             </tr>

@@ -182,7 +182,7 @@
                                                 class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">
                                                 Edit
                                             </a>
-                                            <form action="{{ route('master_data.brands.destroy', $brand) }}"
+                                            {{-- <form action="{{ route('master_data.brands.destroy', $brand) }}"
                                                 method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
@@ -191,7 +191,7 @@
                                                     onclick="return confirm('Are you sure you want to delete this category?')">
                                                     Delete
                                                 </button>
-                                            </form>
+                                            </form> --}}
                                         </td>
                                     </tr>
                                 @empty

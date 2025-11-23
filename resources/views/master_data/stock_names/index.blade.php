@@ -189,7 +189,7 @@
                                                 class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">
                                                 Edit
                                             </a>
-                                            <form action="{{ route('master_data.stock_names.destroy', $stockName) }}"
+                                            {{-- <form action="{{ route('master_data.stock_names.destroy', $stockName) }}"
                                                 method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
@@ -198,7 +198,7 @@
                                                     onclick="return confirm('Are you sure you want to delete this stock name?')">
                                                     Delete
                                                 </button>
-                                            </form>
+                                            </form> --}}
                                         </td>
                                     </tr>
                                 @empty

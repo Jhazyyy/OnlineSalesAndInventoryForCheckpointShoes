@@ -322,7 +322,8 @@ class PurchaseReturnService
 
         // Reduce inventory (outbound movement)
         $previousQuantity = $product->quantity;
-        $product->decrement('quantity', $quantityToReduce);
+        $product->quantity = max(0, $product->quantity - $quantityToReduce);
+        $product->save();
 
         // Create stock movement record
         if (class_exists('App\Models\StockMovement')) {
@@ -356,7 +357,8 @@ class PurchaseReturnService
 
         // Restore inventory
         $previousQuantity = $product->quantity;
-        $product->increment('quantity', $quantityToRestore);
+        $product->quantity = $product->quantity + $quantityToRestore;
+        $product->save();
 
         // Create reverse stock movement record
         if (class_exists('App\Models\StockMovement')) {

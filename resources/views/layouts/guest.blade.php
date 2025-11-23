@@ -32,7 +32,7 @@
         <div class="w-full max-w-md mx-auto px-4 py-8 sm:px-6 sm:py-10 md:px-8 md:py-12 bg-gray-300/95 dark:bg-gray-800/95 shadow-lg overflow-hidden rounded-lg backdrop-blur-sm">
             <div class="flex justify-center mb-6 sm:mb-8">
                 <a href="/">
-                    <img src="{{ asset('checkpointlogo.jpg') }}" alt="Checkpoint Logo" class="max-w-32 max-h-32 object-cover rounded-full" />
+                    <img src="{{ asset('just some image.png') }}" alt="Checkpoint Logo" class="max-w-32 max-h-32 object-cover rounded-full" />
                 </a>
             </div>
             <div>

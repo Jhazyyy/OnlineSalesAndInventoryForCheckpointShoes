@@ -194,6 +194,22 @@ class Product extends Model
     ];
 
     /**
+     * Mutator to prevent negative quantity values
+     */
+    public function setQuantityAttribute($value)
+    {
+        $this->attributes['quantity'] = max(0, (int) $value);
+    }
+
+    /**
+     * Mutator to prevent negative price values
+     */
+    public function setPriceAttribute($value)
+    {
+        $this->attributes['price'] = max(0, (float) $value);
+    }
+
+    /**
      * Get the sales for the product.
      */
     public function sales(): HasMany

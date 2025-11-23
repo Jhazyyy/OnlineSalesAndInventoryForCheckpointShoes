@@ -517,12 +517,14 @@ class ShipmentService
             foreach ($shipment->items as $item) {
                 $product = $item->product;
                 if ($product && $product->quantity >= $item->quantity_shipped) {
-                    $product->decrement('quantity', $item->quantity_shipped);
+                    $quantityBefore = $product->quantity;
+                    $product->quantity = max(0, $product->quantity - $item->quantity_shipped);
+                    $product->save();
                     
                     // Record stock movement using the proper method
                     \App\Models\StockMovement::recordMovement(
                         productId: $product->product_id,
-                        quantityBefore: $product->quantity + $item->quantity_shipped, // Before we decremented it
+                        quantityBefore: $quantityBefore, // Use the variable we just captured
                         quantityChange: -$item->quantity_shipped, // Negative because it's outbound
                         quantityAfter: $product->quantity,
                         movementType: \App\Models\StockMovement::TYPE_SALE,
