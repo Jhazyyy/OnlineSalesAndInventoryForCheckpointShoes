@@ -334,37 +334,53 @@ class ReportService
         
         $orders = $query->with(['items.product', 'customer'])->get();
         
-        // Calculate totals
+        // Calculate totals using standard accounting formulas
         $totalOrders = $orders->count();
         
-        // Revenue = Total amount received from customers (includes taxes, shipping, excludes discounts)
-        $totalRevenue = $orders->sum('total_amount');
+        // Gross Revenue = Subtotal (sum of all line items before discounts, taxes, shipping)
+        $grossRevenue = $orders->sum('subtotal');
         
-        // Calculate total cost of goods sold (COGS)
+        // Total Discount Amount
+        $totalDiscount = $orders->sum('discount_amount');
+        
+        // Net Revenue = Gross Revenue - Discounts
+        $netRevenue = $grossRevenue - $totalDiscount;
+        
+        // Tax and Shipping (added to Net Revenue to get Total Revenue)
+        $totalTax = $orders->sum('tax_amount');
+        $totalShipping = $orders->sum('shipping_amount');
+        
+        // Total Revenue = Net Revenue + Tax + Shipping (what customer actually pays)
+        $totalRevenue = $netRevenue + $totalTax + $totalShipping;
+        // Alternative: $orders->sum('total_amount') should equal totalRevenue
+        
+        // Calculate Cost of Goods Sold (COGS)
         $totalCost = $orders->sum(function ($order) {
             return $order->items->sum(function ($item) {
                 return ($item->product->total_cost ?? 0) * $item->quantity;
             });
         });
         
-        // Calculate gross revenue (subtotal before taxes and shipping)
-        $grossRevenue = $orders->sum('subtotal');
+        // Gross Profit = Net Revenue - COGS (profit before operating expenses)
+        $grossProfit = $netRevenue - $totalCost;
         
-        // Calculate total profit (Gross Revenue - COGS)
-        // Note: Using subtotal (not total_amount) because profit should be calculated before taxes/shipping
-        $totalProfit = $grossRevenue - $totalCost;
-        
-        // Profit margin based on gross revenue
-        $profitMargin = $grossRevenue > 0 ? (($totalProfit / $grossRevenue) * 100) : 0;
+        // Profit Margin = (Gross Profit / Net Revenue) × 100
+        // Using Net Revenue (revenue after discounts) as the base
+        $profitMargin = $netRevenue > 0 ? (($grossProfit / $netRevenue) * 100) : 0;
         
         // Group by date
         $salesByDate = $orders->groupBy(function ($order) {
             return Carbon::parse($order->order_date)->format('Y-m-d');
         })->map(function ($dayOrders) {
+            $dayGrossRevenue = $dayOrders->sum('subtotal');
+            $dayDiscount = $dayOrders->sum('discount_amount');
+            $dayNetRevenue = $dayGrossRevenue - $dayDiscount;
+            
             return [
                 'count' => $dayOrders->count(),
                 'revenue' => $dayOrders->sum('total_amount'),
-                'gross_revenue' => $dayOrders->sum('subtotal'),
+                'gross_revenue' => $dayGrossRevenue,
+                'net_revenue' => $dayNetRevenue,
             ];
         });
         
@@ -401,11 +417,15 @@ class ReportService
             ],
             'summary' => [
                 'total_orders' => $totalOrders,
-                'total_revenue' => round($totalRevenue, 2), // Total amount including taxes and shipping
-                'gross_revenue' => round($grossRevenue, 2), // Subtotal before taxes and shipping
-                'total_cost' => round($totalCost, 2),
-                'total_profit' => round($totalProfit, 2), // Gross Revenue - COGS
-                'profit_margin' => round($profitMargin, 2),
+                'total_revenue' => round($totalRevenue, 2), // Total amount customer pays (Net Revenue + Tax + Shipping)
+                'gross_revenue' => round($grossRevenue, 2), // Subtotal before any deductions
+                'net_revenue' => round($netRevenue, 2), // Gross Revenue - Discounts
+                'total_discount' => round($totalDiscount, 2),
+                'total_tax' => round($totalTax, 2),
+                'total_shipping' => round($totalShipping, 2),
+                'total_cost' => round($totalCost, 2), // COGS
+                'total_profit' => round($grossProfit, 2), // Gross Profit (Net Revenue - COGS)
+                'profit_margin' => round($profitMargin, 2), // (Gross Profit / Net Revenue) × 100
                 'average_order_value' => $totalOrders > 0 ? round($totalRevenue / $totalOrders, 2) : 0,
             ],
             'sales_by_date' => $salesByDate,

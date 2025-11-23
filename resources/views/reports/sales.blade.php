@@ -3,7 +3,7 @@
         <div class="w-full mx-auto sm:px-6 lg:px-8">
 
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Sales Report</h2>
@@ -23,7 +23,7 @@
             </div>
 
             <!-- Filter Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <form method="GET" action="{{ route('reports.sales') }}" class="space-y-4">
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -67,7 +67,7 @@
                             'color' => 'from-blue-500 to-blue-600',
                             'value' => $report['summary']['total_orders'] ?? 0,
                             'icon' => 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z',
-                            'info' => 'Total number of sales orders',
+                            'info' => 'Total number of sales orders in period',
                         ],
                         [
                             'label' => 'Total Revenue',
@@ -75,7 +75,7 @@
                             'value' => '₱' . number_format($report['summary']['total_revenue'] ?? 0, 2),
                             'icon' =>
                                 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-                            'info' => 'Total sales including tax & shipping',
+                            'info' => 'Total amount collected from customers (Net Revenue + Tax + Shipping)',
                         ],
                         [
                             'label' => 'Gross Revenue',
@@ -83,14 +83,14 @@
                             'value' => '₱' . number_format($report['summary']['gross_revenue'] ?? 0, 2),
                             'icon' =>
                                 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z',
-                            'info' => 'Subtotal before tax & shipping',
+                            'info' => 'Subtotal before discounts, taxes, and shipping',
                         ],
                         [
-                            'label' => 'Total Profit',
+                            'label' => 'Gross Profit',
                             'color' => 'from-purple-500 to-purple-600',
                             'value' => '₱' . number_format($report['summary']['total_profit'] ?? 0, 2),
                             'icon' => 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6',
-                            'info' => 'Gross Revenue - Cost of Goods',
+                            'info' => 'Net Revenue - Cost of Goods Sold (COGS)',
                         ],
                         [
                             'label' => 'Profit Margin',
@@ -98,7 +98,7 @@
                             'value' => number_format($report['summary']['profit_margin'] ?? 0, 1) . '%',
                             'icon' =>
                                 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
-                            'info' => 'Profit as % of Gross Revenue',
+                            'info' => '(Gross Profit / Net Revenue) × 100',
                         ],
                     ];
                 @endphp
@@ -123,28 +123,46 @@
             </div>
 
             <!-- Info Box explaining Revenue vs Profit -->
-            <div class="bg-blue-50 dark:bg-blue-900 border-l-4 border-blue-500 p-4 mb-6 rounded">
-                <div class="flex items-start">
-                    <svg class="w-5 h-5 text-blue-500 mt-0.5 mr-3 flex-shrink-0" fill="currentColor"
+            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-2">
+                <div class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor"
                         viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
                             d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                             clip-rule="evenodd" />
                     </svg>
-                    <div class="text-sm text-blue-800 dark:text-blue-200">
-                        <p class="font-semibold mb-1">Understanding Revenue vs Profit</p>
-                        <p><strong>Total Revenue</strong> = Complete amount received from customers (including taxes &
-                            shipping)</p>
-                        <p><strong>Gross Revenue</strong> = Product sales amount only (before taxes & shipping)</p>
-                        <p><strong>Total Profit</strong> = Gross Revenue - Cost of Goods Sold (COGS)</p>
-                        <p class="mt-1 text-xs opacity-90">Note: Profit calculation uses Gross Revenue (subtotal) to
-                            accurately reflect product profitability</p>
+                    <div class="text-sm text-blue-900 dark:text-blue-200">
+                        <p class="font-semibold mb-2">Revenue & Profit Calculation Formula</p>
+                        <div class="space-y-1 font-mono text-xs">
+                            <p><strong>Gross Revenue</strong> =
+                                ₱{{ number_format($report['summary']['gross_revenue'], 2) }} (Sum of all product line
+                                items)</p>
+                            <p><strong>- Discounts</strong> =
+                                ₱{{ number_format($report['summary']['total_discount'] ?? 0, 2) }}</p>
+                            <p class="border-t border-blue-300 dark:border-blue-700 pt-1"><strong>= Net Revenue</strong>
+                                = ₱{{ number_format($report['summary']['net_revenue'] ?? 0, 2) }}</p>
+                            <p class="mt-2"><strong>+ Tax</strong> =
+                                ₱{{ number_format($report['summary']['total_tax'] ?? 0, 2) }}</p>
+                            {{-- <p><strong>+ Shipping</strong> = ₱{{ number_format($report['summary']['total_shipping'] ?? 0, 2) }}</p> --}}
+                            <p class="border-t border-blue-300 dark:border-blue-700 pt-1"><strong>= Total
+                                    Revenue</strong> = ₱{{ number_format($report['summary']['total_revenue'], 2) }}
+                                (Customer Pays)</p>
+                            <p class="mt-2 text-purple-700 dark:text-purple-300"><strong>Net Revenue</strong> -
+                                <strong>COGS (₱{{ number_format($report['summary']['total_cost'], 2) }})</strong> =
+                                <strong>Gross Profit
+                                    (₱{{ number_format($report['summary']['total_profit'], 2) }})</strong>
+                            </p>
+                            <p class="text-yellow-700 dark:text-yellow-300"><strong>Profit Margin</strong> = (Gross
+                                Profit / Net Revenue) × 100 =
+                                <strong>{{ number_format($report['summary']['profit_margin'], 1) }}%</strong>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Export Buttons -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-4 flex flex-wrap gap-3 sm:gap-4">
                     <button type="button" onclick="openPreviewModal()"
                         class="inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-medium rounded-md transition w-fit">
@@ -183,15 +201,15 @@
             <!-- Charts & Analytics -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-4 sm:p-6">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-1 gap-6">
 
 
                         <!-- Charts & Analytics -->
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                             <div class="p-4 sm:p-6">
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                     <!-- Orders by Status -->
-                                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg shadow p-6">
+                                    {{-- <div class="bg-gray-50 dark:bg-gray-700 rounded-lg shadow p-6">
                                         <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">
                                             Orders by Status</h3>
                                         <div class="space-y-3">
@@ -200,6 +218,8 @@
                                                     class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded">
                                                     <span
                                                         class="font-medium capitalize text-gray-900 dark:text-white">{{ $status }}</span>
+                                                    <span
+                                                        class="font-medium capitalize text-gray-900 dark:text-white">Completed</span>
                                                     <div class="text-right">
                                                         <span
                                                             class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full font-bold">{{ $data['count'] }}</span>
@@ -212,7 +232,7 @@
                                                     available</p>
                                             @endforelse
                                         </div>
-                                    </div>
+                                    </div> --}}
 
                                     <!-- Top 10 Products -->
                                     <div class="bg-gray-50 dark:bg-gray-700 rounded-lg shadow p-6">
@@ -298,56 +318,54 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Sales Order Master Table -->
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                            <div class="p-4 sm:p-6">
-                                <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Sales Order
-                                    Master</h3>
-
-                                <div class="overflow-x-auto">
-                                    <table
-                                        class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm sm:text-base">
-                                        <thead class="bg-gray-50 dark:bg-gray-700">
-                                            <tr>
-                                                @foreach (['SKU', 'Product Name', 'Brand', 'Category', 'Sold Qty', 'Sold Amount', 'Instock Qty'] as $header)
-                                                    <th
-                                                        class="px-4 py-3 sm:px-6 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">
-                                                        {{ $header }}</th>
-                                                @endforeach
+                    </div>
+                    <!-- Sales Order Master Table -->
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div class="p-4 sm:p-6">
+                            <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Sales Order
+                            </h3>
+                            <div class="overflow-x-auto">
+                                <table
+                                    class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm sm:text-base">
+                                    <thead class="bg-gray-50 dark:bg-gray-700">
+                                        <tr>
+                                            @foreach (['SKU', 'Product Name', 'Brand', 'Category', 'Sold Qty', 'Sold Amount', 'Instock Qty'] as $header)
+                                                <th
+                                                    class="px-4 py-3 sm:px-6 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">
+                                                    {{ $header }}</th>
+                                            @endforeach
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                        @forelse(($report['product_sales'] ?? []) as $row)
+                                            <tr class="hover:bg-blue-50 dark:hover:bg-gray-700 transition">
+                                                <td
+                                                    class="px-4 py-3 sm:px-6 font-mono text-xs text-gray-900 dark:text-white">
+                                                    {{ $row->product_sku ?? 'N/A' }}</td>
+                                                <td
+                                                    class="px-4 py-3 sm:px-6 font-light text-sm text-gray-900 dark:text-white">
+                                                    {{ $row->product_name }}</td>
+                                                <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
+                                                    {{ $row->product_brand }}</td>
+                                                <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
+                                                    {{ $row->product_category }}</td>
+                                                <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
+                                                    {{ (int) ($row->total_quantity ?? 0) }}</td>
+                                                <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
+                                                    ₱{{ number_format($row->total_revenue ?? 0, 2) }}</td>
+                                                <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
+                                                    {{ (int) ($row->instock_qty ?? 0) }}</td>
                                             </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                                            @forelse(($report['product_sales'] ?? []) as $row)
-                                                <tr class="hover:bg-blue-50 dark:hover:bg-gray-700 transition">
-                                                    <td
-                                                        class="px-4 py-3 sm:px-6 font-mono text-xs text-gray-900 dark:text-white">
-                                                        {{ $row->product_sku ?? 'N/A' }}</td>
-                                                    <td
-                                                        class="px-4 py-3 sm:px-6 font-medium text-gray-900 dark:text-white">
-                                                        {{ $row->product_name }}</td>
-                                                    <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
-                                                        {{ $row->product_brand }}</td>
-                                                    <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
-                                                        {{ $row->product_category }}</td>
-                                                    <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
-                                                        {{ (int) ($row->total_quantity ?? 0) }}</td>
-                                                    <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
-                                                        ₱{{ number_format($row->total_revenue ?? 0, 2) }}</td>
-                                                    <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
-                                                        {{ (int) ($row->instock_qty ?? 0) }}</td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="7"
-                                                        class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
-                                                        No sales in selected period.
-                                                    </td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
-                                </div>
+                                        @empty
+                                            <tr>
+                                                <td colspan="7"
+                                                    class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                                                    No sales in selected period.
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

@@ -368,7 +368,7 @@
                                                         class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">View</button>
                                                     <button onclick="openEditProductModal({{ $product->product_id }})"
                                                         class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">Edit</button>
-                                                    @hasrole('inventory_clerk')
+                                                    @hasanyrole('super_admin|admin|inventory_clerk')
                                                         <button
                                                             onclick="openStockAdjustmentModal({{ $product->product_id }}, '{{ $product->product_name }}', {{ $product->quantity }})"
                                                             class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">Adjust
@@ -376,7 +376,7 @@
                                                         <button
                                                             onclick="openAdjustmentHistoryModal({{ $product->product_id }}, '{{ $product->product_name }}')"
                                                             class="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300">History</button>
-                                                    @endhasrole
+                                                    @endhasanyrole
                                                         <form method="POST"
                                                             action="{{ route('inventory.products.destroy', $product) }}"
                                                             class="inline-block"
@@ -387,7 +387,7 @@
                                                                 class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">Delete</button>
                                                         </form>
                                                     </td>
-                                                @endhasrole
+                                                @endhasanyrole
                                             </tr>
                                         @endforeach
                                     </tbody>
