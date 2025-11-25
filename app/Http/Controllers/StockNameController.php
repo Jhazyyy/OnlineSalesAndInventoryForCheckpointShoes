@@ -43,6 +43,14 @@ class StockNameController extends Controller
 
         $stockNames = $query->paginate(10)->withQueryString();
         
+        // Return JSON for AJAX requests
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'html' => view('master_data.stock_names.partials.table', compact('stockNames'))->render(),
+                'pagination' => view('master_data.stock_names.partials.pagination', compact('stockNames'))->render()
+            ]);
+        }
+        
         return view('master_data.stock_names.index', compact('stockNames'));
     }
 
@@ -106,7 +114,7 @@ class StockNameController extends Controller
     public function update(Request $request, StockName $stockName)
     {
         $validator = Validator::make($request->all(), [
-            'stock_code' => 'required|max:20|alpha_dash|unique:stock_names,stock_code,' . $stockName->id,
+            'stock_code' => 'required|max:20|alpha_dash|unique:stock_names, stock_code,' . $stockName->id,
             'name' => 'required|string|max:100',
             'description' => 'nullable|string|max:500',
             'is_active' => 'boolean'

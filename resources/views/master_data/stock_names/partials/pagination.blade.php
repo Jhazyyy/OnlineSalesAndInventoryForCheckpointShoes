@@ -1,0 +1,1 @@
+{{ $stockNames->links() }}

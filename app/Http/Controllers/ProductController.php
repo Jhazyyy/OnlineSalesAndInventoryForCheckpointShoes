@@ -216,6 +216,7 @@ class ProductController extends Controller
             // Generate SKU based on brand and product name
             $stockNamePrefix = strtoupper(substr(str_replace([' ', '-'], '', $stockName->name), 0, 3));
             $namePrefix = strtoupper(substr(str_replace([' ', '-'], '', $request->product_name), 0, 3));
+            
             $randomSuffix = strtoupper(substr(md5(uniqid()), 0, length: 6));
             $data['sku'] = "{$stockNamePrefix}-{$namePrefix}-{$randomSuffix}";
 
