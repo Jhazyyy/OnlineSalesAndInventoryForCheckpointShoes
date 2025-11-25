@@ -145,7 +145,7 @@ class ScanAllProductStock extends Command
             case 'out_of_stock':
                 return [
                     'type' => 'inventory.out_of_stock',
-                    'title' => 'Product Out of Stock',
+                    'title' => 'Out of Stock Alert',
                     'message' => "Product '{$productName}' (SKU: {$sku}) is OUT OF STOCK. Immediate restocking required!",
                     'level' => 'danger',
                     'link' => url('/inventory/products/' . $product->product_id),
@@ -154,7 +154,7 @@ class ScanAllProductStock extends Command
             case 'critical_stock':
                 return [
                     'type' => 'inventory.critical_stock',
-                    'title' => 'Critical Stock Level',
+                    'title' => 'Critical Stock Alert',
                     'message' => "Product '{$productName}' (SKU: {$sku}) has reached CRITICAL level with only {$currentQuantity} units remaining (Critical threshold: {$criticalLevel}). Urgent action required!",
                     'level' => 'danger',
                     'link' => url('/inventory/products/' . $product->product_id),

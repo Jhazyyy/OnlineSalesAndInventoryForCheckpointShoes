@@ -111,26 +111,6 @@
                                     </option>
                                 </select>
                             </div>
-
-                            <!-- Price Range -->
-                            {{-- <div class="flex space-x-2">
-                                <div class="flex-1">
-                                    <label for="min_price"
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Min
-                                        Price</label>
-                                    <input type="number" id="min_price" name="min_price"
-                                        value="{{ request('min_price') }}" step="0.01" placeholder="0.00"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                </div>
-                                <div class="flex-1">
-                                    <label for="max_price"
-                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300">Max
-                                        Price</label>
-                                    <input type="number" id="max_price" name="max_price"
-                                        value="{{ request('max_price') }}" step="0.01" placeholder="999.99"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                </div>
-                            </div> --}}
                         </div>
 
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -1690,7 +1670,7 @@
                                     </optgroup>
                                     <optgroup label="Decrease Stock" id="decrease_reasons" style="display:none;">
                                         <option value="Damaged">Damaged Goods</option>
-                                        <option value="Expired">Expired</option>
+                                        {{-- <option value="Expired">Expired</option> --}}
                                         <option value="Lost">Lost/Missing</option>
                                         <option value="Stolen">Stolen</option>
                                         <option value="Waste">Waste/Scrapped</option>

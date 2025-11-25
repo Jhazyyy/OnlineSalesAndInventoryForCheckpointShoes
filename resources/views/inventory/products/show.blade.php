@@ -278,7 +278,7 @@
                                 @if ($product->last_purchase_price)
                                     <div>
                                         <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Last
-                                            Purchase Price</label>
+                                            Price Upon Purchase</label>
                                         <p class="text-sm font-medium text-gray-900 dark:text-white">
                                             ₱{{ number_format($product->last_purchase_price, 2) }}</p>
                                         @if ($product->price > $product->last_purchase_price)

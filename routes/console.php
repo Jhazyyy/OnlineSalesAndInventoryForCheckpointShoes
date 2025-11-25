@@ -21,6 +21,14 @@ Schedule::command('products:calculate-movements --days=30')
     ->withoutOverlapping()
     ->runInBackground();
 
+
+// Create notifications for products below thresholds
+Schedule::command('stock:scan-all')
+    ->daily()
+    ->at('08:00')
+    ->withoutOverlapping()
+    ->runInBackground();
+
 // Schedule inventory threshold checks
 // Schedule::command('inventory:check-thresholds --silent')
 //     ->everyThirtyMinutes()

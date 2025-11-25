@@ -155,9 +155,9 @@
 
                             @if ($receive->items->count() > 0)
                                 <div class="overflow-x-auto -mx-4 sm:mx-0">
-                                    <div class="inline-block min-w-full align-middle">
+                                    <div class="inline-block max-w-full align-middle">
                                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                            <thead class="bg-gray-100 dark:bg-gray-700">
                                                 <tr>
                                                     <th
                                                         class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -172,8 +172,8 @@
                                                         class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
                                                         Damaged</th>
                                                     <th
-                                                        class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
-                                                        Unit Price</th>
+                                                        class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider break-words">
+                                                        Unit Price Upon Purchase</th>
                                                     <th
                                                         class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
                                                         Condition</th>

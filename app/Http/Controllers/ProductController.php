@@ -43,6 +43,18 @@ class ProductController extends Controller
             $query->where('stock_name', 'like', '%'.$request->stock_names.'%');
         }
 
+        // Filter by preferred supplier
+        if ($request->has('preferred_supplier_id') && $request->preferred_supplier_id) {
+            $query->where('preferred_supplier_id', $request->preferred_supplier_id);
+        }
+
+        //Filter by last supplier
+        if ($request->has('last_supplier_id') && $request->last_supplier_id) {
+            $query->where('last_supplier_id', $request->last_supplier_id);
+        }
+
+
+
         // Filter by stock status
         if ($request->has('stock_status') && $request->stock_status) {
             switch ($request->stock_status) {
@@ -61,14 +73,6 @@ class ProductController extends Controller
             }
         }
 
-        // Price range filters
-        if ($request->has('min_price') && $request->min_price) {
-            $query->where('price', '>=', $request->min_price);
-        }
-        if ($request->has('max_price') && $request->max_price) {
-            $query->where('price', '<=', $request->max_price);
-        }
-
         // Sorting
         $sortBy = $request->get('sort', 'product_name');
         $sortOrder = $request->get('order', 'asc');
@@ -84,7 +88,7 @@ class ProductController extends Controller
 
         // Get unique categories for filter dropdown
         $categories = Product::distinct()->pluck('product_category')->filter()->sort()->values();
-        
+
         // Get active suppliers for dropdown
         $suppliers = \App\Models\Supplier::where('status', 'active')->orderBy('supplier_name')->get();
 
