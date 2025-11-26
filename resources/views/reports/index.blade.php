@@ -5,8 +5,8 @@
                 <div class="flex-1 p-6">
                     <!-- Header -->
                     <div class="mb-6">
-                        <h2 class="text-3xl font-bold">Reports Management</h2>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Generate comprehensive business reports
+                        <h2 class="text-3xl font-bold dark:text-white">Reports Management</h2>
+                        <p class="text-sm text-gray-600 dark:text-white mt-1">Generate comprehensive business reports
                         </p>
                     </div>
 
@@ -271,7 +271,7 @@
                     </div>
 
                     <!-- Quick Stats -->
-                    <div class="mt-8 bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                    <div class="mt-8 bg-gray-50 dark:bg-gray-700 rounded-lg p-6 dark:text-white">
                         <h3 class="text-lg font-bold mb-4">Quick Export Options</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                             <div class="flex items-center">

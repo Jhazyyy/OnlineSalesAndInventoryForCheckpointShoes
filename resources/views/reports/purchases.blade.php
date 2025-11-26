@@ -3,7 +3,7 @@
         <div class="w-full mx-auto sm:px-6 lg:px-8">
 
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Purchase Report</h2>
@@ -23,7 +23,7 @@
             </div>
 
             <!-- Date Filter Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <form method="GET" action="{{ route('reports.purchases') }}" class="space-y-4">
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -59,7 +59,7 @@
             </div>
 
             <!-- Summary Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-2">
                 @php
                     $cards = [
                         [
@@ -87,12 +87,12 @@
                         //     'value' => '₱' . number_format($report['summary']['total_due'] ?? 0, 2),
                         //     'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
                         // ],
-                        [
-                            'label' => 'Items Purchased',
-                            'color' => 'from-indigo-500 to-indigo-600',
-                            'value' => $report['summary']['total_items'] ?? 0,
-                            'icon' => 'M20 7l-8-4-8 4v10l8 4 8-4V7z',
-                        ],
+                        // [
+                        //     'label' => 'Items Purchased',
+                        //     'color' => 'from-indigo-500 to-indigo-600',
+                        //     'value' => $report['summary']['total_items'] ?? 0,
+                        //     'icon' => 'M20 7l-8-4-8 4v10l8 4 8-4V7z',
+                        // ],
                     ];
                 @endphp
 
@@ -115,7 +115,7 @@
             </div>
 
             <!-- Export Buttons -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-4 flex flex-wrap gap-3 sm:gap-4">
                     <button type="button" onclick="openPurchasePreviewModal()"
                         class="inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-medium rounded-md transition w-fit">
@@ -154,7 +154,7 @@
 
             <!-- Product Purchase Details (Purchase Order Master by Product) -->
             @if(!empty($report['product_purchases']) && count($report['product_purchases']) > 0)
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-4 sm:p-6">
                     <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Purchase Order Master (By Product)</h3>
 

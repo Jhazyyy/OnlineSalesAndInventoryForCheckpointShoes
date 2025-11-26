@@ -3,7 +3,7 @@
         <div class="w-full mx-auto sm:px-6 lg:px-8">
 
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Inventory Report</h2>
@@ -23,7 +23,7 @@
             </div>
 
             <!-- Filter Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <form method="GET" action="{{ route('reports.inventory') }}" class="space-y-4">
                         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
@@ -79,7 +79,7 @@
             </div>
 
             <!-- Summary Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-2">
                 @php
                     $cards = [
                         ['label' => 'Total Products', 'color' => 'from-green-500 to-green-600', 'value' => $report['summary']['total_products'] ?? 0, 'icon' => 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'],
@@ -106,7 +106,7 @@
             </div>
 
             <!-- Export Buttons -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-4 flex flex-wrap gap-3 sm:gap-4">
                     <a href="{{ route('reports.export-pdf', array_merge(['reportType' => 'inventory'], request()->only(['category', 'movement_category', 'stock_status']))) }}"
                        target="_blank"

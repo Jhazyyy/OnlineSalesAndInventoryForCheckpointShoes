@@ -7,28 +7,32 @@
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Product Costing Management</h2>
-                            <p class="text-gray-600 dark:text-gray-400">Apply product costs, pricing, and profit margins</p>
+                            <p class="text-gray-600 dark:text-gray-400">Apply product costs, pricing, and profit margins
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-6">
                 <!-- Total Products -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
                                 <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                     </svg>
                                 </div>
                             </div>
                             <div class="ml-4">
                                 <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Products</div>
-                                <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($stats['total_products']) }}</div>
+                                <div class="text-2xl font-bold text-gray-900 dark:text-white">
+                                    {{ number_format($stats['total_products']) }}</div>
                             </div>
                         </div>
                     </div>
@@ -40,8 +44,10 @@
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
                                 <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 </div>
                             </div>
@@ -49,7 +55,8 @@
                                 <div class="text-sm font-medium text-gray-500 dark:text-gray-400">With Costing</div>
                                 <div class="text-2xl font-bold text-gray-900 dark:text-white">
                                     {{ number_format($stats['products_with_costing']) }}
-                                    <span class="text-sm text-gray-500">({{ $stats['costing_completion_percentage'] }}%)</span>
+                                    <span
+                                        class="text-sm text-gray-500">({{ $stats['costing_completion_percentage'] }}%)</span>
                                 </div>
                             </div>
                         </div>
@@ -57,7 +64,7 @@
                 </div>
 
                 <!-- Average Profit Margin -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
@@ -73,10 +80,10 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Low/Negative Margin -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
@@ -94,7 +101,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
 
             <!-- Filters and Search -->
@@ -104,50 +111,55 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <!-- Search -->
                             <div>
-                                <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <label for="search"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Search Products
                                 </label>
-                                <input type="text" 
-                                       name="search" 
-                                       id="search" 
-                                       value="{{ request('search') }}"
-                                       placeholder="Search by name, brand, or category..."
-                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <input type="text" name="search" id="search" value="{{ request('search') }}"
+                                    placeholder="Search by name, brand, or category..."
+                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
 
                             <!-- Filter -->
                             <div>
-                                <label for="filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <label for="filter"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Filter
                                 </label>
-                                <select name="filter" 
-                                        id="filter"
-                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="all" {{ $filter == 'all' ? 'selected' : '' }}>All Products</option>
-                                    <option value="with-costing" {{ $filter == 'with-costing' ? 'selected' : '' }}>With Costing</option>
-                                    <option value="no-costing" {{ $filter == 'no-costing' ? 'selected' : '' }}>Without Costing</option>
-                                    <option value="low-margin" {{ $filter == 'low-margin' ? 'selected' : '' }}>Low Margin (&lt;20%)</option>
-                                    <option value="negative-margin" {{ $filter == 'negative-margin' ? 'selected' : '' }}>Negative Margin</option>
+                                <select name="filter" id="filter"
+                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="all" {{ $filter == 'all' ? 'selected' : '' }}>All Products
+                                    </option>
+                                    <option value="with-costing" {{ $filter == 'with-costing' ? 'selected' : '' }}>With
+                                        Costing</option>
+                                    <option value="no-costing" {{ $filter == 'no-costing' ? 'selected' : '' }}>Without
+                                        Costing</option>
+                                    {{-- <option value="low-margin" {{ $filter == 'low-margin' ? 'selected' : '' }}>Low Margin (&lt;20%)</option>
+                                    <option value="negative-margin" {{ $filter == 'negative-margin' ? 'selected' : '' }}>Negative Margin</option> --}}
                                 </select>
                             </div>
                         </div>
 
-                        <div class="flex justify-end gap-2">
-                            <a href="{{ route('inventory.product-costing.index') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-gray-300 dark:bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-gray-700 dark:text-gray-200 uppercase tracking-widest hover:bg-gray-400 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                        <div class="flex justify-start gap-2">
+                            <button type="submit"
+                                class="inline-flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white dark:text-white uppercase tracking-widest hover:bg-blue-700 dark:hover:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                                Filter
+                            </button>
+                            <a href="{{ route('inventory.product-costing.index') }}"
+                                class="inline-flex items-center px-4 py-2 bg-gray-300 dark:bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-gray-700 dark:text-gray-200 uppercase tracking-widest hover:bg-gray-400 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Clear
                             </a>
-                            <button type="submit"
-                                    class="inline-flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white dark:text-white uppercase tracking-widest hover:bg-blue-700 dark:hover:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                Apply Filters
-                            </button>
                         </div>
                     </form>
                 </div>
             </div>
 
             <!-- Quick Links -->
-            <div class="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-6">
+            {{-- <div class="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-6">
                 <div class="flex flex-wrap gap-2">
                     <a href="{{ route('inventory.product-costing.low-margin') }}" 
                        class="inline-flex items-center px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition ease-in-out duration-150">
@@ -164,7 +176,7 @@
                         Negative Margin Products ({{ $stats['negative_margin_products'] }})
                     </a>
                 </div>
-            </div>
+            </div> --}}
 
             <!-- Products Table -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -173,25 +185,31 @@
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Product
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Category
                                     </th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Price
                                     </th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Total Cost
                                     </th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Profit
                                     </th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    {{-- <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Margin %
-                                    </th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    </th> --}}
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Actions
                                     </th>
                                 </tr>
@@ -212,33 +230,35 @@
                                                 {{ $product->product_category }}
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right">
+                                        <td class="px-6 py-4 whitespace-nowrap text-left">
                                             <div class="text-sm text-gray-900 dark:text-white">
                                                 ₱{{ number_format($product->price ?? 0, 2) }}
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right">
-                                            @if($product->total_cost)
+                                        <td class="px-6 py-4 whitespace-nowrap text-left">
+                                            @if ($product->total_cost)
                                                 <div class="text-sm text-gray-900 dark:text-white">
                                                     ₱{{ number_format($product->total_cost, 2) }}
                                                 </div>
                                             @else
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                                                <span
+                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
                                                     Not Set
                                                 </span>
                                             @endif
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right">
-                                            @if($product->profit_amount !== null)
-                                                <div class="text-sm {{ $product->profit_amount >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
+                                        <td class="px-6 py-4 whitespace-nowrap text-left">
+                                            @if ($product->profit_amount !== null)
+                                                <div
+                                                    class="text-sm {{ $product->profit_amount >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
                                                     ₱{{ number_format($product->profit_amount, 2) }}
                                                 </div>
                                             @else
                                                 <span class="text-sm text-gray-400">-</span>
                                             @endif
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right">
-                                            @if($product->profit_margin !== null)
+                                        {{-- <td class="px-6 py-4 whitespace-nowrap text-left">
+                                            @if ($product->profit_margin !== null)
                                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                                     {{ $product->profit_margin < 0 ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : 
                                                        ($product->profit_margin < 20 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : 
@@ -248,17 +268,18 @@
                                             @else
                                                 <span class="text-sm text-gray-400">-</span>
                                             @endif
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a href="{{ route('inventory.product-costing.edit', $product) }}" 
-                                               class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                        </td> --}}
+                                        <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
+                                            <a href="{{ route('inventory.product-costing.edit', $product) }}"
+                                                class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
                                                 Edit Costing
                                             </a>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                                        <td colspan="7"
+                                            class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                                             No products found.
                                         </td>
                                     </tr>
@@ -268,7 +289,7 @@
                     </div>
 
                     <!-- Pagination -->
-                    @if($products->hasPages())
+                    @if ($products->hasPages())
                         <div class="mt-4">
                             {{ $products->links() }}
                         </div>

@@ -460,6 +460,15 @@ class ProductController extends Controller
 
         $product->update($data);
 
+        // Refresh product data
+        $product->refresh();
+        
+        // Update markup price if applicable
+        if ($product->price_source === 'markup' && $product->markup_percentage && $product->total_cost) {
+            $product->updateMarkupPrice();
+            $product->save();
+        }
+
         // Capture new values after update
         $product->refresh();
         $newValues = [

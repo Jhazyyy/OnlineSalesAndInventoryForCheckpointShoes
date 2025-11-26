@@ -270,7 +270,7 @@
                             <div>
                                 <label for="price"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Price<span class="text-red-500">*</span>
+                                    Selling Price<span class="text-red-500">*</span>
                                 </label>
                                 <div class="mt-1 relative rounded-md shadow-sm">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -284,6 +284,21 @@
                                 @error('price')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
+                                
+                                @if($product->markup_price)
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        Markup Price: ₱{{ number_format($product->markup_price, 2) }}
+                                        @if($product->markup_percentage)
+                                            ({{ number_format($product->markup_percentage, 2) }}% markup)
+                                        @endif
+                                    </p>
+                                @endif
+                                
+                                <p class="mt-1 text-xs text-blue-600 dark:text-blue-400">
+                                    <a href="{{ route('master_data.markup_prices.index') }}" class="hover:underline">
+                                        Configure markup pricing →
+                                    </a>
+                                </p>
                             </div>
                             <!-- Current Stock (Read-only Display) -->
                             {{-- <div
