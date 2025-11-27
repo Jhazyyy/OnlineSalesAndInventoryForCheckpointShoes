@@ -225,86 +225,6 @@ Route::get('dashboard', function() {
         ];
     }
 
-    // Shipment Statistics
-    try {
-        $shipmentStats = [
-            'total_shipments' => \App\Models\Shipment::count(),
-            'pending_shipments' => \App\Models\Shipment::pending()->count(),
-            'shipped_shipments' => \App\Models\Shipment::shipped()->count(),
-            'in_transit_shipments' => \App\Models\Shipment::inTransit()->count(),
-            'delivered_shipments' => \App\Models\Shipment::delivered()->count(),
-            'overdue_shipments' => \App\Models\Shipment::overdue()->count(),
-            'today_shipments' => \App\Models\Shipment::today()->count(),
-            'this_week_shipments' => \App\Models\Shipment::thisWeek()->count(),
-            'this_month_shipments' => \App\Models\Shipment::thisMonth()->count(),
-            'total_shipping_cost' => \App\Models\Shipment::sum('total_shipping_cost') ?? 0,
-            'active_shipments' => \App\Models\Shipment::whereNotIn('status', ['delivered', 'cancelled', 'returned'])->count(),
-        ];
-    } catch (\Exception $e) {
-        $shipmentStats = [
-            'total_shipments' => 0,
-            'pending_shipments' => 0,
-            'shipped_shipments' => 0,
-            'in_transit_shipments' => 0,
-            'delivered_shipments' => 0,
-            'overdue_shipments' => 0,
-            'today_shipments' => 0,
-            'this_week_shipments' => 0,
-            'this_month_shipments' => 0,
-            'total_shipping_cost' => 0,
-            'active_shipments' => 0,
-        ];
-    }
-
-    // Sales Order Summary (Last 7 days)
-    try {
-        $last7Days = collect(range(6, 0))->map(function ($days) {
-            return now()->subDays($days)->format('M d');
-        });
-        
-        $salesOrderData = collect(range(6, 0))->map(function ($days) {
-            $date = now()->subDays($days)->toDateString();
-            return [
-                'date' => now()->subDays($days)->format('M d'),
-                'draft' => \App\Models\Sale::where('created_at', '>=', $date . ' 00:00:00')
-                    ->where('created_at', '<=', $date . ' 23:59:59')
-                    ->where('status', 'draft')->count(),
-                'confirmed' => \App\Models\Sale::where('created_at', '>=', $date . ' 00:00:00')
-                    ->where('created_at', '<=', $date . ' 23:59:59')
-                    ->where('status', 'confirmed')->count(),
-                'packed' => \App\Models\Sale::where('created_at', '>=', $date . ' 00:00:00')
-                    ->where('created_at', '<=', $date . ' 23:59:59')
-                    ->where('status', 'packed')->count(),
-                'shipped' => \App\Models\Sale::where('created_at', '>=', $date . ' 00:00:00')
-                    ->where('created_at', '<=', $date . ' 23:59:59')
-                    ->where('status', 'shipped')->count(),
-                'invoiced' => \App\Models\Sale::where('created_at', '>=', $date . ' 00:00:00')
-                    ->where('created_at', '<=', $date . ' 23:59:59')
-                    ->where('status', 'invoiced')->count(),
-            ];
-        });
-    } catch (\Exception $e) {
-        $last7Days = collect();
-        $salesOrderData = collect();
-    }
-
-    // Sales Activity - E-commerce Order Tracking
-    try {
-        $salesActivity = [
-            'total_orders' => \App\Models\SalesOrder::count(),
-            'pending_orders' => \App\Models\SalesOrder::where('status', 'pending')->count(),
-            'shipped_orders' => \App\Models\SalesOrder::where('status', 'shipped')->count(),
-            'delivered_orders' => \App\Models\SalesOrder::where('status', 'delivered')->count(),
-        ];
-    } catch (\Exception $e) {
-        $salesActivity = [
-            'total_orders' => 0,
-            'pending_orders' => 0,
-            'shipped_orders' => 0,
-            'delivered_orders' => 0,
-        ];
-    }
-
     // Top Selling Items - From Sales Orders (Default: This Month)
     try {
         $topSellingItems = \App\Models\SalesOrderItem::select('product_id')
@@ -453,8 +373,6 @@ Route::get('dashboard', function() {
         ];
     }
 
-    // REMOVED: Purchase Deliveries Analytics - delivery system no longer used
-
     // Purchase Payment Analytics
     try {
         $purchasePaymentStats = [
@@ -525,7 +443,6 @@ Route::get('dashboard', function() {
         'stockStatus',
         'purchaseOrderStatus',
         'purchaseReceiveStats',
-        // REMOVED: 'purchaseDeliveryStats' - delivery system no longer used
         'purchasePaymentStats',
         'last6Months',
         'monthlyRevenue'

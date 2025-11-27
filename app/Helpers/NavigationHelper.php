@@ -287,10 +287,17 @@ class NavigationHelper
                 ['label' => 'Inventory', 'url' => null],
                 ['label' => 'Products', 'url' => route('inventory.products.index')],
             ],
+
+            'inventory.product-costing.index' => [
+                ['label' => 'Inventory', 'url' => null],
+                ['label' => 'Product Costing', 'url' => route('inventory.product-costing.index')],
+            ],
+            
             'master_data.products.index' => [
                 ['label' => 'Inventory', 'url' => null],
                 ['label' => 'Products', 'url' => null],
             ],
+            
             'master_data.products.create' => [
                 ['label' => 'Master Data', 'url' => null],
                 ['label' => 'Products', 'url' => route('inventory.products.index')],
@@ -398,6 +405,7 @@ class NavigationHelper
             'notifications.index' => [
                 ['label' => 'Notifications', 'url' => 'notifications.index'],
             ],
+
         ];
 
         // Return breadcrumbs for the current route

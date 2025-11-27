@@ -200,7 +200,7 @@
             @endif
 
             <!-- Purchase Order Master Table -->
-            {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-4 sm:p-6">
                     <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Purchase Orders (By Order)</h3>
 
@@ -208,7 +208,7 @@
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm sm:text-base">
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
-                                    @foreach (['PO Number', 'Supplier', 'Order Date', 'Amount Due', 'Status'] as $header)
+                                    @foreach (['PO Number', 'Supplier', 'Order Date', 'Amount Due', 'Due Date', 'Total Paid', 'Status'] as $header)
                                         <th
                                             class="px-4 py-3 sm:px-6 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">
                                             {{ $header }}</th>
@@ -224,14 +224,14 @@
                                             {{ $order->supplier->supplier_name ?? 'N/A' }}</td>
                                         <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
                                             {{ \Carbon\Carbon::parse($order->order_date)->format('M d, Y') }}</td>
-                                        <td class="px-4 py-3 sm:px-6 text-right text-gray-800 dark:text-gray-300">
+                                        <td class="px-4 py-3 sm:px-6 text-left text-gray-800 dark:text-gray-300">
                                             ₱{{ number_format($order->total_amount ?? 0, 2) }}</td>
                                         <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
                                             {{ $order->expected_date ? \Carbon\Carbon::parse($order->expected_date)->format('M d, Y') : 'N/A' }}
                                         </td>
-                                        <td class="px-4 py-3 sm:px-6 text-right text-gray-800 dark:text-gray-300">
+                                        <td class="px-4 py-3 sm:px-6 text-left text-gray-800 dark:text-gray-300">
                                             ₱{{ number_format($order->payments->sum('amount') ?? 0, 2) }}</td>
-                                        <td class="px-4 py-3 sm:px-6 text-center">
+                                        <td class="px-4 py-3 sm:px-6 text-left text-gray-800 dark:text-gray-300">
                                             @php
                                                 $statusColors = [
                                                     'pending' =>
@@ -239,11 +239,11 @@
                                                     'approved' =>
                                                         'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
                                                     'received' =>
-                                                        'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                                                        'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
                                                     'cancelled' =>
                                                         'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
                                                     'completed' =>
-                                                        'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+                                                        'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
                                                 ];
                                                 $statusColor =
                                                     $statusColors[strtolower($order->status)] ??
@@ -267,8 +267,7 @@
                         </table>
                     </div>
                 </div>
-            </div> --}}
-
+            </div>
         </div>
     </div>
 

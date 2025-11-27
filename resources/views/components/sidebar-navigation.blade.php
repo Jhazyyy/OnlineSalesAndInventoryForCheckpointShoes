@@ -13,7 +13,7 @@
             <div class="flex items-center space-x-3">
                 <!-- Logo Icon/Image -->
                 <div class="flex-shrink-0">
-                    <img src="{{ companyLogoUrl() }}" alt="{{ setting('general.company_name', 'Checkpoint') }}"
+                    <img src="{{ asset('checkpointlogo.jpg') }}" alt="{{ setting('general.company_name', 'Checkpoint') }}"
                         class="w-10 h-10 rounded-lg object-contain bg-white dark:bg-gray-700 p-1 shadow-sm border-2 dark:border-gray-700">
                 </div>
 

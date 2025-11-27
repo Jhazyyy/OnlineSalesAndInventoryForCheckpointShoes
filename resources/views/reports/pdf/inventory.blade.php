@@ -70,30 +70,30 @@
             <thead>
                 <tr>
                     <th>Status</th>
-                    <th class="right">Count</th>
+                    <th class="left">Count</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>Out of Stock</td>
-                    <td class="right">{{ $report['stock_status']['out_of_stock'] ?? 0 }}</td>
+                    <td class="left">{{ $report['stock_status']['out_of_stock'] ?? 0 }}</td>
                 </tr>
                 <tr>
                     <td>Low Stock</td>
-                    <td class="right">{{ $report['stock_status']['low_stock'] ?? 0 }}</td>
+                    <td class="left">{{ $report['stock_status']['low_stock'] ?? 0 }}</td>
                 </tr>
                 <tr>
                     <td>Critical Stock</td>
-                    <td class="right">{{ $report['stock_status']['critical_stock'] ?? 0 }}</td>
+                    <td class="left">{{ $report['stock_status']['critical_stock'] ?? 0 }}</td>
                 </tr>
                 <tr>
                     <td>Healthy Stock</td>
-                    <td class="right">{{ $report['stock_status']['healthy_stock'] ?? 0 }}</td>
+                    <td class="left">{{ $report['stock_status']['healthy_stock'] ?? 0 }}</td>
                 </tr>
-                <tr>
+                {{-- <tr>
                     <td>Overstocked</td>
-                    <td class="right">{{ $report['stock_status']['overstocked'] ?? 0 }}</td>
-                </tr>
+                    <td class="left">{{ $report['stock_status']['overstocked'] ?? 0 }}</td>
+                </tr> --}}
             </tbody>
         </table>
     </div>
@@ -105,26 +105,26 @@
             <thead>
                 <tr>
                     <th>Category</th>
-                    <th class="right">Count</th>
+                    <th class="left">Count</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>Fast Moving</td>
-                    <td class="right">{{ $report['movement_analysis']['fast_moving'] ?? 0 }}</td>
+                    <td class="left">{{ $report['movement_analysis']['fast_moving'] ?? 0 }}</td>
                 </tr>
                 <tr>
                     <td>Slow Moving</td>
-                    <td class="right">{{ $report['movement_analysis']['slow_moving'] ?? 0 }}</td>
+                    <td class="left">{{ $report['movement_analysis']['slow_moving'] ?? 0 }}</td>
                 </tr>
                 <tr>
                     <td>Non Moving</td>
-                    <td class="right">{{ $report['movement_analysis']['non_moving'] ?? 0 }}</td>
+                    <td class="left">{{ $report['movement_analysis']['non_moving'] ?? 0 }}</td>
                 </tr>
-                <tr>
+                {{-- <tr>
                     <td>Uncategorized</td>
                     <td class="right">{{ $report['movement_analysis']['uncategorized'] ?? 0 }}</td>
-                </tr>
+                </tr> --}}
             </tbody>
         </table>
     </div>
@@ -150,9 +150,9 @@
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $product->sku ?? 'N/A' }}</td>
                     <td>{{ $product->product_name ?? $product->name ?? 'Unknown' }}</td>
-                    <td class="right">{{ number_format($product->quantity ?? 0) }}</td>
-                    <td class="right">₱{{ number_format($product->price ?? 0, 2) }}</td>
-                    <td class="right">₱{{ number_format($product->total_value ?? 0, 2) }}</td>
+                    <td class="left">{{ number_format($product->quantity ?? 0) }}</td>
+                    <td class="left">₱{{ number_format($product->price ?? 0, 2) }}</td>
+                    <td class="left">₱{{ number_format($product->total_value ?? 0, 2) }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -163,15 +163,14 @@
     <!-- Low Stock Products -->
     @if(!empty($report['low_stock_products']) && count($report['low_stock_products']) > 0)
     <div class="section">
-        <h2>Low Stock Alert</h2>
+        <h2>Low Stock Products</h2>
         <table>
             <thead>
                 <tr>
                     <th>SKU</th>
                     <th>Product Name</th>
-                    <th class="right">Current Qty</th>
-                    <th class="right">Reorder Level</th>
-                    <th>Status</th>
+                    <th class="left">Current Qty</th>
+                    {{-- <th>Status</th> --}}
                 </tr>
             </thead>
             <tbody>
@@ -179,9 +178,8 @@
                 <tr>
                     <td>{{ $product->sku ?? 'N/A' }}</td>
                     <td>{{ $product->product_name ?? $product->name ?? 'Unknown' }}</td>
-                    <td class="right">{{ $product->quantity ?? 0 }}</td>
-                    <td class="right">{{ $product->reorder_level ?? 0 }}</td>
-                    <td><span class="badge badge-warning">LOW STOCK</span></td>
+                    <td class="left">{{ $product->quantity ?? 0 }}</td>
+                    {{-- <td class="left">{{ $product->reorder_level ?? 0 }}</td> --}}
                 </tr>
                 @endforeach
             </tbody>
@@ -199,7 +197,6 @@
                     <th>SKU</th>
                     <th>Product Name</th>
                     <th>Category</th>
-                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -208,7 +205,6 @@
                     <td>{{ $product->sku ?? 'N/A' }}</td>
                     <td>{{ $product->product_name ?? $product->name ?? 'Unknown' }}</td>
                     <td>{{ $product->product_category ?? 'N/A' }}</td>
-                    <td><span class="badge badge-danger">OUT OF STOCK</span></td>
                 </tr>
                 @endforeach
             </tbody>
@@ -226,9 +222,9 @@
                     <th>SKU</th>
                     <th>Product Name</th>
                     <th>Category</th>
-                    <th class="right">Quantity</th>
-                    <th class="right">Price</th>
-                    <th class="right">Value</th>
+                    <th class="left">Quantity</th>
+                    <th class="left">Price</th>
+                    <th class="left">Value</th>
                     <th>Movement</th>
                 </tr>
             </thead>
@@ -238,10 +234,10 @@
                     <td class="small">{{ $product->sku ?? 'N/A' }}</td>
                     <td>{{ $product->product_name ?? $product->name ?? 'Unknown' }}</td>
                     <td class="small">{{ $product->product_category ?? 'N/A' }}</td>
-                    <td class="right">{{ number_format($product->quantity ?? 0) }}</td>
-                    <td class="right">₱{{ number_format($product->price ?? 0, 2) }}</td>
-                    <td class="right">₱{{ number_format(($product->quantity ?? 0) * ($product->price ?? 0), 2) }}</td>
-                    <td class="small">{{ ucfirst($product->movement_category ?? 'N/A') }}</td>
+                    <td class="left">{{ number_format($product->quantity ?? 0) }}</td>
+                    <td class="left">₱{{ number_format($product->price ?? 0, 2) }}</td>
+                    <td class="left">₱{{ number_format(($product->quantity ?? 0) * ($product->price ?? 0), 2) }}</td>
+                    <td class="small">{{ ucwords($product->movement_category ?? 'N/A') }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -250,7 +246,7 @@
     @endif
 
     <div style="margin-top: 30px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 10px; color: #666;">
-        <p>Report generated by Checkpoint Sales and Inventory System on {{ now()->format('F d, Y \a\t H:i:s') }}</p>
+        <p>Report generated by {{ Auth()->user()->name ?? 'Unknown User' }} on {{ now()->format('F d, Y \a\t H:i:s') }}</p>
     </div>
 </body>
 </html>

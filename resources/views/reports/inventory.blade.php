@@ -108,6 +108,18 @@
             <!-- Export Buttons -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-4 flex flex-wrap gap-3 sm:gap-4">
+                    <button type="button" onclick="openPreviewModal()"
+                        class="inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-medium rounded-md transition w-fit">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        Preview Report
+                    </button>
+
                     <a href="{{ route('reports.export-pdf', array_merge(['reportType' => 'inventory'], request()->only(['category', 'movement_category', 'stock_status']))) }}"
                        target="_blank"
                        class="inline-flex items-center px-3 py-2 sm:px-4 sm:py-2 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-medium rounded-md transition w-fit">
@@ -254,4 +266,84 @@
             </div>
         </div>
     </div>
+
+    <!-- PDF Preview Modal -->
+    <div id="pdfPreviewModal"
+        class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div
+            class="relative top-10 mx-auto p-5 border w-11/12 max-w-7xl shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100">Inventory Report Preview</h3>
+                <button onclick="closePreviewModal()"
+                    class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4" style="height: 80vh;">
+                <iframe id="pdfPreviewFrame" class="w-full h-full rounded"
+                    style="border: none;"></iframe>
+            </div>
+            <div class="mt-4 flex justify-end gap-3">
+                <button onclick="closePreviewModal()"
+                    class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium">
+                    Close
+                </button>
+                <a id="downloadPdfLink" href="#" target="_blank"
+                    class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium inline-block">
+                    Download PDF
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @push('scripts')
+    <script>
+        function openPreviewModal() {
+            const params = new URLSearchParams(window.location.search);
+            const category = params.get('category') || '';
+            const movementCategory = params.get('movement_category') || '';
+            const stockStatus = params.get('stock_status') || '';
+            
+            let previewUrl = '{{ route('reports.preview-pdf', ['reportType' => 'inventory']) }}';
+            let downloadUrl = '{{ route('reports.export-pdf', ['reportType' => 'inventory']) }}';
+            
+            const queryParams = [];
+            if (category) queryParams.push('category=' + encodeURIComponent(category));
+            if (movementCategory) queryParams.push('movement_category=' + encodeURIComponent(movementCategory));
+            if (stockStatus) queryParams.push('stock_status=' + encodeURIComponent(stockStatus));
+            
+            if (queryParams.length > 0) {
+                const queryString = queryParams.join('&');
+                previewUrl += '?' + queryString;
+                downloadUrl += '?' + queryString;
+            }
+
+            document.getElementById('pdfPreviewFrame').src = previewUrl;
+            document.getElementById('downloadPdfLink').href = downloadUrl;
+            document.getElementById('pdfPreviewModal').classList.remove('hidden');
+        }
+
+        function closePreviewModal() {
+            document.getElementById('pdfPreviewModal').classList.add('hidden');
+            document.getElementById('pdfPreviewFrame').src = '';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('pdfPreviewModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePreviewModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePreviewModal();
+            }
+        });
+    </script>
+    @endpush
 </x-app-layout>
