@@ -132,10 +132,9 @@ class StockAdjustmentController extends Controller
     {
         $product = Product::findOrFail($productId);
         
-        // Get all manual adjustments for this product
+        // Get all stock movements for this product (including sales, purchases, and adjustments)
         $adjustments = StockMovement::where('product_id', $productId)
-            ->where('reference_type', 'manual_adjustment')
-            ->with('user')
+            ->with(['user', 'product'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 

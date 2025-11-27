@@ -74,7 +74,7 @@
                                         <div>
                                             <label
                                                 class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
-                                                Name (Base Product)</label>
+                                                Name</label>
                                             <p class="text-lg text-gray-900 dark:text-white">{{ $product->stock_name }}
                                             </p>
                                         </div>

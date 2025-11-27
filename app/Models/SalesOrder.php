@@ -68,7 +68,7 @@ class SalesOrder extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'order_date' => 'date',
+        'order_date' => 'datetime',
         'required_date' => 'date',
         'shipped_date' => 'date',
         'subtotal' => 'decimal:2',

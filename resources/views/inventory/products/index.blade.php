@@ -1740,13 +1740,13 @@
 
         <!-- Adjustment History Modal -->
         <div id="adjustmentHistoryModal"
-            class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto max-h-full max-w-full z-50">
             <div
-                class="relative top-10 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white dark:bg-gray-800 mb-10">
+                class="relative top-10 mx-auto p-5 border w-11/12 max-w-7xl shadow-lg rounded-md bg-white dark:bg-gray-800 mb-10">
                 <!-- Modal Header -->
                 <div class="flex justify-between items-center pb-4 border-b dark:border-gray-700">
                     <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                        Stock Adjustment History - <span id="history_product_name"></span>
+                        Movement History: <span id="history_product_name"></span>
                     </h3>
                     <button onclick="closeAdjustmentHistoryModal()"
                         class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
@@ -1775,9 +1775,9 @@
 
         <!-- View Product Modal -->
         <div id="viewProductModal"
-            class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto max-h-full max-w-full z-50">
             <div
-                class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-3/4 shadow-lg rounded-md bg-white dark:bg-gray-800">
+                class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 max-w-7xl shadow-lg rounded-md bg-white dark:bg-gray-800">
                 <div class="mt-3">
                     <div class="flex items-center justify-between pb-3 border-b dark:border-gray-700">
                         <h3 class="text-xl font-semibold text-gray-900 dark:text-white" id="view_product_name">Product
@@ -1816,8 +1816,7 @@
                             <!-- Middle: Product Details -->
                             <div class="lg:col-span-1 space-y-4">
                                 <div id="view_stock_name_container" style="display:none;">
-                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock Name
-                                        (Base Product)</label>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock Name</label>
                                     <p class="text-lg text-gray-900 dark:text-white" id="view_stock_name"></p>
                                 </div>
                                 <div>

@@ -85,6 +85,32 @@
                                 </div>
                             </div>
 
+                            <!-- Revenue Trend Chart Section -->
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                                <div
+                                    class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                                        Revenue Trend
+                                    </h3>
+                                    <select id="revenueTrendPeriod"
+                                        class="appearance-none w-full lg:w-32 sm:w-auto text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="today">Today</option>
+                                        <option value="yesterday">Yesterday</option>
+                                        <option value="this_week">This Week</option>
+                                        <option value="last_week">Last Week</option>
+                                        <option value="this_month" selected>This Month</option>
+                                        <option value="last_month">Last Month</option>
+                                        <option value="this_year">This Year</option>
+                                        <option value="all_time">All Time</option>
+                                    </select>
+                                </div>
+
+                                <div id="revenueTrendContainer" style="height: 300px; position: relative;">
+                                    <canvas id="revenueTrendChart"></canvas>
+                                </div>
+                            </div>
+
                             <!-- Top Selling & Purchase Items Section (Grid Layout) -->
                             <div class="grid grid-cols-3 lg:grid-cols-2 gap-1">
                                 <!-- Top Selling Items Section -->
@@ -623,6 +649,144 @@
                             }
                         }
                     }
+                });
+            }
+
+            // Revenue Trend Chart
+            let revenueTrendChart = null;
+            
+            function loadRevenueTrend(period = 'this_month') {
+                console.log('Loading revenue trend for period:', period);
+                const container = document.getElementById('revenueTrendContainer');
+                const canvas = document.getElementById('revenueTrendChart');
+                
+                if (!canvas) {
+                    console.error('Canvas element not found');
+                    return;
+                }
+
+                // Show loading state
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'absolute inset-0 flex justify-center items-center bg-white dark:bg-gray-800 bg-opacity-90';
+                loadingDiv.innerHTML = `
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                `;
+                container.appendChild(loadingDiv);
+
+                // Fetch revenue data
+                fetch('/dashboard/revenue-trend?period=' + period)
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        if (!response.ok) {
+                            throw new Error('HTTP error ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Revenue data received:', data);
+                        // Remove loading state
+                        loadingDiv.remove();
+
+                        // Destroy existing chart
+                        if (revenueTrendChart) {
+                            revenueTrendChart.destroy();
+                        }
+
+                        // Create new chart
+                        revenueTrendChart = new Chart(canvas, {
+                            type: 'line',
+                            data: {
+                                labels: data.labels || [],
+                                datasets: [{
+                                    label: 'Revenue',
+                                    data: data.data || [],
+                                    borderColor: 'rgb(59, 130, 246)',
+                                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                    borderWidth: 2,
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 3,
+                                    pointHoverRadius: 5,
+                                    pointBackgroundColor: 'rgb(59, 130, 246)',
+                                    pointBorderColor: '#fff',
+                                    pointBorderWidth: 2
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                    tooltip: {
+                                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                        padding: 12,
+                                        titleColor: '#fff',
+                                        bodyColor: '#fff',
+                                        borderColor: 'rgb(59, 130, 246)',
+                                        borderWidth: 1,
+                                        displayColors: false,
+                                        callbacks: {
+                                            label: function(context) {
+                                                return 'Revenue: ₱' + context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                });
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: function(value) {
+                                                return '₱' + value.toLocaleString('en-US');
+                                            },
+                                            color: 'rgb(107, 114, 128)'
+                                        },
+                                        grid: {
+                                            color: 'rgba(107, 114, 128, 0.1)'
+                                        }
+                                    },
+                                    x: {
+                                        ticks: {
+                                            color: 'rgb(107, 114, 128)',
+                                            maxRotation: 45,
+                                            minRotation: 0
+                                        },
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                        console.log('Chart created successfully');
+                    })
+                    .catch(error => {
+                        console.error('Error fetching revenue trend:', error);
+                        loadingDiv.innerHTML = `
+                            <div class="text-center text-red-500 dark:text-red-400">
+                                <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <p class="text-sm">Error loading revenue data</p>
+                                <p class="text-xs mt-1">${error.message}</p>
+                            </div>
+                        `;
+                    });
+            }
+
+            // Initialize revenue trend chart
+            loadRevenueTrend();
+
+            // Revenue Trend Period Filter
+            const revenueTrendPeriodSelect = document.getElementById('revenueTrendPeriod');
+            if (revenueTrendPeriodSelect) {
+                revenueTrendPeriodSelect.addEventListener('change', function() {
+                    loadRevenueTrend(this.value);
                 });
             }
 

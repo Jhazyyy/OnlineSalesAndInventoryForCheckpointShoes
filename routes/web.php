@@ -225,6 +225,23 @@ Route::get('dashboard', function() {
         ];
     }
 
+    // Shipment Statistics
+    try {
+        $shipmentStats = [
+            'total_shipments' => 0,
+            'pending_shipments' => 0,
+            'in_transit_shipments' => 0,
+            'delivered_shipments' => 0,
+        ];
+    } catch (\Exception $e) {
+        $shipmentStats = [
+            'total_shipments' => 0,
+            'pending_shipments' => 0,
+            'in_transit_shipments' => 0,
+            'delivered_shipments' => 0,
+        ];
+    }
+
     // Top Selling Items - From Sales Orders (Default: This Month)
     try {
         $topSellingItems = \App\Models\SalesOrderItem::select('product_id')
@@ -532,6 +549,163 @@ Route::get('dashboard/top-selling-items', function (Illuminate\Http\Request $req
 
     return response()->json(['items' => $topSellingItems]);
 })->middleware(['auth', 'verified'])->name('dashboard.top-selling-items');
+
+// Dashboard Revenue Trend AJAX Route
+Route::get('dashboard/revenue-trend', function (Illuminate\Http\Request $request) {
+    if (!Auth::check()) {
+        return response()->json(['labels' => [], 'data' => []], 401);
+    }
+
+    $period = $request->get('period', 'this_month');
+    $query = \App\Models\SalesOrder::query();
+    $labels = [];
+    $data = [];
+
+    // Apply date filter and grouping based on period
+    switch ($period) {
+        case 'today':
+            // Group by hour
+            $query->whereDate('order_date', today());
+            $revenueData = $query
+                ->selectRaw('HOUR(order_date) as period_key')
+                ->selectRaw('SUM(total_amount) as total_revenue')
+                ->groupBy('period_key')
+                ->orderBy('period_key')
+                ->get()
+                ->keyBy('period_key');
+            
+            for ($i = 0; $i < 24; $i++) {
+                $labels[] = sprintf('%02d:00', $i);
+                $data[] = isset($revenueData[$i]) ? (float) $revenueData[$i]->total_revenue : 0;
+            }
+            break;
+
+        case 'yesterday':
+            // Group by hour
+            $query->whereDate('order_date', today()->subDay());
+            $revenueData = $query
+                ->selectRaw('HOUR(order_date) as period_key')
+                ->selectRaw('SUM(total_amount) as total_revenue')
+                ->groupBy('period_key')
+                ->orderBy('period_key')
+                ->get()
+                ->keyBy('period_key');
+            
+            for ($i = 0; $i < 24; $i++) {
+                $labels[] = sprintf('%02d:00', $i);
+                $data[] = isset($revenueData[$i]) ? (float) $revenueData[$i]->total_revenue : 0;
+            }
+            break;
+
+        case 'this_week':
+        case 'last_week':
+            // Group by day
+            if ($period === 'this_week') {
+                $startDate = now()->startOfWeek();
+                $endDate = now()->endOfWeek();
+            } else {
+                $startDate = now()->subWeek()->startOfWeek();
+                $endDate = now()->subWeek()->endOfWeek();
+            }
+            
+            $query->whereBetween('order_date', [$startDate, $endDate]);
+            $revenueData = $query
+                ->selectRaw('DATE(order_date) as period_key')
+                ->selectRaw('SUM(total_amount) as total_revenue')
+                ->groupBy('period_key')
+                ->orderBy('period_key')
+                ->get()
+                ->keyBy('period_key');
+            
+            $currentDate = $startDate->copy();
+            while ($currentDate <= $endDate) {
+                $dateKey = $currentDate->format('Y-m-d');
+                $labels[] = $currentDate->format('D, M j');
+                $data[] = isset($revenueData[$dateKey]) ? (float) $revenueData[$dateKey]->total_revenue : 0;
+                $currentDate->addDay();
+            }
+            break;
+
+        case 'this_month':
+        case 'last_month':
+            // Group by day
+            if ($period === 'this_month') {
+                $startDate = now()->startOfMonth();
+                $endDate = now()->endOfMonth();
+                $query->whereMonth('order_date', now()->month)
+                      ->whereYear('order_date', now()->year);
+            } else {
+                $startDate = now()->subMonth()->startOfMonth();
+                $endDate = now()->subMonth()->endOfMonth();
+                $query->whereMonth('order_date', now()->subMonth()->month)
+                      ->whereYear('order_date', now()->subMonth()->year);
+            }
+            
+            $revenueData = $query
+                ->selectRaw('DATE(order_date) as period_key')
+                ->selectRaw('SUM(total_amount) as total_revenue')
+                ->groupBy('period_key')
+                ->orderBy('period_key')
+                ->get()
+                ->keyBy('period_key');
+            
+            $currentDate = $startDate->copy();
+            while ($currentDate <= $endDate) {
+                $dateKey = $currentDate->format('Y-m-d');
+                $labels[] = $currentDate->format('M j');
+                $data[] = isset($revenueData[$dateKey]) ? (float) $revenueData[$dateKey]->total_revenue : 0;
+                $currentDate->addDay();
+            }
+            break;
+
+        case 'this_year':
+            // Group by month
+            $query->whereYear('order_date', now()->year);
+            $revenueData = $query
+                ->selectRaw('MONTH(order_date) as period_key')
+                ->selectRaw('SUM(total_amount) as total_revenue')
+                ->groupBy('period_key')
+                ->orderBy('period_key')
+                ->get()
+                ->keyBy('period_key');
+            
+            for ($i = 1; $i <= 12; $i++) {
+                $labels[] = now()->month($i)->format('M');
+                $data[] = isset($revenueData[$i]) ? (float) $revenueData[$i]->total_revenue : 0;
+            }
+            break;
+
+        case 'all_time':
+            // Group by month (last 12 months)
+            $startDate = now()->subMonths(11)->startOfMonth();
+            $endDate = now()->endOfMonth();
+            
+            $query->whereBetween('order_date', [$startDate, $endDate]);
+            $revenueData = $query
+                ->selectRaw('DATE_FORMAT(order_date, "%Y-%m") as period_key')
+                ->selectRaw('SUM(total_amount) as total_revenue')
+                ->groupBy('period_key')
+                ->orderBy('period_key')
+                ->get()
+                ->keyBy('period_key');
+            
+            $currentDate = $startDate->copy();
+            while ($currentDate <= $endDate) {
+                $dateKey = $currentDate->format('Y-m');
+                $labels[] = $currentDate->format('M Y');
+                $data[] = isset($revenueData[$dateKey]) ? (float) $revenueData[$dateKey]->total_revenue : 0;
+                $currentDate->addMonth();
+            }
+            break;
+    }
+
+    return response()->json([
+        'labels' => $labels,
+        'data' => $data,
+        'total' => array_sum($data)
+    ]);
+})->middleware(['auth', 'verified'])->name('dashboard.revenue-trend');
+
 
 // Dashboard Top Purchase Items AJAX Route
 Route::get('dashboard/top-purchase-items', function (Illuminate\Http\Request $request) {

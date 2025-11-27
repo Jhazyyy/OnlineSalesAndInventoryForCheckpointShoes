@@ -647,7 +647,12 @@
 
                                 <!-- Hidden Fields -->
                                 <input type="hidden" name="order_date"
-                                    :value="new Date().toISOString().split('T')[0]">
+                                    :value="(() => {
+                                        const now = new Date();
+                                        const offset = 8 * 60; // Philippine time is UTC+8
+                                        const phTime = new Date(now.getTime() + offset * 60 * 1000);
+                                        return phTime.toISOString().slice(0, 19).replace('T', ' ');
+                                    })()">
                                 <input type="hidden" name="tax_rule_id"
                                     :value="selectedTaxRule ? selectedTaxRule : ''">
                                 <input type="hidden" name="tax_amount"
