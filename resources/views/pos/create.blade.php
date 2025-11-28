@@ -673,8 +673,7 @@
                                 <div class="mt-6 space-y-2">
                                     <button type="submit"
                                         :disabled="cart.length === 0 || (!selectedCustomerId && !newCustomer.first_name) || (
-                                            paymentMethod === 'cash' && paymentStatus === 'paid' &&
-                                            amountReceived > 0 && amountReceived < total)"
+                                            paymentMethod === 'cash' && (!amountReceived || amountReceived <= 0))"
                                         @click="validatePayment($event)"
                                         class="w-full inline-flex items-center justify-center px-4 py-3 bg-green-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
@@ -1007,6 +1006,8 @@
                     this.$watch('amountReceived', () => this.checkPaymentAmount());
                     this.$watch('total', () => this.checkPaymentAmount());
                     this.$watch('paymentMethod', () => this.checkPaymentAmount());
+                    this.$watch('selectedCustomerId', () => this.checkPaymentAmount());
+                    this.$watch('newCustomer.first_name', () => this.checkPaymentAmount());
                 },
 
                 filterProducts() {
@@ -1027,12 +1028,22 @@
                 },
 
                 checkPaymentAmount() {
-                    // Automatically set payment status to pending if amount is insufficient
-                    if (this.paymentMethod === 'cash' && this.amountReceived > 0 && this.amountReceived < this.total) {
+                    // Set payment status to pending if:
+                    // 1. No customer selected
+                    // 2. Cash payment with no amount received or amount is 0
+                    // 3. Cash payment with insufficient amount
+                    if (!this.selectedCustomerId && !this.newCustomer.first_name) {
                         this.paymentStatus = 'pending';
-                    } else if (this.paymentMethod === 'cash' && this.amountReceived >= this.total) {
-                        // Only set to paid if amount is sufficient and currently pending
-                        if (this.paymentStatus === 'pending') {
+                        return;
+                    }
+
+                    if (this.paymentMethod === 'cash') {
+                        if (!this.amountReceived || this.amountReceived <= 0) {
+                            this.paymentStatus = 'pending';
+                        } else if (this.amountReceived < this.total) {
+                            this.paymentStatus = 'pending';
+                        } else if (this.amountReceived >= this.total) {
+                            // Only set to paid if amount is sufficient
                             this.paymentStatus = 'paid';
                         }
                     }

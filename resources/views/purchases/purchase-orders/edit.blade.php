@@ -170,7 +170,7 @@
                                     
                                     <!-- Item Content (Collapsible) -->
                                     <div class="item-content p-4" style="max-height: 1000px; opacity: 1; overflow: hidden; transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;">
-                                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                                         <div class="md:col-span-2">
                                             <label
                                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
@@ -216,12 +216,6 @@
                                                 class="line-total mt-1 block w-full rounded-md border-gray-300 bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white"
                                                 readonly>
                                         </div>
-                                        <div>
-                                            <button type="button"
-                                                class="remove-item w-full inline-flex justify-center items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                                Remove
-                                            </button>
-                                        </div>
                                     </div>
                                     <div class="mt-4">
                                         <label
@@ -229,6 +223,10 @@
                                         <textarea name="items[{{ $index }}][notes]" rows="2"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                             placeholder="Optional notes for this item">{{ old("items.{$index}.notes", $item->notes) }}</textarea>
+                                        <button type="button"
+                                            class="remove-item mt-2 w-full inline-flex justify-center items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                            Remove
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -478,18 +476,16 @@
                                     class="line-total mt-1 block w-full rounded-md border-gray-300 bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white"
                                     readonly>
                             </div>
-                            <div>
-                                <button type="button"
-                                    class="remove-item w-full inline-flex justify-center items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                    Remove
-                                </button>
-                            </div>
                         </div>
                         <div class="mt-4">
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
                             <textarea name="items[${index}][notes]" rows="2"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                 placeholder="Optional notes for this item"></textarea>
+                            <button type="button"
+                                class="remove-item mt-2 w-full inline-flex justify-center items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                Remove
+                            </button>
                         </div>
                     </div>
                 `;

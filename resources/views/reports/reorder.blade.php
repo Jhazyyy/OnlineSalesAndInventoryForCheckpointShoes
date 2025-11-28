@@ -3,7 +3,7 @@
         <div class="w-full mx-auto sm:px-6 lg:px-8">
 
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Reorder Items</h2>
@@ -45,7 +45,7 @@
             @endif
 
             <!-- Filter Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <form method="GET" action="{{ route('reports.reorder') }}" class="space-y-4">
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -77,7 +77,7 @@
             </div>
 
             <!-- Summary Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-2">
                 @php
                     $cards = [
                         ['label' => 'Total Products', 'color' => 'from-blue-500 to-blue-600', 'value' => $report['summary']['total_products'] ?? 0, 'icon' => 'M3 12h18M9 18l-6-6 6-6'],
