@@ -19,7 +19,6 @@ return new class extends Migration
             // Foreign Keys
             $table->foreignId('purchase_order_id');
             $table->foreignId('supplier_id');
-            $table->unsignedBigInteger('delivery_id')->nullable();
 
             $table->date('receive_date');
             $table->enum('status', ['in_transit', 'received', 'partially_received', 'damaged', 'cancelled'])->default('in_transit');
@@ -40,7 +39,6 @@ return new class extends Migration
             $table->index(['status', 'receive_date']);
             $table->index(['purchase_order_id', 'receive_date']);
             $table->index(['supplier_id', 'receive_date']);
-            $table->index(['delivery_id', 'receive_date']);
             $table->index('is_short_closed');
         });
     }

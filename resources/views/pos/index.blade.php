@@ -24,7 +24,7 @@
             </div>
 
             <!-- Today's Summary -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -211,7 +211,7 @@
                                             <div class="text-sm text-gray-900 dark:text-white">
                                                 {{ $order->order_date->format('M d, Y') }}</div>
                                             <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                {{ $order->order_date->format('g:i A') }}</div>
+                                                {{ $order->order_date->format('h:i A') }}</div>
                                         </td>
                                         <td class="px-6 py-4">
                                             <div class="text-sm text-gray-900 dark:text-white">

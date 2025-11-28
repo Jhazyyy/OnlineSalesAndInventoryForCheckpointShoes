@@ -649,9 +649,14 @@
                                 <input type="hidden" name="order_date"
                                     :value="(() => {
                                         const now = new Date();
-                                        const offset = 8 * 60; // Philippine time is UTC+8
-                                        const phTime = new Date(now.getTime() + offset * 60 * 1000);
-                                        return phTime.toISOString().slice(0, 19).replace('T', ' ');
+                                        // Get local time components directly (browser timezone)
+                                        const year = now.getFullYear();
+                                        const month = String(now.getMonth() + 1).padStart(2, '0');
+                                        const day = String(now.getDate()).padStart(2, '0');
+                                        const hours = String(now.getHours()).padStart(2, '0');
+                                        const minutes = String(now.getMinutes()).padStart(2, '0');
+                                        const seconds = String(now.getSeconds()).padStart(2, '0');
+                                        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
                                     })()">
                                 <input type="hidden" name="tax_rule_id"
                                     :value="selectedTaxRule ? selectedTaxRule : ''">

@@ -364,7 +364,7 @@
                                                 </a>
                                                 @if (!$user->hasAnyRole(['super_admin', 'admin']) || (auth()->user()->hasRole('super_admin') && $user->hasRole('admin')))
                                                     <a href="{{ route('user-management.edit', $user) }}"
-                                                        class="text-indigo-600 hover:text-indigo-900" title="Edit">
+                                                        class="text-yellow-600 hover:text-yellow-900" title="Edit">
                                                         <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                             viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round"

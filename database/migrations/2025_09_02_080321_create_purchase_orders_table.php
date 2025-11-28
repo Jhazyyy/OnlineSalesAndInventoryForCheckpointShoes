@@ -21,7 +21,6 @@ return new class extends Migration
             $table->enum('status', ['pending', 'ordered', 'cancelled', 'completed'])->default('pending');
             $table->enum('priority', ['low', 'normal', 'high', 'urgent'])->default('normal');
             $table->decimal('subtotal', 12, 2)->default(0);
-            $table->decimal('shipping_amount', 12, 2)->default(0);
             $table->decimal('total_amount', 12, 2)->default(0);
             $table->decimal('paid_amount', 12, 2)->default(0);
             $table->enum('payment_status', ['pending', 'partial', 'paid', 'refunded'])->default('pending');

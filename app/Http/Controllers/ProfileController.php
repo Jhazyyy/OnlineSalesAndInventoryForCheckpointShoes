@@ -64,6 +64,25 @@ class ProfileController extends Controller
     }
 
     /**
+     * Remove the user's profile photo.
+     */
+    public function removePhoto(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        // Delete the profile photo from storage if it exists
+        if ($user->profile_photo && Storage::disk('public')->exists($user->profile_photo)) {
+            Storage::disk('public')->delete($user->profile_photo);
+        }
+
+        // Set profile_photo to null (default avatar will be shown)
+        $user->profile_photo = null;
+        $user->save();
+
+        return Redirect::route('profile.edit')->with('status', 'photo-removed');
+    }
+
+    /**
      * Delete the user's account.
      */
     public function destroy(Request $request): RedirectResponse

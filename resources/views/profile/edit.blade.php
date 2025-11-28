@@ -17,6 +17,20 @@
                 </div>
             @endif
 
+            @if (session('status') === 'photo-removed')
+                <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)"
+                    class="mb-4 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-200 px-4 py-3 rounded-lg shadow-lg">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="font-medium">Profile photo removed successfully!</span>
+                    </div>
+                </div>
+            @endif
+
             <!-- Profile Card -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg sm:rounded-lg">
                 <!-- Gradient Header with Avatar -->
@@ -80,7 +94,7 @@
                                 <!-- Overlay (appears on hover) -->
                                 <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
                                     id="hoverOverlay">
-                                    <span class="text-white text-sm">Upload New Photo</span>
+                                    <span class="text-white text-xs">Upload New Photo</span>
                                 </div>
 
                                 <!-- Loading Overlay -->
@@ -99,6 +113,20 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Remove Photo Button (only show if photo exists) -->
+                            @if($user->profile_photo)
+                                <form method="POST" action="{{ route('profile.photo.remove') }}" class="mt-2" onsubmit="return confirm('Are you sure you want to remove your profile photo?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-md transition duration-150 ease-in-out">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                        Remove Photo
+                                    </button>
+                                </form>
+                            @endif
                         </div>
                     </div>
 

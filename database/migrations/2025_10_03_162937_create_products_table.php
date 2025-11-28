@@ -24,6 +24,9 @@ return new class extends Migration {
             $table->string('product_category')->nullable();
             $table->integer('quantity')->default(0);
             $table->decimal('price', 10, 2)->nullable()->comment('base price'); 
+            $table->decimal('markup_percentage', 10, 2)->nullable()->comment('Markup percentage to add to cost');
+            $table->decimal('markup_price', 10, 2)->nullable()->comment('Calculated selling price with markup applied');
+            $table->enum('price_source', ['manual', 'markup', 'costing'])->default('manual')->comment('Source of selling price: manual, markup, or costing');
             $table->string('image')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
@@ -37,17 +40,6 @@ return new class extends Migration {
             $table->unsignedBigInteger('last_supplier_id')->nullable();
             $table->timestamp('last_received_at')->nullable();
             $table->decimal('last_purchase_price', 10, 2)->nullable();
-            
-            // Inventory Thresholds
-            $table->integer('reorder_level')->nullable()->comment('Minimum level before reorder is triggered');
-            $table->integer('critical_level')->nullable()->comment('Critical stock level requiring immediate attention');
-            $table->integer('ceiling_level')->nullable()->comment('Maximum stock level (overstocking threshold)');
-            $table->integer('floor_level')->nullable()->comment('Absolute minimum acceptable stock level');
-            $table->boolean('auto_reorder_enabled')->default(false)->comment('Enable automatic reorder suggestions');
-            $table->boolean('threshold_alerts_enabled')->default(true)->comment('Enable threshold-based alerts');
-            $table->integer('lead_time_days')->nullable()->comment('Lead time in days for restocking');
-            $table->integer('economic_order_quantity')->nullable()->comment('EOQ - optimal order quantity');
-            $table->timestamp('last_threshold_check')->nullable();
             
             // Product Movement Tracking
             $table->string('movement_category')->nullable()->comment('fast, slow, non-moving, or null for uncategorized');

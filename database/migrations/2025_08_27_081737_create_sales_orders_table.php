@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('order_id');
             $table->string('order_number')->unique();
             $table->foreignId('customer_id');
-            $table->date('order_date');
+            $table->dateTime('order_date');
             $table->date('required_date')->nullable();
             $table->date('shipped_date')->nullable();
             $table->enum('status', ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'returned'])->default('pending');

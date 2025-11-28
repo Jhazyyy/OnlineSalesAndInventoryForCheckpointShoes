@@ -310,11 +310,11 @@ class UserManagementController extends Controller
                 ->with('error', 'Admin users can only be edited by super admin.');
         }
         
-        // Determine allowed roles based on current user
+        // Determine allowed roles based on current user (match creation permissions)
         if ($currentUser->hasRole('super_admin')) {
-            $allowedRoles = ['super_admin', 'admin', 'user'];
+            $allowedRoles = ['super_admin', 'admin', 'salesperson', 'inventory_clerk', 'user'];
         } elseif ($currentUser->hasRole('admin')) {
-            $allowedRoles = ['admin', 'user'];
+            $allowedRoles = ['admin', 'salesperson', 'inventory_clerk', 'user'];
         } else {
             $allowedRoles = ['user'];
         }
