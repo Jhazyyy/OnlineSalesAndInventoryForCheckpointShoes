@@ -6,8 +6,7 @@
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Purchase Order:
-                                {{ $order->order_number }}</h2>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Purchase Order: {{ $order->order_number }}</h2>
                             <p class="text-gray-600 dark:text-gray-400">Update purchase order information</p>
                         </div>
                         <div class="flex space-x-3 mt-4 sm:mt-0">
@@ -17,7 +16,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M15 19l-7-7 7-7" />
                                 </svg>
-                                Back
+                                Back to Details
                             </a>
                         </div>
                     </div>
@@ -31,11 +30,11 @@
                 @method('PUT')
 
                 <!-- Order Information -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Order Information</h3>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                             <!-- Order Number (Read-only) -->
                             <div>
                                 <x-input-label for="order_number" :value="__('Order Number')" />
@@ -63,7 +62,7 @@
                             <div>
                                 <x-input-label for="order_date" :value="__('Order Date')" />
                                 <x-text-input id="order_date" name="order_date" type="date" class="mt-1 block w-full"
-                                    :value="old('order_date', $order->order_date->format('Y-m-d'))" required />
+                                    :value="old('order_date', $order->order_date->format('Y-m-d'))" min="{{ date('Y-m-d') }}" required />
                                 <x-input-error :messages="$errors->get('order_date')" class="mt-2" />
                             </div>
 
@@ -74,7 +73,7 @@
                                     class="mt-1 block w-full" :value="old(
                                         'expected_date',
                                         $order->expected_date ? $order->expected_date->format('Y-m-d') : '',
-                                    )" />
+                                    )" min="{{ date('Y-m-d') }}"/>
                                 <x-input-error :messages="$errors->get('expected_date')" class="mt-2" />
                             </div>
 
@@ -136,7 +135,7 @@
                 </div>
 
                 <!-- Order Items -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white">Order Items</h3>
@@ -150,86 +149,93 @@
                             </button>
                         </div>
 
-                        <div id="orderItems" class="max-h-[600px] overflow-y-auto pr-2" style="scrollbar-width: thin; scrollbar-color: #9ca3af #f3f4f6;">
+                        <div id="orderItems" class="max-h-[600px] overflow-y-auto pr-2"
+                            style="scrollbar-width: thin; scrollbar-color: #9ca3af #f3f4f6;">
                             @foreach ($order->items as $index => $item)
                                 <!-- Existing item row -->
                                 <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg mb-4">
                                     <!-- Toggle Header -->
-                                    <div class="toggle-item-header flex items-center justify-between p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                    <div
+                                        class="toggle-item-header flex items-center justify-between p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                                         <div class="flex items-center space-x-3">
-                                            <svg class="toggle-item-icon w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-300" 
-                                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                            <svg class="toggle-item-icon w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-300"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 9l-7 7-7-7"></path>
                                             </svg>
-                                            <span class="item-product-name font-medium text-gray-700 dark:text-gray-300">
+                                            <span
+                                                class="item-product-name font-medium text-gray-700 dark:text-gray-300">
                                                 {{ $item->product->product_name ?? 'Not selected' }}
                                             </span>
-                                            <span class="item-summary text-sm text-gray-500 dark:text-gray-400" style="display: none;"></span>
+                                            <span class="item-summary text-sm text-gray-500 dark:text-gray-400"
+                                                style="display: none;"></span>
                                         </div>
                                     </div>
-                                    
+
                                     <!-- Item Content (Collapsible) -->
-                                    <div class="item-content p-4" style="max-height: 1000px; opacity: 1; overflow: hidden; transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;">
-                                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                                        <div class="md:col-span-2">
-                                            <label
-                                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
-                                            <select name="items[{{ $index }}][product_id]"
-                                                class="product-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                required>
-                                                <option value="">Select Product</option>
-                                                @foreach ($products as $product)
-                                                    <option value="{{ $product['id'] }}"
-                                                        data-price="{{ $product['price'] }}"
-                                                        data-stock="{{ $product['stock'] }}"
-                                                        {{ old("items.{$index}.product_id", $item->product_id) == $product['id'] ? 'selected' : '' }}>
-                                                        {{ $product['product_name'] }} (Stock:
-                                                        {{ $product['stock'] }})
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                                    <div class="item-content p-4"
+                                        style="max-height: 1000px; opacity: 1; overflow: hidden; transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;">
+                                        <div class="grid grid-cols-1 md:grid-cols-5 gap-2 items-end">
+                                            <div class="md:col-span-2">
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
+                                                <select name="items[{{ $index }}][product_id]"
+                                                    class="product-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                    required>
+                                                    <option value="">Select Product</option>
+                                                    @foreach ($products as $product)
+                                                        <option value="{{ $product['id'] }}"
+                                                            data-price="{{ $product['price'] }}"
+                                                            data-stock="{{ $product['stock'] }}"
+                                                            {{ old("items.{$index}.product_id", $item->product_id) == $product['id'] ? 'selected' : '' }}>
+                                                            {{ $product['product_name'] }} (Stock:
+                                                            {{ $product['stock'] }})
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
+                                                <input type="number"
+                                                    name="items[{{ $index }}][quantity_ordered]"
+                                                    class="quantity-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                    min="1"
+                                                    value="{{ old("items.{$index}.quantity_ordered", $item->quantity_ordered) }}"
+                                                    required>
+                                            </div>
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit
+                                                    Price</label>
+                                                <input type="number" name="items[{{ $index }}][unit_price]"
+                                                    step="0.01"
+                                                    class="unit-price-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                    value="{{ old("items.{$index}.unit_price", $item->unit_price) }}"
+                                                    required>
+                                            </div>
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Line
+                                                    Total</label>
+                                                <input type="text"
+                                                    class="line-total mt-1 block w-full rounded-md border-gray-300 bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white"
+                                                    readonly>
+                                            </div>
                                         </div>
-                                        <div>
+                                        <div class="mt-4">
                                             <label
-                                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
-                                            <input type="number" name="items[{{ $index }}][quantity_ordered]"
-                                                class="quantity-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                min="1"
-                                                value="{{ old("items.{$index}.quantity_ordered", $item->quantity_ordered) }}"
-                                                required>
+                                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
+                                            <textarea name="items[{{ $index }}][notes]" rows="2"
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                placeholder="Optional notes for this item">{{ old("items.{$index}.notes", $item->notes) }}</textarea>
+                                            <button type="button"
+                                                class="remove-item mt-2 w-full inline-flex justify-center items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                                Remove
+                                            </button>
                                         </div>
-                                        <div>
-                                            <label
-                                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit
-                                                Price</label>
-                                            <input type="number" name="items[{{ $index }}][unit_price]"
-                                                step="0.01"
-                                                class="unit-price-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                                value="{{ old("items.{$index}.unit_price", $item->unit_price) }}"
-                                                required>
-                                        </div>
-                                        <div>
-                                            <label
-                                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Line
-                                                Total</label>
-                                            <input type="text"
-                                                class="line-total mt-1 block w-full rounded-md border-gray-300 bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white"
-                                                readonly>
-                                        </div>
-                                    </div>
-                                    <div class="mt-4">
-                                        <label
-                                            class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
-                                        <textarea name="items[{{ $index }}][notes]" rows="2"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                            placeholder="Optional notes for this item">{{ old("items.{$index}.notes", $item->notes) }}</textarea>
-                                        <button type="button"
-                                            class="remove-item mt-2 w-full inline-flex justify-center items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                            Remove
-                                        </button>
                                     </div>
                                 </div>
-                            </div>
                             @endforeach
                         </div>
 
@@ -238,7 +244,7 @@
                 </div>
 
                 <!-- Order Summary -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Order Summary</h3>
 
@@ -263,56 +269,8 @@
                                 </div>
                             </div>
                         </div>
+
                     </div>
-                </div>
-
-                <!-- Additional Information -->
-                {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                    <div class="p-6">
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Additional Information</h3>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Delivery Address -->
-                            <div>
-                                <x-input-label for="delivery_address" :value="__('Delivery Address')" />
-                                <textarea id="delivery_address" name="delivery_address" rows="4"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    placeholder="Enter delivery address">{{ old('delivery_address', $order->delivery_address) }}</textarea>
-                                <x-input-error :messages="$errors->get('delivery_address')" class="mt-2" />
-                            </div>
-
-                            <!-- Billing Address -->
-                            <div>
-                                <x-input-label for="billing_address" :value="__('Billing Address')" />
-                                <textarea id="billing_address" name="billing_address" rows="4"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    placeholder="Enter billing address">{{ old('billing_address', $order->billing_address) }}</textarea>
-                                <x-input-error :messages="$errors->get('billing_address')" class="mt-2" />
-                            </div>
-
-                            <!-- Notes -->
-                            <div>
-                                <x-input-label for="notes" :value="__('Public Notes')" />
-                                <textarea id="notes" name="notes" rows="4"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    placeholder="Notes visible to supplier">{{ old('notes', $order->notes) }}</textarea>
-                                <x-input-error :messages="$errors->get('notes')" class="mt-2" />
-                            </div>
-
-                            <!-- Internal Notes -->
-                            <div>
-                                <x-input-label for="internal_notes" :value="__('Internal Notes')" />
-                                <textarea id="internal_notes" name="internal_notes" rows="4"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    placeholder="Internal notes (not visible to supplier)">{{ old('internal_notes', $order->internal_notes) }}</textarea>
-                                <x-input-error :messages="$errors->get('internal_notes')" class="mt-2" />
-                            </div>
-                        </div>
-                    </div>
-                </div> --}}
-
-                <!-- Form Actions -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
                     <div class="p-6">
                         <div class="flex items-center justify-end space-x-3">
                             <a href="{{ route('purchases.purchase-orders.show', $order->order_id) }}"
@@ -371,13 +329,15 @@
                             itemContent.style.maxHeight = '0px';
                             itemContent.style.opacity = '0';
                             toggleIcon.style.transform = 'rotate(-90deg)';
-                            
+
                             // Show summary
-                            const productName = itemRow.querySelector('.item-product-name').textContent || 'Not selected';
+                            const productName = itemRow.querySelector('.item-product-name').textContent ||
+                                'Not selected';
                             const quantity = itemRow.querySelector('.quantity-input').value || '0';
                             const unitPrice = itemRow.querySelector('.unit-price-input').value || '0';
                             const lineTotal = (parseFloat(quantity) * parseFloat(unitPrice)).toFixed(2);
-                            itemSummary.textContent = `Qty: ${quantity} × ₱${parseFloat(unitPrice).toFixed(2)} = ₱${lineTotal}`;
+                            itemSummary.textContent =
+                                `Qty: ${quantity} × ₱${parseFloat(unitPrice).toFixed(2)} = ₱${lineTotal}`;
                             itemSummary.style.display = 'inline';
                         } else {
                             // Expand
@@ -398,7 +358,7 @@
                         const row = e.target.closest('.item-row');
                         const priceInput = row.querySelector('.unit-price-input');
                         const productNameDisplay = row.querySelector('.item-product-name');
-                        
+
                         priceInput.value = price;
                         if (productNameDisplay) {
                             productNameDisplay.textContent = productName;
@@ -418,7 +378,8 @@
                 // Event delegation for remove button
                 orderItemsContainer.addEventListener('click', function(e) {
                     if (e.target.classList.contains('remove-item') || e.target.closest('.remove-item')) {
-                        const button = e.target.classList.contains('remove-item') ? e.target : e.target.closest('.remove-item');
+                        const button = e.target.classList.contains('remove-item') ? e.target : e.target.closest(
+                            '.remove-item');
                         const itemRows = document.querySelectorAll('.item-row');
                         if (itemRows.length > 1) {
                             button.closest('.item-row').remove();
@@ -443,49 +404,63 @@
 
                     products.forEach(product => {
                         productOptions += `<option value="${product.id}" data-price="${product.price}" data-stock="${product.stock}">
-                        ${product.name} (Stock: ${product.stock})
+                        ${product.product_name} (Stock: ${product.stock})
                     </option>`;
                     });
 
                     return `
-                    <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-4">
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
-                                <select name="items[${index}][product_id]"
-                                    class="product-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    required>
-                                    ${productOptions}
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
-                                <input type="number" name="items[${index}][quantity_ordered]"
-                                    class="quantity-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    min="1" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit Price</label>
-                                <input type="number" name="items[${index}][unit_price]" step="0.01"
-                                    class="unit-price-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                    required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Line Total</label>
-                                <input type="text"
-                                    class="line-total mt-1 block w-full rounded-md border-gray-300 bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white"
-                                    readonly>
+                    <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg mb-4">
+                        <!-- Toggle Header -->
+                        <div class="toggle-item-header flex items-center justify-between p-4 cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                            <div class="flex items-center space-x-3">
+                                <svg class="toggle-item-icon w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-300" 
+                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                                <span class="item-product-name font-medium text-gray-700 dark:text-gray-300">Not selected</span>
+                                <span class="item-summary text-sm text-gray-500 dark:text-gray-400" style="display: none;"></span>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
-                            <textarea name="items[${index}][notes]" rows="2"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                placeholder="Optional notes for this item"></textarea>
-                            <button type="button"
-                                class="remove-item mt-2 w-full inline-flex justify-center items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                Remove
-                            </button>
+                        
+                        <!-- Item Content (Collapsible) -->
+                        <div class="item-content p-4" style="max-height: 1000px; opacity: 1; overflow: hidden; transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;">
+                            <div class="grid grid-cols-1 md:grid-cols-5 gap-2 items-end">
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
+                                    <select name="items[${index}][product_id]"
+                                        class="product-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        required>
+                                        ${productOptions}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
+                                    <input type="number" name="items[${index}][quantity_ordered]"
+                                        class="quantity-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        min="1" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit Price</label>
+                                    <input type="number" name="items[${index}][unit_price]" step="0.01"
+                                        class="unit-price-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Line Total</label>
+                                    <input type="text"
+                                        class="line-total mt-1 block w-full rounded-md border-gray-300 bg-gray-50 dark:bg-gray-600 dark:border-gray-600 dark:text-white"
+                                        readonly>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
+                                <textarea name="items[${index}][notes]" rows="2"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    placeholder="Optional notes for this item"></textarea>
+                                <button type="button"
+                                    class="remove-item mt-2 w-full inline-flex justify-center items-center px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                    Remove
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -549,7 +524,7 @@
 
                         // Get selected product name
                         const productName = productSelect.selectedOptions[0]?.text || 'Not selected';
-                        
+
                         if (quantity > 0 && price > 0 && productSelect.value) {
                             itemsHtml += `
                                 <div class="flex justify-between items-start text-sm">
@@ -567,7 +542,8 @@
                     if (itemsHtml) {
                         summaryItemsContainer.innerHTML = itemsHtml;
                     } else {
-                        summaryItemsContainer.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400">No items selected yet</p>';
+                        summaryItemsContainer.innerHTML =
+                            '<p class="text-sm text-gray-500 dark:text-gray-400">No items selected yet</p>';
                     }
 
                     const total = subtotal;

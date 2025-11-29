@@ -6,11 +6,11 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\SalesOrder;
 use App\Services\SalesOrderService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class POSController extends Controller
 {
@@ -27,20 +27,20 @@ class POSController extends Controller
     public function index(Request $request)
     {
         $query = SalesOrder::with(['customer', 'items.product'])
-                          ->where('purchase_type', 'in_store')
-                          ->orderBy('created_at', 'desc');
+            ->where('purchase_type', 'in_store')
+            ->orderBy('created_at', 'desc');
 
         // Search functionality
         if ($search = $request->get('search')) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('order_number', 'like', "%{$search}%")
-                  ->orWhere('payment_method', 'like', "%{$search}%")
-                  ->orWhereHas('customer', function($customerQuery) use ($search) {
-                      $customerQuery->where('first_name', 'like', "%{$search}%")
-                                   ->orWhere('last_name', 'like', "%{$search}%")
-                                   ->orWhere('email', 'like', "%{$search}%")
-                                   ->orWhere('phone', 'like', "%{$search}%");
-                  });
+                    ->orWhere('payment_method', 'like', "%{$search}%")
+                    ->orWhereHas('customer', function ($customerQuery) use ($search) {
+                        $customerQuery->where('first_name', 'like', "%{$search}%")
+                            ->orWhere('last_name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -65,21 +65,20 @@ class POSController extends Controller
         // Get today's summary
         $todaySummary = [
             'total_sales' => SalesOrder::where('purchase_type', 'in_store')
-                                      ->whereDate('order_date', Carbon::today())
-                                      ->sum('total_amount'),
+                ->whereDate('order_date', Carbon::today())
+                ->sum('total_amount'),
             'total_orders' => SalesOrder::where('purchase_type', 'in_store')
-                                       ->whereDate('order_date', Carbon::today())
-                                       ->count(),
+                ->whereDate('order_date', Carbon::today())
+                ->count(),
             'cash_sales' => SalesOrder::where('purchase_type', 'in_store')
-                                     ->where('payment_method', 'cash')
-                                     ->whereDate('order_date', Carbon::today())
-                                     ->sum('total_amount'),
+                ->where('payment_method', 'cash')
+                ->whereDate('order_date', Carbon::today())
+                ->sum('total_amount'),
             'card_sales' => SalesOrder::where('purchase_type', 'in_store')
-                                     ->where('payment_method', 'card')
-                                     ->whereDate('order_date', Carbon::today())
-                                     ->sum('total_amount'),
+                ->where('payment_method', 'card')
+                ->whereDate('order_date', Carbon::today())
+                ->sum('total_amount'),
         ];
-
 
         $totalOrderSummary = [
             'total_sales' => SalesOrder::sum('total_amount'),
@@ -88,7 +87,6 @@ class POSController extends Controller
 
             'cash_sales' => SalesOrder::where('payment_method', 'cash')->sum('total_amount'),
         ];
-
 
         return view('pos.index', compact('orders', 'todaySummary', 'totalOrderSummary'));
     }
@@ -100,38 +98,38 @@ class POSController extends Controller
     {
         // Get active customers for quick selection
         $customers = Customer::active()
-                            ->orderBy('created_at', 'desc')
-                            ->limit(100)
-                            ->get()
-                            ->map(function($customer) {
-                                return [
-                                    'id' => $customer->customer_id,
-                                    'name' => trim($customer->first_name . ' ' . $customer->last_name),
-                                    'phone' => $customer->phone,
-                                    'email' => $customer->email,
-                                ];
-                            });
+            ->orderBy('created_at', 'desc')
+            ->limit(100)
+            ->get()
+            ->map(function ($customer) {
+                return [
+                    'id' => $customer->customer_id,
+                    'name' => trim($customer->first_name.' '.$customer->last_name),
+                    'phone' => $customer->phone,
+                    'email' => $customer->email,
+                ];
+            });
 
         // Get available products with stock
         $products = Product::where('quantity', '>', 0)
-                          ->orderBy('product_name')
-                          ->get()
-                          ->map(function($product) {
-                              return [
-                                  'id' => $product->product_id,
-                                  'name' => $product->name,
-                                  'sku' => $product->sku,
-                                  'price' => $product->getEffectivePrice() ?? $product->price,
-                                  'original_price' => $product->price,
-                                  'markup_price' => $product->markup_price,
-                                  'price_source' => $product->price_source,
-                                  'stock' => $product->quantity,
-                                  'category' => $product->product_category ?? 'Uncategorized',
-                                  'brand' => $product->product_brand ?? 'N/A',
-                                  'image' => $product->image ? $product->image_url : null,
-                                  'unit' => 'pcs',
-                              ];
-                          });
+            ->orderBy('product_name')
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id' => $product->product_id,
+                    'name' => $product->name,
+                    'sku' => $product->sku,
+                    'price' => $product->getEffectivePrice() ?? $product->price,
+                    'original_price' => $product->price,
+                    'markup_price' => $product->markup_price,
+                    'price_source' => $product->price_source,
+                    'stock' => $product->quantity,
+                    'category' => $product->product_category ?? 'Uncategorized',
+                    'brand' => $product->product_brand ?? 'N/A',
+                    'image' => $product->image ? $product->image_url : null,
+                    'unit' => 'pcs',
+                ];
+            });
 
         // Get active customer taxes and discounts
         $activeTaxes = \App\Models\TaxDiscount::active()->taxes()->forCustomer()->orderBy('priority')->get();
@@ -140,9 +138,9 @@ class POSController extends Controller
         // Get VAT-12 as default tax (find by name or code)
         $defaultTax = \App\Models\TaxDiscount::active()
             ->taxes()
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('name', 'VAT-12')
-                      ->orWhere('code', 'VAT-12');
+                    ->orWhere('code', 'VAT-12');
             })
             ->first();
 
@@ -164,7 +162,7 @@ class POSController extends Controller
             'new_customer_last_name' => 'nullable|string|max:255',
             'new_customer_phone' => 'nullable|string|max:20',
             'new_customer_email' => 'nullable|email|max:255',
-            
+
             // Order data
             'order_date' => 'required|date',
             'payment_method' => 'required|in:cash,bank_transfer,gcash',
@@ -174,7 +172,7 @@ class POSController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|numeric|min:0',
             'items.*.discount_amount' => 'nullable|numeric|min:0',
-            
+
             // Tax and discount
             'tax_rule_id' => 'nullable|exists:tax_discounts,id',
             'tax_amount' => 'nullable|numeric|min:0',
@@ -182,21 +180,22 @@ class POSController extends Controller
             'discount_amount' => 'nullable|numeric|min:0',
             'subtotal_amount' => 'required|numeric|min:0',
             'total_amount' => 'required|numeric|min:0',
-            
+
             'notes' => 'nullable|string|max:2000',
             'amount_received' => 'nullable|numeric|min:0',
-            
+
             // Bank transfer fields (required if payment method is bank_transfer)
             'bank_name' => 'nullable|required_if:payment_method,bank_transfer|string|max:255',
             'reference_no' => 'nullable|required_if:payment_method,bank_transfer|string|max:255',
             'payment_proof' => 'nullable|required_if:payment_method,bank_transfer|file|mimes:jpeg,jpg,png,pdf|max:5120',
-            
+
             // GCash fields (required if payment method is gcash)
             'gcash_reference_no' => 'nullable|required_if:payment_method,gcash|string|min:10|max:20',
         ]);
 
         if ($validator->fails()) {
             Log::error('POS Validation Failed:', $validator->errors()->toArray());
+
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput()
@@ -213,11 +212,11 @@ class POSController extends Controller
             } else {
                 // Check if customer with this email already exists
                 $email = $request->new_customer_email;
-                
-                if (!empty($email)) {
+
+                if (! empty($email)) {
                     // Try to find existing customer by email
                     $existingCustomer = Customer::where('email', $email)->first();
-                    
+
                     if ($existingCustomer) {
                         $customerId = $existingCustomer->customer_id;
                         Log::info('Found existing customer by email:', ['customer_id' => $customerId, 'email' => $email]);
@@ -236,8 +235,8 @@ class POSController extends Controller
                     }
                 } else {
                     // No email provided, generate unique placeholder for walk-in customers
-                    $email = 'walkin_' . time() . '_' . rand(1000, 9999) . '@pos.local';
-                    
+                    $email = 'walkin_'.time().'_'.rand(1000, 9999).'@pos.local';
+
                     $customer = Customer::create([
                         'first_name' => $request->new_customer_first_name,
                         'last_name' => $request->new_customer_last_name ?? '',
@@ -258,26 +257,26 @@ class POSController extends Controller
                 'discount_rule_id' => $request->discount_rule_id,
                 'discount_amount' => $request->discount_amount,
             ]);
-            
-            $taxRuleId = !empty($request->tax_rule_id) ? $request->tax_rule_id : null;
-            $discountRuleId = !empty($request->discount_rule_id) ? $request->discount_rule_id : null;
-            
+
+            $taxRuleId = ! empty($request->tax_rule_id) ? $request->tax_rule_id : null;
+            $discountRuleId = ! empty($request->discount_rule_id) ? $request->discount_rule_id : null;
+
             // Check if amount received matches total amount
             $totalAmount = (float) $request->total_amount;
             $amountReceived = (float) ($request->amount_received ?? 0);
             $paymentStatus = $request->payment_status;
-            
+
             // For bank transfer, always set to pending until admin confirms
             if ($request->payment_method === 'bank_transfer') {
                 $paymentStatus = 'pending';
-            } 
+            }
             // If amount received is less than total, set to pending/partial
             elseif ($amountReceived > 0 && $amountReceived < $totalAmount) {
                 $paymentStatus = 'partial';
             } elseif ($amountReceived >= $totalAmount && $request->payment_status === 'paid') {
                 $paymentStatus = 'paid';
             }
-            
+
             $orderData = [
                 'customer_id' => $customerId,
                 'order_date' => $request->order_date,
@@ -306,7 +305,7 @@ class POSController extends Controller
             if ($request->payment_method === 'bank_transfer' && $request->hasFile('payment_proof')) {
                 // Handle proof file upload
                 $file = $request->file('payment_proof');
-                $filename = 'pos_payment_proof_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $filename = 'pos_payment_proof_'.time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
                 $proofPath = $file->storeAs('payment_proofs', $filename, 'public');
 
                 // Create bank transfer payment record
@@ -351,17 +350,18 @@ class POSController extends Controller
             DB::commit();
 
             return redirect()->route('pos.show', $order->order_id)
-                ->with('success', 'Sale completed successfully! Order #' . $order->order_number . ' has been recorded.')
+                ->with('success', 'Sale completed successfully! Order #'.$order->order_number.' has been recorded.')
                 ->with('amount_received', $request->amount_received);
 
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('POS Store Failed:', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
+
             return redirect()->back()
-                ->withErrors(['error' => 'Failed to process sale: ' . $e->getMessage()])
+                ->withErrors(['error' => 'Failed to process sale: '.$e->getMessage()])
                 ->withInput()
                 ->with('error', 'Failed to process sale. Please try again.');
         }
@@ -373,11 +373,11 @@ class POSController extends Controller
     public function show(SalesOrder $order)
     {
         $order->load(['customer', 'items.product', 'taxRule', 'discountRule']);
-        
+
         // Use amount_received from database first, then fall back to session
         $amountReceived = $order->amount_received ?? session('amount_received');
         $change = $amountReceived ? $amountReceived - $order->total_amount : null;
-        
+
         return view('pos.show', compact('order', 'amountReceived', 'change'));
     }
 
@@ -409,12 +409,12 @@ class POSController extends Controller
             $additionalPayment = (float) $request->additional_payment;
             $currentPaid = (float) ($order->amount_received ?? 0);
             $totalPaid = $currentPaid + $additionalPayment;
-            
+
             // Update payment method if provided
             if ($request->payment_method) {
                 $order->payment_method = $request->payment_method;
             }
-            
+
             // Update payment status and order status
             if ($totalPaid >= $order->total_amount) {
                 $order->payment_status = 'paid';
@@ -425,9 +425,9 @@ class POSController extends Controller
                 $order->payment_status = 'partial';
                 $order->setAttribute('amount_received', $totalPaid);
                 $remaining = $order->total_amount - $totalPaid;
-                $successMessage = 'Payment updated successfully! Remaining balance: ₱' . number_format($remaining, 2);
+                $successMessage = 'Payment updated successfully! Remaining balance: ₱'.number_format($remaining, 2);
             }
-            
+
             $order->save();
 
             Log::info('Payment updated for POS order:', [
@@ -436,7 +436,7 @@ class POSController extends Controller
                 'additional_payment' => $additionalPayment,
                 'total_paid' => $totalPaid,
                 'payment_status' => $order->payment_status,
-                'order_status' => $order->status
+                'order_status' => $order->status,
             ]);
 
             DB::commit();
@@ -449,10 +449,11 @@ class POSController extends Controller
             DB::rollBack();
             Log::error('Payment update failed:', [
                 'error' => $e->getMessage(),
-                'order_id' => $order->order_id
+                'order_id' => $order->order_id,
             ]);
+
             return redirect()->back()
-                ->withErrors(['error' => 'Failed to update payment: ' . $e->getMessage()])
+                ->withErrors(['error' => 'Failed to update payment: '.$e->getMessage()])
                 ->withInput();
         }
     }
@@ -463,24 +464,24 @@ class POSController extends Controller
     public function searchCustomers(Request $request)
     {
         $search = $request->get('q', '');
-        
+
         $customers = Customer::active()
-                            ->where(function($query) use ($search) {
-                                $query->where('first_name', 'like', "%{$search}%")
-                                      ->orWhere('last_name', 'like', "%{$search}%")
-                                      ->orWhere('phone', 'like', "%{$search}%")
-                                      ->orWhere('email', 'like', "%{$search}%");
-                            })
-                            ->limit(10)
-                            ->get()
-                            ->map(function($customer) {
-                                return [
-                                    'id' => $customer->customer_id,
-                                    'name' => trim($customer->first_name . ' ' . $customer->last_name),
-                                    'phone' => $customer->phone,
-                                    'email' => $customer->email,
-                                ];
-                            });
+            ->where(function ($query) use ($search) {
+                $query->where('first_name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            })
+            ->limit(10)
+            ->get()
+            ->map(function ($customer) {
+                return [
+                    'id' => $customer->customer_id,
+                    'name' => trim($customer->first_name.' '.$customer->last_name),
+                    'phone' => $customer->phone,
+                    'email' => $customer->email,
+                ];
+            });
 
         return response()->json($customers);
     }

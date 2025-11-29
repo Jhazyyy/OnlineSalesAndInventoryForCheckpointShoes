@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="py-6" x-data="posSystem()" x-init="init()">
+    <div x-data="posSystem()" x-init="init()">
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <!-- Success/Error Messages -->
             @if (session('success'))
@@ -30,7 +30,7 @@
             @endif
 
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
+            {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -50,15 +50,15 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
             <form method="POST" action="{{ route('pos.store') }}" id="posForm" enctype="multipart/form-data">
                 @csrf
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-2 mb-2">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
                     <!-- Products Section (Left - 2 columns) -->
                     <div class="lg:col-span-2 mt-2">
                         <!-- Product Search & Filter -->
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm mb-2">
+                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-2">
                             <div class="p-4 space-y-3">
                                 <!-- Search Input -->
                                 <input type="text" x-model="productSearch" @input="filterProducts"
@@ -82,7 +82,7 @@
                         </div>
 
                         <!-- Products Grid -->
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
+                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
                             <div class="p-4">
                                 <div class="flex items-center justify-between mb-3">
                                     <h3 class="text-lg font-medium text-gray-900 dark:text-white">Products</h3>
@@ -112,14 +112,14 @@
                                     </p>
                                     <button type="button" x-show="productSearch || selectedCategory"
                                         @click="productSearch = ''; selectedCategory = ''; filterProducts();"
-                                        class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 transition">
+                                        class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 transition">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
                                             </path>
                                         </svg>
-                                        Clear All Filters
+                                        Clear Filters
                                     </button>
                                 </div>
 
@@ -149,15 +149,15 @@
                                                         <img :src="product.image" :alt="product.name"
                                                             class="w-full h-full object-cover">
                                                     </template>
-                                                    <template x-if="!product.image">
-                                                        <svg class="w-8 h-8 text-gray-400" fill="none"
+                                                    {{-- <template x-if="!product.image">
+                                                        <svg class="w-5 h-5 text-gray-400" fill="none"
                                                             stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2"
                                                                 d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4">
                                                             </path>
                                                         </svg>
-                                                    </template>
+                                                    </template> --}}
                                                 </div>
                                                 <div class="p-2">
                                                     <div class="flex items-start justify-between mb-1">
@@ -272,7 +272,7 @@
 
                     <!-- Cart & Checkout Section (Right - 1 column) -->
                     <div class="lg:col-span-1 mt-2">
-                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
+                        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
                             <div class="p-6">
                                 <!-- Customer Selection/Creation -->
                                 <div class="mb-6">
@@ -671,6 +671,11 @@
 
                                 <!-- Action Buttons -->
                                 <div class="mt-6 space-y-2">
+                                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                        <span class="font-semibold">Note:</span> You cannot modify the cart or
+                                        customer details after confirming the sale.
+
+                                    </div>
                                     <button type="submit"
                                         :disabled="cart.length === 0 || (!selectedCustomerId && !newCustomer.first_name) || (
                                             paymentMethod === 'cash' && (!amountReceived || amountReceived <= 0))"
@@ -681,7 +686,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
-                                        Confirm
+                                        Confirm Sale
                                     </button>
                                     <button type="button" @click="clearAll()"
                                         class="w-full inline-flex items-center justify-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-gray-700 transition">

@@ -395,8 +395,10 @@ class NavigationHelper
             ],
             'pos.create' => [
                 ['label' => 'Sales History', 'url' => route('pos.index')],
-                ['label' => 'Point of Sale', 'url' => null],
+                ['label' => 'Point of Sale', 'url' => route('pos.create')],
+                ['label' => 'New Sale', 'url' => null],
             ],
+
             'sales.customers.index' => [
                 ['label' => 'Sales', 'url' => null],
                 ['label' => 'Customers', 'url' => route('sales.customers.index')],
