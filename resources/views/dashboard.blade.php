@@ -106,7 +106,7 @@
                                     </select>
                                 </div>
 
-                                <div id="revenueTrendContainer" style="height: 300px; position: relative;">
+                                <div id="revenueTrendContainer" style="height: 250px; position: relative;">
                                     <canvas id="revenueTrendChart"></canvas>
                                 </div>
                             </div>
@@ -173,13 +173,15 @@
                                                         </div>
                                                         <div class="text-xs text-gray-500 dark:text-gray-400">
                                                             {{ $item['sku'] ?? '' }}
-                                                            @if(!empty($item['size']) || !empty($item['color']))
+                                                            @if (!empty($item['size']) || !empty($item['color']))
                                                                 <span class="mx-1">|</span>
-                                                                @if(!empty($item['size']))
+                                                                @if (!empty($item['size']))
                                                                     <span>{{ $item['size'] }}</span>
                                                                 @endif
-                                                                @if(!empty($item['color']))
-                                                                    @if(!empty($item['size']))<span class="mx-1">|</span>@endif
+                                                                @if (!empty($item['color']))
+                                                                    @if (!empty($item['size']))
+                                                                        <span class="mx-1">|</span>
+                                                                    @endif
                                                                     <span>{{ $item['color'] }}</span>
                                                                 @endif
                                                             @endif
@@ -274,13 +276,15 @@
                                                         </div>
                                                         <div class="text-xs text-gray-500 dark:text-gray-400">
                                                             {{ $item['sku'] ?? '' }}
-                                                            @if(!empty($item['size']) || !empty($item['color']))
+                                                            @if (!empty($item['size']) || !empty($item['color']))
                                                                 <span class="mx-1">|</span>
-                                                                @if(!empty($item['size']))
+                                                                @if (!empty($item['size']))
                                                                     <span>{{ $item['size'] }}</span>
                                                                 @endif
-                                                                @if(!empty($item['color']))
-                                                                    @if(!empty($item['size']))<span class="mx-1">|</span>@endif
+                                                                @if (!empty($item['color']))
+                                                                    @if (!empty($item['size']))
+                                                                        <span class="mx-1">|</span>
+                                                                    @endif
                                                                     <span>{{ $item['color'] }}</span>
                                                                 @endif
                                                             @endif
@@ -325,8 +329,8 @@
                                     Summary</h3>
 
                                 <!-- Quantity in Hand -->
-                                <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-                                    <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-2">
+                                <div class="mb-3 pb-6 border-b border-gray-200 dark:border-gray-700">
+                                    <div class="text-sm text-gray-600 dark:text-gray-400 font-medium mb-4">
                                         Quantity In Hand
                                     </div>
                                     <div class="text-2xl font-bold text-gray-800 dark:text-gray-100">
@@ -392,7 +396,7 @@
                                                 <div
                                                     class="flex items-center justify-between p-2 bg-green-50 dark:bg-green-900/20 rounded">
                                                     <div class="flex items-center">
-                                                        <svg class="w-4 h-4 text-green-600 dark:text-green-400 mr-2"
+                                                        <svg class="w-3 h-3 text-green-600 dark:text-green-400 mr-2"
                                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
                                                                 stroke-width="2"
@@ -411,112 +415,96 @@
                                     @endif
                                 </div>
                             </div>
+
+                            <!-- Revenue Statistics Card -->
+                            <div
+                                class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mt-2">
+                                <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Period
+                                    Statistics</h3>
+                                <!-- Total Revenue -->
+                                <div
+                                    class="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg mb-2">
+                                    <div class="flex items-center">
+                                        <div class="p-2 bg-green-500 rounded-lg mr-3">
+                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 8h4a3 3 0 0 1 0 6H9m0-6v10m0-10V6m0 4h7m-7 4h7M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs text-gray-600 dark:text-gray-400">Total Revenue
+                                            </div>
+                                            <div class="text-xs font-bold text-gray-800 dark:text-gray-100"
+                                                id="periodTotalRevenue">₱0.00</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Total Profit -->
+                                <div
+                                    class="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg mb-2">
+                                    <div class="flex items-center">
+                                        <div class="p-2 bg-blue-500 rounded-lg mr-3">
+                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs text-gray-600 dark:text-gray-400">Total Profit
+                                            </div>
+                                            <div class="text-xs font-bold text-gray-800 dark:text-gray-100"
+                                                id="periodTotalProfit">₱0.00</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Total Sales -->
+                                <div
+                                    class="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg mb-2">
+                                    <div class="flex items-center">
+                                        <div class="p-2 bg-purple-500 rounded-lg mr-3">
+                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                                                </path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs text-gray-600 dark:text-gray-400">Total Sales</div>
+                                            <div class="text-xs font-bold text-gray-800 dark:text-gray-100"
+                                                id="periodTotalSales">0</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Total Items Sold -->
+                                <div
+                                    class="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg mb-2">
+                                    <div class="flex items-center">
+                                        <div class="p-2 bg-orange-500 rounded-lg mr-3">
+                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4">
+                                                </path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs text-gray-600 dark:text-gray-400">Total Items Sold
+                                            </div>
+                                            <div class="text-xs font-bold text-gray-800 dark:text-gray-100"
+                                                id="periodTotalItems">0</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Additional Quick Stats (Optional Secondary Row) -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-6">
-                        <!-- Purchases Card -->
-                        {{-- <div
-                            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-                            <div class="flex items-center">
-                                <div class="p-2 bg-yellow-500 rounded-lg">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8.5m-8.5 0a2 2 0 11-4 0 2 2 0 014 0zm8.5 0a2 2 0 11-4 0 2 2 0 014 0z">
-                                        </path>
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                        Purchases</p>
-                                    <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                                        {{ $purchaseStats['total_purchases'] ?? 0 }}
-                                    </p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                        ₱{{ number_format($purchaseStats['total_purchase_value'] ?? 0, 2) }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div> --}}
-
-                        <!-- Suppliers Card -->
-                        {{-- <div
-                            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-                            <div class="flex items-center">
-                                <div class="p-2 bg-indigo-500 rounded-lg">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
-                                        </path>
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                        Suppliers</p>
-                                    <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                                        {{ $supplierStats['total_suppliers'] ?? 0 }}
-                                    </p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                        {{ $supplierStats['active_suppliers'] ?? 0 }} active
-                                    </p>
-                                </div>
-                            </div>
-                        </div> --}}
-
-                        <!-- Customers Card -->
-                        {{-- <div
-                            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-                            <div class="flex items-center">
-                                <div class="p-2 bg-purple-500 rounded-lg">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
-                                        </path>
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                        Customers</p>
-                                    <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                                        {{ $customerStats['total_customers'] ?? 0 }}
-                                    </p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                        {{ $customerStats['active_customers'] ?? 0 }} active
-                                    </p>
-                                </div>
-                            </div>
-                        </div> --}}
-
-                        <!-- Revenue Card -->
-                        {{-- <div
-                            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-                            <div class="flex items-center">
-                                <div class="p-2 bg-green-500 rounded-lg">
-                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                                        </path>
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                        Total Revenue</p>
-                                    <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                                        ₱{{ number_format(($monthlyRevenue ?? collect())->sum(), 2) }}
-                                    </p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                        Last 6 months
-                                    </p>
-                                </div>
-                            </div>
-                        </div> --}}
-                    </div>
-
                 </div>
 
                 <!-- Footer -->
@@ -654,12 +642,12 @@
 
             // Revenue Trend Chart
             let revenueTrendChart = null;
-            
+
             function loadRevenueTrend(period = 'this_month') {
                 console.log('Loading revenue trend for period:', period);
                 const container = document.getElementById('revenueTrendContainer');
                 const canvas = document.getElementById('revenueTrendChart');
-                
+
                 if (!canvas) {
                     console.error('Canvas element not found');
                     return;
@@ -667,7 +655,8 @@
 
                 // Show loading state
                 const loadingDiv = document.createElement('div');
-                loadingDiv.className = 'absolute inset-0 flex justify-center items-center bg-white dark:bg-gray-800 bg-opacity-90';
+                loadingDiv.className =
+                    'absolute inset-0 flex justify-center items-center bg-white dark:bg-gray-800 bg-opacity-90';
                 loadingDiv.innerHTML = `
                     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                 `;
@@ -729,10 +718,11 @@
                                         displayColors: false,
                                         callbacks: {
                                             label: function(context) {
-                                                return 'Revenue: ₱' + context.parsed.y.toLocaleString('en-US', {
-                                                    minimumFractionDigits: 2,
-                                                    maximumFractionDigits: 2
-                                                });
+                                                return 'Revenue: ₱' + context.parsed.y
+                                                    .toLocaleString('en-US', {
+                                                        minimumFractionDigits: 2,
+                                                        maximumFractionDigits: 2
+                                                    });
                                             }
                                         }
                                     }
@@ -780,14 +770,107 @@
             }
 
             // Initialize revenue trend chart
-            loadRevenueTrend();
+            const revenueTrendPeriodSelect = document.getElementById('revenueTrendPeriod');
+            const initialPeriod = revenueTrendPeriodSelect ? revenueTrendPeriodSelect.value : 'this_month';
+
+            console.log('Initializing dashboard with period:', initialPeriod);
+            console.log('Revenue trend select element:', revenueTrendPeriodSelect);
+
+            loadRevenueTrend(initialPeriod);
+
+            // Load Period Statistics
+            function loadPeriodStatistics(period = 'this_month') {
+                console.log('Loading period statistics for:', period);
+                console.log('Current timestamp:', new Date().toISOString());
+
+                // Check if elements exist
+                const revenueEl = document.getElementById('periodTotalRevenue');
+                const profitEl = document.getElementById('periodTotalProfit');
+                const salesEl = document.getElementById('periodTotalSales');
+                const itemsEl = document.getElementById('periodTotalItems');
+
+                console.log('Elements found:', {
+                    revenueEl: !!revenueEl,
+                    profitEl: !!profitEl,
+                    salesEl: !!salesEl,
+                    itemsEl: !!itemsEl
+                });
+
+                if (!revenueEl || !profitEl || !salesEl || !itemsEl) {
+                    console.error('Period statistics elements not found!');
+                    setTimeout(() => loadPeriodStatistics(period), 1000); // Retry after 1 second
+                    return;
+                }
+
+                fetch('/dashboard/period-statistics?period=' + period, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+                                'content') || ''
+                        },
+                        credentials: 'same-origin'
+                    })
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        if (!response.ok) {
+                            if (response.status === 401) {
+                                throw new Error('Authentication required');
+                            }
+                            throw new Error('HTTP error ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Period statistics received:', data);
+
+                        // Update Total Revenue
+                        revenueEl.textContent =
+                            '₱' + parseFloat(data.total_revenue || 0).toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+
+                        // Update Total Profit
+                        profitEl.textContent =
+                            '₱' + parseFloat(data.total_profit || 0).toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+
+                        // Update Total Sales
+                        salesEl.textContent =
+                            parseInt(data.total_sales || 0).toLocaleString('en-US');
+
+                        // Update Total Items Sold
+                        itemsEl.textContent =
+                            parseInt(data.total_items || 0).toLocaleString('en-US');
+                    })
+                    .catch(error => {
+                        console.error('Error fetching period statistics:', error);
+                        // Set to 0 on error
+                        revenueEl.textContent = '₱0.00';
+                        profitEl.textContent = '₱0.00';
+                        salesEl.textContent = '0';
+                        itemsEl.textContent = '0';
+                    });
+            }
+
+            // Initialize period statistics with the same period as revenue trend
+            loadPeriodStatistics(initialPeriod);
 
             // Revenue Trend Period Filter
-            const revenueTrendPeriodSelect = document.getElementById('revenueTrendPeriod');
             if (revenueTrendPeriodSelect) {
+                console.log('Setting up change listener for revenue trend select');
                 revenueTrendPeriodSelect.addEventListener('change', function() {
-                    loadRevenueTrend(this.value);
+                    const period = this.value;
+                    console.log('Revenue trend period changed to:', period);
+                    loadRevenueTrend(period);
+                    loadPeriodStatistics(period);
                 });
+            } else {
+                console.error('Revenue trend period select element not found!');
             }
 
             // Top Selling Items Period Filter
@@ -817,12 +900,12 @@
                                             <div class="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center overflow-hidden">
                                                 ${item.image 
                                                     ? `<img src="/storage/${item.image}" 
-                                                                                   alt="${item.name}" 
-                                                                                   class="w-5 h-5 object-cover"
-                                                                                   onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
+                                                                                           alt="${item.name}" 
+                                                                                           class="w-5 h-5 object-cover"
+                                                                                           onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
                                                     : `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                                                               </svg>`
+                                                                                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                                                       </svg>`
                                                 }
                                             </div>
                                             <div class="flex-1 min-w-0">
@@ -892,12 +975,12 @@
                                             <div class="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center overflow-hidden">
                                                 ${item.image 
                                                     ? `<img src="/storage/${item.image}" 
-                                                                                   alt="${item.name}" 
-                                                                                   class="w-5 h-5 object-cover"
-                                                                                   onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
+                                                                                           alt="${item.name}" 
+                                                                                           class="w-5 h-5 object-cover"
+                                                                                           onerror="this.onerror=null; this.parentElement.innerHTML='<svg class=\\'w-5 h-5 text-white\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\\'></path></svg>';">`
                                                     : `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                                                               </svg>`
+                                                                                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                                                       </svg>`
                                                 }
                                             </div>
                                             <div class="flex-1 min-w-0">
