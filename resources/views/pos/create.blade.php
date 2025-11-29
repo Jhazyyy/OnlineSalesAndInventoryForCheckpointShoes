@@ -3,7 +3,7 @@
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <!-- Success/Error Messages -->
             @if (session('success'))
-                <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+                <div class="mb-2 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
                     role="alert">
                     <strong class="font-bold">Success!</strong>
                     <span class="block sm:inline">{{ session('success') }}</span>
@@ -11,14 +11,14 @@
             @endif
 
             @if (session('error'))
-                <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <div class="mb-2 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                     <strong class="font-bold">Error!</strong>
                     <span class="block sm:inline">{{ session('error') }}</span>
                 </div>
             @endif
 
             @if ($errors->any())
-                <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                <div class="mb-2 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
                     role="alert">
                     <strong class="font-bold">Please fix the following errors:</strong>
                     <ul class="mt-2 list-disc list-inside">
@@ -52,7 +52,8 @@
                 </div>
             </div> --}}
 
-            <form method="POST" action="{{ route('pos.store') }}" id="posForm" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('pos.store') }}" id="posForm" enctype="multipart/form-data"
+                @submit="updateDateTime()">
                 @csrf
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
                     <!-- Products Section (Left - 2 columns) -->
@@ -124,143 +125,75 @@
                                 </div>
 
                                 <div x-show="filteredProducts.length > 0"
-                                    class="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 min-h-screen overflow-y-auto">
+                                    class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 min-h-screen overflow-y-auto">
                                     <template x-for="product in filteredProducts" :key="product.id">
-                                        <div class="relative" x-data="{ showTooltip: false }" @mouseenter="showTooltip = true"
-                                            @mouseleave="showTooltip = false">
-                                            <div @click="addToCart(product.id, product.name, product.price, product.stock, product.image || '')"
-                                                class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all"
-                                                :class="{ 'opacity-60 cursor-not-allowed': !product.price || product.price ===
-                                                    0 }">
+                                        <div @click="addToCart(product.id, product.name, product.price, product.stock, product.image || '')"
+                                            class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all"
+                                            :class="{ 'opacity-60 cursor-not-allowed': !product.price || product.price === 0 }">
 
-                                                <!-- No Price Warning Badge -->
-                                                <template x-if="!product.price || product.price === 0">
-                                                    <div class="absolute top-1 left-1 z-10">
-                                                        <span
-                                                            class="inline-flex items-center px-1.5 py-0.5 text-xs font-bold rounded bg-red-600 text-white">
-                                                            No Price
-                                                        </span>
-                                                    </div>
-                                                </template>
-
-                                                <div
-                                                    class="aspect-square bg-gray-100 dark:bg-gray-600 flex items-center justify-center">
-                                                    <template x-if="product.image">
-                                                        <img :src="product.image" :alt="product.name"
-                                                            class="w-full h-full object-cover">
-                                                    </template>
-                                                    {{-- <template x-if="!product.image">
-                                                        <svg class="w-5 h-5 text-gray-400" fill="none"
-                                                            stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4">
-                                                            </path>
-                                                        </svg>
-                                                    </template> --}}
+                                            <!-- No Price Warning Badge -->
+                                            <template x-if="!product.price || product.price === 0">
+                                                <div class="absolute top-2 left-2 z-10">
+                                                    <span
+                                                        class="inline-flex items-center px-2 py-1 text-xs font-bold rounded bg-red-600 text-white">
+                                                        No Price
+                                                    </span>
                                                 </div>
-                                                <div class="p-2">
-                                                    <div class="flex items-start justify-between mb-1">
-                                                        <span
-                                                            class="inline-block px-1.5 py-0.5 text-xs font-semibold rounded"
-                                                            :class="{
-                                                                'text-green-700 bg-green-100 dark:bg-green-900 dark:text-green-300': product
-                                                                    .stock > 10,
-                                                                'text-yellow-700 bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-300': product.stock <= 10 && product.stock > 5,
-                                                                'text-red-700 bg-red-100 dark:bg-red-900 dark:text-red-300': product
-                                                                    .stock <= 5
-                                                            }"
-                                                            x-text="product.stock"></span>
+                                            </template>
+
+                                            <!-- Product Image -->
+                                            <div class="aspect-square bg-gray-100 dark:bg-gray-600 flex items-center justify-center relative">
+                                                <template x-if="product.image">
+                                                    <img :src="product.image" :alt="product.name"
+                                                        class="w-full h-full object-cover">
+                                                </template>
+                                            </div>
+
+                                            <!-- Product Information -->
+                                            <div class="p-3 space-y-2">
+                                                <!-- Product Name & SKU -->
+                                                <div>
+                                                    <h4 class="font-bold text-sm text-gray-900 dark:text-white line-clamp-2 mb-1"
+                                                        x-text="product.name"></h4>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400" x-text="product.sku"></p>
+                                                </div>
+
+                                                <!-- Product Details -->
+                                                <div class="space-y-1.5 text-xs border-t border-gray-200 dark:border-gray-700 pt-2">
+                                                    <div class="flex justify-between">
+                                                        <span class="text-gray-600 dark:text-gray-400">Category:</span>
+                                                        <span class="font-medium text-gray-900 dark:text-white" x-text="product.category"></span>
                                                     </div>
-                                                    <h4 class="font-semibold text-xs text-gray-900 dark:text-white line-clamp-2 mb-1 min-h-[2rem]"
-                                                        x-text="product.name" :title="product.name"></h4>
                                                     <div class="flex justify-between items-center">
+                                                        <span class="text-gray-600 dark:text-gray-400">Price:</span>
                                                         <template x-if="product.price && product.price > 0">
-                                                            <span
-                                                                class="text-sm font-bold text-gray-900 dark:text-white"
+                                                            <span class="font-bold text-base text-blue-600 dark:text-blue-400"
                                                                 x-text="'₱' + parseFloat(product.price).toFixed(2)"></span>
                                                         </template>
                                                         <template x-if="!product.price || product.price === 0">
-                                                            <span
-                                                                class="text-xs font-semibold text-red-600 dark:text-red-400">
+                                                            <span class="text-xs font-semibold text-red-600 dark:text-red-400">
                                                                 No Price Set
                                                             </span>
                                                         </template>
                                                     </div>
+                                                    <div class="flex justify-between items-center">
+                                                        <span class="text-gray-600 dark:text-gray-400">Stock:</span>
+                                                        <span class="font-semibold px-2 py-0.5 rounded"
+                                                            :class="{
+                                                                'text-green-700 bg-green-100 dark:bg-green-900 dark:text-green-300': product.stock > 10,
+                                                                'text-yellow-700 bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-300': product.stock <= 10 && product.stock > 5,
+                                                                'text-red-700 bg-red-100 dark:bg-red-900 dark:text-red-300': product.stock <= 5
+                                                            }"
+                                                            x-text="product.stock + ' ' + product.unit">
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <!-- Hover Tooltip -->
-                                            <div x-show="showTooltip"
-                                                x-transition:enter="transition ease-out duration-200"
-                                                x-transition:enter-start="opacity-0 scale-95"
-                                                x-transition:enter-end="opacity-100 scale-100"
-                                                x-transition:leave="transition ease-in duration-150"
-                                                x-transition:leave-start="opacity-100 scale-100"
-                                                x-transition:leave-end="opacity-0 scale-95"
-                                                class="absolute z-50 inset-0 bg-white dark:bg-gray-800 border-2 border-blue-500 dark:border-blue-400 rounded-lg shadow-2xl p-2 overflow-y-auto cursor-pointer"
-                                                style="display: none;"
-                                                @click="addToCart(product.id, product.name, product.price, product.stock, product.image || ''); showTooltip = false">
-                                                <div class="space-y-1.5 h-full flex flex-col">
-                                                    <!-- Product Image -->
-                                                    <template x-if="product.image">
-                                                        <div
-                                                            class="w-full h-15 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
-                                                            <img :src="product.image" :alt="product.name"
-                                                                class="w-full h-full object-cover">
-                                                        </div>
-                                                    </template>
-
-                                                    <!-- Product Name -->
-                                                    <div class="flex-shrink-0">
-                                                        <h4 class="font-bold text-xs text-gray-900 dark:text-white mb-0.5 line-clamp-2"
-                                                            x-text="product.name"></h4>
-                                                        <p class="text-xs text-gray-500 dark:text-gray-400">
-                                                            <span x-text="product.sku"></span>
-                                                        </p>
-                                                    </div>
-
-                                                    <!-- Product Details -->
-                                                    <div
-                                                        class="space-y-1 text-xs border-t border-gray-200 dark:border-gray-700 pt-1.5 flex-1">
-                                                        <div class="flex justify-between">
-                                                            <span
-                                                                class="text-gray-600 dark:text-gray-400">Category:</span>
-                                                            <span
-                                                                class="font-medium text-gray-900 dark:text-white break-words ml-2"
-                                                                x-text="product.category"></span>
-                                                        </div>
-                                                        <div class="flex justify-between">
-                                                            <span
-                                                                class="text-gray-600 dark:text-gray-400">Price:</span>
-                                                            <span
-                                                                class="font-bold text-sm text-blue-600 dark:text-blue-400"
-                                                                x-text="'₱' + parseFloat(product.price).toFixed(2)"></span>
-                                                        </div>
-                                                        <div class="flex justify-between">
-                                                            <span
-                                                                class="text-gray-600 dark:text-gray-400">Stock:</span>
-                                                            <span class="font-semibold"
-                                                                :class="{
-                                                                    'text-green-600 dark:text-green-400': product
-                                                                        .stock > 10,
-                                                                    'text-yellow-600 dark:text-yellow-400': product
-                                                                        .stock <= 10 && product.stock > 5,
-                                                                    'text-red-600 dark:text-red-400': product.stock <=
-                                                                        5
-                                                                }"
-                                                                x-text="product.stock + ' ' + product.unit">
-                                                            </span>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Click to Add Hint -->
-                                                    <div
-                                                        class="text-center pt-1 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
-                                                        <p class="text-xs text-gray-500 dark:text-gray-400 italic">
-                                                            Click to add to cart
-                                                        </p>
-                                                    </div>
+                                                <!-- Click to Add Hint -->
+                                                <div class="text-center pt-2 border-t border-gray-200 dark:border-gray-700">
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 italic">
+                                                        Click to add to cart
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
@@ -646,18 +579,8 @@
 
 
                                 <!-- Hidden Fields -->
-                                <input type="hidden" name="order_date"
-                                    :value="(() => {
-                                        const now = new Date();
-                                        // Get local time components directly (browser timezone)
-                                        const year = now.getFullYear();
-                                        const month = String(now.getMonth() + 1).padStart(2, '0');
-                                        const day = String(now.getDate()).padStart(2, '0');
-                                        const hours = String(now.getHours()).padStart(2, '0');
-                                        const minutes = String(now.getMinutes()).padStart(2, '0');
-                                        const seconds = String(now.getSeconds()).padStart(2, '0');
-                                        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-                                    })()">
+                                <!-- Order date will be updated to real-time on form submission -->
+                                <input type="hidden" name="order_date" id="order_date_input" :value="currentDateTime">
                                 <input type="hidden" name="tax_rule_id"
                                     :value="selectedTaxRule ? selectedTaxRule : ''">
                                 <input type="hidden" name="tax_amount"
@@ -929,6 +852,7 @@
                 paymentMethod: 'cash',
                 paymentStatus: 'paid',
                 amountReceived: 0,
+                currentDateTime: '',
 
                 // Bank Transfer fields
                 bankName: '',
@@ -1007,12 +931,33 @@
                     this.categories = [...new Set(this.products.map(p => p.category))].sort();
 
                     this.filteredProducts = this.products;
+                    
+                    // Initialize current date time
+                    this.updateDateTime();
+                    
                     // Watch for payment amount changes
                     this.$watch('amountReceived', () => this.checkPaymentAmount());
                     this.$watch('total', () => this.checkPaymentAmount());
                     this.$watch('paymentMethod', () => this.checkPaymentAmount());
                     this.$watch('selectedCustomerId', () => this.checkPaymentAmount());
                     this.$watch('newCustomer.first_name', () => this.checkPaymentAmount());
+                },
+
+                updateDateTime() {
+                    const now = new Date();
+                    const year = now.getFullYear();
+                    const month = String(now.getMonth() + 1).padStart(2, '0');
+                    const day = String(now.getDate()).padStart(2, '0');
+                    const hours = String(now.getHours()).padStart(2, '0');
+                    const minutes = String(now.getMinutes()).padStart(2, '0');
+                    const seconds = String(now.getSeconds()).padStart(2, '0');
+                    this.currentDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+                    
+                    // Also directly set the input value to ensure it's updated before form submission
+                    const input = document.getElementById('order_date_input');
+                    if (input) {
+                        input.value = this.currentDateTime;
+                    }
                 },
 
                 filterProducts() {
@@ -1151,12 +1096,49 @@
                 },
 
                 validatePayment(event) {
+                    // Update order_date to real-time timestamp before submission
+                    this.updateDateTime();
+                    
+                    // Debug: Show the timestamp being sent
+                    console.log('=== POS TIMESTAMP DEBUG ===');
+                    console.log('Current DateTime:', this.currentDateTime);
+                    console.log('JavaScript Date:', new Date().toLocaleString());
+                    console.log('==========================');
+
+                    // Validate cart is not empty
+                    if (this.cart.length === 0) {
+                        event.preventDefault();
+                        this.showToast('Cannot create sale: Cart is empty', 'error');
+                        return false;
+                    }
+
+                    // Validate customer is selected
+                    if (!this.selectedCustomerId && !this.newCustomer.first_name) {
+                        event.preventDefault();
+                        this.showToast('Please select a customer or enter new customer details', 'error');
+                        return false;
+                    }
+
+                    // Validate all products have valid prices
+                    const invalidProducts = this.cart.filter(item => !item.price || item.price <= 0);
+                    if (invalidProducts.length > 0) {
+                        event.preventDefault();
+                        this.showToast('Some products have invalid prices. Please remove them from cart.', 'error');
+                        return false;
+                    }
+
                     // Prevent form submission if payment is insufficient but marked as paid
                     if (this.paymentMethod === 'cash' && this.paymentStatus === 'paid' && this.amountReceived > 0 && this
                         .amountReceived < this.total) {
                         event.preventDefault();
-                        alert(
-                            'Cannot complete as PAID with insufficient payment amount. Please enter the full amount or mark as PENDING.');
+                        this.showToast('Cannot complete as PAID with insufficient payment amount. Please enter the full amount or mark as PENDING.', 'error');
+                        return false;
+                    }
+
+                    // Validate cash payment has amount received
+                    if (this.paymentMethod === 'cash' && (!this.amountReceived || this.amountReceived <= 0)) {
+                        event.preventDefault();
+                        this.showToast('Please enter the amount received for cash payment', 'error');
                         return false;
                     }
 
@@ -1164,8 +1146,7 @@
                     if (this.paymentMethod === 'bank_transfer') {
                         if (!this.bankName || !this.referenceNo || !this.proofFileName) {
                             event.preventDefault();
-                            alert(
-                                'Please fill in all bank transfer details: Bank Name, Reference Number, and upload Proof of Payment.');
+                            this.showToast('Please fill in all bank transfer details: Bank Name, Reference Number, and upload Proof of Payment.', 'error');
                             return false;
                         }
                     }
@@ -1174,13 +1155,13 @@
                     if (this.paymentMethod === 'gcash') {
                         if (!this.gcashReferenceNo || this.gcashReferenceNo.length < 10) {
                             event.preventDefault();
-                            alert('Please click "Show GCash QR Code" and enter the reference number after payment.');
+                            this.showToast('Please click "Show GCash QR Code" and enter the reference number after payment.', 'error');
                             return false;
                         }
                     }
 
-                    // Confirm submission
-                    console.log('Submitting POS form', {
+                    // Log submission for debugging
+                    console.log('Submitting POS form at:', this.currentDateTime, {
                         cart: this.cart,
                         customerId: this.selectedCustomerId,
                         newCustomer: this.newCustomer,
@@ -1190,8 +1171,11 @@
                         bankName: this.bankName,
                         referenceNo: this.referenceNo,
                         gcashReferenceNo: this.gcashReferenceNo,
-                        total: this.total
+                        total: this.total,
+                        orderDate: this.currentDateTime
                     });
+
+                    return true;
                 },
 
                 confirmGcashPayment() {

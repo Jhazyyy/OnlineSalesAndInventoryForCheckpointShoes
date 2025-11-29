@@ -2,7 +2,7 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -20,7 +20,7 @@
                                         d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
                                     </path>
                                 </svg>
-                                View Profile
+                                View Customer
                             </a>
                             <a href="{{ route('sales.customers.index') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
@@ -103,7 +103,7 @@
                 </div> --}}
 
                 <!-- Basic Information -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white">Basic Information</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -233,19 +233,16 @@
                     </div>
                 </div> --}}
                 <!-- Additional Information -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mt-2">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Additional Information</h3>
                         <div>
-                            <label for="notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
+                            <label for="notes"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
                             <textarea id="notes" name="notes" rows="4" placeholder="Add any additional notes about this customer..."
-                                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">{{ old('notes', $customer->notes) }}</textarea>
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">{{ old('notes', $customer->notes) }}</textarea>
                         </div>
                     </div>
-                </div>
-
-                <!-- Form Actions -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm">
                     <div class="p-6">
                         <div
                             class="flex flex-col sm:flex-row sm:items-center sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3">
@@ -283,7 +280,7 @@
                 companyName.setAttribute('required', 'required');
                 // Show business check mark
                 document.querySelector('label:has(input[value="business"]) .customer-type-check').classList.remove(
-                'hidden');
+                    'hidden');
                 // Update styling
                 document.querySelector('label:has(input[value="business"])').className =
                     'flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 border-purple-500 bg-purple-50 dark:bg-purple-900/20';

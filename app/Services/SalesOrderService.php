@@ -133,8 +133,8 @@ class SalesOrderService
      */
     public function createOrder(array $data): SalesOrder
     {
-        // Set defaults
-        $data['order_date'] = $data['order_date'] ?? Carbon::today();
+        // Set defaults - use Carbon::now() to capture current date AND time
+        $data['order_date'] = $data['order_date'] ?? Carbon::now();
         $data['status'] = $data['status'] ?? 'pending';
         $data['priority'] = $data['priority'] ?? 'normal';
         $data['payment_status'] = $data['payment_status'] ?? 'pending';
@@ -145,8 +145,8 @@ class SalesOrderService
         if ($data['purchase_type'] === 'in_store' && $data['payment_status'] === 'paid') {
             // Set status to delivered since customer gets the product immediately
             $data['status'] = 'delivered';
-            // Set shipped_date to today since it's instant
-            $data['shipped_date'] = $data['shipped_date'] ?? Carbon::today();
+            // Set shipped_date to now since it's instant
+            $data['shipped_date'] = $data['shipped_date'] ?? Carbon::now();
         } elseif ($data['purchase_type'] === 'in_store' && $data['payment_status'] !== 'paid') {
             // For in-store but not yet paid, keep as pending or confirmed
             if (!isset($data['status']) || $data['status'] === 'pending') {

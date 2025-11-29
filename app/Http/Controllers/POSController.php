@@ -164,7 +164,7 @@ class POSController extends Controller
             'new_customer_email' => 'nullable|email|max:255',
 
             // Order data
-            'order_date' => 'required|date',
+            'order_date' => 'required|date_format:Y-m-d H:i:s',
             'payment_method' => 'required|in:cash,bank_transfer,gcash',
             'payment_status' => 'required|in:pending,paid',
             'items' => 'required|array|min:1',
@@ -204,6 +204,34 @@ class POSController extends Controller
 
         try {
             DB::beginTransaction();
+
+            // Validate stock availability before processing order
+            $stockErrors = [];
+            foreach ($request->items as $item) {
+                $product = Product::find($item['product_id']);
+                if (!$product) {
+                    $stockErrors[] = "Product ID {$item['product_id']} not found";
+                    continue;
+                }
+                
+                if ($product->quantity < $item['quantity']) {
+                    $stockErrors[] = "{$product->product_name}: Only {$product->quantity} available, {$item['quantity']} requested";
+                }
+                
+                // Validate product has a price
+                if (!$product->price || $product->price <= 0) {
+                    $stockErrors[] = "{$product->product_name}: No price set for this product";
+                }
+            }
+            
+            if (!empty($stockErrors)) {
+                DB::rollBack();
+                Log::warning('POS Stock Validation Failed:', $stockErrors);
+                return redirect()->back()
+                    ->withErrors(['stock' => $stockErrors])
+                    ->withInput()
+                    ->with('error', 'Stock validation failed. Please check the cart and try again.');
+            }
 
             // Handle customer (create new or use existing)
             if ($request->filled('customer_id')) {
@@ -256,6 +284,7 @@ class POSController extends Controller
                 'tax_amount' => $request->tax_amount,
                 'discount_rule_id' => $request->discount_rule_id,
                 'discount_amount' => $request->discount_amount,
+                'order_date_received' => $request->order_date,
             ]);
 
             $taxRuleId = ! empty($request->tax_rule_id) ? $request->tax_rule_id : null;
@@ -277,9 +306,18 @@ class POSController extends Controller
                 $paymentStatus = 'paid';
             }
 
+            // Parse order_date to ensure it's a proper Carbon instance with time
+            $orderDate = $request->order_date ? Carbon::parse($request->order_date) : Carbon::now();
+            
+            Log::info('Parsed order_date:', [
+                'original' => $request->order_date,
+                'parsed' => $orderDate->toDateTimeString(),
+                'formatted' => $orderDate->format('Y-m-d H:i:s')
+            ]);
+
             $orderData = [
                 'customer_id' => $customerId,
-                'order_date' => $request->order_date,
+                'order_date' => $orderDate,
                 'payment_method' => $request->payment_method,
                 'payment_status' => $paymentStatus,
                 'amount_received' => $amountReceived > 0 ? $amountReceived : null,
