@@ -1,8 +1,8 @@
 <x-app-layout>
-    <div class="py-6">
+    <div class="py-2">
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="flex items-center justify-between">
                         <div>
@@ -23,10 +23,6 @@
                             </a>
                             <a href="{{ route('master_data.suppliers.index') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 19l-7-7 7-7" />
-                                </svg>
                                 Back to Suppliers
                             </a>
                         </div>
@@ -98,7 +94,7 @@
                         <!-- Address Information -->
                         <div>
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Address Information</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-5 gap-2">
                                 <!-- Address -->
                                 <div class="md:col-span-1">
                                     <x-input-label for="address" :value="__('Street Address')" />
@@ -144,7 +140,7 @@
                         <!-- Business Information -->
                         <div>
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Business Information</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                                 <!-- Tax ID -->
                                 <div>
                                     <x-input-label for="tax_id" :value="__('Tax ID/Registration Number')" />
@@ -198,10 +194,6 @@
                             </a>
                             <button
                                 class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                                </svg>
                                 Update Supplier
                             </button>
                         </div>

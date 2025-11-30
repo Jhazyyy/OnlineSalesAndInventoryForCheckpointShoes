@@ -6,16 +6,13 @@
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Purchase Order: {{ $order->order_number }}</h2>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Purchase Order:
+                                {{ $order->order_number }}</h2>
                             <p class="text-gray-600 dark:text-gray-400">Update purchase order information</p>
                         </div>
                         <div class="flex space-x-3 mt-4 sm:mt-0">
                             <a href="{{ route('purchases.purchase-orders.show', $order->order_id) }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 19l-7-7 7-7" />
-                                </svg>
                                 Back to Details
                             </a>
                         </div>
@@ -34,7 +31,7 @@
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Order Information</h3>
 
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-7 gap-2">
                             <!-- Order Number (Read-only) -->
                             <div>
                                 <x-input-label for="order_number" :value="__('Order Number')" />
@@ -73,7 +70,7 @@
                                     class="mt-1 block w-full" :value="old(
                                         'expected_date',
                                         $order->expected_date ? $order->expected_date->format('Y-m-d') : '',
-                                    )" min="{{ date('Y-m-d') }}"/>
+                                    )" min="{{ date('Y-m-d') }}" />
                                 <x-input-error :messages="$errors->get('expected_date')" class="mt-2" />
                             </div>
 
@@ -277,13 +274,10 @@
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Cancel
                             </a>
-                            <x-primary-button type="submit">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                                </svg>
-                                {{ __('Update') }}
-                            </x-primary-button>
+                            <button
+                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                Update Purchase Order
+                            </button>
                         </div>
                     </div>
                 </div>

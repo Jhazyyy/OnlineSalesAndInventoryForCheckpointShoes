@@ -224,6 +224,9 @@
                                             <div class="text-sm text-gray-500 dark:text-gray-400">
                                                 {{ $product->product_brand }}
                                             </div>
+                                            <div class="text-xs text-gray-400 dark:text-gray-500 font-mono mt-0.5">
+                                                SKU: {{ $product->sku ?? 'N/A' }}
+                                            </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900 dark:text-white">
@@ -272,7 +275,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">
                                             <a href="{{ route('inventory.product-costing.edit', $product) }}"
                                                 class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
-                                                Edit Costing
+                                                Apply Costing
                                             </a>
                                         </td>
                                     </tr>

@@ -488,7 +488,7 @@ class ProductController extends Controller
             \App\Models\AuditLog::SEVERITY_INFO
         );
 
-        return redirect()->route('inventory.products.index')->with('success', 'Product updated successfully!');
+        return redirect()->back()->with('success', 'Product updated successfully!');
     }
 
     /**

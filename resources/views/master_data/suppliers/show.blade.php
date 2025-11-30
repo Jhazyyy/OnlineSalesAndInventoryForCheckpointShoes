@@ -1,8 +1,8 @@
 <x-app-layout>
-    <div class="py-6">
+    <div class="py-2">
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
@@ -37,11 +37,7 @@
                             </a>
                             <a href="{{ route('master_data.suppliers.index') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 19l-7-7 7-7" />
-                                </svg>
-                                Back to Suppliers
+                                Back to List of Suppliers
                             </a>
                         </div>
                     </div>
@@ -49,7 +45,7 @@
             </div>
 
             <!-- Supplier Information and Performance -->
-            <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-6">
+            <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-2">
                 <!-- Contact Information -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
@@ -207,7 +203,7 @@
             </div>
 
             <!-- Activity Log -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Activity Log</h3>
@@ -217,7 +213,7 @@
                     </div>
 
                     @if ($recentActivities->count() > 0)
-                        <div class="space-y-4">
+                        <div class="space-y-2">
                             @foreach ($recentActivities as $activity)
                                 <div
                                     class="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
@@ -333,7 +329,7 @@
             </div>
 
             <!-- Purchase History -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Purchase Orders</h3>
@@ -460,7 +456,7 @@
 
             <!-- Monthly Purchase Chart (if data available) -->
             @if ($monthlyPurchases->count() > 0)
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                     <div class="p-6">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Monthly Purchase Activity
                             ({{ date('Y') }})</h3>
@@ -484,7 +480,7 @@
 
             <!-- Notes Section -->
             @if ($supplier->notes)
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                     <div class="p-6">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Notes</h3>
                         <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ $supplier->notes }}

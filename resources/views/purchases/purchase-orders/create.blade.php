@@ -150,10 +150,12 @@
                                                     <option value="{{ $product['id'] }}"
                                                         data-price="{{ $product['price'] }}"
                                                         data-stock="{{ $product['stock'] }}">
-                                                        {{ $product['product_name'] }}
+                                                        {{ $product['product_name'] }} (Stock:
+                                                        {{ $product['stock'] }})
                                                     </option>
                                                 @endforeach
                                             </select>
+                                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 stock-info"></p>
                                         </div>
                                         <div>
                                             <label
@@ -253,10 +255,12 @@
                     if (e.target.classList.contains('product-select')) {
                         const option = e.target.selectedOptions[0];
                         const price = option.dataset.price || '';
+                        const stock = option.dataset.stock || '';
                         const productName = option.text || 'Not selected';
                         const row = e.target.closest('.item-row');
                         const priceInput = row.querySelector('.unit-price-input');
                         const productNameDisplay = row.querySelector('.item-product-name');
+                        const stockInfo = row.querySelector('.stock-info');
 
                         priceInput.value = price;
                         if (productNameDisplay) {
@@ -376,6 +380,7 @@
                                                 required>
                                                 ${productOptions}
                                             </select>
+                                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 stock-info"></p>
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>

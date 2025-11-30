@@ -1,9 +1,9 @@
 <x-app-layout>
-    <div class="py-6">
+    <div class="py-2">
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
 
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="flex items-center justify-between">
                         <div>
@@ -12,11 +12,7 @@
                         </div>
                         <a href="{{ route('master_data.stock_names.index') }}"
                             class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 19l-7-7 7-7" />
-                            </svg>
-                            Back to List
+                            Back to Stock Names
                         </a>
                     </div>
                 </div>
@@ -97,7 +93,7 @@
                             </a>
                             <button type="submit"
                                 class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                Update
+                                Update Stock Name
                             </button>
                         </div>
                     </form>

@@ -906,11 +906,6 @@ Route::get('dashboard/top-purchase-items', function (Illuminate\Http\Request $re
         Route::put('/{product}', [ProductController::class, 'update'])->middleware('permission:edit products')->name('update');
         Route::delete('/{product}', [ProductController::class, 'destroy'])->middleware('permission:delete products')->name('destroy');
 
-        // Import routes
-        // Route::get('/import/form', [ProductController::class, 'showImportForm'])->name('import');
-        // Route::post('/import', [ProductController::class, 'import'])->name('import');
-        // Route::get('/template/download', [ProductController::class, 'downloadTemplate'])->name('template');
-
         // API routes
         Route::post('/bulk-update-stock', [ProductController::class, 'bulkUpdateStock'])->middleware('permission:manage stock')->name('bulk-update-stock');
         Route::get('/alerts', [ProductController::class, 'getAlertsData'])->middleware('permission:view products')->name('alerts');

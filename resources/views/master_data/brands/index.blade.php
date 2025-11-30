@@ -1,9 +1,9 @@
 <x-app-layout>
-    <div class="py-6">
+    <div class="py-2">
         <div class="w-full mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
             <div
-                class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -39,7 +39,7 @@
 
             <!-- Search and Filters -->
             <div
-                class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <form method="GET" action="{{ route('master_data.brands.index') }}" class="space-y-4">
                         <!-- Inputs Row -->
