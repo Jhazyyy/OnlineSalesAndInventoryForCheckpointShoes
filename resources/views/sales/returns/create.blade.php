@@ -1,8 +1,8 @@
 <x-app-layout>
-    <div class="py-6">
+    <div class="py-2">
         <div class="w-full mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -12,11 +12,7 @@
                         <div>
                             <a href="{{ route('sales.returns.index') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 19l-7-7 7-7" />
-                                </svg>
-                                Back to Returns
+                                Back to Return List
                             </a>
                         </div>
                     </div>
@@ -95,7 +91,7 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                             <!-- Customer Selection (Auto-populated from sales order) -->
                             <div>
                                 <label for="customer_id"
@@ -367,7 +363,7 @@
                             <div class="font-medium text-gray-900 dark:text-white">${item.product_name}</div>
                             <div class="text-sm text-gray-600 dark:text-gray-400">Qty: ${item.quantity} • Price: ₱${parseFloat(item.unit_price).toFixed(2)}</div>
                         </div>
-                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300">₱${parseFloat(item.total_price).toFixed(2)}</div>
+                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300">₱${(parseFloat(item.quantity) * parseFloat(item.unit_price)).toFixed(2)}</div>
                         <button type="button" class="ml-3 px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600">
                             Select
                         </button>
@@ -379,6 +375,11 @@
                         priceInput.value = parseFloat(item.unit_price).toFixed(2);
                         quantityInput.value = 1; // Default to 1, user can change
                         quantityInput.max = item.quantity; // Max is what was ordered
+                        quantityInput.setAttribute('data-max-quantity', item.quantity);
+                        
+                        // Update stock info to show max returnable
+                        stockInfo.innerHTML = `<span class="text-blue-600 dark:text-blue-400">Maximum returnable: ${item.quantity} units (from this order)</span>`;
+                        
                         updateStockInfo();
                         calculateTotal();
 
@@ -441,6 +442,19 @@
             productSelect.addEventListener('change', updatePrice);
             priceInput.addEventListener('input', calculateTotal);
             quantityInput.addEventListener('input', calculateTotal);
+
+            // Add validation for max quantity
+            quantityInput.addEventListener('input', function() {
+                const maxQty = parseInt(quantityInput.getAttribute('max'));
+                const currentQty = parseInt(quantityInput.value);
+                
+                if (maxQty && currentQty > maxQty) {
+                    quantityInput.setCustomValidity('Quantity cannot exceed ' + maxQty + ' units');
+                    quantityInput.reportValidity();
+                } else {
+                    quantityInput.setCustomValidity('');
+                }
+            });
 
             // Initial calculation
             if (productSelect.value) {

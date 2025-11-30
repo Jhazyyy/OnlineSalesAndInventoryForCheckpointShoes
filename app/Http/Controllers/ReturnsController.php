@@ -6,6 +6,7 @@ use App\Models\Returns;
 use App\Models\Product;
 use App\Models\Customer;
 use App\Models\SalesOrder;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -122,6 +123,29 @@ class ReturnsController extends Controller
                                           'Return #' . $existingReturn->return_id . ' is already ' . $existingReturn->return_status . '.'
                     ])->withInput();
                 }
+
+                // Validate return quantity doesn't exceed ordered quantity
+                $salesOrder = SalesOrder::with('items')->find($validated['sales_order_id']);
+                if ($salesOrder) {
+                    $orderItem = $salesOrder->items->where('product_id', $validated['product_id'])->first();
+                    if ($orderItem) {
+                        // Calculate total already returned for this product in this order
+                        $totalReturned = Returns::where('sales_order_id', $validated['sales_order_id'])
+                            ->where('product_id', $validated['product_id'])
+                            ->whereNotIn('return_status', [Returns::STATUS_REJECTED])
+                            ->sum('quantity');
+
+                        $availableToReturn = $orderItem->quantity - $totalReturned;
+
+                        if ($validated['quantity'] > $availableToReturn) {
+                            DB::rollBack();
+                            return back()->withErrors([
+                                'quantity' => 'Return quantity (' . $validated['quantity'] . ') exceeds available quantity to return (' . $availableToReturn . '). ' .
+                                           'Ordered: ' . $orderItem->quantity . ', Already returned: ' . $totalReturned . '.'
+                            ])->withInput();
+                        }
+                    }
+                }
             }
 
             $return = Returns::create([
@@ -139,6 +163,15 @@ class ReturnsController extends Controller
                 DB::rollBack();
                 return back()->withErrors(['product_id' => 'Product not found.'])->withInput();
             }
+
+            // Create notification for new return
+            Notification::create([
+                'type' => 'return',
+                'title' => 'New Return Created',
+                'message' => 'Return #' . $return->return_id . ' has been created for ' . $return->product->product_name . ' (Qty: ' . $return->quantity . ')',
+                'level' => 'info',
+                'link' => route('sales.returns.show', $return->return_id),
+            ]);
 
             DB::commit();
 
@@ -209,6 +242,31 @@ class ReturnsController extends Controller
         ]);
 
         try {
+            // Validate return quantity doesn't exceed ordered quantity if linked to sales order
+            if ($validated['sales_order_id']) {
+                $salesOrder = SalesOrder::with('items')->find($validated['sales_order_id']);
+                if ($salesOrder) {
+                    $orderItem = $salesOrder->items->where('product_id', $validated['product_id'])->first();
+                    if ($orderItem) {
+                        // Calculate total already returned for this product in this order (excluding current return)
+                        $totalReturned = Returns::where('sales_order_id', $validated['sales_order_id'])
+                            ->where('product_id', $validated['product_id'])
+                            ->where('return_id', '!=', $return->return_id)
+                            ->whereNotIn('return_status', [Returns::STATUS_REJECTED])
+                            ->sum('quantity');
+
+                        $availableToReturn = $orderItem->quantity - $totalReturned;
+
+                        if ($validated['quantity'] > $availableToReturn) {
+                            return back()->withErrors([
+                                'quantity' => 'Return quantity (' . $validated['quantity'] . ') exceeds available quantity to return (' . $availableToReturn . '). ' .
+                                           'Ordered: ' . $orderItem->quantity . ', Already returned: ' . $totalReturned . '.'
+                            ])->withInput();
+                        }
+                    }
+                }
+            }
+
             // If the status is being changed to approved, use the approve() method
             // to ensure inventory is updated properly
             if (isset($validated['return_status']) && 
@@ -289,6 +347,15 @@ class ReturnsController extends Controller
             DB::beginTransaction();
 
             if ($return->approve()) {
+                // Create notification for approved return
+                Notification::create([
+                    'type' => 'return',
+                    'title' => 'Return Approved',
+                    'message' => 'Return #' . $return->return_id . ' has been approved. ' . $return->quantity . ' units of ' . $return->product->product_name . ' added to inventory.',
+                    'level' => 'success',
+                    'link' => route('sales.returns.show', $return->return_id),
+                ]);
+
                 DB::commit();
                 return back()->with('success', 'Return approved successfully. Inventory has been updated.');
             } else {
@@ -315,6 +382,15 @@ class ReturnsController extends Controller
 
         try {
             if ($return->reject()) {
+                // Create notification for rejected return
+                Notification::create([
+                    'type' => 'return',
+                    'title' => 'Return Rejected',
+                    'message' => 'Return #' . $return->return_id . ' has been rejected for ' . $return->product->product_name . ' (Qty: ' . $return->quantity . ')',
+                    'level' => 'warning',
+                    'link' => route('sales.returns.show', $return->return_id),
+                ]);
+
                 return back()->with('success', 'Return rejected successfully.');
             } else {
                 return back()->with('error', 'Failed to reject return.');
@@ -344,6 +420,15 @@ class ReturnsController extends Controller
 
         try {
             if ($return->markAsProcessed()) {
+                // Create notification for processed return
+                Notification::create([
+                    'type' => 'return',
+                    'title' => 'Return Processed',
+                    'message' => 'Return #' . $return->return_id . ' has been marked as processed for ' . $return->product->product_name,
+                    'level' => 'info',
+                    'link' => route('sales.returns.show', $return->return_id),
+                ]);
+
                 return back()->with('success', 'Return marked as processed successfully.');
             } else {
                 return back()->with('error', 'Failed to mark return as processed.');
@@ -411,6 +496,17 @@ class ReturnsController extends Controller
                 }
             }
 
+            // Create notification for bulk approve
+            if ($approvedCount > 0) {
+                Notification::create([
+                    'type' => 'return',
+                    'title' => 'Returns Bulk Approved',
+                    'message' => $approvedCount . ' return(s) have been approved and inventory has been updated.',
+                    'level' => 'success',
+                    'link' => route('sales.returns.index'),
+                ]);
+            }
+
             DB::commit();
 
             if ($approvedCount > 0) {
@@ -447,6 +543,17 @@ class ReturnsController extends Controller
                 if ($return->reject()) {
                     $rejectedCount++;
                 }
+            }
+
+            // Create notification for bulk reject
+            if ($rejectedCount > 0) {
+                Notification::create([
+                    'type' => 'return',
+                    'title' => 'Returns Bulk Rejected',
+                    'message' => $rejectedCount . ' return(s) have been rejected.',
+                    'level' => 'warning',
+                    'link' => route('sales.returns.index'),
+                ]);
             }
 
             if ($rejectedCount > 0) {

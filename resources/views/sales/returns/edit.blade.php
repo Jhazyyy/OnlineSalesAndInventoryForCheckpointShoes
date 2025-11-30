@@ -1,8 +1,8 @@
 <x-app-layout>
-    <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-2">
+        <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -13,11 +13,7 @@
                         <div>
                             <a href="{{ route('sales.returns.show', $return) }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 19l-7-7 7-7" />
-                                </svg>
-                                Back to Return
+                                Back to Details
                             </a>
                         </div>
                     </div>
@@ -38,7 +34,7 @@
 
             <!-- Sales Order Information (if linked) -->
             @if ($return->salesOrder)
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
                             <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -86,7 +82,7 @@
 
             <!-- Customer Information (if linked) -->
             @if ($return->customer)
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
                             <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,10 +183,31 @@
                                 </label>
                                 <input type="number" id="quantity" name="quantity"
                                     value="{{ old('quantity', $return->quantity) }}" required min="1"
+                                    @if($return->salesOrder)
+                                        @php
+                                            $orderItem = $return->salesOrder->items->where('product_id', $return->product_id)->first();
+                                            $totalReturned = \App\Models\Returns::where('sales_order_id', $return->sales_order_id)
+                                                ->where('product_id', $return->product_id)
+                                                ->where('return_id', '!=', $return->return_id)
+                                                ->whereNotIn('return_status', [\App\Models\Returns::STATUS_REJECTED])
+                                                ->sum('quantity');
+                                            $maxQuantity = $orderItem ? $orderItem->quantity - $totalReturned : 999999;
+                                        @endphp
+                                        max="{{ $maxQuantity }}"
+                                        data-max-quantity="{{ $maxQuantity }}"
+                                        data-ordered-quantity="{{ $orderItem ? $orderItem->quantity : 0 }}"
+                                        data-returned-quantity="{{ $totalReturned }}"
+                                    @endif
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 @error('quantity')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
+                                @if($return->salesOrder && isset($maxQuantity))
+                                    <p class="mt-1 text-sm text-gray-500">
+                                        Maximum returnable: {{ $maxQuantity }} 
+                                        (Ordered: {{ $orderItem ? $orderItem->quantity : 0 }}@if($totalReturned > 0), Already returned: {{ $totalReturned }}@endif)
+                                    </p>
+                                @endif
                                 <p class="mt-1 text-sm text-gray-500" id="stock-info"></p>
                             </div>
 
@@ -297,10 +314,6 @@
                             </a>
                             <button type="submit"
                                 class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                                </svg>
                                 Update Return
                             </button>
                         </div>
@@ -361,6 +374,19 @@
                 calculateTotal();
             });
             quantityInput.addEventListener('input', calculateTotal);
+
+            // Add validation for max quantity
+            quantityInput.addEventListener('input', function() {
+                const maxQty = parseInt(quantityInput.getAttribute('max'));
+                const currentQty = parseInt(quantityInput.value);
+                
+                if (maxQty && currentQty > maxQty) {
+                    quantityInput.setCustomValidity('Quantity cannot exceed ' + maxQty + ' units');
+                    quantityInput.reportValidity();
+                } else {
+                    quantityInput.setCustomValidity('');
+                }
+            });
 
             // Initial setup
             updateStockInfo();

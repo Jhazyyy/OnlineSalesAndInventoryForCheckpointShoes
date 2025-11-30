@@ -79,14 +79,11 @@
                                     <x-input-label for="applicable_for" :value="__('Applicable For')" />
                                     <select id="applicable_for" name="applicable_for" required
                                         class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                                        {{-- <option value="both" {{ old('applicable_for', 'both') === 'both' ? 'selected' : '' }}>Both (Supplier & Customer)</option> --}}
-                                        {{-- <option value="supplier" {{ old('applicable_for') === 'supplier' ? 'selected' : '' }}>Supplier (Purchase Orders)</option> --}}
                                         <option value="customer"
-                                            {{ old('applicable_for') === 'customer' ? 'selected' : '' }}>Customer (Sales
+                                            {{ old('applicable_for', 'customer') === 'customer' ? 'selected' : '' }}>Customer (Sales
                                             Orders)</option>
                                     </select>
                                     <x-input-error class="mt-2" :messages="$errors->get('applicable_for')" />
-                                    {{-- <p class="mt-1 text-sm text-gray-500">Choose whether this applies to suppliers, customers, or both</p> --}}
                                 </div>
 
                                 <!-- Calculation Method -->
@@ -124,16 +121,6 @@
                                     <x-input-error class="mt-2" :messages="$errors->get('fixed_amount')" />
                                     <p class="mt-1 text-sm text-gray-500">Enter fixed amount in pesos</p>
                                 </div>
-
-                                <!-- Priority -->
-                                {{-- <div>
-                                    <x-input-label for="priority" :value="__('Priority')" />
-                                    <x-text-input id="priority" name="priority" type="number"
-                                        class="mt-1 block w-full" :value="old('priority', 0)" required min="0"
-                                        placeholder="0" />
-                                    <x-input-error class="mt-2" :messages="$errors->get('priority')" />
-                                    <p class="mt-1 text-sm text-gray-500">Lower numbers are calculated first (0 is highest priority)</p>
-                                </div> --}}
                             </div>
                         </div>
 
@@ -257,11 +244,7 @@
                             </a>
                             <button type="submit"
                                 class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7" />
-                                </svg>
-                                Create
+                                Create Tax/Discount
                             </button>
                         </div>
                     </form>
