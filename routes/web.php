@@ -1010,14 +1010,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/profit-breakdown', [\App\Http\Controllers\TaxDiscountController::class, 'profitBreakdown'])->name('profit-breakdown');
     });
 
-    // Master Data Markup Price Routes (Admin only)
-    Route::prefix('master_data/markup_prices')->name('master_data.markup_prices.')->middleware('role:super_admin,admin')->group(function () {
-        Route::get('/', [\App\Http\Controllers\MarkupPriceController::class, 'index'])->name('index');
-        Route::put('/{product}', [\App\Http\Controllers\MarkupPriceController::class, 'update'])->name('update');
-        Route::post('/bulk-update', [\App\Http\Controllers\MarkupPriceController::class, 'bulkUpdate'])->name('bulk-update');
-        Route::get('/{product}/preview', [\App\Http\Controllers\MarkupPriceController::class, 'preview'])->name('preview');
-    });
-
     // API route for tax/discount calculation
     Route::post('/api/tax-discounts/calculate', [\App\Http\Controllers\TaxDiscountController::class, 'calculateForOrder'])->name('api.tax-discounts.calculate');
 

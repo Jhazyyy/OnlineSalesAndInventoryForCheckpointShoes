@@ -274,10 +274,6 @@ class NavigationHelper
                 ['label' => 'Master Data', 'url' => null],
                 ['label' => 'Tax Discounts', 'url' => route('master_data.tax_discounts.index')],
             ],
-            'master_data.markup_prices.index' => [
-                ['label' => 'Master Data', 'url' => null],
-                ['label' => 'Markup Prices', 'url' => route('master_data.markup_prices.index')],
-            ],
             'master_data.suppliers.index' => [
                 ['label' => 'Master Data', 'url' => null],
                 ['label' => 'Suppliers', 'url' => route('master_data.suppliers.index')],

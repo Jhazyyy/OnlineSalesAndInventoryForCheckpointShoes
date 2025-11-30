@@ -8,7 +8,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Create New Tax/Discount</h2>
-                            <p class="text-gray-600 dark:text-gray-400">Add a new tax or discount markup</p>
+                            <p class="text-gray-600 dark:text-gray-400">Add a new tax or discount</p>
                         </div>
                         <a href="{{ route('master_data.tax_discounts.index') }}"
                             class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">

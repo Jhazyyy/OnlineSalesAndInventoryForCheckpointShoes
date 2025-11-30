@@ -1,8 +1,8 @@
 <x-app-layout>
-    <div class="py-6">
+    <div class="py-2">
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -35,7 +35,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
                 <!-- Product Details -->
                 <div class="lg:col-span-2 space-y-6">
                     <!-- Basic Information -->
@@ -243,13 +243,13 @@
                 </div>
 
                 <!-- Statistics Sidebar -->
-                <div class="space-y-6">
+                <div class="space-y-2">
                     <!-- Supplier Information -->
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Supplier Information</h3>
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Supplier Information</h3>
 
-                            <div class="space-y-4">
+                            <div class="space-y-2">
                                 @if ($product->lastSupplier)
                                     <div>
                                         <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Last
@@ -263,7 +263,6 @@
                                         @endif
                                     </div>
                                 @endif
-
                                 @if ($product->preferredSupplier)
                                     <div>
                                         <label
@@ -334,9 +333,9 @@
                     <!-- Product Info -->
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Product Info</h3>
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Product Info</h3>
 
-                            <div class="space-y-4">
+                            <div class="space-y-2">
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm text-gray-500 dark:text-gray-400">Product ID</span>
                                     <span

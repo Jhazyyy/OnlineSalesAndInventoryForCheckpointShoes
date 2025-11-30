@@ -1,8 +1,8 @@
 <x-app-layout>
-    <div class="py-6">
+    <div class="py-2">
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -31,7 +31,7 @@
                         @method('PUT')
 
                         <!-- Stock Name and Product Name Row -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                             <!-- Stock Name (Parent Product) -->
                             <div>
                                 <label for="stock_name"
@@ -63,31 +63,8 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Preferred Supplier -->
-                            <div>
-                                <label for="preferred_supplier_id"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Preferred Supplier <span class="text-gray-400 text-xs">(Optional)</span>
-                                </label>
-                                <select id="preferred_supplier_id" name="preferred_supplier_id"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">Select a supplier...</option>
-                                    @foreach ($suppliers as $supplier)
-                                        <option value="{{ $supplier->supplier_id }}"
-                                            {{ old('preferred_supplier_id', $product->preferred_supplier_id) == $supplier->supplier_id ? 'selected' : '' }}>
-                                            {{ $supplier->supplier_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('preferred_supplier_id')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
                         <!-- Price and Image Row -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                             <!-- Size -->
                             <div>
                                 <label for="size"
@@ -115,10 +92,32 @@
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
+
+                            <!-- Preferred Supplier -->
+                            <div>
+                                <label for="preferred_supplier_id"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Preferred Supplier <span class="text-gray-400 text-xs">(Optional)</span>
+                                </label>
+                                <select id="preferred_supplier_id" name="preferred_supplier_id"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">Select a supplier...</option>
+                                    @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->supplier_id }}"
+                                            {{ old('preferred_supplier_id', $product->preferred_supplier_id) == $supplier->supplier_id ? 'selected' : '' }}>
+                                            {{ $supplier->supplier_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('preferred_supplier_id')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                         </div>
 
                         <!-- SKU, Barcode Row -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
                             <!-- SKU -->
                             <div>
                                 <label for="sku"
@@ -132,58 +131,6 @@
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
-
-                            <!-- Barcode -->
-                            {{-- <div>
-                                <label for="barcode"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Barcode
-                                </label>
-                                <input type="text" id="barcode" name="barcode"
-                                    value="{{ old('barcode', $product->barcode) }}"
-                                    placeholder="e.g., 1234567890123"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('barcode') border-red-500 @enderror">
-                                @error('barcode')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div> --}}
-                        </div>
-
-                        <!-- Property Name and Value Row -->
-                        {{-- <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Property Name -->
-                            <div>
-                                <label for="property_name"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Property Name <span class="text-gray-400 text-xs">(Optional, e.g., Size, Color)</span>
-                                </label>
-                                <input type="text" id="property_name" name="property_name"
-                                    value="{{ old('property_name', $product->property_name) }}"
-                                    placeholder="e.g., Size"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('property_name') border-red-500 @enderror">
-                                @error('property_name')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <!-- Property Value -->
-                            <div>
-                                <label for="property_value"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Property Value <span class="text-gray-400 text-xs">(Optional, e.g., 42, Red)</span>
-                                </label>
-                                <input type="text" id="property_value" name="property_value"
-                                    value="{{ old('property_value', $product->property_value) }}"
-                                    placeholder="e.g., 42"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('property_value') border-red-500 @enderror">
-                                @error('property_value')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div> --}}
-
-                        <!-- Brand and Category Row -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Product Brand -->
                             <div>
                                 <label for="product_brand"
@@ -262,10 +209,6 @@
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
-                        </div>
-
-                        <!-- Price and Current Stock Row -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Price -->
                             <div>
                                 <label for="price"
@@ -284,49 +227,10 @@
                                 @error('price')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
-                                
-                                @if($product->markup_price)
-                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                        Markup Price: ₱{{ number_format($product->markup_price, 2) }}
-                                        @if($product->markup_percentage)
-                                            ({{ number_format($product->markup_percentage, 2) }}% markup)
-                                        @endif
-                                    </p>
-                                @endif
-                                
-                                <p class="mt-1 text-xs text-blue-600 dark:text-blue-400">
-                                    <a href="{{ route('master_data.markup_prices.index') }}" class="hover:underline">
-                                        Configure markup pricing →
-                                    </a>
-                                </p>
                             </div>
-                            <!-- Current Stock (Read-only Display) -->
-                            {{-- <div
-                                class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                                <div class="flex items-start">
-                                    <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 mr-2 mt-0.5" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                                    </svg>
-                                    <div class="flex-1">
-                                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Current
-                                            Stock Quantity</label>
-                                        <div class="mt-1 text-2xl font-semibold text-gray-900 dark:text-white">
-                                            {{ number_format($product->quantity) }}
-                                        </div>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                            Managed via <a
-                                                href="{{ route('inventory.product_stock_adjustment.index') }}"
-                                                class="text-indigo-600 dark:text-indigo-400 hover:underline">Stock
-                                                Movements</a>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div> --}}
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-rows-1 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                             <!-- Current Image Display -->
                             @if ($product->image)
                                 <div>
@@ -346,93 +250,101 @@
                                 <img id="previewImg" src="#" alt="Preview"
                                     class="w-48 h-auto object-cover rounded-lg border">
                             </div>
-                        </div>
 
-                        <!-- Product Image Upload -->
-                        <div>
-                            <label for="image" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {{ $product->image ? 'Update Image' : 'Product Image' }}
-                            </label>
-
-                            <!-- Image Source Toggle -->
-                            <div class="mt-2 flex space-x-4">
-                                <label class="inline-flex items-center">
-                                    <input type="radio" name="image_source" value="file" checked
-                                        onchange="toggleImageSource()"
-                                        class="form-radio text-indigo-600 focus:ring-indigo-500">
-                                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Upload File</span>
+                            <!-- Product Image Upload -->
+                            <div>
+                                <label for="image"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {{ $product->image ? 'Update Image' : 'Product Image' }}
                                 </label>
-                                <label class="inline-flex items-center">
-                                    <input type="radio" name="image_source" value="url"
-                                        onchange="toggleImageSource()"
-                                        class="form-radio text-indigo-600 focus:ring-indigo-500">
-                                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Image URL</span>
-                                </label>
-                            </div>
 
-                            <!-- File Upload Section -->
-                            <div id="fileUploadSection" class="mt-2">
-                                <div
-                                    class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600">
-                                    <div class="space-y-1 text-center">
-                                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor"
-                                            fill="none" viewBox="0 0 48 48">
-                                            <path
-                                                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                        <div class="flex text-sm text-gray-600">
-                                            <label for="image"
-                                                class="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                                                <span>{{ $product->image ? 'Replace image' : 'Upload a file' }}</span>
-                                                <input id="image" name="image" type="file" class="sr-only"
-                                                    accept="image/*" onchange="previewImage(this)">
-                                            </label>
-                                            <p class="pl-1">or drag and drop</p>
-                                        </div>
-                                        <p class="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
-                                    </div>
+                                <!-- Image Source Toggle -->
+                                <div class="mt-2 flex space-x-4">
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="image_source" value="file" checked
+                                            onchange="toggleImageSource()"
+                                            class="form-radio text-indigo-600 focus:ring-indigo-500">
+                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Upload File</span>
+                                    </label>
+                                    <label class="inline-flex items-center">
+                                        <input type="radio" name="image_source" value="url"
+                                            onchange="toggleImageSource()"
+                                            class="form-radio text-indigo-600 focus:ring-indigo-500">
+                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Image URL</span>
+                                    </label>
                                 </div>
-                            </div>
 
-                            <!-- URL Input Section -->
-                            <div id="urlInputSection" class="mt-2 hidden">
-                                <input type="url" id="image_url" name="image_url"
-                                    value="{{ old('image_url') }}" placeholder="https://example.com/image.jpg"
-                                    onchange="previewImageFromUrl(this.value)"
-                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Enter a direct image URL (must
-                                    end with .jpg, .jpeg, .png, or .gif)</p>
-
-                                <!-- URL Image Preview -->
-                                <div id="urlPreviewContainer" class="mt-3 hidden">
+                                <!-- File Upload Section -->
+                                <div id="fileUploadSection" class="mt-2">
                                     <div
-                                        class="relative border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600 p-4">
-                                        <img id="urlPreviewImg" src="#" alt="URL Preview"
-                                            class="max-w-full h-auto object-cover rounded-md" />
+                                        class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600">
+                                        <div class="space-y-1 text-center">
+                                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor"
+                                                fill="none" viewBox="0 0 48 48">
+                                                <path
+                                                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                                    stroke-width="2" stroke-linecap="round"
+                                                    stroke-linejoin="round" />
+                                            </svg>
+                                            <div class="flex text-sm text-gray-600">
+                                                <label for="image"
+                                                    class="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                                                    <span>{{ $product->image ? 'Replace image' : 'Upload a file' }}</span>
+                                                    <input id="image" name="image" type="file"
+                                                        class="sr-only" accept="image/*"
+                                                        onchange="previewImage(this)">
+                                                </label>
+                                                <p class="pl-1">or drag and drop</p>
+                                            </div>
+                                            <p class="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
+                                        </div>
                                     </div>
                                 </div>
+
+                                <!-- URL Input Section -->
+                                <div id="urlInputSection" class="mt-2 hidden">
+                                    <input type="url" id="image_url" name="image_url"
+                                        value="{{ old('image_url') }}" placeholder="https://example.com/image.jpg"
+                                        onchange="previewImageFromUrl(this.value)"
+                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Enter a direct image URL
+                                        (must
+                                        end with .jpg, .jpeg, .png, or .gif)</p>
+
+                                    <!-- URL Image Preview -->
+                                    <div id="urlPreviewContainer" class="mt-3 hidden">
+                                        <div
+                                            class="relative border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600 p-4">
+                                            <img id="urlPreviewImg" src="#" alt="URL Preview"
+                                                class="max-w-full h-auto object-cover rounded-md" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @error('image')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                                @error('image_url')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
 
-                            @error('image')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                            @error('image_url')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+                            <!-- Description -->
+                            <div>
+                                <label for="description"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Description
+                                </label>
+                                <textarea id="description" name="description" rows="4" placeholder="Enter product description..."
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('description') border-red-500 @enderror">{{ old('description', $product->description) }}</textarea>
+                                @error('description')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
 
-                        <!-- Description -->
-                        <div>
-                            <label for="description"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Description
-                            </label>
-                            <textarea id="description" name="description" rows="4" placeholder="Enter product description..."
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('description') border-red-500 @enderror">{{ old('description', $product->description) }}</textarea>
-                            @error('description')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
+
+
+
                         </div>
 
                         <!-- Form Actions -->

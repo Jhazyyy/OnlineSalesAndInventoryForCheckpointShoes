@@ -121,7 +121,6 @@ class POSController extends Controller
                     'sku' => $product->sku,
                     'price' => $product->getEffectivePrice() ?? $product->price,
                     'original_price' => $product->price,
-                    'markup_price' => $product->markup_price,
                     'price_source' => $product->price_source,
                     'stock' => $product->quantity,
                     'category' => $product->product_category ?? 'Uncategorized',

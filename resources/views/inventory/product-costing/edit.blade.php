@@ -1,8 +1,8 @@
 <x-app-layout>
-    <div class="py-6">
+    <div class="py-2">
         <div class="w-full mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -43,10 +43,10 @@
             @endif
 
             <!-- Product Info Card -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Product Information</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                         <div>
                             <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Product Name</label>
                             <p class="text-gray-900 dark:text-white">{{ $product->product_name }}</p>
@@ -75,7 +75,7 @@
                                 @endif
                             </p>
                         </div>
-                        <div>
+                        {{-- <div>
                             <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Current Profit
                                 Margin</label>
                             <p
@@ -86,25 +86,25 @@
                                     <span class="text-gray-400">Not Set</span>
                                 @endif
                             </p>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
 
             <!-- Current Cost Breakdown -->
             @if ($product->total_cost && !empty($breakdown))
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                    <div class="p-6">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
+                    <div class="p-2">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Current Cost Breakdown</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-4 md:grid-cols-4 gap-2">
                             @foreach ($breakdown as $component => $data)
                                 <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                                     <p class="text-sm text-gray-500 dark:text-gray-400 capitalize">
                                         {{ str_replace('_', ' ', $component) }}</p>
                                     <p class="text-lg font-bold text-gray-900 dark:text-white">
                                         ₱{{ number_format($data['amount'], 2) }}</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ $data['percentage'] }}% of
-                                        total</p>
+                                    {{-- <p class="text-xs text-gray-500 dark:text-gray-400">{{ $data['percentage'] }}% of
+                                        total</p> --}}
                                 </div>
                             @endforeach
                         </div>
@@ -113,16 +113,16 @@
             @endif
 
             <!-- Costing Form -->
-            <form method="POST" action="{{ route('inventory.product-costing.update', $product) }}" class="space-y-6">
+            <form method="POST" action="{{ route('inventory.product-costing.update', $product) }}" class="space-y-2">
                 @csrf
                 @method('PUT')
 
                 <!-- Cost Components -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                     <div class="p-6">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Cost Components</h3>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                             <!-- Raw Material Cost -->
                             <div>
                                 <label for="raw_material_cost"
@@ -248,6 +248,21 @@
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
 
+                            <!-- Price Suggestion -->
+                            @if (!empty($pricesuggestion))
+                                <div
+                                    class="mt-4 p-4 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg">
+                                    <h4 class="text-sm font-semibold text-green-900 dark:text-green-200 mb-2">💡
+                                        Pricing
+                                        Suggestion</h4>
+                                    <p class="text-sm text-green-800 dark:text-green-300">
+                                        For a {{ $pricesuggestion['desired_margin'] ?? 30 }}% profit margin, suggested
+                                        price:
+                                        <strong
+                                            class="text-lg">₱{{ number_format($pricesuggestion['suggested_price'] ?? 0, 2) }}</strong>
+                                    </p>
+                                </div>
+                            @endif
                             <!-- Calculation Method -->
                             {{-- <div>
                                 <label for="cost_calculation_method"
@@ -271,30 +286,14 @@
                                 </select>
                             </div> --}}
                         </div>
-
-                        <!-- Price Suggestion -->
-                        @if (!empty($pricesuggestion))
-                            <div
-                                class="mt-4 p-4 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg">
-                                <h4 class="text-sm font-semibold text-green-900 dark:text-green-200 mb-2">💡 Pricing
-                                    Suggestion</h4>
-                                <p class="text-sm text-green-800 dark:text-green-300">
-                                    For a {{ $pricesuggestion['desired_margin'] ?? 30 }}% profit margin, suggested
-                                    price:
-                                    <strong
-                                        class="text-lg">₱{{ number_format($pricesuggestion['suggested_price'] ?? 0, 2) }}</strong>
-                                </p>
-                            </div>
-                        @endif
                     </div>
                 </div>
 
                 <!-- Notes -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                     <div class="p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Additional Information
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Additional Information
                         </h3>
-
                         <div>
                             <label for="cost_notes"
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -304,23 +303,22 @@
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                 placeholder="Add any notes about costing calculations...">{{ old('cost_notes', $product->cost_notes) }}</textarea>
                         </div>
+                        <!-- Actions -->
+                        <div class="flex justify-end gap-4 mt-4">
+                            <a href="{{ route('inventory.product-costing.index') }}"
+                                class="inline-flex items-center px-4 py-2 bg-gray-300 dark:bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-gray-700 dark:text-gray-200 uppercase tracking-widest hover:bg-gray-400 dark:hover:bg-gray-500">
+                                Cancel
+                            </a>
+                            <button type="submit"
+                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                </svg>
+                                Update Costing
+                            </button>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Actions -->
-                <div class="flex justify-end gap-4">
-                    <a href="{{ route('inventory.product-costing.index') }}"
-                        class="inline-flex items-center px-4 py-2 bg-gray-300 dark:bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-gray-700 dark:text-gray-200 uppercase tracking-widest hover:bg-gray-400 dark:hover:bg-gray-500">
-                        Cancel
-                    </a>
-                    <button type="submit"
-                        class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                        </svg>
-                        Update Costing
-                    </button>
                 </div>
             </form>
         </div>

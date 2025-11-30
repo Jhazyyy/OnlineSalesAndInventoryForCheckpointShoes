@@ -37,8 +37,6 @@ class Product extends Model
         'product_category',
         'preferred_supplier_id',
         'price',
-        'markup_percentage',
-        'markup_price',
         'price_source',
         'image',
         'description',
@@ -1073,19 +1071,7 @@ class Product extends Model
         return $movements;
     }
 
-    /**
-     * Calculate markup price based on cost and markup percentage
-     * 
-     * @return float|null
-     */
-    public function calculateMarkupPrice(): ?float
-    {
-        if (!$this->total_cost || !$this->markup_percentage) {
-            return null;
-        }
 
-        return $this->total_cost * (1 + ($this->markup_percentage / 100));
-    }
 
     /**
      * Get the effective selling price based on price source
@@ -1095,26 +1081,10 @@ class Product extends Model
     public function getEffectivePrice(): ?float
     {
         return match($this->price_source) {
-            'markup' => $this->markup_price ?? $this->price,
             'costing' => $this->total_cost ? ($this->total_cost * (1 + (($this->profit_margin ?? 0) / 100))) : $this->price,
             default => $this->price,
         };
     }
 
-    /**
-     * Update markup price when markup percentage or total cost changes
-     * 
-     * @return void
-     */
-    public function updateMarkupPrice(): void
-    {
-        if ($this->markup_percentage && $this->total_cost) {
-            $this->markup_price = $this->calculateMarkupPrice();
-            
-            // If price source is markup, update the main price field
-            if ($this->price_source === 'markup') {
-                $this->price = $this->markup_price;
-            }
-        }
-    }
+
 }

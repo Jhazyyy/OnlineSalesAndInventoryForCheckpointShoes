@@ -24,9 +24,7 @@ return new class extends Migration {
             $table->string('product_category')->nullable();
             $table->integer('quantity')->default(0);
             $table->decimal('price', 10, 2)->nullable()->comment('base price'); 
-            $table->decimal('markup_percentage', 10, 2)->nullable()->comment('Markup percentage to add to cost');
-            $table->decimal('markup_price', 10, 2)->nullable()->comment('Calculated selling price with markup applied');
-            $table->enum('price_source', ['manual', 'markup', 'costing'])->default('manual')->comment('Source of selling price: manual, markup, or costing');
+            $table->enum('price_source', ['manual', 'costing'])->default('manual')->comment('Source of selling price: manual or costing');
             $table->string('image')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
