@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="py-6">
+    <div class="py-2">
         <div class="w-full mx-auto sm:px-6 lg:px-8">
 
             <!-- Header Section -->
@@ -83,7 +83,7 @@
                             'value' => '₱' . number_format($report['summary']['gross_revenue'] ?? 0, 2),
                             'icon' =>
                                 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z',
-                            'info' => 'Subtotal before discounts, taxes, and shipping',
+                            'info' => 'Subtotal before discounts and taxes',
                         ],
                         [
                             'label' => 'Gross Profit',

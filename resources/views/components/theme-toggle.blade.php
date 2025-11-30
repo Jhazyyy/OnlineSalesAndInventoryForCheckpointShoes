@@ -3,19 +3,24 @@
     isDark: false,
     
     init() {
-        // Check for saved theme preference or default to system preference
+        // Check for saved theme preference or default to light theme
         const savedTheme = localStorage.getItem('theme');
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         
-        if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+        // Always default to light theme if no saved preference exists
+        if (savedTheme === 'dark') {
             this.isDark = true;
             document.documentElement.classList.add('dark');
         } else {
+            // Default to light theme (ignore system preference)
             this.isDark = false;
             document.documentElement.classList.remove('dark');
+            // Set light as default if no theme was previously saved
+            if (!savedTheme) {
+                localStorage.setItem('theme', 'light');
+            }
         }
         
-        // Save initial theme
+        // Save current theme state
         localStorage.setItem('theme', this.isDark ? 'dark' : 'light');
     },
     
