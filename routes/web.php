@@ -769,14 +769,28 @@ Route::get('dashboard/period-statistics', function (Illuminate\Http\Request $req
             $totalItems = \App\Models\SalesOrderItem::whereIn('order_id', $salesOrderIds)
                 ->sum('quantity') ?? 0;
                 
-            // For profit, since we don't have cost data, use a simple calculation
-            // This shows total item revenue (could be enhanced with actual cost data later)
-            $totalProfit = \App\Models\SalesOrderItem::whereIn('order_id', $salesOrderIds)
-                ->selectRaw('SUM(unit_price * quantity) as total')
-                ->value('total') ?? 0;
-                
-            // Apply a simple profit margin estimate (e.g., 30% of revenue)
-            $totalProfit = $totalProfit * 0.3; // Assuming 30% profit margin for demonstration
+            // Calculate actual profit using the same method as sales reports:
+            // Gross Profit = Net Revenue - COGS (Cost of Goods Sold)
+            
+            // Get all orders with their items and calculate cost
+            $orders = \App\Models\SalesOrder::with('items.product')
+                ->whereIn('order_id', $salesOrderIds)
+                ->get();
+            
+            // Calculate Net Revenue (Gross Revenue - Discounts)
+            $grossRevenue = $orders->sum('subtotal') ?? 0;
+            $totalDiscount = $orders->sum('discount_amount') ?? 0;
+            $netRevenue = $grossRevenue - $totalDiscount;
+            
+            // Calculate COGS (Cost of Goods Sold)
+            $totalCost = $orders->sum(function ($order) {
+                return $order->items->sum(function ($item) {
+                    return ($item->product->total_cost ?? 0) * $item->quantity;
+                });
+            });
+            
+            // Gross Profit = Net Revenue - COGS
+            $totalProfit = $netRevenue - $totalCost;
         }
         
     } catch (\Exception $e) {
