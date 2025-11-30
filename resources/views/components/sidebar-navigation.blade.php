@@ -6,7 +6,7 @@
         x-transition:enter-end="opacity-100 transform translate-x-0" x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="opacity-100 transform translate-x-0"
         x-transition:leave-end="opacity-0 transform -translate-x-full"
-        class="fixed left-0 top-14 h-screen w-72 bg-white dark:bg-gray-800 shadow-lg z-30 overflow-y-auto">
+        class="fixed left-0 top-14 h-screen w-72 dark:bg-gray-800 shadow-lg z-30 overflow-y-auto">
 
         <!-- Logo Section -->
         <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">

@@ -14,7 +14,6 @@ use App\Http\Controllers\ReturnsController;
 use App\Http\Controllers\SalesOrderController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BankTransferPaymentController;
@@ -777,7 +776,7 @@ Route::get('dashboard/period-statistics', function (Illuminate\Http\Request $req
                 ->value('total') ?? 0;
                 
             // Apply a simple profit margin estimate (e.g., 30% of revenue)
-            $totalProfit = $totalProfit * 0.3;
+            $totalProfit = $totalProfit * 0.3; // Assuming 30% profit margin for demonstration
         }
         
     } catch (\Exception $e) {
@@ -1412,20 +1411,20 @@ Route::get('/terms/{slug}', [\App\Http\Controllers\TermsAndConditionsController:
 // Bank Transfer Payment Routes
 Route::middleware(['auth', 'verified'])->group(function () {
     // Customer routes - submit bank transfer payment proof
-    Route::get('/bank-transfer-payments/create', [\App\Http\Controllers\BankTransferPaymentController::class, 'create'])
+    Route::get('/bank-transfer-payments/create', [BankTransferPaymentController::class, 'create'])
         ->name('bank-transfer-payments.create');
-    Route::post('/bank-transfer-payments', [\App\Http\Controllers\BankTransferPaymentController::class, 'store'])
+    Route::post('/bank-transfer-payments', [BankTransferPaymentController::class, 'store'])
         ->name('bank-transfer-payments.store');
     
     // Admin routes - review and manage bank transfer payments
     Route::prefix('admin/bank-transfer-payments')->name('admin.bank-transfer-payments.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\BankTransferPaymentController::class, 'index'])
+        Route::get('/', [BankTransferPaymentController::class, 'index'])
             ->name('index');
-        Route::post('/{id}/confirm', [\App\Http\Controllers\BankTransferPaymentController::class, 'confirm'])
+        Route::post('/{id}/confirm', [BankTransferPaymentController::class, 'confirm'])
             ->name('confirm');
-        Route::post('/{id}/cancel', [\App\Http\Controllers\BankTransferPaymentController::class, 'cancel'])
+        Route::post('/{id}/cancel', [BankTransferPaymentController::class, 'cancel'])
             ->name('cancel');
-        Route::get('/{id}/proof', [\App\Http\Controllers\BankTransferPaymentController::class, 'showProof'])
+        Route::get('/{id}/proof', [BankTransferPaymentController::class, 'showProof'])
             ->name('proof');
     });
 });
