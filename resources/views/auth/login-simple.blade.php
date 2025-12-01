@@ -27,16 +27,19 @@
             @csrf
 
             <div class="mb-4">
-                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                <label for="login" class="block text-gray-700 text-sm font-bold mb-2">Email or Username</label>
                 <input 
-                    type="email" 
-                    id="email" 
-                    name="email" 
-                    value="{{ old('email') }}"
+                    type="text" 
+                    id="login" 
+                    name="login" 
+                    value="{{ old('login') }}"
                     required
                     autofocus
                     class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 >
+                @error('login')
+                    <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
+                @enderror
                 @error('email')
                     <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
                 @enderror

@@ -13,11 +13,12 @@
     <form method="POST" action="{{ route('login') }}" id="loginForm" class="space-y-4 sm:space-y-6">
         @csrf
 
-        <!-- Email Address -->
+        <!-- Email or Username -->
         <div>
-            <x-input-label for="email" :value="__('Email')" class="text-sm sm:text-base" />
-            <x-text-input id="email" class="block mt-1 w-full text-sm sm:text-base px-3 py-2 sm:px-4 sm:py-2.5"
-                type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+            <x-input-label for="login" :value="__('Email or Username')" class="text-sm sm:text-base" />
+            <x-text-input id="login" class="block mt-1 w-full text-sm sm:text-base px-3 py-2 sm:px-4 sm:py-2.5"
+                type="text" name="login" :value="old('login')" required autofocus autocomplete="username" />
+            <x-input-error :messages="$errors->get('login')" class="mt-2" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
@@ -93,17 +94,17 @@
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             // Store form data in case of error
             const formData = new FormData(this);
-            const email = formData.get('email');
-            if (email) {
-                sessionStorage.setItem('loginEmail', email);
+            const login = formData.get('login');
+            if (login) {
+                sessionStorage.setItem('loginValue', login);
             }
         });
 
-        // Restore email if coming back from 419 error
+        // Restore login value if coming back from 419 error
         window.addEventListener('load', function() {
-            const savedEmail = sessionStorage.getItem('loginEmail');
-            if (savedEmail && document.getElementById('email').value === '') {
-                document.getElementById('email').value = savedEmail;
+            const savedLogin = sessionStorage.getItem('loginValue');
+            if (savedLogin && document.getElementById('login').value === '') {
+                document.getElementById('login').value = savedLogin;
             }
         });
     </script>

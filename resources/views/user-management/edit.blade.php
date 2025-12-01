@@ -23,7 +23,7 @@
                                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Edit: {{ $user->name }}
                                 </h2>
                                 <p class="text-gray-600 dark:text-gray-400">
-                                    {{ $user->primary_role === 'super_admin' ? 'Super Admin' : ucfirst(str_replace('_', ' ', $user->primary_role)) }}
+                                    {{ $user->primary_role === 'super_admin' ? 'Super Admin' : ucwords(str_replace('_', ' ', $user->primary_role)) }}
                                     @php
                                         // Determine the correct badge based on both is_active and status
                                         $badgeClass = 'bg-gray-100 text-gray-800';
@@ -132,11 +132,11 @@
                                 <div>
                                     <label for="username"
                                         class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Username
+                                        Username <span class="text-red-500">*</span>
                                     </label>
                                     <input type="text" id="username" name="username"
                                         value="{{ old('username', $user->username) }}" maxlength="255"
-                                        placeholder="Enter username"
+                                        placeholder="Enter username" required
                                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('username') border-red-500 @enderror">
                                     @error('username')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -205,7 +205,14 @@
                                     @error('password')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
-                                    <p class="mt-1 text-xs font-mono text-gray-500">Minimum 8 characters with special characters</p>
+                                    <div id="password-validation" class="mt-1 text-xs space-y-1" style="display: none;">
+                                        <p id="length-check" class="text-gray-500">
+                                            <span class="validation-icon">○</span> At least 8 characters
+                                        </p>
+                                        <p id="special-check" class="text-gray-500">
+                                            <span class="validation-icon">○</span> At least one special character (!@#$%^&*(),.?":{}|<>)
+                                        </p>
+                                    </div>
                                 </div>
 
                                 <!-- Confirm Password -->
@@ -217,6 +224,9 @@
                                     <input type="password" id="password_confirmation" name="password_confirmation"
                                         minlength="8" placeholder="Confirm new password"
                                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <p id="match-check" class="mt-1 text-xs text-gray-500" style="display: none;">
+                                        <span class="validation-icon">○</span> Passwords must match
+                                    </p>
                                 </div>
 
                                 <!-- Role -->
@@ -342,4 +352,84 @@
 
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('password_confirmation');
+            const validationDiv = document.getElementById('password-validation');
+            const lengthCheck = document.getElementById('length-check');
+            const specialCheck = document.getElementById('special-check');
+            const matchCheck = document.getElementById('match-check');
+
+            // Show validation messages when user starts typing
+            passwordInput.addEventListener('input', function() {
+                const value = this.value;
+                
+                // Show validation div when user starts typing
+                if (value.length > 0) {
+                    validationDiv.style.display = 'block';
+                } else {
+                    validationDiv.style.display = 'none';
+                }
+
+                // Check length
+                if (value.length >= 8) {
+                    lengthCheck.classList.remove('text-gray-500', 'text-red-500');
+                    lengthCheck.classList.add('text-green-600');
+                    lengthCheck.querySelector('.validation-icon').textContent = '✓';
+                } else if (value.length > 0) {
+                    lengthCheck.classList.remove('text-gray-500', 'text-green-600');
+                    lengthCheck.classList.add('text-red-500');
+                    lengthCheck.querySelector('.validation-icon').textContent = '✗';
+                } else {
+                    lengthCheck.classList.remove('text-red-500', 'text-green-600');
+                    lengthCheck.classList.add('text-gray-500');
+                    lengthCheck.querySelector('.validation-icon').textContent = '○';
+                }
+
+                // Check special character
+                const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+                if (specialCharRegex.test(value)) {
+                    specialCheck.classList.remove('text-gray-500', 'text-red-500');
+                    specialCheck.classList.add('text-green-600');
+                    specialCheck.querySelector('.validation-icon').textContent = '✓';
+                } else if (value.length > 0) {
+                    specialCheck.classList.remove('text-gray-500', 'text-green-600');
+                    specialCheck.classList.add('text-red-500');
+                    specialCheck.querySelector('.validation-icon').textContent = '✗';
+                } else {
+                    specialCheck.classList.remove('text-red-500', 'text-green-600');
+                    specialCheck.classList.add('text-gray-500');
+                    specialCheck.querySelector('.validation-icon').textContent = '○';
+                }
+
+                // Check password match
+                checkPasswordMatch();
+            });
+
+            // Check password confirmation match
+            confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+
+            function checkPasswordMatch() {
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+
+                if (confirmPassword.length > 0) {
+                    matchCheck.style.display = 'block';
+                    if (password === confirmPassword && password.length > 0) {
+                        matchCheck.classList.remove('text-gray-500', 'text-red-500');
+                        matchCheck.classList.add('text-green-600');
+                        matchCheck.querySelector('.validation-icon').textContent = '✓';
+                    } else {
+                        matchCheck.classList.remove('text-gray-500', 'text-green-600');
+                        matchCheck.classList.add('text-red-500');
+                        matchCheck.querySelector('.validation-icon').textContent = '✗';
+                    }
+                } else {
+                    matchCheck.style.display = 'none';
+                }
+            }
+        });
+    </script>
 </x-app-layout>
