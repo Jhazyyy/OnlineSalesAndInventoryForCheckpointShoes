@@ -39,6 +39,7 @@ return new class extends Migration
             $table->text('billing_address')->nullable();
             $table->integer('payment_terms')->nullable()->comment('Payment terms in days');
             $table->timestamps();
+            $table->softDeletes();
             
             // Indexes
             $table->index(['customer_id']);

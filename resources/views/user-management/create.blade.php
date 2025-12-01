@@ -1,9 +1,9 @@
 <x-app-layout>
-    <div class="py-6">
+    <div class="py-2">
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
             <div
-                class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -13,10 +13,6 @@
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
                             <a href="{{ route('user-management.index') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                                </svg>
                                 Back to Users
                             </a>
                         </div>
@@ -43,13 +39,13 @@
                         @csrf
 
                         <!-- Personal Information Section -->
-                        <div class="mb-6">
+                        <div class="mb-2">
                             <h3
                                 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
                                 Personal Information
                             </h3>
 
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-6 gap-2">
                                 <!-- First Name -->
                                 <div>
                                     <label for="first_name"
@@ -100,7 +96,7 @@
                                         Username
                                     </label>
                                     <input type="text" id="username" name="username" value="{{ old('username') }}"
-                                        maxlength="255" placeholder="Enter username (optional)"
+                                        maxlength="255" placeholder="Enter username"
                                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('username') border-red-500 @enderror">
                                     @error('username')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -114,7 +110,7 @@
                                         Phone Number
                                     </label>
                                     <input type="text" id="phone" name="phone" value="{{ old('phone') }}"
-                                        maxlength="20" placeholder="Enter phone number (optional)"
+                                        maxlength="20" placeholder="Enter phone number"
                                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('phone') border-red-500 @enderror">
                                     @error('phone')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -133,7 +129,7 @@
                                     @error('profile_photo')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
-                                    <p class="mt-1 text-sm text-gray-500">Max size: 2MB. Formats: JPEG, PNG,
+                                    <p class="mt-1 text-xs font-mono text-gray-500">Max size: 2MB. Formats: JPEG, PNG,
                                         JPG, GIF</p>
                                 </div>
                             </div>
@@ -146,7 +142,7 @@
                                 Account Information
                             </h3>
 
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
                                 <!-- Password -->
                                 <div>
                                     <label for="password"
@@ -159,7 +155,7 @@
                                     @error('password')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
-                                    <p class="mt-1 text-sm text-gray-500">Minimum 8 characters</p>
+                                    <p class="mt-1 text-xs font-mono text-gray-500">Minimum 8 characters with special characters</p>
                                 </div>
 
                                 <!-- Confirm Password -->
@@ -289,10 +285,6 @@
                             </a>
                             <button type="submit"
                                 class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 4v16m8-8H4"></path>
-                                </svg>
                                 Create User
                             </button>
                         </div>

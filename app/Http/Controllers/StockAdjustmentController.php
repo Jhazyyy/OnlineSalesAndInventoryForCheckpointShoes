@@ -72,7 +72,7 @@ class StockAdjustmentController extends Controller
 
             // Log the stock adjustment
             AuditLog::logAction(
-                $adjustmentType === 'increase' ? 'stock_increase' : 'stock_decrease',
+                $adjustmentType === 'increase' ? 'stock increase' : 'stock decrease',
                 AuditLog::MODULE_INVENTORY,
                 "{$adjustmentType} stock for {$product->product_name}: {$quantityChange} units. Reason: {$reason}",
                 Product::class,

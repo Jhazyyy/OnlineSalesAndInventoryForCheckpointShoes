@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * The primary key for the model.
@@ -942,7 +943,7 @@ class Product extends Model
                 // Log stock change to audit trail
                 if ($results[$productId]) {
                     $difference = $quantity - $oldQuantity;
-                    $action = $difference >= 0 ? 'stock_increase' : 'stock_decrease';
+                    $action = $difference >= 0 ? 'stock increase' : 'stock decrease';
                     
                     \App\Models\AuditLog::logAction(
                         $action,

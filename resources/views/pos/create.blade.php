@@ -125,7 +125,7 @@
                                 </div>
 
                                 <div x-show="filteredProducts.length > 0"
-                                    class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 min-h-screen overflow-y-auto">
+                                    class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 max-h-screen overflow-y-auto">
                                     <template x-for="product in filteredProducts" :key="product.id">
                                         <div @click="addToCart(product.id, product.name, product.price, product.stock, product.image || '')"
                                             class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all"
@@ -604,11 +604,6 @@
                                             paymentMethod === 'cash' && (!amountReceived || amountReceived <= 0))"
                                         @click="validatePayment($event)"
                                         class="w-full inline-flex items-center justify-center px-4 py-3 bg-green-600 border border-transparent rounded-md font-semibold text-sm text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
-                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
                                         Confirm Sale
                                     </button>
                                     <button type="button" @click="clearAll()"

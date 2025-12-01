@@ -38,6 +38,7 @@ return new class extends Migration
             $table->string('tracking_number')->nullable();
             $table->string('shipping_carrier')->nullable();
             $table->timestamps();
+            $table->softDeletes();
             
             $table->index(['customer_id', 'status']);
             $table->index(['order_date']);

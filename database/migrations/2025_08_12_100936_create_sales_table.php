@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->string('sale_type', 50)->default('retail'); // retail, wholesale, etc.
             $table->text('notes')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

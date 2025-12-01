@@ -124,7 +124,7 @@
                                     <option value="">All Actions</option>
                                     @foreach($actions as $action)
                                         <option value="{{ $action }}" {{ request('action') == $action ? 'selected' : '' }}>
-                                            {{ ucfirst($action) }}
+                                            {{ ucwords($action) }}
                                         </option>
                                     @endforeach
                                 </select>

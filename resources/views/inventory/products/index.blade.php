@@ -345,17 +345,50 @@
                                             @hasanyrole('super_admin|admin')
                                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                                                     <button onclick="openViewProductModal({{ $product->product_id }})"
-                                                        class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">View</button>
+                                                        class="text-blue-600" title="View Product">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
+                                                            </path>
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                                            </path>
+                                                        </svg>
+                                                    </button>
                                                     <button onclick="openEditProductModal({{ $product->product_id }})"
-                                                        class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">Edit</button>
+                                                        class="text-yellow-600" title="Edit">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                            </path>
+                                                        </svg>
+                                                    </button>
                                                     @hasanyrole('super_admin|admin|inventory_clerk')
                                                         <button
                                                             onclick="openStockAdjustmentModal({{ $product->product_id }}, '{{ $product->product_name }}', {{ $product->quantity }})"
-                                                            class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">Adjust
-                                                            Stock</button>
+                                                            class="text-orange-400" title="Adjust Stock">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                                viewBox="0 0 24 24">
+                                                                <path
+                                                                    d="M3 17v2h6v-2zM3 5v2h10V5zm10 16v-2h8v-2h-8v-2h-2v6zM7 9v2H3v2h4v2h2V9zm14 4v-2H11v2zm-6-4h2V7h4V5h-4V3h-2z">
+                                                                </path>
+                                                            </svg>
+                                                        </button>
+
                                                         <button
                                                             onclick="openAdjustmentHistoryModal({{ $product->product_id }}, '{{ $product->product_name }}')"
-                                                            class="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300">History</button>
+                                                            class="text-purple-700" title="History">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                                focusable="false" aria-hidden="true" viewBox="0 0 24 24">
+                                                                <path
+                                                                    d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9m-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8z">
+                                                                </path>
+                                                            </svg>
+                                                        </button>
                                                     @endhasanyrole
                                                     {{-- <form method="POST"
                                                             action="{{ route('inventory.products.destroy', $product) }}"

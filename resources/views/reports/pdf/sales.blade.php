@@ -177,7 +177,7 @@
                 <th>Category</th>
                 <th class="left">Sold Qty</th>
                 <th class="left">Sold Amount</th>
-                <th class="left">Instock Qty</th>
+                <th class="left">Stock</th>
             </tr>
         </thead>
         <tbody>

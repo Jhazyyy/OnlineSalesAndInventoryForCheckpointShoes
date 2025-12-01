@@ -18,7 +18,7 @@
                 <p class="text-sm text-gray-500 dark:text-gray-400">Module</p>
                 <p class="text-sm font-medium">
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100">
-                        {{ ucfirst($auditLog->module) }}
+                        {{ ucwords($auditLog->module) }}
                     </span>
                 </p>
             </div>
@@ -26,7 +26,7 @@
                 <p class="text-sm text-gray-500 dark:text-gray-400">Action</p>
                 <p class="text-sm font-medium">
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ $auditLog->action_color }}-100 text-{{ $auditLog->action_color }}-800 dark:bg-{{ $auditLog->action_color }}-800 dark:text-{{ $auditLog->action_color }}-100">
-                        {{ ucfirst($auditLog->action) }}
+                        {{ ucwords($auditLog->action) }}
                     </span>
                 </p>
             </div>
@@ -34,7 +34,7 @@
                 <p class="text-sm text-gray-500 dark:text-gray-400">Severity</p>
                 <p class="text-sm font-medium">
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ $auditLog->severity_color }}-100 text-{{ $auditLog->severity_color }}-800 dark:bg-{{ $auditLog->severity_color }}-800 dark:text-{{ $auditLog->severity_color }}-100">
-                        {{ ucfirst($auditLog->severity) }}
+                        {{ ucwords($auditLog->severity) }}
                     </span>
                 </p>
             </div>
@@ -124,14 +124,14 @@
     @endif
 
     <!-- New Values (for create actions) -->
-    @if($auditLog->action === 'create' && $auditLog->new_values)
+    {{-- @if($auditLog->action === 'create' && $auditLog->new_values)
         <div>
             <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Created Data</h4>
             <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
                 <pre class="text-xs text-gray-700 dark:text-gray-300 overflow-x-auto">{{ json_encode($auditLog->new_values, JSON_PRETTY_PRINT) }}</pre>
             </div>
         </div>
-    @endif
+    @endif --}}
 
     <!-- User Agent -->
     @if($auditLog->user_agent)

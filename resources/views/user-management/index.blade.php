@@ -25,7 +25,7 @@
             </div>
 
             <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
                 <div
                     class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <div class="flex items-center justify-between">
@@ -126,7 +126,7 @@
             <div
                 class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
-                    <form method="GET" action="{{ route('user-management.index') }}" class="space-y-4">
+                    <form method="GET" action="{{ route('user-management.index') }}" class="space-y-2">
                         <!-- Inputs Row -->
                         <div class="flex flex-col md:flex-row md:items-end md:space-x-6">
                             <!-- Search -->
@@ -375,6 +375,7 @@
                                                     </a>
                                                 @endif
                                                 @hasrole('super_admin')
+                                                @if (!$user->hasAnyRole(['super_admin']))
                                                 <form action="{{ route('user-management.destroy', $user) }}"
                                                     method="POST" class="inline">
                                                     @csrf
@@ -391,6 +392,7 @@
                                                         </svg>
                                                     </button>
                                                 </form>
+                                                @endif
                                                 @endhasrole
                                             </div>
                                         </td>

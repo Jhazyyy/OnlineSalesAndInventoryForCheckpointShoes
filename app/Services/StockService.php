@@ -159,7 +159,7 @@ class StockService
 
             // Log the stock adjustment to audit trail
             \App\Models\AuditLog::logAction(
-                $quantityChange > 0 ? 'stock_increase' : 'stock_decrease',
+                $quantityChange > 0 ? 'stock increase' : 'stock decrease',
                 \App\Models\AuditLog::MODULE_INVENTORY,
                 "{$adjustmentType} stock for {$product->product_name}: " . abs($quantityChange) . " units (Old: {$currentInventoryTotal}, New: {$newQuantity}). Reason: " . ($data['reason'] ?? 'Stock adjustment'),
                 Product::class,

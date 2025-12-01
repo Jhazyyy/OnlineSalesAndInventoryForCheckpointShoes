@@ -1,10 +1,10 @@
 <x-app-layout>
-    <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-2">
+        <div class="max-w-full mx-auto sm:px-6 lg:px-8">
 
             <!-- Header Section -->
             <div
-                class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
@@ -49,10 +49,6 @@
                         </div>
                         <a href="{{ route('user-management.index') }}"
                             class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 transition ease-in-out duration-150">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 19l-7-7 7-7" />
-                            </svg>
                             Back to Users
                         </a>
                     </div>
@@ -86,7 +82,7 @@
                                 Personal Information
                             </h3>
 
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-6 gap-2">
                                 <!-- First Name -->
                                 <div>
                                     <label for="first_name"
@@ -140,7 +136,7 @@
                                     </label>
                                     <input type="text" id="username" name="username"
                                         value="{{ old('username', $user->username) }}" maxlength="255"
-                                        placeholder="Enter username (optional)"
+                                        placeholder="Enter username"
                                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('username') border-red-500 @enderror">
                                     @error('username')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -155,7 +151,7 @@
                                     </label>
                                     <input type="text" id="phone" name="phone"
                                         value="{{ old('phone', $user->phone) }}" maxlength="20"
-                                        placeholder="Enter phone number (optional)"
+                                        placeholder="Enter phone number"
                                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('phone') border-red-500 @enderror">
                                     @error('phone')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -182,20 +178,20 @@
                                     @error('profile_photo')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
-                                    <p class="mt-1 text-sm text-gray-500">Max size: 2MB. Formats: JPEG, PNG, JPG, GIF
+                                    <p class="mt-1 text-xs font-mono text-gray-500">Max size: 2MB. Formats: JPEG, PNG, JPG, GIF
                                     </p>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Account Information Section -->
-                        <div class="mb-6">
+                        <div class="mb-2">
                             <h3
                                 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
                                 Account Information
                             </h3>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
                                 <!-- Password -->
                                 <div>
                                     <label for="password"
@@ -209,7 +205,7 @@
                                     @error('password')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
-                                    <p class="mt-1 text-sm text-gray-500">Minimum 8 characters</p>
+                                    <p class="mt-1 text-xs font-mono text-gray-500">Minimum 8 characters with special characters</p>
                                 </div>
 
                                 <!-- Confirm Password -->
@@ -234,7 +230,7 @@
                                         @foreach ($roles as $role)
                                             <option value="{{ $role }}"
                                                 {{ old('role', $user->primary_role) == $role ? 'selected' : '' }}>
-                                                {{ $role === 'super_admin' ? 'Super Admin' : ucfirst(str_replace('_', ' ', $role)) }}
+                                                {{ $role === 'super_admin' ? 'Super Admin' : ucwords(str_replace('_', ' ', $role)) }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -337,10 +333,6 @@
                             </a>
                             <button type="submit"
                                 class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                                </svg>
                                 Update User
                             </button>
                         </div>

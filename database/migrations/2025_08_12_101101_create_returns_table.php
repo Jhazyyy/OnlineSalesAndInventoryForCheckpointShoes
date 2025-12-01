@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->timestamp('return_date')->nullable();
             $table->decimal('price', 10, 2)->unsigned();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index('return_status');
             $table->index('return_date');

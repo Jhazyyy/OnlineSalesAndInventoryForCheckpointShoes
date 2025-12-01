@@ -31,6 +31,7 @@ return new class extends Migration
             $table->text('internal_notes')->nullable();
             $table->string('reference_number', 100)->unique();
             $table->timestamps();
+            $table->softDeletes();
             
             $table->index(['status', 'order_date']);
             $table->index(['supplier_id', 'order_date']);

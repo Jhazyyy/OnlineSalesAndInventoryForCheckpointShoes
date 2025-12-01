@@ -22,6 +22,7 @@ return new class extends Migration
             $table->decimal('unit_cost', 10, 2)->nullable();
             $table->timestamp('last_movement_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index(['product_id', 'property_id']);
             $table->index(['sku']);

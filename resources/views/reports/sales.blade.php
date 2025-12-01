@@ -14,9 +14,6 @@
 
                     <a href="{{ route('reports.index') }}"
                         class="inline-flex items-center px-3 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150 ease-in-out w-fit">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
                         Back to Reports
                     </a>
                 </div>
@@ -329,7 +326,7 @@
                                     class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm sm:text-base">
                                     <thead class="bg-gray-50 dark:bg-gray-700">
                                         <tr>
-                                            @foreach (['SKU', 'Product Name', 'Brand', 'Category', 'Sold Qty', 'Sold Amount', 'Instock Qty'] as $header)
+                                            @foreach (['SKU', 'Product Name', 'Brand', 'Category', 'Sold Qty', 'Sold Amount', 'Stock'] as $header)
                                                 <th
                                                     class="px-4 py-3 sm:px-6 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">
                                                     {{ $header }}</th>

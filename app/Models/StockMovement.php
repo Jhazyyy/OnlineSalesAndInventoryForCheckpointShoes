@@ -258,7 +258,7 @@ class StockMovement extends Model
         // Log stock movement to audit trail
         $product = \App\Models\Product::find($productId);
         if ($product && $status === self::STATUS_CONFIRMED) {
-            $action = $quantityChange >= 0 ? 'stock_increase' : 'stock_decrease';
+            $action = $quantityChange >= 0 ? 'stock increase' : 'stock decrease';
             $description = sprintf(
                 '%s: %s stock changed from %d to %d (%+d)',
                 ucfirst(str_replace('_', ' ', $movementType)),

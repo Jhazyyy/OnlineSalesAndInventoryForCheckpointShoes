@@ -69,6 +69,9 @@ return new class extends Migration {
             $table->index('threshold_alerts_enabled');
             $table->index('movement_category');
             $table->index('last_sale_date');
+            
+            // Soft Deletes
+            $table->softDeletes();
         });
     }
 
