@@ -19,6 +19,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BankTransferPaymentController;
 use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\MarkupPriceController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Contracts\Auth as ContractsAuth;
 use Illuminate\Support\Facades\Auth;
@@ -1021,6 +1022,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // API route for tax/discount calculation
     Route::post('/api/tax-discounts/calculate', [\App\Http\Controllers\TaxDiscountController::class, 'calculateForOrder'])->name('api.tax-discounts.calculate');
 
+    //Master Data Markup Price Routes (Admin only)
+    Route::prefix('master_data/markup_prices')->name('master_data.markup_prices.')->middleware('role:super_admin,admin')->group(function () {
+        Route::get('/', [MarkupPriceController::class, 'index'])->name('index');
+        Route::get('/create', [MarkupPriceController::class, 'create'])->name('create');
+        Route::post('/', [MarkupPriceController::class, 'store'])->name('store');
+        Route::get('/{markupPrice}/edit', [MarkupPriceController::class, 'edit'])->name('edit');
+        Route::put('/{markupPrice}', [MarkupPriceController::class, 'update'])->name('update');
+        Route::delete('/{markupPrice}', [MarkupPriceController::class, 'destroy'])->name('destroy');
+    });
 
     // Product Movement Management Routes (Fast/Slow/Non-Moving)
     Route::prefix('inventory/product-movement')->name('inventory.product-movement.')->middleware('permission:view inventory')->group(function () {

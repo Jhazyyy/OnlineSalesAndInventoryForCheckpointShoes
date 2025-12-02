@@ -174,7 +174,7 @@
                     @hasanyrole('super_admin|admin')
                         @can('view categories')
                             <x-nav-item
-                                route-pattern="master_data.categories.*|master_data.brands.*|master_data.suppliers.*|master_data.tax_discounts.*"
+                                route-pattern="master_data.categories.*|master_data.brands.*|master_data.suppliers.*|master_data.tax_discounts.*|master_data.markup_prices.*"
                                 :icon="App\Helpers\NavigationHelper::getIcon('master_data')" title="Master Data" :is-dropdown="true">
 
                                 <!-- Supplier -->
@@ -208,6 +208,13 @@
                                         'tax_and_discount',
                                         'w-5 h-5 mr-3',
                                     )" title="Tax & Discount" size="small" />
+
+                                <!-- Markup Prices (Admin Only) -->
+                                <x-nav-item route="master_data.markup_prices.index" route-pattern="master_data.markup_prices.*"
+                                    :icon="App\Helpers\NavigationHelper::getIcon(
+                                        'markup_prices',
+                                        'w-4 h-4 mr-3',
+                                    )" title="Markup Prices" size="small" />
                             </x-nav-item>
                         @endcan
                     @endhasanyrole
