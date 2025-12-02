@@ -355,17 +355,6 @@ class Product extends Model
                 // Use the manually set price
                 return $this->price;
                 
-            case 'costing':
-                // Calculate from total_cost if available
-                if ($this->total_cost) {
-                    // If profit_margin is set, calculate selling price from cost + margin
-                    if ($this->profit_margin) {
-                        return $this->total_cost * (1 + ($this->profit_margin / 100));
-                    }
-                    return $this->total_cost;
-                }
-                return $this->price; // Fallback to manual price
-                
             case 'markup':
                 // Calculate from markup price if set
                 if ($this->markupPrice && $this->total_cost) {
@@ -1123,13 +1112,6 @@ class Product extends Model
      * 
      * @return float|null
      */
-    public function getEffectivePrice(): ?float
-    {
-        return match($this->price_source) {
-            'costing' => $this->total_cost ? ($this->total_cost * (1 + (($this->profit_margin ?? 0) / 100))) : $this->price,
-            default => $this->price,
-        };
-    }
 
 
 }

@@ -231,11 +231,10 @@
                                 <select id="pricing_method" name="pricing_method" required
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('pricing_method') border-red-500 @enderror">
                                     <option value="manual" {{ old('pricing_method', 'manual') == 'manual' ? 'selected' : '' }}>Manual Price</option>
-                                    <option value="costing" {{ old('pricing_method') == 'costing' ? 'selected' : '' }}>Product Costing</option>
                                     <option value="markup" {{ old('pricing_method') == 'markup' ? 'selected' : '' }}>Markup Price</option>
                                 </select>
                                 <p class="mt-1 text-xs text-gray-500">
-                                    Manual: Fixed price | Costing: Calculated from costs | Markup: Applied from markup configuration
+                                    Manual: Fixed price | Markup: Applied from markup configuration
                                 </p>
                                 @error('pricing_method')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -580,13 +579,6 @@
                     priceInput.removeAttribute('required');
                     priceRequired.style.display = 'none';
                     priceHelper.textContent = 'Optional base/reference price (selling price will be calculated from markup)';
-                } else if (method === 'costing') {
-                    // Hide markup field, make price optional (will be calculated)
-                    markupPriceField.style.display = 'none';
-                    markupPriceSelect.removeAttribute('required');
-                    priceInput.removeAttribute('required');
-                    priceRequired.style.display = 'none';
-                    priceHelper.textContent = 'Optional base/reference price (selling price will be calculated from costs)';
                 } else {
                     // Manual: hide markup field, require price
                     markupPriceField.style.display = 'none';

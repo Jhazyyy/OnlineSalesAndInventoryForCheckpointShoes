@@ -292,7 +292,7 @@
                                                 {{ number_format($product->quantity) }}</td>
                                             {{-- Product Price --}}
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-white break-words">
-                                                ₱{{ number_format($product->price, 2) }}</td>
+                                                ₱{{ number_format($product->calculateSellingPrice(), 2) }}</td>
                                             {{-- Last Supplier --}}
                                             {{-- <td class="px-6 py-4 whitespace-nowrap">
                                                 @if ($product->lastSupplier)
@@ -504,7 +504,7 @@
                         </div>
 
                         <!-- Product Brand and Category Row -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                             <!-- Product Brand -->
                             <div>
                                 <label for="modal_product_brand"
@@ -546,10 +546,8 @@
                                     placeholder="Enter new category name..." style="display: none;"
                                     class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
-                        </div>
 
-                        <!-- Preferred Supplier -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <!-- Preferred Supplier -->
                             <div>
                                 <label for="modal_preferred_supplier_id"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -577,11 +575,10 @@
                                 <select id="modal_pricing_method" name="pricing_method" required
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     <option value="manual" selected>Manual Price</option>
-                                    <option value="costing">Product Costing</option>
                                     <option value="markup">Markup Price</option>
                                 </select>
                                 <p class="mt-1 text-xs text-gray-500">
-                                    Manual: Fixed | Costing: From costs | Markup: From markup %
+                                    Manual: Fixed price | Markup: From markup %
                                 </p>
                             </div>
 
@@ -620,17 +617,14 @@
                                 <p class="mt-1 text-xs text-gray-500" id="modal_price_helper">Base price for the
                                     product</p>
                             </div>
-                        </div>
 
-                        {{-- Product Image and Description --}}
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                             <!-- Description -->
                             <div>
                                 <label for="modal_description"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Description
                                 </label>
-                                <textarea id="modal_description" name="description" rows="5" placeholder="Enter product description..."
+                                <textarea id="modal_description" name="description" rows="1" placeholder="Enter product description..."
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
                             </div>
                         </div>
@@ -766,12 +760,6 @@
                         modalPriceInput.removeAttribute('required');
                         modalPriceRequired.style.display = 'none';
                         modalPriceHelper.textContent = 'Optional (calculated from markup)';
-                    } else if (method === 'costing') {
-                        modalMarkupPriceField.style.display = 'none';
-                        modalMarkupPriceSelect.removeAttribute('required');
-                        modalPriceInput.removeAttribute('required');
-                        modalPriceRequired.style.display = 'none';
-                        modalPriceHelper.textContent = 'Optional (calculated from costs)';
                     } else {
                         modalMarkupPriceField.style.display = 'none';
                         modalMarkupPriceSelect.removeAttribute('required');
@@ -910,6 +898,14 @@
                         });
                     }
 
+                    // Populate total cost
+                    const totalCostField = document.getElementById('edit_total_cost');
+                    if (data.product.total_cost) {
+                        totalCostField.value = parseFloat(data.product.total_cost).toFixed(2);
+                    } else {
+                        totalCostField.value = '0.00';
+                    }
+
                     // Trigger pricing field update
                     updateEditPricingFields();
                 })
@@ -952,12 +948,6 @@
                 priceInput.removeAttribute('required');
                 priceRequired.style.display = 'none';
                 priceHelper.textContent = 'Optional (calculated from markup)';
-            } else if (method === 'costing') {
-                markupPriceField.style.display = 'none';
-                markupPriceSelect.removeAttribute('required');
-                priceInput.removeAttribute('required');
-                priceRequired.style.display = 'none';
-                priceHelper.textContent = 'Optional (calculated from costs)';
             } else {
                 markupPriceField.style.display = 'none';
                 markupPriceSelect.removeAttribute('required');
@@ -1149,6 +1139,21 @@
                         minimumFractionDigits: 2
                     }).format(data.price);
 
+                    // Total Cost
+                    const totalCost = data.total_cost || 0;
+                    document.getElementById('view_total_cost').textContent = '₱' + new Intl.NumberFormat('en-PH', {
+                        minimumFractionDigits: 2
+                    }).format(totalCost);
+
+                    // Markup
+                    if (data.pricing_method === 'markup' && data.markup_price) {
+                        document.getElementById('view_markup_container').style.display = 'block';
+                        document.getElementById('view_markup').textContent = data.markup_price.name + ' (' + data
+                            .markup_price.markup_percentage + '%)';
+                    } else {
+                        document.getElementById('view_markup_container').style.display = 'none';
+                    }
+
                     // Stock Name
                     if (data.stock_name) {
                         document.getElementById('view_stock_name_container').style.display = 'block';
@@ -1248,19 +1253,6 @@
                             day: 'numeric',
                             year: 'numeric'
                         });
-
-                    if (data.image) {
-                        document.getElementById('view_image_container').classList.remove('hidden');
-                        // Check if image is a URL or storage path
-                        const imageUrl = data.image.startsWith('http://') || data.image.startsWith('https://') ?
-                            data.image :
-                            `/storage/${data.image}`;
-                        document.getElementById('view_product_image').src = imageUrl;
-                        document.getElementById('view_no_image').classList.add('hidden');
-                    } else {
-                        document.getElementById('view_image_container').classList.add('hidden');
-                        document.getElementById('view_no_image').classList.remove('hidden');
-                    }
 
                     if (data.description) {
                         document.getElementById('view_description_container').style.display = 'block';
@@ -1402,6 +1394,16 @@
                                 <input type="text" id="edit_sku" name="sku"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
+                            <div>
+                                <label for="edit_preferred_supplier_id"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Preferred Supplier <span class="text-gray-400 text-xs">(Optional)</span>
+                                </label>
+                                <select id="edit_preferred_supplier_id" name="preferred_supplier_id"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">Select a supplier...</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1427,19 +1429,6 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="edit_preferred_supplier_id"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Preferred Supplier <span class="text-gray-400 text-xs">(Optional)</span>
-                                </label>
-                                <select id="edit_preferred_supplier_id" name="preferred_supplier_id"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">Select a supplier...</option>
-                                </select>
-                            </div>
-                        </div>
-
                         <!-- Pricing Method and Markup Price -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                             <!-- Pricing Method -->
@@ -1451,11 +1440,10 @@
                                 <select id="edit_pricing_method" name="pricing_method" required
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     <option value="manual">Manual Price</option>
-                                    <option value="costing">Product Costing</option>
                                     <option value="markup">Markup Price</option>
                                 </select>
                                 <p class="mt-1 text-xs text-gray-500">
-                                    Manual: Fixed | Costing: From costs | Markup: From markup %
+                                    Manual: Fixed price | Markup: From markup %
                                 </p>
                             </div>
 
@@ -1493,19 +1481,35 @@
                                 <p class="mt-1 text-xs text-gray-500" id="edit_price_helper">Base price for the
                                     product</p>
                             </div>
+
+                            <!-- Cost (Read-only display) -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Total Cost
+                                </label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">₱</span>
+                                    </div>
+                                    <input type="text" id="edit_total_cost" readonly
+                                        class="pl-7 block w-full rounded-md border-gray-300 bg-gray-50 dark:bg-gray-600 shadow-sm dark:border-gray-600 dark:text-white cursor-not-allowed"
+                                        placeholder="0.00">
+                                </div>
+                                <p class="mt-1 text-xs text-gray-500">From Product Costing</p>
+                            </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
                             <div>
                                 <label for="edit_description"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-                                <textarea id="edit_description" name="description" rows="5"
+                                <textarea id="edit_description" name="description" rows="1"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
                             </div>
                         </div>
                     </div>
 
-                    <div class="flex justify-end gap-3 mt-6 pt-4 border-t dark:border-gray-700">
+                    <div class="flex justify-end gap-3 mt-2 pt-4 border-t dark:border-gray-700">
                         <button type="button" onclick="closeEditProductModal()"
                             class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
                             Cancel
@@ -1707,29 +1711,9 @@
                 </div>
 
                 <div class="mt-4 max-h-[60vh] overflow-y-auto pr-2">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- Left: Image -->
-                        <div class="lg:col-span-1">
-                            <div id="view_image_container" class="hidden">
-                                <img id="view_product_image" src="" alt="Product"
-                                    class="w-full h-auto object-cover rounded-lg border">
-                            </div>
-                            <div id="view_no_image"
-                                class="w-full h-64 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center border hidden">
-                                <div class="text-center">
-                                    <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                        </path>
-                                    </svg>
-                                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No image available</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Middle: Product Details -->
-                        <div class="lg:col-span-1 space-y-4">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                        <!-- Left: Product Details -->
+                        <div class="lg:col-span-1 space-y-2">
                             <div id="view_stock_name_container" style="display:none;">
                                 <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
                                     Name</label>
@@ -1780,6 +1764,20 @@
                                         id="view_price"></p>
                                 </div>
                             </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Total
+                                        Cost</label>
+                                    <p class="text-lg font-semibold text-blue-600 dark:text-blue-400"
+                                        id="view_total_cost">₱0.00</p>
+                                </div>
+                                <div id="view_markup_container" style="display:none;">
+                                    <label
+                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400">Markup</label>
+                                    <p class="text-lg font-semibold text-purple-600 dark:text-purple-400"
+                                        id="view_markup"></p>
+                                </div>
+                            </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
                                     Status</label>
@@ -1794,7 +1792,7 @@
                         </div>
 
                         <!-- Right: Supplier & Product Info -->
-                        <div class="lg:col-span-1 space-y-6">
+                        <div class="lg:col-span-1 space-y-2">
                             <!-- Supplier Information -->
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                                 <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Supplier Information

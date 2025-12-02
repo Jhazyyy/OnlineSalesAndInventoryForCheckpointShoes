@@ -119,13 +119,12 @@ class POSController extends Controller
                     'id' => $product->product_id,
                     'name' => $product->name,
                     'sku' => $product->sku,
-                    'price' => $product->getEffectivePrice() ?? $product->price,
+                    'price' => $product->calculateSellingPrice(),
                     'original_price' => $product->price,
-                    'price_source' => $product->price_source,
+                    'pricing_method' => $product->pricing_method,
                     'stock' => $product->quantity,
                     'category' => $product->product_category ?? 'Uncategorized',
                     'brand' => $product->product_brand ?? 'N/A',
-                    'image' => $product->image ? $product->image_url : null,
                     'unit' => 'pcs',
                 ];
             });

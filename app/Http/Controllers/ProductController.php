@@ -269,7 +269,7 @@ class ProductController extends Controller
         // Check if request wants JSON (AJAX request for modal)
         if (request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
             // Load relationships for modal view
-            $product->load(['lastSupplier', 'preferredSupplier']);
+            $product->load(['lastSupplier', 'preferredSupplier', 'markupPrice']);
 
             return response()->json($product);
         }
@@ -300,6 +300,7 @@ class ProductController extends Controller
 
         // Check if request wants JSON (AJAX request for modal)
         if (request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+            $product->load('markupPrice');
             return response()->json([
                 'product' => $product,
                 'stockNames' => $stockNames,
@@ -332,7 +333,7 @@ class ProductController extends Controller
             'custom_category' => 'nullable|string|max:255',
             'quantity' => 'nullable|integer|min:0',
             'price' => 'nullable|numeric|min:0',
-            'pricing_method' => 'required|in:manual,costing,markup',
+            'pricing_method' => 'required|in:manual,markup',
             'markup_price_id' => 'nullable|required_if:pricing_method,markup|exists:markup_prices,id',
             'description' => 'nullable|string|max:1000',
             'product_brand' => 'nullable|string|max:255',

@@ -127,7 +127,7 @@
                                 <div x-show="filteredProducts.length > 0"
                                     class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-2 max-h-screen overflow-y-auto">
                                     <template x-for="product in filteredProducts" :key="product.id">
-                                        <div @click="addToCart(product.id, product.name, product.price, product.stock, product.image || '')"
+                                        <div @click="addToCart(product.id, product.name, product.price, product.stock)"
                                             class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all"
                                             :class="{ 'opacity-60 cursor-not-allowed': !product.price || product.price === 0 }">
 
@@ -140,14 +140,6 @@
                                                     </span>
                                                 </div>
                                             </template>
-
-                                            <!-- Product Image -->
-                                            <div class="aspect-square bg-gray-100 dark:bg-gray-600 flex items-center justify-center relative">
-                                                <template x-if="product.image">
-                                                    <img :src="product.image" :alt="product.name"
-                                                        class="w-full h-full object-cover">
-                                                </template>
-                                            </div>
 
                                             <!-- Product Information -->
                                             <div class="p-2 space-y-1">
@@ -162,7 +154,7 @@
                                                 <div class="space-y-1 text-xs border-t border-gray-200 dark:border-gray-700 pt-1">
                                                     <div class="flex justify-between">
                                                         <span class="text-gray-600 dark:text-gray-400">Category:</span>
-                                                        <span class="font-medium text-gray-900 dark:text-white" x-text="product.category"></span>
+                                                        <span class="text-xs text-gray-900 dark:text-white" x-text="product.category"></span>
                                                     </div>
                                                     <div class="flex justify-between items-center">
                                                         <span class="text-gray-600 dark:text-gray-400">Price:</span>
@@ -180,11 +172,11 @@
                                                         <span class="text-gray-600 dark:text-gray-400">Stock:</span>
                                                         <span class="font-semibold px-1.5 py-0.5 rounded text-xs"
                                                             :class="{
-                                                                'text-green-700 bg-green-100 dark:bg-green-900 dark:text-green-300': product.stock > 10,
-                                                                'text-yellow-700 bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-300': product.stock <= 10 && product.stock > 5,
-                                                                'text-red-700 bg-red-100 dark:bg-red-900 dark:text-red-300': product.stock <= 5
+                                                                'text-green-700   dark:text-green-300': product.stock > 10,
+                                                                'text-yellow-700  dark:text-yellow-300': product.stock <= 10 && product.stock > 5,
+                                                                'text-red-700 dark:text-red-300': product.stock <= 5
                                                             }"
-                                                            x-text="product.stock + ' ' + product.unit">
+                                                            x-text="product.stock + ' ' + (product.stock === 1 ? 'unit' : 'units')">
                                                         </span>
                                                     </div>
                                                 </div>
@@ -994,7 +986,7 @@
                     }
                 },
 
-                addToCart(id, name, price, stock, image = '') {
+                addToCart(id, name, price, stock) {
                     // Validate if product has a price
                     if (!price || price === 0 || price === '0' || price === null || price === '') {
                         this.showToast('Cannot add product: Price not set for "' + name +
@@ -1016,8 +1008,7 @@
                                 name: name,
                                 price: price,
                                 quantity: 1,
-                                stock: stock,
-                                image: image
+                                stock: stock
                             });
                             this.showToast('Product added to cart', 'success');
                         } else {
