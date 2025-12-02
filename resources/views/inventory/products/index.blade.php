@@ -580,21 +580,61 @@
                                     @endforeach
                                 </select>
                             </div>
+                        </div>
+
+                        <!-- Pricing Method and Markup Price -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                            <!-- Pricing Method -->
+                            <div>
+                                <label for="modal_pricing_method"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Pricing Method<span class="text-red-500">*</span>
+                                </label>
+                                <select id="modal_pricing_method" name="pricing_method" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="manual" selected>Manual Price</option>
+                                    <option value="costing">Product Costing</option>
+                                    <option value="markup">Markup Price</option>
+                                </select>
+                                <p class="mt-1 text-xs text-gray-500">
+                                    Manual: Fixed | Costing: From costs | Markup: From markup %
+                                </p>
+                            </div>
+
+                            <!-- Markup Price Configuration -->
+                            <div id="modal_markup_price_field" style="display: none;">
+                                <label for="modal_markup_price_id"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Markup Configuration<span class="text-red-500">*</span>
+                                </label>
+                                <select id="modal_markup_price_id" name="markup_price_id"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">Select markup...</option>
+                                    @foreach ($markupPrices as $markup)
+                                        <option value="{{ $markup->id }}">{{ $markup->name }}
+                                            ({{ $markup->markup_percentage }}%)
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <p class="mt-1 text-xs text-gray-500">Price = Cost + Markup %</p>
+                            </div>
 
                             <!-- Price -->
                             <div>
                                 <label for="modal_price"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Price<span class="text-red-500">*</span>
+                                    Price<span class="text-red-500" id="modal_price_required">*</span>
                                 </label>
                                 <div class="mt-1 relative rounded-md shadow-sm">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <span class="text-gray-500 sm:text-sm">₱</span>
                                     </div>
                                     <input type="number" id="modal_price" name="price" step="0.01"
-                                        min="0"
+                                        min="0" required
                                         class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 </div>
+                                <p class="mt-1 text-xs text-gray-500" id="modal_price_helper">Base price for the
+                                    product</p>
                             </div>
                         </div>
 
@@ -863,6 +903,43 @@
                     }
                 });
             }
+
+            // Handle pricing method changes for create modal
+            const modalPricingMethodSelect = document.getElementById('modal_pricing_method');
+            const modalMarkupPriceField = document.getElementById('modal_markup_price_field');
+            const modalMarkupPriceSelect = document.getElementById('modal_markup_price_id');
+            const modalPriceInput = document.getElementById('modal_price');
+            const modalPriceRequired = document.getElementById('modal_price_required');
+            const modalPriceHelper = document.getElementById('modal_price_helper');
+
+            if (modalPricingMethodSelect) {
+                function updateModalPricingFields() {
+                    const method = modalPricingMethodSelect.value;
+
+                    if (method === 'markup') {
+                        modalMarkupPriceField.style.display = 'block';
+                        modalMarkupPriceSelect.setAttribute('required', 'required');
+                        modalPriceInput.removeAttribute('required');
+                        modalPriceRequired.style.display = 'none';
+                        modalPriceHelper.textContent = 'Optional (calculated from markup)';
+                    } else if (method === 'costing') {
+                        modalMarkupPriceField.style.display = 'none';
+                        modalMarkupPriceSelect.removeAttribute('required');
+                        modalPriceInput.removeAttribute('required');
+                        modalPriceRequired.style.display = 'none';
+                        modalPriceHelper.textContent = 'Optional (calculated from costs)';
+                    } else {
+                        modalMarkupPriceField.style.display = 'none';
+                        modalMarkupPriceSelect.removeAttribute('required');
+                        modalPriceInput.setAttribute('required', 'required');
+                        modalPriceRequired.style.display = 'inline';
+                        modalPriceHelper.textContent = 'Base price for the product';
+                    }
+                }
+
+                modalPricingMethodSelect.addEventListener('change', updateModalPricingFields);
+                updateModalPricingFields(); // Initialize on load
+            }
         });
 
         // Close on Escape key
@@ -973,6 +1050,25 @@
                         supplierSelect.appendChild(option);
                     });
 
+                    // Populate pricing method and markup price
+                    const pricingMethodSelect = document.getElementById('edit_pricing_method');
+                    pricingMethodSelect.value = data.product.pricing_method || 'manual';
+
+                    const markupPriceSelect = document.getElementById('edit_markup_price_id');
+                    if (data.markupPrices) {
+                        markupPriceSelect.innerHTML = '<option value="">Select markup...</option>';
+                        data.markupPrices.forEach(markup => {
+                            const option = document.createElement('option');
+                            option.value = markup.id;
+                            option.textContent = `${markup.name} (${markup.markup_percentage}%)`;
+                            option.selected = data.product.markup_price_id === markup.id;
+                            markupPriceSelect.appendChild(option);
+                        });
+                    }
+
+                    // Trigger pricing field update
+                    updateEditPricingFields();
+
                     if (data.product.image) {
                         document.getElementById('edit_current_image').classList.remove('hidden');
                         // Check if image is a URL or storage path
@@ -1021,6 +1117,46 @@
             document.getElementById('edit_image_url').disabled = true;
             document.getElementById('edit_urlPreviewContainer').classList.add('hidden');
         }
+
+        // Handle pricing method changes for edit modal
+        function updateEditPricingFields() {
+            const pricingMethodSelect = document.getElementById('edit_pricing_method');
+            const markupPriceField = document.getElementById('edit_markup_price_field');
+            const markupPriceSelect = document.getElementById('edit_markup_price_id');
+            const priceInput = document.getElementById('edit_price');
+            const priceRequired = document.getElementById('edit_price_required');
+            const priceHelper = document.getElementById('edit_price_helper');
+
+            const method = pricingMethodSelect.value;
+
+            if (method === 'markup') {
+                markupPriceField.style.display = 'block';
+                markupPriceSelect.setAttribute('required', 'required');
+                priceInput.removeAttribute('required');
+                priceRequired.style.display = 'none';
+                priceHelper.textContent = 'Optional (calculated from markup)';
+            } else if (method === 'costing') {
+                markupPriceField.style.display = 'none';
+                markupPriceSelect.removeAttribute('required');
+                priceInput.removeAttribute('required');
+                priceRequired.style.display = 'none';
+                priceHelper.textContent = 'Optional (calculated from costs)';
+            } else {
+                markupPriceField.style.display = 'none';
+                markupPriceSelect.removeAttribute('required');
+                priceInput.setAttribute('required', 'required');
+                priceRequired.style.display = 'inline';
+                priceHelper.textContent = 'Base price for the product';
+            }
+        }
+
+        // Attach event listener for edit pricing method
+        document.addEventListener('DOMContentLoaded', function() {
+            const editPricingMethodSelect = document.getElementById('edit_pricing_method');
+            if (editPricingMethodSelect) {
+                editPricingMethodSelect.addEventListener('change', updateEditPricingFields);
+            }
+        });
 
         // STOCK ADJUSTMENT MODAL
         let currentProductStock = 0;
@@ -1539,20 +1675,58 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Pricing Method and Markup Price -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                            <!-- Pricing Method -->
+                            <div>
+                                <label for="edit_pricing_method"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Pricing Method<span class="text-red-500">*</span>
+                                </label>
+                                <select id="edit_pricing_method" name="pricing_method" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="manual">Manual Price</option>
+                                    <option value="costing">Product Costing</option>
+                                    <option value="markup">Markup Price</option>
+                                </select>
+                                <p class="mt-1 text-xs text-gray-500">
+                                    Manual: Fixed | Costing: From costs | Markup: From markup %
+                                </p>
+                            </div>
+
+                            <!-- Markup Price Configuration -->
+                            <div id="edit_markup_price_field" style="display: none;">
+                                <label for="edit_markup_price_id"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Markup Configuration<span class="text-red-500">*</span>
+                                </label>
+                                <select id="edit_markup_price_id" name="markup_price_id"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">Select markup...</option>
+                                    @foreach ($markupPrices as $markup)
+                                        <option value="{{ $markup->id }}">{{ $markup->name }}
+                                            ({{ $markup->markup_percentage }}%)
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <p class="mt-1 text-xs text-gray-500">Price = Cost + Markup %</p>
+                            </div>
+
                             <div>
                                 <label for="edit_price"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Price<span class="text-red-500">*</span>
+                                    Price<span class="text-red-500" id="edit_price_required">*</span>
                                 </label>
                                 <div class="mt-1 relative rounded-md shadow-sm">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <span class="text-gray-500 sm:text-sm">₱</span>
                                     </div>
                                     <input type="number" id="edit_price" name="price" step="0.01"
-                                        min="0"
+                                        min="0" required
                                         class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 </div>
+                                <p class="mt-1 text-xs text-gray-500" id="edit_price_helper">Base price for the
+                                    product</p>
                             </div>
                         </div>
 
@@ -1969,11 +2143,6 @@
                     </button>
                     <button type="button" onclick="openEditFromView()"
                         class="inline-flex items-center px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                            </path>
-                        </svg>
                         Edit Product
                     </button>
                 </div>

@@ -92,7 +92,10 @@ class ProductController extends Controller
         // Get active suppliers for dropdown
         $suppliers = \App\Models\Supplier::where('status', 'active')->orderBy('supplier_name')->get();
 
-        return view('inventory.products.index', compact('products', 'stockNames', 'brands', 'categories', 'suppliers'));
+        // Get active markup prices for dropdown
+        $markupPrices = \App\Models\MarkupPrice::where('is_active', true)->orderBy('name')->get();
+
+        return view('inventory.products.index', compact('products', 'stockNames', 'brands', 'categories', 'suppliers', 'markupPrices'));
     }
 
     /**
@@ -114,7 +117,10 @@ class ProductController extends Controller
         // Get active suppliers for dropdown
         $suppliers = \App\Models\Supplier::where('status', 'active')->orderBy('supplier_name')->get();
 
-        return view('inventory.products.create', compact('stockNames', 'brands', 'categories', 'suppliers'));
+        // Get active markup prices for dropdown
+        $markupPrices = \App\Models\MarkupPrice::where('is_active', true)->orderBy('name')->get();
+
+        return view('inventory.products.create', compact('stockNames', 'brands', 'categories', 'suppliers', 'markupPrices'));
     }
 
     public function store(Request $request)
@@ -135,6 +141,8 @@ class ProductController extends Controller
             'product_category' => 'nullable|string|max:255',
             'custom_category' => 'nullable|string|max:255',
             'price' => 'nullable|numeric|min:0',
+            'pricing_method' => 'required|in:manual,costing,markup',
+            'markup_price_id' => 'nullable|required_if:pricing_method,markup|exists:markup_prices,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image_url' => 'nullable|url|max:500',
             'description' => 'nullable|string|max:1000',
@@ -310,6 +318,7 @@ class ProductController extends Controller
         $brands = Brand::pluck('name');  // get brand names as a collection
         $categories = Category::pluck('name');  // get category names as a collection
         $suppliers = \App\Models\Supplier::where('status', 'active')->orderBy('supplier_name')->get();
+        $markupPrices = \App\Models\MarkupPrice::where('is_active', true)->orderBy('name')->get();
 
         // Check if request wants JSON (AJAX request for modal)
         if (request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
@@ -319,10 +328,11 @@ class ProductController extends Controller
                 'brands' => $brands,
                 'categories' => $categories,
                 'suppliers' => $suppliers,
+                'markupPrices' => $markupPrices,
             ]);
         }
 
-        return view('inventory.products.edit', compact('product', 'stockNames', 'brands', 'categories', 'suppliers'));
+        return view('inventory.products.edit', compact('product', 'stockNames', 'brands', 'categories', 'suppliers', 'markupPrices'));
     }
 
     public function update(Request $request, Product $product)
@@ -344,6 +354,8 @@ class ProductController extends Controller
             'custom_category' => 'nullable|string|max:255',
             'quantity' => 'nullable|integer|min:0',
             'price' => 'nullable|numeric|min:0',
+            'pricing_method' => 'required|in:manual,costing,markup',
+            'markup_price_id' => 'nullable|required_if:pricing_method,markup|exists:markup_prices,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'image_url' => 'nullable|url|max:500',
             'description' => 'nullable|string|max:1000',

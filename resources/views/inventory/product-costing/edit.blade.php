@@ -242,15 +242,15 @@
                             <div>
                                 <label for="price"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Selling Price (₱) *
+                                    Selling Price (₱) 
                                 </label>
                                 <input type="number" name="price" id="price" step="0.01" min="0"
-                                    required value="{{ old('price', $product->price) }}"
+                                    value="{{ old('price', $product->price) }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
 
                             <!-- Price Suggestion -->
-                            @if (!empty($pricesuggestion))
+                            {{-- @if (!empty($pricesuggestion))
                                 <div
                                     class="mt-4 p-4 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg">
                                     <h4 class="text-sm font-semibold text-green-900 dark:text-green-200 mb-2">💡
@@ -263,7 +263,7 @@
                                             class="text-lg">₱{{ number_format($pricesuggestion['suggested_price'] ?? 0, 2) }}</strong>
                                     </p>
                                 </div>
-                            @endif
+                            @endif --}}
                             <!-- Calculation Method -->
                             {{-- <div>
                                 <label for="cost_calculation_method"

@@ -38,7 +38,8 @@ class Product extends Model
         'product_category',
         'preferred_supplier_id',
         'price',
-        'price_source',
+        'pricing_method',
+        'markup_price_id',
         'image',
         'description',
     ];
@@ -332,6 +333,49 @@ class Product extends Model
     public function stockName()
     {
         return $this->belongsTo(StockName::class, 'stock_name_id');
+    }
+
+    /**
+     * Get the markup price configuration associated with this product.
+     */
+    public function markupPrice()
+    {
+        return $this->belongsTo(MarkupPrice::class, 'markup_price_id');
+    }
+
+    /**
+     * Calculate the selling price based on the pricing method.
+     * 
+     * @return float|null
+     */
+    public function calculateSellingPrice()
+    {
+        switch ($this->pricing_method) {
+            case 'manual':
+                // Use the manually set price
+                return $this->price;
+                
+            case 'costing':
+                // Calculate from total_cost if available
+                if ($this->total_cost) {
+                    // If profit_margin is set, calculate selling price from cost + margin
+                    if ($this->profit_margin) {
+                        return $this->total_cost * (1 + ($this->profit_margin / 100));
+                    }
+                    return $this->total_cost;
+                }
+                return $this->price; // Fallback to manual price
+                
+            case 'markup':
+                // Calculate from markup price if set
+                if ($this->markupPrice && $this->total_cost) {
+                    return $this->markupPrice->calculatePrice($this->total_cost);
+                }
+                return $this->price; // Fallback to manual price
+                
+            default:
+                return $this->price;
+        }
     }
 
     /**

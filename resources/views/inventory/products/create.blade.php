@@ -220,13 +220,59 @@
                             </div>
                         </div>
 
+                        <!-- Pricing Method and Markup Price Row -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Pricing Method -->
+                            <div>
+                                <label for="pricing_method"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Pricing Method<span class="text-red-500">*</span>
+                                </label>
+                                <select id="pricing_method" name="pricing_method" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('pricing_method') border-red-500 @enderror">
+                                    <option value="manual" {{ old('pricing_method', 'manual') == 'manual' ? 'selected' : '' }}>Manual Price</option>
+                                    <option value="costing" {{ old('pricing_method') == 'costing' ? 'selected' : '' }}>Product Costing</option>
+                                    <option value="markup" {{ old('pricing_method') == 'markup' ? 'selected' : '' }}>Markup Price</option>
+                                </select>
+                                <p class="mt-1 text-xs text-gray-500">
+                                    Manual: Fixed price | Costing: Calculated from costs | Markup: Applied from markup configuration
+                                </p>
+                                @error('pricing_method')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Markup Price (only shown when markup is selected) -->
+                            <div id="markup_price_field" style="display: none;">
+                                <label for="markup_price_id"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Markup Price Configuration<span class="text-red-500">*</span>
+                                </label>
+                                <select id="markup_price_id" name="markup_price_id"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('markup_price_id') border-red-500 @enderror">
+                                    <option value="">Select markup configuration...</option>
+                                    @foreach ($markupPrices as $markup)
+                                        <option value="{{ $markup->id }}" {{ old('markup_price_id') == $markup->id ? 'selected' : '' }}>
+                                            {{ $markup->name }} ({{ $markup->markup_percentage }}%)
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <p class="mt-1 text-xs text-gray-500">
+                                    Selling price will be calculated from total cost + markup percentage
+                                </p>
+                                @error('markup_price_id')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
                         <!-- Price and Image Row -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Price -->
-                            <div>
+                            <div id="manual_price_field">
                                 <label for="price"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Price<span class="text-red-500">*</span>
+                                    Price<span class="text-red-500" id="price_required">*</span>
                                 </label>
                                 <div class="mt-1 relative rounded-md shadow-sm">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -236,6 +282,9 @@
                                         step="0.01" min="0" required
                                         class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('price') border-red-500 @enderror">
                                 </div>
+                                <p class="mt-1 text-xs text-gray-500" id="price_helper">
+                                    Base price for the product
+                                </p>
                                 @error('price')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -510,5 +559,49 @@
                 urlPreviewContainer.classList.add('hidden');
             }
         }
+
+        // Handle pricing method changes
+        document.addEventListener('DOMContentLoaded', function() {
+            const pricingMethodSelect = document.getElementById('pricing_method');
+            const markupPriceField = document.getElementById('markup_price_field');
+            const markupPriceSelect = document.getElementById('markup_price_id');
+            const manualPriceField = document.getElementById('manual_price_field');
+            const priceInput = document.getElementById('price');
+            const priceRequired = document.getElementById('price_required');
+            const priceHelper = document.getElementById('price_helper');
+
+            function updatePricingFields() {
+                const method = pricingMethodSelect.value;
+                
+                if (method === 'markup') {
+                    // Show markup price field, hide/optional manual price
+                    markupPriceField.style.display = 'block';
+                    markupPriceSelect.setAttribute('required', 'required');
+                    priceInput.removeAttribute('required');
+                    priceRequired.style.display = 'none';
+                    priceHelper.textContent = 'Optional base/reference price (selling price will be calculated from markup)';
+                } else if (method === 'costing') {
+                    // Hide markup field, make price optional (will be calculated)
+                    markupPriceField.style.display = 'none';
+                    markupPriceSelect.removeAttribute('required');
+                    priceInput.removeAttribute('required');
+                    priceRequired.style.display = 'none';
+                    priceHelper.textContent = 'Optional base/reference price (selling price will be calculated from costs)';
+                } else {
+                    // Manual: hide markup field, require price
+                    markupPriceField.style.display = 'none';
+                    markupPriceSelect.removeAttribute('required');
+                    priceInput.setAttribute('required', 'required');
+                    priceRequired.style.display = 'inline';
+                    priceHelper.textContent = 'Base price for the product';
+                }
+            }
+
+            // Initialize on page load
+            updatePricingFields();
+
+            // Update when pricing method changes
+            pricingMethodSelect.addEventListener('change', updatePricingFields);
+        });
     </script>
 </x-app-layout>
