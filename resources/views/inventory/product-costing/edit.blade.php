@@ -7,8 +7,7 @@
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Product Costing</h2>
-                            <p class="text-gray-600 dark:text-gray-400">{{ $product->product_name }} 
-                                {{-- <span class="text-gray-500">({{ $product->sku ?? 'No SKU' }})</span></p> --}}
+                            <p class="text-gray-600 dark:text-gray-400">{{ $product->product_name }}</p>
                         </div>
                         <div class="mt-4 sm:mt-0">
                             <a href="{{ route('inventory.product-costing.index') }}"
@@ -61,13 +60,7 @@
                             <p class="text-gray-900 dark:text-white">{{ $product->product_category }}</p>
                         </div>
                         <div>
-                            <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Current Price</label>
-                            <p class="text-lg font-bold text-green-600 dark:text-green-400">
-                                ₱{{ number_format($product->price ?? 0, 2) }}</p>
-                        </div>
-                        <div>
-                            <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Current Total
-                                Cost</label>
+                            <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Current Total Cost</label>
                             <p class="text-lg font-bold text-blue-600 dark:text-blue-400">
                                 @if ($product->total_cost)
                                     ₱{{ number_format($product->total_cost ?? 0, 2) }}
@@ -76,18 +69,6 @@
                                 @endif
                             </p>
                         </div>
-                        {{-- <div>
-                            <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Current Profit
-                                Margin</label>
-                            <p
-                                class="text-lg font-bold {{ ($product->profit_margin ?? 0) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
-                                @if ($product->profit_margin !== null)
-                                    {{ number_format($product->profit_margin ?? 0, 2) }}%
-                                @else
-                                    <span class="text-gray-400">Not Set</span>
-                                @endif
-                            </p>
-                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -104,8 +85,6 @@
                                         {{ str_replace('_', ' ', $component) }}</p>
                                     <p class="text-lg font-bold text-gray-900 dark:text-white">
                                         ₱{{ number_format($data['amount'], 2) }}</p>
-                                    {{-- <p class="text-xs text-gray-500 dark:text-gray-400">{{ $data['percentage'] }}% of
-                                        total</p> --}}
                                 </div>
                             @endforeach
                         </div>
@@ -204,88 +183,17 @@
 
                         <!-- Live Calculation Display -->
                         <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg">
-                            <h4 class="text-sm font-semibold text-blue-900 dark:text-blue-200 mb-3">Calculated Summary
-                            </h4>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <h4 class="text-sm font-semibold text-blue-900 dark:text-blue-200 mb-3">Calculated Cost Summary</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-2 gap-4 text-sm">
                                 <div>
                                     <p class="text-blue-700 dark:text-blue-300">Manufacturing Cost</p>
-                                    <p class="text-lg font-bold text-blue-900 dark:text-blue-100"
-                                        id="calc-manufacturing">₱0.00</p>
+                                    <p class="text-lg font-bold text-blue-900 dark:text-blue-100" id="calc-manufacturing">₱0.00</p>
                                 </div>
                                 <div>
                                     <p class="text-blue-700 dark:text-blue-300">Total Cost</p>
-                                    <p class="text-lg font-bold text-blue-900 dark:text-blue-100"
-                                        id="calc-total-cost">₱0.00</p>
-                                </div>
-                                <div>
-                                    <p class="text-blue-700 dark:text-blue-300">Profit Amount</p>
-                                    <p class="text-lg font-bold text-blue-900 dark:text-blue-100" id="calc-profit">
-                                        ₱0.00</p>
-                                </div>
-                                <div>
-                                    <p class="text-blue-700 dark:text-blue-300">Profit Margin</p>
-                                    <p class="text-lg font-bold text-blue-900 dark:text-blue-100" id="calc-margin">
-                                        0.00%</p>
+                                    <p class="text-lg font-bold text-blue-900 dark:text-blue-100" id="calc-total-cost">₱0.00</p>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pricing -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
-                    <div class="p-6">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Pricing</h3>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Selling Price -->
-                            <div>
-                                <label for="price"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Selling Price (₱) 
-                                </label>
-                                <input type="number" name="price" id="price" step="0.01" min="0"
-                                    value="{{ old('price', $product->price) }}"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                            </div>
-
-                            <!-- Price Suggestion -->
-                            {{-- @if (!empty($pricesuggestion))
-                                <div
-                                    class="mt-4 p-4 bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg">
-                                    <h4 class="text-sm font-semibold text-green-900 dark:text-green-200 mb-2">💡
-                                        Pricing
-                                        Suggestion</h4>
-                                    <p class="text-sm text-green-800 dark:text-green-300">
-                                        For a {{ $pricesuggestion['desired_margin'] ?? 30 }}% profit margin, suggested
-                                        price:
-                                        <strong
-                                            class="text-lg">₱{{ number_format($pricesuggestion['suggested_price'] ?? 0, 2) }}</strong>
-                                    </p>
-                                </div>
-                            @endif --}}
-                            <!-- Calculation Method -->
-                            {{-- <div>
-                                <label for="cost_calculation_method"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Calculation Method
-                                </label>
-                                <select name="cost_calculation_method" id="cost_calculation_method"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="standard"
-                                        {{ old('cost_calculation_method', $product->cost_calculation_method) == 'standard' ? 'selected' : '' }}>
-                                        Standard</option>
-                                    <option value="average"
-                                        {{ old('cost_calculation_method', $product->cost_calculation_method) == 'average' ? 'selected' : '' }}>
-                                        Average</option>
-                                    <option value="fifo"
-                                        {{ old('cost_calculation_method', $product->cost_calculation_method) == 'fifo' ? 'selected' : '' }}>
-                                        FIFO</option>
-                                    <option value="lifo"
-                                        {{ old('cost_calculation_method', $product->cost_calculation_method) == 'lifo' ? 'selected' : '' }}>
-                                        LIFO</option>
-                                </select>
-                            </div> --}}
                         </div>
                     </div>
                 </div>
@@ -330,8 +238,7 @@
                     'overhead_cost',
                     'shipping_cost_per_unit',
                     'tax_amount_per_unit',
-                    'handling_cost',
-                    'price'
+                    'handling_cost'
                 ];
 
                 function calculateCosts() {
@@ -341,33 +248,12 @@
                     const shipping = parseFloat(document.getElementById('shipping_cost_per_unit').value) || 0;
                     const tax = parseFloat(document.getElementById('tax_amount_per_unit').value) || 0;
                     const handling = parseFloat(document.getElementById('handling_cost').value) || 0;
-                    const price = parseFloat(document.getElementById('price').value) || 0;
 
                     const manufacturing = rawMaterial + labor + overhead;
                     const totalCost = manufacturing + shipping + tax + handling;
-                    const profit = price - totalCost;
-                    const margin = totalCost > 0 ? ((profit / totalCost) * 100) : 0;
 
                     document.getElementById('calc-manufacturing').textContent = '₱' + manufacturing.toFixed(2);
                     document.getElementById('calc-total-cost').textContent = '₱' + totalCost.toFixed(2);
-                    document.getElementById('calc-profit').textContent = '₱' + profit.toFixed(2);
-                    document.getElementById('calc-margin').textContent = margin.toFixed(2) + '%';
-
-                    // Update profit color
-                    const profitEl = document.getElementById('calc-profit');
-                    const marginEl = document.getElementById('calc-margin');
-
-                    if (profit >= 0) {
-                        profitEl.classList.remove('text-red-900', 'dark:text-red-100');
-                        profitEl.classList.add('text-green-900', 'dark:text-green-100');
-                        marginEl.classList.remove('text-red-900', 'dark:text-red-100');
-                        marginEl.classList.add('text-green-900', 'dark:text-green-100');
-                    } else {
-                        profitEl.classList.remove('text-green-900', 'dark:text-green-100');
-                        profitEl.classList.add('text-red-900', 'dark:text-red-100');
-                        marginEl.classList.remove('text-green-900', 'dark:text-green-100');
-                        marginEl.classList.add('text-red-900', 'dark:text-red-100');
-                    }
                 }
 
                 // Add event listeners

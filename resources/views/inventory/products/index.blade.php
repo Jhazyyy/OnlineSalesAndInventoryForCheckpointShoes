@@ -155,20 +155,17 @@
                                 class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 border border-gray-200 dark:border-gray-100">
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Image</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            <a
-                                                href="{{ request()->fullUrlWithQuery(['sort' => 'sku', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
-                                                SKU
-                                                @if (request('sort') === 'sku')
-                                                    <span
-                                                        class="ml-1">{{ request('order') === 'asc' ? '↑' : '↓' }}</span>
-                                                @endif
-                                            </a>
-                                        </th>
+                                        {{-- <th
+                                                class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <a
+                                                    href="{{ request()->fullUrlWithQuery(['sort' => 'sku', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
+                                                    SKU
+                                                    @if (request('sort') === 'sku')
+                                                        <span
+                                                            class="ml-1">{{ request('order') === 'asc' ? '↑' : '↓' }}</span>
+                                                    @endif
+                                                </a>
+                                            </th> --}}
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a
@@ -239,31 +236,12 @@
                                     class="bg-slate-100 dark:bg-gray-900 divide-y divide-gray-600 dark:divide-gray-400">
                                     @foreach ($products as $product)
                                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                            {{-- Product Image --}}
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                @if ($product->image)
-                                                    <img src="{{ $product->image_url }}"
-                                                        alt="{{ $product->product_name }}"
-                                                        class="h-16 w-16 object-cover rounded-none border border-gray-300 dark:border-gray-200">
-                                                @else
-                                                    <div
-                                                        class="h-16 w-16 bg-gray-200 dark:bg-gray-600 rounded-none flex items-center justify-center">
-                                                        <svg class="h-8 w-8 text-gray-400" fill="none"
-                                                            stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M4 16l4.586-4.56a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                                            </path>
-                                                        </svg>
-                                                    </div>
-                                                @endif
-                                            </td>
-                                            <td>
+                                            {{-- <td>
                                                 <div
                                                     class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">
                                                     {{ $product->sku }}
                                                 </div>
-                                            </td>
+                                            </td> --}}
                                             {{-- Product Name and Description --}}
                                             <td class="px-6 py-4">
                                                 @if ($product->stock_name)
@@ -276,19 +254,25 @@
                                                     class="text-sm font-medium text-gray-900 dark:text-white break-words">
                                                     {{ $product->product_name }}
                                                 </div>
-                                                @if ($product->size || $product->color)
+                                                @if ($product->sku || $product->size || $product->color)
                                                     <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                        @if ($product->size)
+                                                        @if ($product->sku)
                                                             <span
-                                                                class="inline-block bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded mr-1">Size:
-                                                                {{ $product->size }}</span>
+                                                                class=" bg-gray-100 dark:bg-gray-700 py-0.5 rounded mr-1">SKU:
+                                                                {{ $product->sku }}</span>
                                                         @endif
-                                                        @if ($product->color)
-                                                            <span
-                                                                class="inline-block bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">Color:
-                                                                {{ $product->color }}</span>
-                                                        @endif
-                                                    </div>
+                                                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                            @if ($product->size)
+                                                                <span
+                                                                    class=" bg-gray-100 dark:bg-gray-700 py-0.5 rounded mr-1">Size:
+                                                                    {{ $product->size }}</span>
+                                                            @endif
+                                                            @if ($product->color)
+                                                                <span
+                                                                    class=" bg-gray-100 dark:bg-gray-700 py-0.5 rounded">Color:
+                                                                    {{ $product->color }}</span>
+                                                            @endif
+                                                        </div>
                                                 @endif
 
                                                 @if ($product->description)
@@ -640,81 +624,6 @@
 
                         {{-- Product Image and Description --}}
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            <!-- Product Image -->
-                            <div>
-                                <label for="modal_image"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Product Image
-                                </label>
-
-                                <!-- Image Source Toggle -->
-                                <div class="mt-2 flex space-x-4">
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="modal_image_source" value="file" checked
-                                            onchange="toggleModalImageSource()"
-                                            class="form-radio text-indigo-600 focus:ring-indigo-500">
-                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Upload File</span>
-                                    </label>
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="modal_image_source" value="url"
-                                            onchange="toggleModalImageSource()"
-                                            class="form-radio text-indigo-600 focus:ring-indigo-500">
-                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Image URL</span>
-                                    </label>
-                                </div>
-
-                                <!-- File Upload Section -->
-                                <div id="modal_fileUploadSection" class="mt-2">
-                                    <div class="relative flex justify-center items-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600 overflow-hidden cursor-pointer"
-                                        onclick="document.getElementById('modal_image').click()">
-                                        <!-- Upload placeholder -->
-                                        <div id="modal_uploadPlaceholder" class="space-y-1 text-center">
-                                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor"
-                                                fill="none" viewBox="0 0 48 48">
-                                                <path
-                                                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                                                    stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                            </svg>
-                                            <div class="flex text-sm text-gray-600 dark:text-gray-400 justify-center">
-                                                <span
-                                                    class="relative bg-white dark:bg-gray-800 rounded-md font-medium text-indigo-600 hover:text-indigo-500">
-                                                    Click to upload
-                                                </span>
-                                                <p class="pl-1">or drag and drop</p>
-                                            </div>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF up to 2MB
-                                            </p>
-                                        </div>
-                                        <!-- Hidden File Input -->
-                                        <input id="modal_image" name="image" type="file" class="sr-only"
-                                            accept="image/*" onchange="previewModalImage(this)">
-                                        <!-- Image Preview -->
-                                        <img id="modal_previewImg" src="#" alt="Preview"
-                                            class="inset-0 max-w-12 h-12 object-cover rounded-none hidden" />
-                                    </div>
-                                </div>
-
-                                <!-- URL Input Section -->
-                                <div id="modal_urlInputSection" class="mt-2 hidden">
-                                    <input type="url" id="modal_image_url" name="image_url"
-                                        placeholder="https://example.com/image.jpg"
-                                        onchange="previewModalImageFromUrl(this.value)"
-                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Enter a direct image URL
-                                    </p>
-
-                                    <!-- URL Image Preview -->
-                                    <div id="modal_urlPreviewContainer" class="mt-3 hidden">
-                                        <div
-                                            class="relative border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600 p-4">
-                                            <img id="modal_urlPreviewImg" src="#" alt="URL Preview"
-                                                class="max-w-auto h-auto object-cover rounded-none" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                             <!-- Description -->
                             <div>
                                 <label for="modal_description"
@@ -765,71 +674,6 @@
             // Hide custom brand/category inputs
             document.getElementById('modal_custom_brand').style.display = 'none';
             document.getElementById('modal_custom_category').style.display = 'none';
-        }
-
-        function previewModalImage(input) {
-            const previewImg = document.getElementById('modal_previewImg');
-            const uploadPlaceholder = document.getElementById('modal_uploadPlaceholder');
-            const file = input.files[0];
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    previewImg.src = e.target.result;
-                    previewImg.classList.remove('hidden');
-                    uploadPlaceholder.classList.add('hidden');
-                };
-                reader.readAsDataURL(file);
-            } else {
-                previewImg.src = '#';
-                previewImg.classList.add('hidden');
-                uploadPlaceholder.classList.remove('hidden');
-            }
-        }
-
-        function toggleModalImageSource() {
-            const source = document.querySelector('input[name="modal_image_source"]:checked').value;
-            const fileSection = document.getElementById('modal_fileUploadSection');
-            const urlSection = document.getElementById('modal_urlInputSection');
-            const fileInput = document.getElementById('modal_image');
-            const urlInput = document.getElementById('modal_image_url');
-
-            if (source === 'file') {
-                fileSection.classList.remove('hidden');
-                urlSection.classList.add('hidden');
-                urlInput.value = '';
-                urlInput.disabled = true;
-                fileInput.disabled = false;
-                document.getElementById('modal_urlPreviewContainer').classList.add('hidden');
-            } else {
-                fileSection.classList.add('hidden');
-                urlSection.classList.remove('hidden');
-                fileInput.value = '';
-                fileInput.disabled = true;
-                urlInput.disabled = false;
-                const previewImg = document.getElementById('modal_previewImg');
-                const uploadPlaceholder = document.getElementById('modal_uploadPlaceholder');
-                previewImg.classList.add('hidden');
-                uploadPlaceholder.classList.remove('hidden');
-            }
-        }
-
-        function previewModalImageFromUrl(url) {
-            const urlPreviewContainer = document.getElementById('modal_urlPreviewContainer');
-            const urlPreviewImg = document.getElementById('modal_urlPreviewImg');
-
-            if (url && url.trim() !== '') {
-                urlPreviewImg.src = url;
-                urlPreviewImg.onerror = function() {
-                    urlPreviewContainer.classList.add('hidden');
-                    alert('Unable to load image from the provided URL. Please check the URL and try again.');
-                };
-                urlPreviewImg.onload = function() {
-                    urlPreviewContainer.classList.remove('hidden');
-                };
-            } else {
-                urlPreviewContainer.classList.add('hidden');
-            }
         }
 
         // Handle custom brand/category/stock name selection
@@ -1068,33 +912,6 @@
 
                     // Trigger pricing field update
                     updateEditPricingFields();
-
-                    if (data.product.image) {
-                        document.getElementById('edit_current_image').classList.remove('hidden');
-                        // Check if image is a URL or storage path
-                        const imageUrl = data.product.image.startsWith('http://') || data.product.image.startsWith(
-                                'https://') ?
-                            data.product.image :
-                            `/storage/${data.product.image}`;
-                        document.getElementById('edit_current_image_preview').src = imageUrl;
-
-                        // If current image is a URL, pre-fill the URL field and switch to URL mode
-                        if (data.product.image.startsWith('http://') || data.product.image.startsWith('https://')) {
-                            document.querySelector('input[name="edit_image_source"][value="url"]').checked = true;
-                            document.getElementById('edit_image_url').value = data.product.image;
-                            toggleEditImageSource();
-                            previewEditImageFromUrl(data.product.image);
-                        } else {
-                            // Reset to file mode for local images
-                            document.querySelector('input[name="edit_image_source"][value="file"]').checked = true;
-                            toggleEditImageSource();
-                        }
-                    } else {
-                        document.getElementById('edit_current_image').classList.add('hidden');
-                        // Reset to file mode
-                        document.querySelector('input[name="edit_image_source"][value="file"]').checked = true;
-                        toggleEditImageSource();
-                    }
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -1306,58 +1123,6 @@
                 closeAdjustmentHistoryModal();
             }
         });
-
-        function previewEditImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    document.getElementById('edit_current_image').classList.remove('hidden');
-                    document.getElementById('edit_current_image_preview').src = e.target.result;
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        function toggleEditImageSource() {
-            const source = document.querySelector('input[name="edit_image_source"]:checked').value;
-            const fileSection = document.getElementById('edit_fileUploadSection');
-            const urlSection = document.getElementById('edit_urlInputSection');
-            const fileInput = document.getElementById('edit_image');
-            const urlInput = document.getElementById('edit_image_url');
-
-            if (source === 'file') {
-                fileSection.classList.remove('hidden');
-                urlSection.classList.add('hidden');
-                urlInput.value = '';
-                urlInput.disabled = true;
-                fileInput.disabled = false;
-                document.getElementById('edit_urlPreviewContainer').classList.add('hidden');
-            } else {
-                fileSection.classList.add('hidden');
-                urlSection.classList.remove('hidden');
-                fileInput.value = '';
-                fileInput.disabled = true;
-                urlInput.disabled = false;
-            }
-        }
-
-        function previewEditImageFromUrl(url) {
-            const urlPreviewContainer = document.getElementById('edit_urlPreviewContainer');
-            const urlPreviewImg = document.getElementById('edit_urlPreviewImg');
-
-            if (url && url.trim() !== '') {
-                urlPreviewImg.src = url;
-                urlPreviewImg.onerror = function() {
-                    urlPreviewContainer.classList.add('hidden');
-                    alert('Unable to load image from the provided URL. Please check the URL and try again.');
-                };
-                urlPreviewImg.onload = function() {
-                    urlPreviewContainer.classList.remove('hidden');
-                };
-            } else {
-                urlPreviewContainer.classList.add('hidden');
-            }
-        }
 
         // VIEW PRODUCT MODAL
         function openViewProductModal(productId) {
@@ -1731,57 +1496,6 @@
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Product
-                                    Image</label>
-                                <div id="edit_current_image" class="mt-2 hidden">
-                                    <img id="edit_current_image_preview" src="" alt="Current"
-                                        class="h-32 w-32 object-cover rounded-lg border">
-                                    <p class="text-xs text-gray-500 mt-1">Current image</p>
-                                </div>
-
-                                <!-- Image Source Toggle -->
-                                <div class="mt-2 flex space-x-4">
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="edit_image_source" value="file" checked
-                                            onchange="toggleEditImageSource()"
-                                            class="form-radio text-indigo-600 focus:ring-indigo-500">
-                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Upload File</span>
-                                    </label>
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="edit_image_source" value="url"
-                                            onchange="toggleEditImageSource()"
-                                            class="form-radio text-indigo-600 focus:ring-indigo-500">
-                                        <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Image URL</span>
-                                    </label>
-                                </div>
-
-                                <!-- File Upload Section -->
-                                <div id="edit_fileUploadSection" class="mt-2">
-                                    <input type="file" id="edit_image" name="image" accept="image/*"
-                                        onchange="previewEditImage(this)"
-                                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                                </div>
-
-                                <!-- URL Input Section -->
-                                <div id="edit_urlInputSection" class="mt-2 hidden">
-                                    <input type="url" id="edit_image_url" name="image_url"
-                                        placeholder="https://example.com/image.jpg"
-                                        onchange="previewEditImageFromUrl(this.value)"
-                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Enter a direct image URL
-                                    </p>
-
-                                    <!-- URL Image Preview -->
-                                    <div id="edit_urlPreviewContainer" class="mt-3 hidden">
-                                        <div
-                                            class="relative border-2 border-gray-300 border-dashed rounded-md dark:border-gray-600 p-4">
-                                            <img id="edit_urlPreviewImg" src="#" alt="URL Preview"
-                                                class="max-w-full h-auto object-cover rounded-md" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                             <div>
                                 <label for="edit_description"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>

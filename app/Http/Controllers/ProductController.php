@@ -143,8 +143,6 @@ class ProductController extends Controller
             'price' => 'nullable|numeric|min:0',
             'pricing_method' => 'required|in:manual,costing,markup',
             'markup_price_id' => 'nullable|required_if:pricing_method,markup|exists:markup_prices,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'image_url' => 'nullable|url|max:500',
             'description' => 'nullable|string|max:1000',
             // Allow either product_brand OR custom_brand to be filled
             'product_brand' => 'nullable|string|max:255',
@@ -234,26 +232,6 @@ class ProductController extends Controller
             while (Product::where('sku', $data['sku'])->exists()) {
                 $data['sku'] = "{$originalSku}-{$counter}";
                 $counter++;
-            }
-        }
-
-        // Handle image upload from file
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time().'_'.$image->getClientOriginalName();
-            $imagePath = $image->storeAs('products', $imageName, 'public');
-            $data['image'] = $imagePath;
-        }
-        // Handle image from URL - store the URL directly
-        elseif ($request->filled('image_url')) {
-            // Validate that it's a proper URL
-            $imageUrl = $request->image_url;
-            if (filter_var($imageUrl, FILTER_VALIDATE_URL)) {
-                $data['image'] = $imageUrl; // Store URL directly
-            } else {
-                return redirect()->back()
-                    ->withErrors(['image_url' => 'Please enter a valid image URL.'])
-                    ->withInput();
             }
         }
 
@@ -356,8 +334,6 @@ class ProductController extends Controller
             'price' => 'nullable|numeric|min:0',
             'pricing_method' => 'required|in:manual,costing,markup',
             'markup_price_id' => 'nullable|required_if:pricing_method,markup|exists:markup_prices,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'image_url' => 'nullable|url|max:500',
             'description' => 'nullable|string|max:1000',
             'product_brand' => 'nullable|string|max:255',
             'custom_brand' => 'nullable|string|max:255',
@@ -430,35 +406,6 @@ class ProductController extends Controller
 
         // Assign the category name
         $data['product_category'] = $category->name;
-
-        // Handle image upload from file
-        if ($request->hasFile('image')) {
-            if ($product->image && ! filter_var($product->image, FILTER_VALIDATE_URL) && Storage::disk('public')->exists($product->image)) {
-                Storage::disk('public')->delete($product->image);
-            }
-
-            $image = $request->file('image');
-            $imageName = time().'_'.$image->getClientOriginalName();
-            $imagePath = $image->storeAs('products', $imageName, 'public');
-            $data['image'] = $imagePath;
-        }
-        // Handle image from URL - store the URL directly
-        elseif ($request->filled('image_url')) {
-            // Delete old local image if exists (but not if it's a URL)
-            if ($product->image && ! filter_var($product->image, FILTER_VALIDATE_URL) && Storage::disk('public')->exists($product->image)) {
-                Storage::disk('public')->delete($product->image);
-            }
-
-            // Validate that it's a proper URL
-            $imageUrl = $request->image_url;
-            if (filter_var($imageUrl, FILTER_VALIDATE_URL)) {
-                $data['image'] = $imageUrl; // Store URL directly
-            } else {
-                return redirect()->back()
-                    ->withErrors(['image_url' => 'Please enter a valid image URL.'])
-                    ->withInput();
-            }
-        }
 
         // Capture old values before update
         $oldValues = [

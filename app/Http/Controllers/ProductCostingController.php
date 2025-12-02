@@ -95,7 +95,6 @@ class ProductCostingController extends Controller
             'shipping_cost_per_unit' => 'nullable|numeric|min:0',
             'tax_amount_per_unit' => 'nullable|numeric|min:0',
             'handling_cost' => 'nullable|numeric|min:0',
-            'price' => 'required|numeric|min:0',
             'cost_calculation_method' => 'nullable|string',
             'cost_notes' => 'nullable|string',
         ]);
