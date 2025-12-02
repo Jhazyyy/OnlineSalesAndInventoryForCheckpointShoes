@@ -102,6 +102,14 @@ class ProductCostingController extends Controller
         try {
             $this->costingService->updateProductCosting($product, $validated);
             
+            // Check if request is from inventory products page (AJAX/modal)
+            if ($request->wantsJson() || $request->ajax()) {
+                return redirect()->route('inventory.products.index')->with('success', 
+                    "Costing updated for {$product->product_name}. Total Cost: ₱" . 
+                    number_format($product->fresh()->total_cost, 2)
+                );
+            }
+            
             return redirect()->back()->with('success', 
                 "Costing updated for {$product->product_name}. Total Cost: ₱" . 
                 number_format($product->fresh()->total_cost, 2)

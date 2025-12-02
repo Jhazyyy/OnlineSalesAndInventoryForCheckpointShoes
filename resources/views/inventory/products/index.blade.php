@@ -374,6 +374,19 @@
                                                             </svg>
                                                         </button>
                                                     @endhasanyrole
+                                                    @hasanyrole('super_admin|admin')
+                                                        <button
+                                                            onclick="openProductCostingModal({{ $product->product_id }}, '{{ $product->product_name }}')"
+                                                            class="text-green-600" title="Product Costing">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                                viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                                </path>
+                                                            </svg>
+                                                        </button>
+                                                    @endhasanyrole
                                                     {{-- <form method="POST"
                                                             action="{{ route('inventory.products.destroy', $product) }}"
                                                             class="inline-block"
@@ -1714,80 +1727,97 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
                         <!-- Left: Product Details -->
                         <div class="lg:col-span-1 space-y-2">
-                            <div id="view_stock_name_container" style="display:none;">
-                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
-                                    Name</label>
-                                <p class="text-lg text-gray-900 dark:text-white" id="view_stock_name"></p>
+
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
+                                <div id="view_stock_name_container" style="display:none;">
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
+                                        Name</label>
+                                    <p class="text-lg text-gray-900 dark:text-white" id="view_stock_name"></p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Product
+                                        Name</label>
+                                    <p class="text-lg text-gray-900 dark:text-white" id="view_product_name_detail">
+                                    </p>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400">SKU</label>
+                                    <p class="text-lg text-gray-900 dark:text-white" id="view_sku"></p>
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Product
-                                    Name</label>
-                                <p class="text-lg text-gray-900 dark:text-white" id="view_product_name_detail"></p>
+
+                            <div class="grid grid-cols-3 gap-2">
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400">Brand</label>
+                                    <p class="text-lg text-gray-900 dark:text-white" id="view_brand"></p>
+                                </div>
+                                <div id="view_size_container" style="display:none;">
+                                    <label
+                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400">Size</label>
+                                    <p class="text-lg text-gray-900 dark:text-white" id="view_size"></p>
+                                </div>
+                                <div id="view_color_container" style="display:none;">
+                                    <label
+                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400">Color</label>
+                                    <p class="text-lg text-gray-900 dark:text-white" id="view_color"></p>
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">SKU</label>
-                                <p class="text-lg text-gray-900 dark:text-white" id="view_sku"></p>
-                            </div>
-                            <div id="view_size_container" style="display:none;">
-                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Size</label>
-                                <p class="text-lg text-gray-900 dark:text-white" id="view_size"></p>
-                            </div>
-                            <div id="view_color_container" style="display:none;">
-                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Color</label>
-                                <p class="text-lg text-gray-900 dark:text-white" id="view_color"></p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Brand</label>
-                                <p class="text-lg text-gray-900 dark:text-white" id="view_brand"></p>
-                            </div>
-                            <div>
-                                <label
-                                    class="block text-sm font-medium text-gray-500 dark:text-gray-400">Category</label>
-                                <p class="text-lg text-gray-900 dark:text-white" id="view_category"></p>
-                            </div>
-                            <div id="view_preferred_supplier_container" style="display:none;">
-                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Preferred
-                                    Supplier</label>
-                                <p class="text-lg text-gray-900 dark:text-white" id="view_preferred_supplier"></p>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
+
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400">Category</label>
+                                    <p class="text-lg text-gray-900 dark:text-white" id="view_category"></p>
+                                </div>
+                                <div id="view_preferred_supplier_container" style="display:none;">
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Preferred
+                                        Supplier</label>
+                                    <p class="text-lg text-gray-900 dark:text-white" id="view_preferred_supplier"></p>
+                                </div>
                                 <div>
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">Quantity</label>
                                     <p class="text-lg font-semibold text-gray-900 dark:text-white" id="view_quantity">
                                     </p>
                                 </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-2">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Base
                                         Price</label>
                                     <p class="text-lg font-semibold text-green-600 dark:text-green-400"
                                         id="view_price"></p>
                                 </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Total
                                         Cost</label>
                                     <p class="text-lg font-semibold text-blue-600 dark:text-blue-400"
                                         id="view_total_cost">₱0.00</p>
                                 </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Inventory
+                                        Value</label>
+                                    <p class="text-lg font-semibold text-gray-900 dark:text-white"
+                                        id="view_inventory_value"></p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
                                 <div id="view_markup_container" style="display:none;">
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">Markup</label>
-                                    <p class="text-lg font-semibold text-purple-600 dark:text-purple-400"
-                                        id="view_markup"></p>
+                                    <p class="text-lg font-semibold text-gray-600 dark:text-white" id="view_markup">
+                                    </p>
                                 </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
-                                    Status</label>
-                                <div id="view_stock_status"></div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Inventory
-                                    Value</label>
-                                <p class="text-lg font-semibold text-gray-900 dark:text-white"
-                                    id="view_inventory_value"></p>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
+                                        Status</label>
+                                    <div id="view_stock_status"></div>
+                                </div>
                             </div>
                         </div>
 
@@ -1861,5 +1891,291 @@
             </div>
         </div>
     </div>
+
+    <!-- Product Costing Modal -->
+    <div id="productCostingModal"
+        class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto max-h-full max-w-full z-50">
+        <div
+            class="relative top-10 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white dark:bg-gray-800 mb-10">
+            <div class="mt-3">
+                <div class="flex items-center justify-between pb-3 border-b dark:border-gray-700">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Product Costing: <span
+                            id="costing_product_name"></span></h3>
+                    <button onclick="closeProductCostingModal()"
+                        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <form id="productCostingForm" method="POST" action="">
+                    @csrf
+                    @method('PUT')
+                    <div class="mt-4 space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+                        <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg mb-4">
+                            <p class="text-sm text-gray-600 dark:text-gray-300">Enter the cost components for this
+                                product. All fields are optional. The system will calculate the total cost.</p>
+                        </div>
+
+                        <!-- Cost Components -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="costing_raw_material_cost"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Raw Material
+                                    Cost</label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">₱</span>
+                                    </div>
+                                    <input type="number" id="costing_raw_material_cost" name="raw_material_cost"
+                                        step="0.01" min="0" oninput="calculateCostingTotalCost()"
+                                        class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        placeholder="0.00">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="costing_labor_cost"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Labor
+                                    Cost</label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">₱</span>
+                                    </div>
+                                    <input type="number" id="costing_labor_cost" name="labor_cost" step="0.01"
+                                        min="0" oninput="calculateCostingTotalCost()"
+                                        class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        placeholder="0.00">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="costing_overhead_cost"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Overhead
+                                    Cost</label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">₱</span>
+                                    </div>
+                                    <input type="number" id="costing_overhead_cost" name="overhead_cost"
+                                        step="0.01" min="0" oninput="calculateCostingTotalCost()"
+                                        class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        placeholder="0.00">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="costing_shipping_cost"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Shipping Cost
+                                    per
+                                    Unit</label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">₱</span>
+                                    </div>
+                                    <input type="number" id="costing_shipping_cost" name="shipping_cost_per_unit"
+                                        step="0.01" min="0" oninput="calculateCostingTotalCost()"
+                                        class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        placeholder="0.00">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="costing_tax_amount"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tax Amount per
+                                    Unit</label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">₱</span>
+                                    </div>
+                                    <input type="number" id="costing_tax_amount" name="tax_amount_per_unit"
+                                        step="0.01" min="0" oninput="calculateCostingTotalCost()"
+                                        class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        placeholder="0.00">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="costing_handling_cost"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Handling
+                                    Cost</label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">₱</span>
+                                    </div>
+                                    <input type="number" id="costing_handling_cost" name="handling_cost"
+                                        step="0.01" min="0" oninput="calculateCostingTotalCost()"
+                                        class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Current Price (Read-only) -->
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Current
+                                        Selling Price</label>
+                                    <div class="mt-1 text-2xl font-bold text-green-600 dark:text-green-400"
+                                        id="costing_current_price">₱0.00</div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Current
+                                        Total Cost</label>
+                                    <div class="mt-1 text-2xl font-bold text-blue-600 dark:text-blue-400"
+                                        id="costing_current_total_cost">₱0.00</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div>
+                            <label for="costing_notes"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cost Notes</label>
+                            <textarea id="costing_notes" name="cost_notes" rows="3"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                placeholder="Optional notes about cost calculations..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 mt-6 pt-4 border-t dark:border-gray-700">
+                        <button type="button" onclick="closeProductCostingModal()"
+                            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                            Update Costing
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Product Costing Modal Functions
+        let currentProductData = null; // Store current product data for calculations
+
+        function calculateCostingTotalCost() {
+            // Get all cost component values
+            const rawMaterial = parseFloat(document.getElementById('costing_raw_material_cost').value) || 0;
+            const labor = parseFloat(document.getElementById('costing_labor_cost').value) || 0;
+            const overhead = parseFloat(document.getElementById('costing_overhead_cost').value) || 0;
+            const shipping = parseFloat(document.getElementById('costing_shipping_cost').value) || 0;
+            const tax = parseFloat(document.getElementById('costing_tax_amount').value) || 0;
+            const handling = parseFloat(document.getElementById('costing_handling_cost').value) || 0;
+
+            // Calculate total cost
+            const totalCost = rawMaterial + labor + overhead + shipping + tax + handling;
+
+            // Update display
+            document.getElementById('costing_current_total_cost').textContent = '₱' + new Intl.NumberFormat('en-PH', {
+                minimumFractionDigits: 2
+            }).format(totalCost);
+
+            // If product has markup pricing, calculate and update selling price
+            if (currentProductData && currentProductData.pricing_method === 'markup' && currentProductData.markup_price) {
+                const markupPercentage = currentProductData.markup_price.markup_percentage || 0;
+                const calculatedPrice = totalCost * (1 + markupPercentage / 100);
+
+                document.getElementById('costing_current_price').textContent = '₱' + new Intl.NumberFormat('en-PH', {
+                    minimumFractionDigits: 2
+                }).format(calculatedPrice);
+            }
+        }
+
+        function openProductCostingModal(productId, productName) {
+            document.getElementById('costing_product_name').textContent = productName;
+            document.getElementById('productCostingModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            // Fetch product costing data
+            fetch(`/inventory/products/${productId}/edit`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const product = data.product;
+                    currentProductData = product; // Store for calculations
+
+                    // Set form action
+                    document.getElementById('productCostingForm').action =
+                        `/inventory/product-costing/${productId}`;
+
+                    // Populate cost fields
+                    document.getElementById('costing_raw_material_cost').value = product.raw_material_cost || '';
+                    document.getElementById('costing_labor_cost').value = product.labor_cost || '';
+                    document.getElementById('costing_overhead_cost').value = product.overhead_cost || '';
+                    document.getElementById('costing_shipping_cost').value = product.shipping_cost_per_unit || '';
+                    document.getElementById('costing_tax_amount').value = product.tax_amount_per_unit || '';
+                    document.getElementById('costing_handling_cost').value = product.handling_cost || '';
+                    document.getElementById('costing_notes').value = product.cost_notes || '';
+
+                    // Calculate and display selling price based on pricing method
+                    let sellingPrice = 0;
+                    if (product.pricing_method === 'markup' && product.markup_price && product.total_cost) {
+                        // Use markup calculation
+                        const markupPercentage = product.markup_price.markup_percentage || 0;
+                        sellingPrice = product.total_cost * (1 + markupPercentage / 100);
+                    } else {
+                        // Use manual price
+                        sellingPrice = product.price || 0;
+                    }
+
+                    // Display current selling price
+                    document.getElementById('costing_current_price').textContent = '₱' + new Intl.NumberFormat(
+                        'en-PH', {
+                            minimumFractionDigits: 2
+                        }).format(sellingPrice);
+
+                    // Display current total cost
+                    document.getElementById('costing_current_total_cost').textContent = '₱' + new Intl.NumberFormat(
+                        'en-PH', {
+                            minimumFractionDigits: 2
+                        }).format(product.total_cost || 0);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to load product costing data.');
+                    closeProductCostingModal();
+                });
+        }
+
+        function closeProductCostingModal() {
+            document.getElementById('productCostingModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            document.getElementById('productCostingForm').reset();
+            currentProductData = null; // Clear stored data
+        }
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modal = document.getElementById('productCostingModal');
+                if (modal && !modal.classList.contains('hidden')) {
+                    closeProductCostingModal();
+                }
+            }
+        });
+
+        // Close on outside click
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('productCostingModal');
+            if (modal) {
+                modal.addEventListener('click', function(event) {
+                    if (event.target === this) {
+                        closeProductCostingModal();
+                    }
+                });
+            }
+        });
+    </script>
 
 </x-app-layout>
