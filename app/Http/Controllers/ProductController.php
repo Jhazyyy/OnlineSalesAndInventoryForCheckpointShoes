@@ -78,7 +78,7 @@ class ProductController extends Controller
         $sortOrder = $request->get('order', 'asc');
         $query->orderBy($sortBy, $sortOrder);
 
-        $products = $query->with('lastSupplier')->paginate(15)->withQueryString();
+        $products = $query->with('lastSupplier')->paginate(10)->withQueryString();
 
         // Get unique stock names for filter dropdown
         $stockNames = StockName::where('is_active', true)->orderBy('name')->pluck('name')->filter()->sort()->values();

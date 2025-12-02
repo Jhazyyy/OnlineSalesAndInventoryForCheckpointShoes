@@ -125,7 +125,7 @@
                                 </div>
 
                                 <div x-show="filteredProducts.length > 0"
-                                    class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 max-h-screen overflow-y-auto">
+                                    class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-2 max-h-screen overflow-y-auto">
                                     <template x-for="product in filteredProducts" :key="product.id">
                                         <div @click="addToCart(product.id, product.name, product.price, product.stock, product.image || '')"
                                             class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all"
@@ -150,16 +150,16 @@
                                             </div>
 
                                             <!-- Product Information -->
-                                            <div class="p-3 space-y-2">
+                                            <div class="p-2 space-y-1">
                                                 <!-- Product Name & SKU -->
                                                 <div>
-                                                    <h4 class="font-bold text-sm text-gray-900 dark:text-white line-clamp-2 mb-1"
+                                                    <h4 class="font-bold text-xs text-gray-900 dark:text-white line-clamp-1 mb-0.5"
                                                         x-text="product.name"></h4>
                                                     <p class="text-xs text-gray-500 dark:text-gray-400" x-text="product.sku"></p>
                                                 </div>
 
                                                 <!-- Product Details -->
-                                                <div class="space-y-1.5 text-xs border-t border-gray-200 dark:border-gray-700 pt-2">
+                                                <div class="space-y-1 text-xs border-t border-gray-200 dark:border-gray-700 pt-1">
                                                     <div class="flex justify-between">
                                                         <span class="text-gray-600 dark:text-gray-400">Category:</span>
                                                         <span class="font-medium text-gray-900 dark:text-white" x-text="product.category"></span>
@@ -167,7 +167,7 @@
                                                     <div class="flex justify-between items-center">
                                                         <span class="text-gray-600 dark:text-gray-400">Price:</span>
                                                         <template x-if="product.price && product.price > 0">
-                                                            <span class="font-bold text-base text-blue-600 dark:text-blue-400"
+                                                            <span class="font-bold text-sm text-blue-600 dark:text-blue-400"
                                                                 x-text="'₱' + parseFloat(product.price).toFixed(2)"></span>
                                                         </template>
                                                         <template x-if="!product.price || product.price === 0">
@@ -178,7 +178,7 @@
                                                     </div>
                                                     <div class="flex justify-between items-center">
                                                         <span class="text-gray-600 dark:text-gray-400">Stock:</span>
-                                                        <span class="font-semibold px-2 py-0.5 rounded"
+                                                        <span class="font-semibold px-1.5 py-0.5 rounded text-xs"
                                                             :class="{
                                                                 'text-green-700 bg-green-100 dark:bg-green-900 dark:text-green-300': product.stock > 10,
                                                                 'text-yellow-700 bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-300': product.stock <= 10 && product.stock > 5,
@@ -190,7 +190,7 @@
                                                 </div>
 
                                                 <!-- Click to Add Hint -->
-                                                <div class="text-center pt-2 border-t border-gray-200 dark:border-gray-700">
+                                                <div class="text-center pt-1 border-t border-gray-200 dark:border-gray-700">
                                                     <p class="text-xs text-gray-500 dark:text-gray-400 italic">
                                                         Click to add to cart
                                                     </p>
@@ -208,7 +208,7 @@
                         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
                             <div class="p-6">
                                 <!-- Customer Selection/Creation -->
-                                <div class="mb-6">
+                                <div class="mb-2">
                                     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-3">Customer</h3>
 
                                     <!-- Existing Customer -->

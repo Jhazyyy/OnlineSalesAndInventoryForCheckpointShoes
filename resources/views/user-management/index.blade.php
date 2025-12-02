@@ -312,8 +312,7 @@
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $user->role_color }}-100 text-{{ $user->role_color }}-800">
+                                            <span class="text-sm text-gray-900 dark:text-gray-100">
                                                 {{ $user->primary_role === 'super_admin' ? 'Super Admin' : ucwords(str_replace('_', ' ', $user->primary_role)) }}
                                             </span>
                                         </td>

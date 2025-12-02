@@ -1636,7 +1636,7 @@
     <div id="stockAdjustmentModal"
         class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
         <div
-            class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-md bg-white dark:bg-gray-800">
+            class="relative top-10 mx-auto p-5 border w-11/12 max-w-7xl shadow-lg rounded-md bg-white dark:bg-gray-800 mb-10">
             <div class="mt-3">
                 <div class="flex items-center justify-between pb-3 border-b dark:border-gray-700">
                     <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Stock Adjustment</h3>

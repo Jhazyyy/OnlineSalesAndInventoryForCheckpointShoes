@@ -134,6 +134,10 @@
                                         Costing</option>
                                     <option value="no-costing" {{ $filter == 'no-costing' ? 'selected' : '' }}>Without
                                         Costing</option>
+                                    <option value="with-price" {{ $filter == 'with-price' ? 'selected' : '' }}>With
+                                        Price</option>
+                                    <option value="no-price" {{ $filter == 'no-price' ? 'selected' : '' }}>Without
+                                        Price</option>
                                     {{-- <option value="low-margin" {{ $filter == 'low-margin' ? 'selected' : '' }}>Low Margin (&lt;20%)</option>
                                     <option value="negative-margin" {{ $filter == 'negative-margin' ? 'selected' : '' }}>Negative Margin</option> --}}
                                 </select>
@@ -195,6 +199,10 @@
                                     </th>
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Quantity
+                                    </th>
+                                    <th
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Price
                                     </th>
                                     <th
@@ -231,6 +239,20 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900 dark:text-white">
                                                 {{ $product->product_category }}
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            @php
+                                                $stock = $product->quantity ?? 0;
+                                                $stockClass = 'text-red-600 dark:text-red-400';
+                                                if ($stock > 10) {
+                                                    $stockClass = 'text-green-600 dark:text-green-400';
+                                                } elseif ($stock > 0) {
+                                                    $stockClass = 'text-yellow-600 dark:text-yellow-400';
+                                                }
+                                            @endphp
+                                            <div class="text-sm font-semibold {{ $stockClass }}">
+                                                {{ number_format($stock) }} {{ $product->unit ?? '' }}
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-left">
@@ -281,7 +303,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7"
+                                        <td colspan="8"
                                             class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                                             No products found.
                                         </td>

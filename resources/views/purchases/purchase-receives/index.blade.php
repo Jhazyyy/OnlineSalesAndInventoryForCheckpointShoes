@@ -152,6 +152,7 @@
                                             </th>
                                             <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">PO#</th>
                                             <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Supplier</th>
+                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Received By</th>
                                             <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Status</th>
                                             <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Quantity</th>
                                             <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Progress</th>
@@ -185,6 +186,9 @@
                                                 <td class="px-3 sm:px-4 lg:px-6 py-4 whitespace-nowrap">
                                                     <div class="text-sm text-gray-900 dark:text-white">{{ $receive->supplier->supplier_name ?? $receive->supplier->name ?? 'N/A' }}</div>
                                                     <div class="text-xs text-gray-500 dark:text-gray-400 hidden lg:block">{{ $receive->supplier->phone ?? '' }}</div>
+                                                </td>
+                                                <td class="px-3 sm:px-4 lg:px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900 dark:text-white">{{ $receive->receiver_name ?? 'N/A' }}</div>
                                                 </td>
                                                 {{-- Status --}}
                                                 <td class="px-3 sm:px-4 lg:px-6 py-4 absolute break-words">

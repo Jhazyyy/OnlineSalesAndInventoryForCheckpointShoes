@@ -47,6 +47,16 @@ class ProductCostingController extends Controller
             case 'with-costing':
                 $query->whereNotNull('total_cost');
                 break;
+            case 'with-price':
+                $query->whereNotNull('price')
+                      ->where('price', '>', 0);
+                break;
+            case 'no-price':
+                $query->where(function($q) {
+                    $q->whereNull('price')
+                      ->orWhere('price', '=', 0);
+                });
+                break;
         }
         
         if ($search) {
@@ -57,7 +67,7 @@ class ProductCostingController extends Controller
             });
         }
         
-        $products = $query->orderBy('product_name')->paginate(15)->appends($request->query());
+        $products = $query->orderBy('product_name')->paginate(10)->appends($request->query());
         
         return view('inventory.product-costing.index', compact('stats', 'products', 'filter'));
     }
