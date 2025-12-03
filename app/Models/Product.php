@@ -197,6 +197,13 @@ class Product extends Model
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['image_url'];
+
+    /**
      * Mutator to prevent negative quantity values
      */
     public function setQuantityAttribute($value)
@@ -367,25 +374,6 @@ class Product extends Model
         }
     }
 
-    /**
-     * Scope a query to only include low stock products.
-     * Standard formula: quantity > 0 AND quantity <= 10
-     */
-    public function scopeLowStock(Builder $query, int $threshold = 10): Builder
-    {
-        return $query->where('quantity', '>', 0)
-                     ->where('quantity', '<=', $threshold);
-    }
-
-    /**
-     * Scope a query to only include critical stock products.
-     * Critical stock: quantity > 0 AND quantity <= 5
-     */
-    public function scopeCriticalStock(Builder $query, int $threshold = 5): Builder
-    {
-        return $query->where('quantity', '>', 0)
-                     ->where('quantity', '<=', $threshold);
-    }
 
     /**
      * Scope a query to only include products that need reordering.
@@ -863,19 +851,44 @@ class Product extends Model
     }
 
     /**
-     * Scope a query to only include products with stock (quantity > 10).
+     * Scope a query to only include products with stock (quantity > 5).
      */
     public function scopeInStock(Builder $query): Builder
     {
         return $query->where('quantity', '>', 10);
     }
 
+    public function allStock(Builder $query): Builder
+    {
+        return $query->where('quantity', '');
+    }
+
     /**
-     * Scope a query to only include out of stock products (quantity = 0).
+     * Scope a query to only include out of stock products (quantity <= 0).
      */
     public function scopeOutOfStock(Builder $query): Builder
     {
-        return $query->where('quantity', '=', 0);
+        return $query->where('quantity', '<=', 0);
+    }
+
+        /**
+     * Scope a query to only include low stock products.
+     * Low stock: quantity > 5
+     */
+    public function scopeLowStock(Builder $query): Builder
+    {
+        return $query->where('quantity', '>', 5)
+                        ->where('quantity', '<=', 10);
+    }
+
+    /**
+     * Scope a query to only include critical stock products.
+     * Critical stock: quantity <= 5 AND quantity > 0
+     */
+    public function scopeCriticalStock(Builder $query): Builder
+    {
+        return $query->where('quantity', '<=', 5)
+                     ->where('quantity', '>', 0);
     }
 
     /**

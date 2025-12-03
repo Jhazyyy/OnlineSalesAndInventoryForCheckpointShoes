@@ -242,44 +242,67 @@
                                                     {{ $product->sku }}
                                                 </div>
                                             </td> --}}
-                                            {{-- Product Name and Description --}}
+                                            {{-- Product Image and Name --}}
                                             <td class="px-6 py-4">
-                                                @if ($product->stock_name)
-                                                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                                                        <span class="font-medium">Stock Name:</span>
-                                                        {{ $product->stock_name }}
-                                                    </div>
-                                                @endif
-                                                <div
-                                                    class="text-sm font-medium text-gray-900 dark:text-white break-words">
-                                                    {{ $product->product_name }}
-                                                </div>
-                                                @if ($product->sku || $product->size || $product->color)
-                                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                        @if ($product->sku)
-                                                            <span
-                                                                class=" bg-gray-100 dark:bg-gray-700 py-0.5 rounded mr-1">SKU:
-                                                                {{ $product->sku }}</span>
-                                                        @endif
-                                                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                            @if ($product->size)
-                                                                <span
-                                                                    class=" bg-gray-100 dark:bg-gray-700 py-0.5 rounded mr-1">Size:
-                                                                    {{ $product->size }}</span>
-                                                            @endif
-                                                            @if ($product->color)
-                                                                <span
-                                                                    class=" bg-gray-100 dark:bg-gray-700 py-0.5 rounded">Color:
-                                                                    {{ $product->color }}</span>
-                                                            @endif
+                                                <div class="flex items-start gap-3">
+                                                    @if ($product->image)
+                                                        <img src="{{ $product->image_url }}"
+                                                            alt="{{ $product->product_name }}"
+                                                            class="w-16 h-16 object-cover rounded-lg border border-gray-300 dark:border-gray-600 flex-shrink-0"
+                                                            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27100%27 height=%27100%27 viewBox=%270 0 100 100%27%3E%3Crect fill=%27%23e5e7eb%27 width=%27100%27 height=%27100%27/%3E%3Ctext fill=%27%239ca3af%27 font-family=%27sans-serif%27 font-size=%2714%27 text-anchor=%27middle%27 x=%2750%27 y=%2755%27%3ENo Image%3C/text%3E%3C/svg%3E'">
+                                                    @else
+                                                        <div
+                                                            class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                            <svg class="w-8 h-8 text-gray-400" fill="none"
+                                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                                </path>
+                                                            </svg>
                                                         </div>
-                                                @endif
+                                                    @endif
+                                                    <div class="flex-1 min-w-0">
+                                                        @if ($product->stock_name)
+                                                            <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                                                                <span class="font-medium">Stock Name:</span>
+                                                                {{ $product->stock_name }}
+                                                            </div>
+                                                        @endif
+                                                        <div
+                                                            class="text-xs font-normal text-gray-900 dark:text-white break-words">
+                                                            {{ $product->product_name }}
+                                                        </div>
+                                                        @if ($product->sku || $product->size || $product->color)
+                                                            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                @if ($product->sku)
+                                                                    <span
+                                                                        class=" bg-gray-100 dark:bg-gray-700 py-0.5 rounded mr-1">SKU:
+                                                                        {{ $product->sku }}</span>
+                                                                @endif
+                                                                <div
+                                                                    class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                    @if ($product->size)
+                                                                        <span
+                                                                            class=" bg-gray-100 dark:bg-gray-700 py-0.5 rounded mr-1">Size:
+                                                                            {{ $product->size }}</span>
+                                                                    @endif
+                                                                    @if ($product->color)
+                                                                        <span
+                                                                            class=" bg-gray-100 dark:bg-gray-700 py-0.5 rounded">Color:
+                                                                            {{ $product->color }}</span>
+                                                                    @endif
+                                                                </div>
+                                                        @endif
 
-                                                @if ($product->description)
-                                                    <div class="text-sm text-gray-500 dark:text-gray-400 break-words">
-                                                        {{ $product->description }}
+                                                        @if ($product->description)
+                                                            <div
+                                                                class="text-sm text-gray-500 dark:text-gray-400 break-words">
+                                                                {{ $product->description }}ption }}
+                                                            </div>
+                                                        @endif
                                                     </div>
-                                                @endif
+                                                </div>
                                             </td>
                                             {{-- Product Brand --}}
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-white break-words">
@@ -640,6 +663,53 @@
                                 <textarea id="modal_description" name="description" rows="1" placeholder="Enter product description..."
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
                             </div>
+
+                            <!-- Image Upload/URL -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Product Image <span class="text-gray-400 text-xs">(Optional)</span>
+                                </label>
+
+                                <!-- Tab Buttons -->
+                                <div class="flex gap-2 mb-3">
+                                    <button type="button" onclick="switchCreateImageTab('url')" id="modal_url_tab"
+                                        class="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white">
+                                        URL
+                                    </button>
+                                    <button type="button" onclick="switchCreateImageTab('upload')"
+                                        id="modal_upload_tab"
+                                        class="px-4 py-2 text-sm font-medium rounded-md bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+                                        Upload
+                                    </button>
+                                </div>
+
+                                <!-- URL Input Section -->
+                                <div id="modal_url_section">
+                                    <input type="url" id="modal_image_url" name="image_url"
+                                        placeholder="https://example.com/image.jpg" oninput="previewCreateImage()"
+                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <p class="mt-1 text-xs text-gray-500">Enter a direct link to an image</p>
+                                </div>
+
+                                <!-- Upload Input Section -->
+                                <div id="modal_upload_section" class="hidden">
+                                    <input type="file" id="modal_image_file" name="image_file" accept="image/*"
+                                        onchange="previewCreateUpload()"
+                                        class="block w-full text-sm text-gray-500 dark:text-gray-400
+                                            file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0
+                                            file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700
+                                            hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-300">
+                                    <p class="mt-1 text-xs text-gray-500">Upload an image file (JPG, PNG, GIF, etc.)
+                                    </p>
+                                </div>
+
+                                <!-- Image Preview -->
+                                <div id="modal_image_preview" class="mt-2 hidden">
+                                    <img id="modal_preview_img" src="" alt="Preview"
+                                        class="w-32 h-32 object-cover rounded-lg border border-gray-300 dark:border-gray-600"
+                                        onerror="this.parentElement.classList.add('hidden')">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -677,10 +747,129 @@
             document.getElementById('modal_previewImg').src = '#';
             document.getElementById('modal_previewImg').classList.add('hidden');
             document.getElementById('modal_uploadPlaceholder').classList.remove('hidden');
+            document.getElementById('modal_image_preview').classList.add('hidden');
 
             // Hide custom brand/category inputs
             document.getElementById('modal_custom_brand').style.display = 'none';
             document.getElementById('modal_custom_category').style.display = 'none';
+        }
+
+        // Image preview functions
+        function previewCreateImage() {
+            const url = document.getElementById('modal_image_url').value;
+            const preview = document.getElementById('modal_image_preview');
+            const img = document.getElementById('modal_preview_img');
+
+            if (url) {
+                img.src = url;
+                preview.classList.remove('hidden');
+            } else {
+                preview.classList.add('hidden');
+            }
+        }
+
+        function previewCreateUpload() {
+            const file = document.getElementById('modal_image_file').files[0];
+            const preview = document.getElementById('modal_image_preview');
+            const img = document.getElementById('modal_preview_img');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    preview.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.classList.add('hidden');
+            }
+        }
+
+        function previewEditImage() {
+            const url = document.getElementById('edit_image_url').value;
+            const preview = document.getElementById('edit_image_preview');
+            const img = document.getElementById('edit_preview_img');
+
+            if (url) {
+                img.src = url;
+                preview.classList.remove('hidden');
+            } else {
+                preview.classList.add('hidden');
+            }
+        }
+
+        function previewEditUpload() {
+            const file = document.getElementById('edit_image_file').files[0];
+            const preview = document.getElementById('edit_image_preview');
+            const img = document.getElementById('edit_preview_img');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    preview.classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.classList.add('hidden');
+            }
+        }
+
+        // Tab switching functions
+        function switchCreateImageTab(tab) {
+            const urlTab = document.getElementById('modal_url_tab');
+            const uploadTab = document.getElementById('modal_upload_tab');
+            const urlSection = document.getElementById('modal_url_section');
+            const uploadSection = document.getElementById('modal_upload_section');
+            const urlInput = document.getElementById('modal_image_url');
+            const fileInput = document.getElementById('modal_image_file');
+
+            if (tab === 'url') {
+                urlTab.classList.add('bg-blue-600', 'text-white');
+                urlTab.classList.remove('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-300');
+                uploadTab.classList.remove('bg-blue-600', 'text-white');
+                uploadTab.classList.add('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-300');
+                urlSection.classList.remove('hidden');
+                uploadSection.classList.add('hidden');
+                fileInput.value = '';
+            } else {
+                uploadTab.classList.add('bg-blue-600', 'text-white');
+                uploadTab.classList.remove('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-300');
+                urlTab.classList.remove('bg-blue-600', 'text-white');
+                urlTab.classList.add('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-300');
+                uploadSection.classList.remove('hidden');
+                urlSection.classList.add('hidden');
+                urlInput.value = '';
+            }
+            document.getElementById('modal_image_preview').classList.add('hidden');
+        }
+
+        function switchEditImageTab(tab) {
+            const urlTab = document.getElementById('edit_url_tab');
+            const uploadTab = document.getElementById('edit_upload_tab');
+            const urlSection = document.getElementById('edit_url_section');
+            const uploadSection = document.getElementById('edit_upload_section');
+            const urlInput = document.getElementById('edit_image_url');
+            const fileInput = document.getElementById('edit_image_file');
+
+            if (tab === 'url') {
+                urlTab.classList.add('bg-blue-600', 'text-white');
+                urlTab.classList.remove('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-300');
+                uploadTab.classList.remove('bg-blue-600', 'text-white');
+                uploadTab.classList.add('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-300');
+                urlSection.classList.remove('hidden');
+                uploadSection.classList.add('hidden');
+                fileInput.value = '';
+            } else {
+                uploadTab.classList.add('bg-blue-600', 'text-white');
+                uploadTab.classList.remove('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-300');
+                urlTab.classList.remove('bg-blue-600', 'text-white');
+                urlTab.classList.add('bg-gray-200', 'text-gray-700', 'dark:bg-gray-700', 'dark:text-gray-300');
+                uploadSection.classList.remove('hidden');
+                urlSection.classList.add('hidden');
+                urlInput.value = '';
+            }
+            document.getElementById('edit_image_preview').classList.add('hidden');
         }
 
         // Handle custom brand/category/stock name selection
@@ -832,6 +1021,7 @@
             currentProductId = productId;
             document.getElementById('editProductModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+            const contentDiv = document.getElementById('historyModalContent');
 
             fetch(`/inventory/products/${productId}/edit`, {
                     headers: {
@@ -848,6 +1038,13 @@
                     document.getElementById('edit_sku').value = data.product.sku || '';
                     document.getElementById('edit_price').value = data.product.price;
                     document.getElementById('edit_description').value = data.product.description || '';
+                    document.getElementById('edit_image_url').value = data.product.image || '';
+
+                    // Show image preview if image exists
+                    if (data.product.image) {
+                        document.getElementById('edit_preview_img').src = data.product.image;
+                        document.getElementById('edit_image_preview').classList.remove('hidden');
+                    }
 
                     // Populate stock names dropdown
                     const stockNameSelect = document.getElementById('edit_stock_name');
@@ -1152,6 +1349,14 @@
                         minimumFractionDigits: 2
                     }).format(data.price);
 
+                    // Product Image
+                    // if (data.image) {
+                    //     document.getElementById('view_product_image').src = data.image;
+                    //     document.getElementById('view_image_container').style.display = 'block';
+                    // } else {
+                    //     document.getElementById('view_image_container').style.display = 'none';
+                    // }
+
                     // Total Cost
                     const totalCost = data.total_cost || 0;
                     document.getElementById('view_total_cost').textContent = '₱' + new Intl.NumberFormat('en-PH', {
@@ -1277,16 +1482,16 @@
                     let statusHTML = '';
                     if (data.quantity <= 0) {
                         statusHTML =
-                            '<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800"><span class="w-2 h-2 mr-1 bg-red-500 rounded-full"></span>Out of Stock</span>';
-                    } else if (data.quantity <= 10 && data.quantity > 5) {
+                            '<span class="inline-flex items-center py-1 rounded-full text-sm font-medium bg-red-100 text-red-800"></span>Out of Stock</span>';
+                    } else if (data.quantity > 5 && data.quantity <= 10) {
                         statusHTML =
-                            '<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800"><span class="w-2 h-2 mr-1 bg-yellow-500 rounded-full"></span>Low Stock</span>';
+                            '<span class="inline-flex items-center py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800"></span>Low Stock</span>';
                     } else if (data.quantity <= 5) {
                         statusHTML =
-                            '<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-600"><span class="w-2 h-2 mr-1 bg-red-500 rounded-full"></span>Critical Stock</span>';
+                            '<span class="inline-flex items-center py-1 rounded-full text-sm font-medium bg-red-100 text-red-600"></span>Critical Stock</span>';
                     } else {
                         statusHTML =
-                            '<span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"><span class="w-2 h-2 mr-1 bg-green-500 rounded-full"></span>In Stock</span>';
+                            '<span class="inline-flex items-start py-1 rounded-full text-xs font-medium text-green-800"></span>In Stock</span>';
                     }
                     document.getElementById('view_stock_status').innerHTML = statusHTML;
                 })
@@ -1334,7 +1539,7 @@
     <div id="editProductModal"
         class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto max-h-full max-w-full z-50">
         <div
-            class="relative top-10 mx-auto p-5 border w-11/12 max-w-7xl shadow-lg rounded-md bg-white dark:bg-gray-800 mb-10">
+            class="relative top-10 mx-auto p-5 border w-11/12 max-w-full shadow-lg rounded-md bg-white dark:bg-gray-800 mb-10">
             <div class="mt-3">
                 <div class="flex items-center justify-between pb-3 border-b dark:border-gray-700">
                     <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Edit Product</h3>
@@ -1351,7 +1556,7 @@
                     @csrf
                     @method('PUT')
                     <div class="mt-4 space-y-6 max-h-[60vh] overflow-y-auto pr-2">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label for="edit_stock_name"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -1379,7 +1584,7 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                             <div>
                                 <label for="edit_size"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -1398,15 +1603,16 @@
                                     placeholder="e.g., Black, Red, Blue"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
-                        </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label for="edit_sku"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">SKU</label>
                                 <input type="text" id="edit_sku" name="sku"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                             <div>
                                 <label for="edit_preferred_supplier_id"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -1417,9 +1623,7 @@
                                     <option value="">Select a supplier...</option>
                                 </select>
                             </div>
-                        </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label for="edit_product_brand"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -1430,6 +1634,7 @@
                                     <option value="">Select a brand...</option>
                                 </select>
                             </div>
+
                             <div>
                                 <label for="edit_product_category"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -1443,7 +1648,7 @@
                         </div>
 
                         <!-- Pricing Method and Markup Price -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                        <div class="grid grid-cols-3 gap-2">
                             <!-- Pricing Method -->
                             <div>
                                 <label for="edit_pricing_method"
@@ -1512,12 +1717,59 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-1 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label for="edit_description"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
                                 <textarea id="edit_description" name="description" rows="1"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
+                            </div>
+
+                            <!-- Image URL -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Product Image <span class="text-gray-400 text-xs">(Optional)</span>
+                                </label>
+
+                                <!-- Tab Buttons -->
+                                <div class="flex gap-2 mb-3">
+                                    <button type="button" onclick="switchEditImageTab('url')" id="edit_url_tab"
+                                        class="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white">
+                                        URL
+                                    </button>
+                                    <button type="button" onclick="switchEditImageTab('upload')"
+                                        id="edit_upload_tab"
+                                        class="px-4 py-2 text-sm font-medium rounded-md bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+                                        Upload
+                                    </button>
+                                </div>
+
+                                <!-- URL Input Section -->
+                                <div id="edit_url_section">
+                                    <input type="url" id="edit_image_url" name="image_url"
+                                        placeholder="https://example.com/image.jpg" oninput="previewEditImage()"
+                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <p class="mt-1 text-xs text-gray-500">Enter a direct link to an image</p>
+                                </div>
+
+                                <!-- Upload Input Section -->
+                                <div id="edit_upload_section" class="hidden">
+                                    <input type="file" id="edit_image_file" name="image_file" accept="image/*"
+                                        onchange="previewEditUpload()"
+                                        class="block w-full text-sm text-gray-500 dark:text-gray-400
+                                            file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0
+                                            file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700
+                                            hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-300">
+                                    <p class="mt-1 text-xs text-gray-500">Upload an image file (JPG, PNG, GIF, etc.)
+                                    </p>
+                                </div>
+
+                                <!-- Image Preview -->
+                                <div id="edit_image_preview" class="mt-2 hidden">
+                                    <img id="edit_preview_img" src="" alt="Preview"
+                                        class="w-32 h-32 object-cover rounded-lg border border-gray-300 dark:border-gray-600"
+                                        onerror="this.parentElement.classList.add('hidden')">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1541,7 +1793,7 @@
     <div id="stockAdjustmentModal"
         class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
         <div
-            class="relative top-10 mx-auto p-5 border w-11/12 max-w-7xl shadow-lg rounded-md bg-white dark:bg-gray-800 mb-10">
+            class="relative top-10 mx-auto p-5 border w-11/12 max-w-full shadow-lg rounded-md bg-white dark:bg-gray-800 mb-10">
             <div class="mt-3">
                 <div class="flex items-center justify-between pb-3 border-b dark:border-gray-700">
                     <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Stock Adjustment</h3>
@@ -1709,7 +1961,7 @@
     <div id="viewProductModal"
         class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto max-h-full max-w-full z-50">
         <div
-            class="relative top-10 mx-auto p-5 border w-11/12 max-w-7xl shadow-lg rounded-md bg-white dark:bg-gray-800 mb-10">
+            class="relative top-10 mx-auto p-5 border w-11/12 max-w-full shadow-lg rounded-md bg-white dark:bg-gray-800 mb-10">
             <div class="mt-3">
                 <div class="flex items-center justify-between pb-3 border-b dark:border-gray-700">
                     <h3 class="text-xl font-semibold text-gray-900 dark:text-white" id="view_product_name">Product
@@ -1724,89 +1976,96 @@
                 </div>
 
                 <div class="mt-4 max-h-[60vh] overflow-y-auto pr-2">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
-                        <!-- Left: Product Details -->
-                        <div class="lg:col-span-1 space-y-2">
+                    <div class="grid grid-cols-1 gap-2">
+                        <!-- Left: Product Image and Details -->
+                        <div class="lg:col-span-2 space-y-2">
+                            <!-- Product Image -->
+                            {{-- <div id="view_image_container" class="flex justify-center" style="display:none;">
+                                <img id="view_product_image" src="" alt="Product Image"
+                                    class="max-w-full h-auto max-h-64 rounded-lg border border-gray-300 dark:border-gray-600 object-cover"
+                                    onerror="this.parentElement.style.display='none'">
+                            </div> --}}
 
-                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
-                                <div id="view_stock_name_container" style="display:none;">
+                            <div class="grid grid-cols-3 gap-2">
+                                <div id="view_stock_name_container" style="display:none;" class="min-w-0">
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
                                         Name</label>
-                                    <p class="text-lg text-gray-900 dark:text-white" id="view_stock_name"></p>
+                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden" id="view_stock_name"></p>
                                 </div>
-                                <div>
+                                <div class="min-w-0">
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Product
                                         Name</label>
-                                    <p class="text-lg text-gray-900 dark:text-white" id="view_product_name_detail">
+                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden"
+                                        id="view_product_name_detail">
                                     </p>
                                 </div>
-                                <div>
+                                <div class="min-w-0">
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">SKU</label>
-                                    <p class="text-lg text-gray-900 dark:text-white" id="view_sku"></p>
+                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden" id="view_sku"></p>
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-3 gap-2">
-                                <div>
+                                <div class="min-w-0">
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">Brand</label>
-                                    <p class="text-lg text-gray-900 dark:text-white" id="view_brand"></p>
+                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden" id="view_brand"></p>
                                 </div>
-                                <div id="view_size_container" style="display:none;">
+                                <div id="view_size_container" style="display:none;" class="min-w-0">
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">Size</label>
-                                    <p class="text-lg text-gray-900 dark:text-white" id="view_size"></p>
+                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden" id="view_size"></p>
                                 </div>
-                                <div id="view_color_container" style="display:none;">
+                                <div id="view_color_container" style="display:none;" class="min-w-0">
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">Color</label>
-                                    <p class="text-lg text-gray-900 dark:text-white" id="view_color"></p>
+                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden" id="view_color"></p>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
-                                <div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="min-w-0">
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">Category</label>
-                                    <p class="text-lg text-gray-900 dark:text-white" id="view_category"></p>
+                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden" id="view_category"></p>
                                 </div>
-                                <div id="view_preferred_supplier_container" style="display:none;">
+                                <div id="view_preferred_supplier_container" style="display:none;" class="min-w-0">
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Preferred
                                         Supplier</label>
-                                    <p class="text-lg text-gray-900 dark:text-white" id="view_preferred_supplier"></p>
+                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden" id="view_preferred_supplier"></p>
                                 </div>
-                                <div>
+                                <div class="min-w-0">
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">Quantity</label>
-                                    <p class="text-lg font-semibold text-gray-900 dark:text-white" id="view_quantity">
+                                    <p class="text-lg font-semibold text-gray-900 dark:text-white break-words overflow-hidden" id="view_quantity">
                                     </p>
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-3 gap-2">
-                                <div>
+                                <div class="min-w-0">
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Base
                                         Price</label>
-                                    <p class="text-lg font-semibold text-green-600 dark:text-green-400"
+                                    <p class="text-lg font-semibold text-green-600 dark:text-green-400 break-words overflow-hidden"
                                         id="view_price"></p>
                                 </div>
-                                <div>
+                                <div class="min-w-0">
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Total
                                         Cost</label>
-                                    <p class="text-lg font-semibold text-blue-600 dark:text-blue-400"
+                                    <p class="text-lg font-semibold text-blue-600 dark:text-blue-400 break-words overflow-hidden"
                                         id="view_total_cost">₱0.00</p>
                                 </div>
 
-                                <div>
+                                <div class="min-w-0">
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Inventory
                                         Value</label>
-                                    <p class="text-lg font-semibold text-gray-900 dark:text-white"
+                                    <p class="text-lg font-semibold text-gray-900 dark:text-white break-words overflow-hidden"
                                         id="view_inventory_value"></p>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-2">
+                            <div class="grid grid-cols-3 gap-2">
                                 <div id="view_markup_container" style="display:none;">
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">Markup</label>
@@ -1822,51 +2081,59 @@
                         </div>
 
                         <!-- Right: Supplier & Product Info -->
-                        <div class="lg:col-span-1 space-y-2">
-                            <!-- Supplier Information -->
-                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                                <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Supplier Information
-                                </h4>
-                                <div class="space-y-3">
-                                    <div id="view_last_supplier_container" style="display:none;">
-                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400">Last
-                                            Supplier</label>
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white"
-                                            id="view_last_supplier"></p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400" id="view_last_received">
-                                        </p>
-                                    </div>
-                                    <div id="view_last_purchase_price_container" style="display:none;">
-                                        <label class="block text-xs font-medium text-gray-500 dark:text-gray-400">Last
-                                            Purchase Price</label>
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white"
-                                            id="view_last_purchase_price"></p>
-                                        <p class="text-xs text-green-600" id="view_price_margin"
-                                            style="display:none;"></p>
-                                    </div>
-                                    <div id="view_no_supplier" class="text-sm text-gray-500 dark:text-gray-400">No
-                                        supplier information available</div>
-                                </div>
-                            </div>
+                        <div class="lg:col-span-5 space-y-2">
 
-                            <!-- Product Info -->
-                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                                <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Product Info</h4>
-                                <div class="space-y-3">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-xs text-gray-500 dark:text-gray-400">Product ID</span>
-                                        <span class="text-sm font-medium text-gray-900 dark:text-white"
-                                            id="view_product_id"></span>
+                            <div class="grid grid-cols-2 gap-2">
+                                <!-- Supplier Information -->
+                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                                    <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Supplier
+                                        Information
+                                    </h4>
+                                    <div class="space-y-3">
+                                        <div id="view_last_supplier_container" style="display:none;">
+                                            <label
+                                                class="block text-xs font-medium text-gray-500 dark:text-gray-400">Last
+                                                Supplier</label>
+                                            <p class="text-sm font-medium text-gray-900 dark:text-white"
+                                                id="view_last_supplier"></p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-3"
+                                                id="view_last_received">
+                                            </p>
+                                        </div>
+                                        <div id="view_last_purchase_price_container" style="display:none;">
+                                            <label
+                                                class="block text-xs font-medium text-gray-500 dark:text-gray-400">Last
+                                                Purchase Price</label>
+                                            <p class="text-sm font-medium text-gray-900 dark:text-white"
+                                                id="view_last_purchase_price"></p>
+                                            <p class="text-xs text-green-600" id="view_price_margin"
+                                                style="display:none;"></p>
+                                        </div>
+                                        <div id="view_no_supplier" class="text-sm text-gray-500 dark:text-gray-400">No
+                                            supplier information available</div>
                                     </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-xs text-gray-500 dark:text-gray-400">Created</span>
-                                        <span class="text-sm font-medium text-gray-900 dark:text-white"
-                                            id="view_created_at"></span>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-xs text-gray-500 dark:text-gray-400">Last Updated</span>
-                                        <span class="text-sm font-medium text-gray-900 dark:text-white"
-                                            id="view_updated_at"></span>
+                                </div>
+
+                                <!-- Product Info -->
+                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                                    <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Product Info
+                                    </h4>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">Product ID</span>
+                                            <span class="text-sm font-medium text-gray-900 dark:text-white"
+                                                id="view_product_id"></span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">Created</span>
+                                            <span class="text-sm font-medium text-gray-900 dark:text-white"
+                                                id="view_created_at"></span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">Last Updated</span>
+                                            <span class="text-sm font-medium text-gray-900 dark:text-white"
+                                                id="view_updated_at"></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -217,8 +217,12 @@
                                 </label>
                                 <select id="pricing_method" name="pricing_method" required
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('pricing_method') border-red-500 @enderror">
-                                    <option value="manual" {{ old('pricing_method', $product->pricing_method ?? 'manual') == 'manual' ? 'selected' : '' }}>Manual Price</option>
-                                    <option value="markup" {{ old('pricing_method', $product->pricing_method) == 'markup' ? 'selected' : '' }}>Markup Price</option>
+                                    <option value="manual"
+                                        {{ old('pricing_method', $product->pricing_method ?? 'manual') == 'manual' ? 'selected' : '' }}>
+                                        Manual Price</option>
+                                    <option value="markup"
+                                        {{ old('pricing_method', $product->pricing_method) == 'markup' ? 'selected' : '' }}>
+                                        Markup Price</option>
                                 </select>
                                 <p class="mt-1 text-xs text-gray-500">
                                     Manual: Fixed price | Markup: Applied from markup configuration
@@ -229,7 +233,8 @@
                             </div>
 
                             <!-- Markup Price (only shown when markup is selected) -->
-                            <div id="markup_price_field" style="display: {{ old('pricing_method', $product->pricing_method) == 'markup' ? 'block' : 'none' }};">
+                            <div id="markup_price_field"
+                                style="display: {{ old('pricing_method', $product->pricing_method) == 'markup' ? 'block' : 'none' }};">
                                 <label for="markup_price_id"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Markup Price Configuration<span class="text-red-500">*</span>
@@ -238,7 +243,8 @@
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('markup_price_id') border-red-500 @enderror">
                                     <option value="">Select markup configuration...</option>
                                     @foreach ($markupPrices as $markup)
-                                        <option value="{{ $markup->id }}" {{ old('markup_price_id', $product->markup_price_id) == $markup->id ? 'selected' : '' }}>
+                                        <option value="{{ $markup->id }}"
+                                            {{ old('markup_price_id', $product->markup_price_id) == $markup->id ? 'selected' : '' }}>
                                             {{ $markup->name }} ({{ $markup->markup_percentage }}%)
                                         </option>
                                     @endforeach
@@ -252,7 +258,7 @@
                             </div>
 
 
-                                                        <!-- Price -->
+                            <!-- Price -->
                             <div>
                                 <label for="price"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -308,7 +314,8 @@
                                     <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Current
                                         Image</label>
                                     <div class="mt-1">
-                                        <img src="{{ $product->image_url }}" alt="{{ $product->product_name }}"
+                                        <img src="{{ $product->image_url }}?v={{ $product->updated_at->timestamp }}"
+                                            alt="{{ $product->product_name }}"
                                             class="w-48 h-auto object-cover rounded-lg border">
                                     </div>
                                 </div>
@@ -358,10 +365,10 @@
                                                     stroke-linejoin="round" />
                                             </svg>
                                             <div class="flex text-sm text-gray-600">
-                                                <label for="image"
+                                                <label for="image_file"
                                                     class="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
                                                     <span>{{ $product->image ? 'Replace image' : 'Upload a file' }}</span>
-                                                    <input id="image" name="image" type="file"
+                                                    <input id="image_file" name="image_file" type="file"
                                                         class="sr-only" accept="image/*"
                                                         onchange="previewImage(this)">
                                                 </label>
@@ -392,7 +399,7 @@
                                     </div>
                                 </div>
 
-                                @error('image')
+                                @error('image_file')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                                 @error('image_url')
@@ -512,7 +519,7 @@
             const imageSource = document.querySelector('input[name="image_source"]:checked').value;
             const fileUploadSection = document.getElementById('fileUploadSection');
             const urlInputSection = document.getElementById('urlInputSection');
-            const imageInput = document.getElementById('image');
+            const imageInput = document.getElementById('image_file');
             const imageUrlInput = document.getElementById('image_url');
 
             if (imageSource === 'file') {
@@ -565,14 +572,15 @@
 
             function updatePricingFields() {
                 const method = pricingMethodSelect.value;
-                
+
                 if (method === 'markup') {
                     // Show markup price field, hide/optional manual price
                     markupPriceField.style.display = 'block';
                     markupPriceSelect.setAttribute('required', 'required');
                     priceInput.removeAttribute('required');
                     priceRequired.style.display = 'none';
-                    priceHelper.textContent = 'Optional base/reference price (selling price will be calculated from markup)';
+                    priceHelper.textContent =
+                        'Optional base/reference price (selling price will be calculated from markup)';
                 } else {
                     // Manual: hide markup field, require price
                     markupPriceField.style.display = 'none';

@@ -30,28 +30,6 @@
             @endif
 
             <!-- Header Section -->
-            {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
-                <div class="p-6">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Create Sales</h2>
-                            <p class="text-gray-600 dark:text-gray-400">Quick in-store purchase</p>
-                        </div>
-                        <div class="flex space-x-3 mt-4 sm:mt-0">
-                            <a href="{{ route('pos.index') }}"
-                                class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 transition">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-                                    </path>
-                                </svg>
-                                Sales List
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
-
             <form method="POST" action="{{ route('pos.store') }}" id="posForm" enctype="multipart/form-data"
                 @submit="updateDateTime()">
                 @csrf
@@ -128,18 +106,33 @@
                                     class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-2 max-h-screen overflow-y-auto">
                                     <template x-for="product in filteredProducts" :key="product.id">
                                         <div @click="addToCart(product.id, product.name, product.price, product.stock)"
-                                            class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all"
+                                            class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden cursor-pointer hover:shadow-lg hover:border-blue-500 transition-all relative"
                                             :class="{ 'opacity-60 cursor-not-allowed': !product.price || product.price === 0 }">
 
                                             <!-- No Price Warning Badge -->
-                                            <template x-if="!product.price || product.price === 0">
+                                            {{-- <template x-if="!product.price || product.price === 0">
                                                 <div class="absolute top-2 left-2 z-10">
                                                     <span
                                                         class="inline-flex items-center px-2 py-1 text-xs font-bold rounded bg-red-600 text-white">
                                                         No Price
                                                     </span>
                                                 </div>
-                                            </template>
+                                            </template> --}}
+
+                                            <!-- Product Image -->
+                                            <div class="w-full h-32 bg-gray-100 dark:bg-gray-600 flex items-center justify-center overflow-hidden">
+                                                <template x-if="product.image_url">
+                                                    <img :src="product.image_url" :alt="product.name"
+                                                        class="w-full h-full object-cover"
+                                                        onerror="this.parentElement.innerHTML='<svg class=\'w-12 h-12 text-gray-400\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z\'></path></svg>'">
+                                                </template>
+                                                <template x-if="!product.image_url">
+                                                    <svg class="w-auto h-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                    </svg>
+                                                </template>
+                                            </div>
 
                                             <!-- Product Information -->
                                             <div class="p-2 space-y-1">

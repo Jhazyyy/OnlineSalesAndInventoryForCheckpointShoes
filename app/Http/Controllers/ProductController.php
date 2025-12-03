@@ -144,6 +144,8 @@ class ProductController extends Controller
             'pricing_method' => 'required|in:manual,costing,markup',
             'markup_price_id' => 'nullable|required_if:pricing_method,markup|exists:markup_prices,id',
             'description' => 'nullable|string|max:1000',
+            'image_url' => 'nullable|url|max:500',
+            'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             // Allow either product_brand OR custom_brand to be filled
             'product_brand' => 'nullable|string|max:255',
             'custom_brand' => 'nullable|string|max:255',
@@ -216,6 +218,16 @@ class ProductController extends Controller
 
         // Assign category name
         $data['product_category'] = $category->name;
+
+        // Handle image upload or URL
+        if ($request->hasFile('image_file')) {
+            // Store uploaded file
+            $imagePath = $request->file('image_file')->store('products', 'public');
+            $data['image'] = $imagePath;
+        } elseif ($request->filled('image_url')) {
+            // Use provided URL
+            $data['image'] = $request->image_url;
+        }
 
         // Auto-generate SKU if not provided
         if (empty($data['sku'])) {
@@ -336,6 +348,8 @@ class ProductController extends Controller
             'pricing_method' => 'required|in:manual,markup',
             'markup_price_id' => 'nullable|required_if:pricing_method,markup|exists:markup_prices,id',
             'description' => 'nullable|string|max:1000',
+            'image_url' => 'nullable|url|max:500',
+            'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'product_brand' => 'nullable|string|max:255',
             'custom_brand' => 'nullable|string|max:255',
         ]);
@@ -408,6 +422,25 @@ class ProductController extends Controller
         // Assign the category name
         $data['product_category'] = $category->name;
 
+        // Handle image upload
+        if ($request->hasFile('image_file')) {
+            // Delete old image if it exists and is a local file (not a URL)
+            if ($product->image && !filter_var($product->image, FILTER_VALIDATE_URL) && Storage::disk('public')->exists($product->image)) {
+                Storage::disk('public')->delete($product->image);
+            }
+
+            // Store new image
+            $imagePath = $request->file('image_file')->store('products', 'public');
+            $data['image'] = $imagePath;
+        } elseif ($request->filled('image_url')) {
+            // Delete old local image if replacing with URL
+            if ($product->image && !filter_var($product->image, FILTER_VALIDATE_URL) && Storage::disk('public')->exists($product->image)) {
+                Storage::disk('public')->delete($product->image);
+            }
+            // If URL is provided, use it
+            $data['image'] = $request->image_url;
+        }
+
         // Capture old values before update
         $oldValues = [
             'product_name' => $product->product_name,
@@ -470,8 +503,8 @@ class ProductController extends Controller
             'quantity' => $product->quantity,
         ];
 
-        // Delete associated image
-        if ($product->image && Storage::disk('public')->exists($product->image)) {
+        // Delete associated image (only if it's a local file, not a URL)
+        if ($product->image && !filter_var($product->image, FILTER_VALIDATE_URL) && Storage::disk('public')->exists($product->image)) {
             Storage::disk('public')->delete($product->image);
         }
 
