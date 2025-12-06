@@ -517,22 +517,17 @@ class ShipmentService
             foreach ($shipment->items as $item) {
                 $product = $item->product;
                 if ($product && $product->quantity >= $item->quantity_shipped) {
-                    $quantityBefore = $product->quantity;
-                    $product->quantity = max(0, $product->quantity - $item->quantity_shipped);
-                    $product->save();
-                    
-                    // Record stock movement using the proper method
-                    \App\Models\StockMovement::recordMovement(
+                    // Use InventoryService to adjust inventory and record stock movement properly
+                    \App\Services\InventoryService::adjust(
                         productId: $product->product_id,
-                        quantityBefore: $quantityBefore, // Use the variable we just captured
-                        quantityChange: -$item->quantity_shipped, // Negative because it's outbound
-                        quantityAfter: $product->quantity,
+                        quantityChange: -$item->quantity_shipped,
+                        unitCost: null,
                         movementType: \App\Models\StockMovement::TYPE_SALE,
-                        userId: auth()->id(),
                         referenceType: 'shipment',
                         referenceId: $shipment->shipment_id,
-                        notes: "Shipped in shipment {$shipment->shipment_number}",
-                        movementDate: Carbon::now()
+                        propertyId: null,
+                        location: null,
+                        syncProductQuantity: true
                     );
                 }
             }

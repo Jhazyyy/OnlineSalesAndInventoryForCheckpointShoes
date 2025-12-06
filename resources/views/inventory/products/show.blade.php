@@ -139,8 +139,7 @@
                                         </div>
                                         <div>
                                             <label
-                                                class="block text-sm font-medium text-gray-500 dark:text-gray-400">Base
-                                                Price</label>
+                                                class="block text-sm font-medium text-gray-500 dark:text-gray-400">Price</label>
                                             <p class="text-lg font-semibold text-green-600 dark:text-green-400">
                                                 ₱{{ number_format($product->price, 2) }}</p>
                                         </div>

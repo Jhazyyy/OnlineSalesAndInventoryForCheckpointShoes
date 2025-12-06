@@ -320,31 +320,18 @@ class PurchaseReturnService
         $product = $item->product;
         $quantityToReduce = $item->quantity;
 
-        // Reduce inventory (outbound movement)
-        $previousQuantity = $product->quantity;
-        $product->quantity = max(0, $product->quantity - $quantityToReduce);
-        $product->save();
-
-        // Create stock movement record
-        if (class_exists('App\Models\StockMovement')) {
-            $movementNotes = "Purchase return to {$return->supplier->supplier_name} - Return #{$return->return_number}";
-            if ($return->reason) {
-                $movementNotes .= " (Reason: {$return->reason})";
-            }
-
-            \App\Models\StockMovement::recordMovement(
-                productId: $product->product_id,
-                quantityBefore: $previousQuantity,
-                quantityChange: -$quantityToReduce, // Negative because it's outbound
-                quantityAfter: $product->quantity,
-                movementType: \App\Models\StockMovement::TYPE_RETURN_OUT,
-                userId: auth()->id(),
-                referenceType: 'purchase_return',
-                referenceId: $return->purchase_return_id,
-                notes: $movementNotes,
-                movementDate: Carbon::now()
-            );
-        }
+        // Reduce inventory using InventoryService to ensure proper sync
+        \App\Services\InventoryService::adjust(
+            productId: $product->product_id,
+            quantityChange: -$quantityToReduce,
+            unitCost: null,
+            movementType: \App\Models\StockMovement::TYPE_RETURN,
+            referenceType: 'purchase_return',
+            referenceId: $return->purchase_return_id,
+            propertyId: null,
+            location: null,
+            syncProductQuantity: true
+        );
     }
 
     /**
@@ -355,26 +342,18 @@ class PurchaseReturnService
         $product = $item->product;
         $quantityToRestore = $item->quantity;
 
-        // Restore inventory
-        $previousQuantity = $product->quantity;
-        $product->quantity = $product->quantity + $quantityToRestore;
-        $product->save();
-
-        // Create reverse stock movement record
-        if (class_exists('App\Models\StockMovement')) {
-            \App\Models\StockMovement::recordMovement(
-                productId: $product->product_id,
-                quantityBefore: $previousQuantity,
-                quantityChange: $quantityToRestore, // Positive because we're restoring
-                quantityAfter: $product->quantity,
-                movementType: \App\Models\StockMovement::TYPE_ADJUSTMENT_IN,
-                userId: auth()->id(),
-                referenceType: 'purchase_return_reversal',
-                referenceId: null,
-                notes: "Inventory restoration due to purchase return reversal",
-                movementDate: Carbon::now()
-            );
-        }
+        // Restore inventory using InventoryService to ensure proper sync
+        \App\Services\InventoryService::adjust(
+            productId: $product->product_id,
+            quantityChange: $quantityToRestore,
+            unitCost: null,
+            movementType: \App\Models\StockMovement::TYPE_ADJUSTMENT,
+            referenceType: 'purchase_return_reversal',
+            referenceId: null,
+            propertyId: null,
+            location: null,
+            syncProductQuantity: true
+        );
     }
 
     /**

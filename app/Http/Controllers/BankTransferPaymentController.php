@@ -249,15 +249,24 @@ class BankTransferPaymentController extends Controller
                             ->with('error', "Insufficient stock for product: {$product->product_name}. Available: {$product->quantity}, Required: {$item->quantity_ordered}");
                     }
 
-                    // Deduct inventory
-                    $product->quantity -= $item->quantity_ordered;
-                    $product->save();
+                    // Deduct inventory using InventoryService to ensure proper sync
+                    \App\Services\InventoryService::adjust(
+                        productId: $product->product_id,
+                        quantityChange: -$item->quantity_ordered,
+                        unitCost: null,
+                        movementType: \App\Models\StockMovement::TYPE_SALE,
+                        referenceType: 'bank_transfer_payment',
+                        referenceId: $order->order_id,
+                        propertyId: null,
+                        location: null,
+                        syncProductQuantity: true
+                    );
 
                     Log::info('Inventory Deducted', [
                         'product_id' => $product->product_id,
                         'product_name' => $product->product_name,
                         'quantity_deducted' => $item->quantity_ordered,
-                        'remaining_stock' => $product->quantity,
+                        'remaining_stock' => $product->fresh()->quantity,
                     ]);
                 }
             }

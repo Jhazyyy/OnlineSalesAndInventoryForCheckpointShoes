@@ -1169,7 +1169,6 @@
             const markupPriceSelect = document.getElementById('edit_markup_price_id');
             const priceInput = document.getElementById('edit_price');
             const priceRequired = document.getElementById('edit_price_required');
-            const priceHelper = document.getElementById('edit_price_helper');
 
             const method = pricingMethodSelect.value;
 
@@ -1178,13 +1177,12 @@
                 markupPriceSelect.setAttribute('required', 'required');
                 priceInput.removeAttribute('required');
                 priceRequired.style.display = 'none';
-                priceHelper.textContent = 'Optional (calculated from markup)';
+        
             } else {
                 markupPriceField.style.display = 'none';
                 markupPriceSelect.removeAttribute('required');
                 priceInput.setAttribute('required', 'required');
                 priceRequired.style.display = 'inline';
-                priceHelper.textContent = 'Base price for the product';
             }
         }
 
@@ -1717,8 +1715,6 @@
                                         min="0" required
                                         class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 </div>
-                                <p class="mt-1 text-xs text-gray-500" id="edit_price_helper">Base price for the
-                                    product</p>
                             </div>
 
                             <!-- Cost (Read-only display) -->
@@ -2066,8 +2062,7 @@
 
                             <div class="grid grid-cols-3 gap-2">
                                 <div class="min-w-0">
-                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Base
-                                        Price</label>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Price</label>
                                     <p class="text-lg font-semibold text-green-600 dark:text-green-400 break-words overflow-hidden"
                                         id="view_price"></p>
                                 </div>

@@ -721,27 +721,28 @@ class SalesOrderService
             throw new \Exception('Insufficient stock for some items in this order.');
         }
 
-        // Reduce inventory
+        // Reduce inventory using InventoryService to ensure proper sync
         foreach ($order->items as $item) {
             $product = $item->product;
-            $product->quantity -= $item->quantity;
-            $product->save();
 
-            // Create stock movement record using the proper method
-            if (class_exists('App\Models\StockMovement')) {
-                \App\Models\StockMovement::recordMovement(
-                    productId: $product->product_id,
-                    quantityBefore: $product->quantity + $item->quantity, // Before we reduced it
-                    quantityChange: -$item->quantity, // Negative because it's outbound
-                    quantityAfter: $product->quantity,
-                    movementType: \App\Models\StockMovement::TYPE_SALE,
-                    userId: auth()->id(),
-                    referenceType: 'sales_order',
-                    referenceId: $order->order_id,
-                    notes: "Order fulfillment for order {$order->order_number}",
-                    movementDate: Carbon::now()
-                );
-            }
+            // Use InventoryService to adjust inventory and record stock movement properly
+            InventoryService::adjust(
+                productId: $product->product_id,
+                quantityChange: -$item->quantity,
+                unitCost: null,
+                movementType: \App\Models\StockMovement::TYPE_SALE,
+                referenceType: 'sales_order',
+                referenceId: $order->order_id,
+                propertyId: null,
+                location: null,
+                syncProductQuantity: true
+            );
+
+            Log::info('Inventory adjusted for order fulfillment', [
+                'product_id' => $product->product_id,
+                'quantity' => $item->quantity,
+                'order_id' => $order->order_id
+            ]);
         }
 
         // Update order status

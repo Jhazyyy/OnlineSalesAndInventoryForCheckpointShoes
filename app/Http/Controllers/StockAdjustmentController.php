@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\StockMovement;
 use App\Models\AuditLog;
+use App\Services\InventoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -46,27 +47,24 @@ class StockAdjustmentController extends Controller
                 return redirect()->back()->with('warning', "Adjustment would result in negative stock. Current stock: {$product->quantity}, Requested decrease: {$quantity}");
             }
 
-            // Update product quantity
+            // Store old quantity for logging
             $oldQuantity = $product->quantity;
-            $product->quantity += $quantityChange;
-            $product->save();
 
-            // Create stock movement record
-            StockMovement::create([
-                'product_id' => $product->product_id,
-                'movement_type' => $movementType,
-                'quantity_change' => $quantityChange,
-                'quantity_before' => $oldQuantity,
-                'quantity_after' => $product->quantity,
-                'unit_price' => $product->unit_price,
-                'total_value' => $product->unit_price * abs($quantityChange),
-                'reason' => $reason,
-                'notes' => $validated['notes'],
-                'user_id' => Auth::id(),
-                'reference_type' => 'manual_adjustment',
-                'reference_id' => null,
-                'status' => 'confirmed',
-            ]);
+            // Use InventoryService to adjust inventory and sync product quantity properly
+            InventoryService::adjust(
+                productId: $product->product_id,
+                quantityChange: $quantityChange,
+                unitCost: null,
+                movementType: $movementType,
+                referenceType: 'manual_adjustment',
+                referenceId: null,
+                propertyId: null,
+                location: null,
+                syncProductQuantity: true
+            );
+
+            // Refresh product to get updated quantity
+            $product->refresh();
 
             DB::commit();
 

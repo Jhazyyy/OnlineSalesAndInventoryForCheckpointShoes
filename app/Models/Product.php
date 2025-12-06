@@ -734,7 +734,7 @@ class Product extends Model
 
     /**
      * Update stock quantity after a sale.
-     * Now uses StockMovement to track changes instead of direct quantity field.
+     * Uses InventoryService to properly update inventory and sync Product.quantity.
      */
     public function decreaseStock(int $quantity): bool
     {
@@ -742,16 +742,18 @@ class Product extends Model
             return false;
         }
 
-        $currentQuantity = $this->quantity;
-        
-        // Create a stock movement record instead of directly modifying quantity
-        StockMovement::recordMovement(
+        // Use InventoryService to adjust inventory and record stock movement
+        // This ensures both Inventory table and Product.quantity stay in sync
+        \App\Services\InventoryService::adjust(
             productId: $this->product_id,
-            quantityBefore: $currentQuantity,
             quantityChange: -$quantity,
-            quantityAfter: $currentQuantity - $quantity,
+            unitCost: null,
             movementType: StockMovement::TYPE_SALE,
-            userId: auth()->id()
+            referenceType: null,
+            referenceId: null,
+            propertyId: null,
+            location: null,
+            syncProductQuantity: true
         );
         
         return true;
@@ -759,20 +761,22 @@ class Product extends Model
 
     /**
      * Update stock quantity after a purchase or return.
-     * Now uses StockMovement to track changes instead of direct quantity field.
+     * Uses InventoryService to properly update inventory and sync Product.quantity.
      */
     public function increaseStock(int $quantity): bool
     {
-        $currentQuantity = $this->quantity;
-        
-        // Create a stock movement record instead of directly modifying quantity
-        StockMovement::recordMovement(
+        // Use InventoryService to adjust inventory and record stock movement
+        // This ensures both Inventory table and Product.quantity stay in sync
+        \App\Services\InventoryService::adjust(
             productId: $this->product_id,
-            quantityBefore: $currentQuantity,
             quantityChange: $quantity,
-            quantityAfter: $currentQuantity + $quantity,
+            unitCost: null,
             movementType: StockMovement::TYPE_PURCHASE,
-            userId: auth()->id()
+            referenceType: null,
+            referenceId: null,
+            propertyId: null,
+            location: null,
+            syncProductQuantity: true
         );
         
         return true;
