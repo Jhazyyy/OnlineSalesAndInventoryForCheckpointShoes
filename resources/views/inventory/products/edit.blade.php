@@ -220,12 +220,18 @@
                                     <option value="manual"
                                         {{ old('pricing_method', $product->pricing_method ?? 'manual') == 'manual' ? 'selected' : '' }}>
                                         Manual Price</option>
+                                    @if($product->total_cost && $product->total_cost > 0)
                                     <option value="markup"
                                         {{ old('pricing_method', $product->pricing_method) == 'markup' ? 'selected' : '' }}>
                                         Markup Price</option>
+                                    @endif
                                 </select>
                                 <p class="mt-1 text-xs text-gray-500">
-                                    Manual: Fixed price | Markup: Applied from markup configuration
+                                    @if($product->total_cost && $product->total_cost > 0)
+                                        Manual: Fixed price | Markup: Applied from markup configuration
+                                    @else
+                                        Manual: Fixed price (Markup pricing available after adding product costing)
+                                    @endif
                                 </p>
                                 @error('pricing_method')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

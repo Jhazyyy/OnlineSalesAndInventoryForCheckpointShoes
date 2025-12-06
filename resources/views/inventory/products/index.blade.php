@@ -295,12 +295,12 @@
                                                                 </div>
                                                         @endif
 
-                                                        @if ($product->description)
+                                                        {{-- @if ($product->description)
                                                             <div
-                                                                class="text-sm text-gray-500 dark:text-gray-400 break-words">
-                                                                {{ $product->description }}ption }}
+                                                                class="text-xs font-mono text-gray-500 dark:text-gray-400 break-words">
+                                                                {{ $product->description }}
                                                             </div>
-                                                        @endif
+                                                        @endif --}}
                                                     </div>
                                                 </div>
                                             </td>
@@ -611,10 +611,9 @@
                                 <select id="modal_pricing_method" name="pricing_method" required
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     <option value="manual" selected>Manual Price</option>
-                                    <option value="markup">Markup Price</option>
                                 </select>
                                 <p class="mt-1 text-xs text-gray-500">
-                                    Manual: Fixed price | Markup: From markup %
+                                    Manual: Fixed price (Markup pricing available after product creation with costing)
                                 </p>
                             </div>
 
@@ -655,14 +654,14 @@
                             </div>
 
                             <!-- Description -->
-                            <div>
+                            {{-- <div>
                                 <label for="modal_description"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Description
                                 </label>
                                 <textarea id="modal_description" name="description" rows="1" placeholder="Enter product description..."
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
-                            </div>
+                            </div> --}}
 
                             <!-- Image Upload/URL -->
                             <div>
@@ -1037,7 +1036,7 @@
                     document.getElementById('edit_color').value = data.product.color || '';
                     document.getElementById('edit_sku').value = data.product.sku || '';
                     document.getElementById('edit_price').value = data.product.price;
-                    document.getElementById('edit_description').value = data.product.description || '';
+                    // document.getElementById('edit_description').value = data.product.description || '';
                     document.getElementById('edit_image_url').value = data.product.image || '';
 
                     // Show image preview if image exists
@@ -1094,7 +1093,29 @@
 
                     // Populate pricing method and markup price
                     const pricingMethodSelect = document.getElementById('edit_pricing_method');
+                    const hasCostingData = data.product.total_cost && data.product.total_cost > 0;
+                    
+                    // Clear and rebuild pricing method options
+                    pricingMethodSelect.innerHTML = '<option value="manual">Manual Price</option>';
+                    
+                    // Only add markup option if product has costing data
+                    if (hasCostingData) {
+                        const markupOption = document.createElement('option');
+                        markupOption.value = 'markup';
+                        markupOption.textContent = 'Markup Price';
+                        pricingMethodSelect.appendChild(markupOption);
+                    }
+                    
+                    // Set the selected value
                     pricingMethodSelect.value = data.product.pricing_method || 'manual';
+                    
+                    // Update help text
+                    const helpText = pricingMethodSelect.parentElement.querySelector('.text-gray-500');
+                    if (helpText) {
+                        helpText.textContent = hasCostingData 
+                            ? 'Manual: Fixed price | Markup: From markup %'
+                            : 'Manual: Fixed price (Markup pricing available after adding product costing)';
+                    }
 
                     const markupPriceSelect = document.getElementById('edit_markup_price_id');
                     if (data.markupPrices) {
@@ -1588,7 +1609,7 @@
                             <div>
                                 <label for="edit_size"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Size <span class="text-gray-400 text-xs">(Optional)</span>
+                                    Size <span class="text-gray-400 text-xs"></span>
                                 </label>
                                 <input type="text" id="edit_size" name="size"
                                     placeholder="e.g., 42, Large, XL"
@@ -1597,7 +1618,7 @@
                             <div>
                                 <label for="edit_color"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Color <span class="text-gray-400 text-xs">(Optional)</span>
+                                    Color <span class="text-gray-400 text-xs"></span>
                                 </label>
                                 <input type="text" id="edit_color" name="color"
                                     placeholder="e.g., Black, Red, Blue"
@@ -1616,7 +1637,7 @@
                             <div>
                                 <label for="edit_preferred_supplier_id"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Preferred Supplier <span class="text-gray-400 text-xs">(Optional)</span>
+                                    Preferred Supplier <span class="text-gray-400 text-xs"></span>
                                 </label>
                                 <select id="edit_preferred_supplier_id" name="preferred_supplier_id"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
@@ -1717,18 +1738,18 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            {{-- <div>
                                 <label for="edit_description"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
                                 <textarea id="edit_description" name="description" rows="1"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
-                            </div>
+                            </div> --}}
 
                             <!-- Image URL -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Product Image <span class="text-gray-400 text-xs">(Optional)</span>
+                                    Product Image <span class="text-gray-400 text-xs"></span>
                                 </label>
 
                                 <!-- Tab Buttons -->
@@ -2066,13 +2087,13 @@
                             </div>
 
                             <div class="grid grid-cols-3 gap-2">
-                                <div id="view_markup_container" style="display:none;">
+                                <div id="view_markup_container" style="display:none;" class="min-w-0">
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">Markup</label>
-                                    <p class="text-lg font-semibold text-gray-600 dark:text-white" id="view_markup">
+                                    <p class="text-lg font-semibold text-gray-600 dark:text-white break-words overflow-hidden" id="view_markup">
                                     </p>
                                 </div>
-                                <div>
+                                <div class="min-w-0">
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
                                         Status</label>
                                     <div id="view_stock_status"></div>

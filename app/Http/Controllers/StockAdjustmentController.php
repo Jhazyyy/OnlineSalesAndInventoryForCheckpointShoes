@@ -143,6 +143,6 @@ class StockAdjustmentController extends Controller
             return view('inventory.stock-adjustments.history-modal', compact('product', 'adjustments'));
         }
 
-        return view('inventory.stock-adjustments.history', compact('product', 'adjustments'));
+        return view('inventory.stock-adjustments.history-modal', compact('product', 'adjustments'));
     }
 }

@@ -619,10 +619,10 @@
                                 @if ($order->canReceiveItems())
                                     <div class="pt-3 border-t">
                                         <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3">Goods
-                                            Receipt</h4>
+                                            Received</h4>
                                         <div class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                                             <p class="text-sm text-blue-800 dark:text-blue-300">
-                                                Receiving of items is done via Goods Receipt. Create a Goods Receipt for
+                                                Receiving of items is done via Goods Received. Create a Goods Received for
                                                 this Purchase Order to record received quantities and update inventory.
                                             </p>
                                         </div>
@@ -633,7 +633,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M12 4v16m8-8H4"></path>
                                             </svg>
-                                            Create Goods Receipt
+                                            Create Goods Received
                                         </a>
                                     </div>
                                 @endif

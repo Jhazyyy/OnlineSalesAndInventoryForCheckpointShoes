@@ -266,7 +266,7 @@
 
     <!-- Audit Detail Modal -->
     <div id="auditDetailModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-        <div class="relative top-10 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white dark:bg-gray-800 mb-10">
+        <div class="relative top-10 mx-auto p-5 border w-11/12 max-w-full shadow-lg rounded-md bg-white dark:bg-gray-800 mb-10">
             <div class="flex justify-between items-center pb-4 border-b dark:border-gray-700">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Audit Log Details</h3>
                 <button onclick="closeAuditDetailModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">

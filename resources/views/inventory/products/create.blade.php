@@ -230,11 +230,10 @@
                                 </label>
                                 <select id="pricing_method" name="pricing_method" required
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('pricing_method') border-red-500 @enderror">
-                                    <option value="manual" {{ old('pricing_method', 'manual') == 'manual' ? 'selected' : '' }}>Manual Price</option>
-                                    <option value="markup" {{ old('pricing_method') == 'markup' ? 'selected' : '' }}>Markup Price</option>
+                                    <option value="manual" selected>Manual Price</option>
                                 </select>
                                 <p class="mt-1 text-xs text-gray-500">
-                                    Manual: Fixed price | Markup: Applied from markup configuration
+                                    Manual: Fixed price (Markup pricing available after product creation with costing)
                                 </p>
                                 @error('pricing_method')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
