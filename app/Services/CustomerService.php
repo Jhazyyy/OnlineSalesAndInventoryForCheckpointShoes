@@ -42,10 +42,10 @@ class CustomerService
         }
 
         // Apply sorting
-        $sortField = $request->get('sort', 'created_at');
+        $sortField = $request->get('sort', 'updated_at');
         $sortOrder = $request->get('order', 'desc');
         
-        if (in_array($sortField, ['first_name', 'last_name', 'email', 'customer_type', 'created_at'])) {
+        if (in_array($sortField, ['first_name', 'last_name', 'email', 'customer_type', 'created_at', 'updated_at'])) {
             $query->orderBy($sortField, $sortOrder);
         }
 

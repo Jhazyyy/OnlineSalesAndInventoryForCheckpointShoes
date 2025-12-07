@@ -32,13 +32,13 @@ class BrandController extends Controller
         }
 
         // Sorting
-        $sortField = $request->get('sort', 'name');
-        $sortDirection = $request->get('order', 'asc');
+        $sortField = $request->get('sort', 'updated_at');
+        $sortDirection = $request->get('order', 'desc');
         
-        if (in_array($sortField, ['name', 'brand_code', 'created_at'])) {
+        if (in_array($sortField, ['name', 'brand_code', 'created_at', 'updated_at'])) {
             $query->orderBy($sortField, $sortDirection);
         } else {
-            $query->orderBy('name', 'asc');
+            $query->orderBy('updated_at', 'desc');
         }
 
         $brands = $query->paginate(10)->withQueryString();

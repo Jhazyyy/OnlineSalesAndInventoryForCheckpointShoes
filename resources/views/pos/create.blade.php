@@ -216,7 +216,7 @@
                                     <div x-show="showNewCustomerForm" class="space-y-3">
                                         <div>
                                             <input type="text" name="new_customer_first_name"
-                                                x-model="newCustomer.first_name" placeholder="First Name *"
+                                                x-model="newCustomer.first_name" placeholder="First Name"
                                                 :required="showNewCustomerForm"
                                                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
                                         </div>

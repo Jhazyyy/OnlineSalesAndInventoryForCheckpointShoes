@@ -42,10 +42,10 @@ class SupplierService
         }
 
         // Apply sorting
-        $sortField = $request->get('sort', 'created_at');
+        $sortField = $request->get('sort', 'updated_at');
         $sortOrder = $request->get('order', 'desc');
         
-        if (in_array($sortField, ['supplier_name', 'email', 'supplier_type', 'status', 'created_at'])) {
+        if (in_array($sortField, ['supplier_name', 'email', 'supplier_type', 'status', 'created_at', 'updated_at'])) {
             $query->orderBy($sortField, $sortOrder);
         }
 

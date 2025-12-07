@@ -74,8 +74,8 @@ class ProductController extends Controller
         }
 
         // Sorting
-        $sortBy = $request->get('sort', 'product_name');
-        $sortOrder = $request->get('order', 'asc');
+        $sortBy = $request->get('sort', 'updated_at');
+        $sortOrder = $request->get('order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
         $products = $query->with('lastSupplier')->paginate(10)->withQueryString();
@@ -136,8 +136,6 @@ class ProductController extends Controller
             'size' => 'nullable|string|max:50',
             'color' => 'nullable|string|max:50',
             'preferred_supplier_id' => 'nullable|exists:suppliers,supplier_id',
-            'property_name' => 'nullable|string|max:255',
-            'property_value' => 'nullable|string|max:255',
             'product_category' => 'nullable|string|max:255',
             'custom_category' => 'nullable|string|max:255',
             'price' => 'nullable|numeric|min:0',
@@ -231,11 +229,10 @@ class ProductController extends Controller
 
         // Auto-generate SKU if not provided
         if (empty($data['sku'])) {
-            // Generate SKU based on brand and product name
-            $stockNamePrefix = strtoupper(substr(str_replace([' ', '-'], '', $stockName->name), 0, 3));
-            $namePrefix = strtoupper(substr(str_replace([' ', '-'], '', $request->product_name), 0, 3));
+            $stockNamePrefix = strtoupper(substr(str_replace([' ', '-'], '', $stockName->name), 0, 5));
+            $namePrefix = strtoupper(substr(str_replace([' ', '-'], '', $request->product_name), 0, 5));
             
-            $randomSuffix = strtoupper(substr(md5(uniqid()), 0, length: 6));
+            $randomSuffix = strtoupper(substr(md5(uniqid()), 0, 5));
             $data['sku'] = "{$stockNamePrefix}-{$namePrefix}-{$randomSuffix}";
 
             // Ensure uniqueness
@@ -339,8 +336,6 @@ class ProductController extends Controller
             'size' => 'nullable|string|max:50',
             'color' => 'nullable|string|max:50',
             'preferred_supplier_id' => 'nullable|exists:suppliers,supplier_id',
-            'property_name' => 'nullable|string|max:255',
-            'property_value' => 'nullable|string|max:255',
             'product_category' => 'nullable|string|max:255',
             'custom_category' => 'nullable|string|max:255',
             'quantity' => 'nullable|integer|min:0',

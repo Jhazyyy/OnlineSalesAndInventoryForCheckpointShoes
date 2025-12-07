@@ -476,7 +476,7 @@
                             <div>
                                 <label for="modal_stock_name"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Stock Name
+                                    Stock Name <span class="text-red-500">*</span>
                                 </label>
                                 <div class="mt-1 flex">
                                     <select id="modal_stock_name" name="stock_name"
@@ -532,7 +532,7 @@
                             <div>
                                 <label for="modal_sku"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    SKU <span class="text-gray-400 text-xs">(Auto-generated if empty)</span>
+                                    SKU <span class="text-gray-400 text-xs">(Auto-Generated)</span>
                                 </label>
                                 <input type="text" id="modal_sku" name="sku" placeholder="e.g., SHOE-001"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
@@ -1582,8 +1582,8 @@
                                     Stock Name<span class="text-gray-400 text-xs"></span>
                                 </label>
                                 <div class="mt-1 flex">
-                                    <select id="edit_stock_name" name="stock_name"
-                                        class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <select id="edit_stock_name" name="stock_name" disabled
+                                        class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white bg-gray-100 dark:bg-gray-600 cursor-not-allowed">
                                         <option value="">Select a stock name</option>
                                     </select>
                                 </div>
@@ -1626,8 +1626,8 @@
                             <div>
                                 <label for="edit_sku"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">SKU</label>
-                                <input type="text" id="edit_sku" name="sku"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <input type="text" id="edit_sku" name="sku" readonly
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white bg-gray-100 dark:bg-gray-600 cursor-not-allowed">
                             </div>
                         </div>
 

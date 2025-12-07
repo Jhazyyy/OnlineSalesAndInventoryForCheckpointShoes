@@ -23,8 +23,13 @@ return new class extends Migration {
             $table->string('product_brand')->nullable();
             $table->string('product_category')->nullable();
             $table->integer('quantity')->default(0);
-            $table->decimal('price', 10, 2)->nullable()->comment('base price'); 
-            $table->enum('price_source', ['manual', 'costing'])->default('manual')->comment('Source of selling price: manual or costing');
+            $table->decimal('price', 10, 2)->nullable()->comment('base price');
+            
+            // Pricing method (markup functionality)
+            $table->unsignedBigInteger('markup_price_id')->nullable();
+            $table->enum('pricing_method', ['manual', 'markup'])->default('manual')
+                  ->comment('Pricing method: manual (fixed price) or markup (applied from markup_prices)');
+            
             $table->string('image')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
@@ -60,13 +65,12 @@ return new class extends Migration {
             $table->decimal('total_cost', 10, 2)->nullable()->comment('Total cost per unit (all costs included)');
             $table->decimal('profit_margin', 10, 2)->nullable()->comment('Profit margin percentage');
             $table->decimal('profit_amount', 10, 2)->nullable()->comment('Profit amount per unit (price - total_cost)');
-            $table->string('cost_calculation_method')->default('standard')->comment('Method: standard, average, fifo, lifo');
+            $table->string('cost_calculation_method', 50)->default('weighted_average')->comment('Method: manual, weighted_average (auto from purchases), latest_purchase (last purchase price), standard, fifo, lifo');
             $table->timestamp('last_cost_update')->nullable()->comment('Last time costs were updated');
             $table->text('cost_notes')->nullable()->comment('Notes about costing calculations');
 
             // Indexes for performance
             $table->index('last_supplier_id');
-            $table->index('threshold_alerts_enabled');
             $table->index('movement_category');
             $table->index('last_sale_date');
             

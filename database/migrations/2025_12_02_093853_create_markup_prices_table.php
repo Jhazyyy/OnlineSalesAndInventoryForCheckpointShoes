@@ -19,6 +19,12 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
+
+        if (Schema::hasTable('products') && Schema::hasColumn('products', 'markup_price_id')) {
+            Schema::table('products', function (Blueprint $table) {
+                $table->foreign('markup_price_id')->references('id')->on('markup_prices')->onDelete('set null');
+            });
+        }
     }
 
     /**
@@ -26,6 +32,13 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Drop foreign key first
+        if (Schema::hasTable('products')) {
+            Schema::table('products', function (Blueprint $table) {
+                $table->dropForeign(['markup_price_id']);
+            });
+        }
+        
         Schema::dropIfExists('markup_prices');
     }
 };

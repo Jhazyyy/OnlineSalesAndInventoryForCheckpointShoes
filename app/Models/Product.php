@@ -32,8 +32,6 @@ class Product extends Model
         'barcode',
         'size',
         'color',
-        'property_name',
-        'property_value',
         'product_brand',
         'product_category',
         'preferred_supplier_id',
@@ -169,15 +167,6 @@ class Product extends Model
      */
     protected $casts = [
         'price' => 'decimal:2',
-        'reorder_level' => 'integer',
-        'critical_level' => 'integer',
-        'ceiling_level' => 'integer',
-        'floor_level' => 'integer',
-        'auto_reorder_enabled' => 'boolean',
-        'threshold_alerts_enabled' => 'boolean',
-        'lead_time_days' => 'integer',
-        'economic_order_quantity' => 'integer',
-        'last_threshold_check' => 'datetime',
         'last_received_at' => 'datetime',
         'last_purchase_price' => 'decimal:2',
         // Product Costing casts
