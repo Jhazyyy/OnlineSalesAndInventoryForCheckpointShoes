@@ -318,8 +318,8 @@ class ReportService
      */
     public function generateSalesReport(array $filters = []): array
     {
-        $startDate = isset($filters['start_date']) ? Carbon::parse($filters['start_date']) : now()->subDays(30);
-        $endDate = isset($filters['end_date']) ? Carbon::parse($filters['end_date']) : now();
+        $startDate = isset($filters['start_date']) ? Carbon::parse($filters['start_date'])->startOfDay() : now()->subDays(30)->startOfDay();
+        $endDate = isset($filters['end_date']) ? Carbon::parse($filters['end_date'])->endOfDay() : now()->endOfDay();
         
         // Base query for orders in range
         $query = SalesOrder::whereBetween('order_date', [$startDate, $endDate]);

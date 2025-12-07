@@ -79,10 +79,21 @@ class InventoryService
             $before = (int) $inventory->quantity_on_hand;
             $after = $before + (int) $quantityChange;
 
+            // Calculate weighted average cost when receiving inventory
+            if ($quantityChange > 0 && $unitCost !== null && $unitCost > 0) {
+                // Weighted Average Cost formula: (Old Value + New Value) / Total Quantity
+                $oldValue = $before * (float) ($inventory->unit_cost ?? 0);
+                $newValue = $quantityChange * $unitCost;
+                $totalQuantity = $after;
+                
+                if ($totalQuantity > 0) {
+                    $inventory->unit_cost = (string) round(($oldValue + $newValue) / $totalQuantity, 2);
+                }
+            }
+
             // Persist inventory change with protection against negative values
             $inventory->quantity_on_hand = max(0, $after);
             $inventory->last_movement_at = now();
-            // Optionally unit_cost could be tracked via a costing service; skipping assignment here for compatibility
             $inventory->save();
 
             // Record stock movement using inventory-based before/after

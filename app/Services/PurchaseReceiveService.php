@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PurchaseReceiveService
 {
@@ -415,6 +416,26 @@ class PurchaseReceiveService
                 'last_received_at' => now(),
                 'last_purchase_price' => $unitPrice,
             ]);
+
+            // Automatically update product costs from purchase prices
+            // This ensures Cost of Goods Sold (COGS) reflects actual purchase costs
+            try {
+                $costingService = app(\App\Services\ProductCostingService::class);
+                
+                // If product doesn't have a cost method set, default to weighted_average
+                if (empty($product->cost_calculation_method) || $product->cost_calculation_method === 'manual') {
+                    $product->enableCostingFields();
+                    $product->update(['cost_calculation_method' => 'weighted_average']);
+                }
+                
+                // Always update cost from inventory for purchased products
+                $costingService->updateCostFromInventory($product->fresh());
+            } catch (\Exception $e) {
+                Log::warning('Failed to auto-update product cost', [
+                    'product_id' => $product->product_id,
+                    'error' => $e->getMessage()
+                ]);
+            }
         }
     }
 

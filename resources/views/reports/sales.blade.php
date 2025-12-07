@@ -22,6 +22,26 @@
             <!-- Filter Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
+                    <!-- Quick Filter Buttons -->
+                    <div class="mb-4 flex flex-wrap gap-2">
+                        <a href="{{ route('reports.sales', ['start_date' => now()->format('Y-m-d'), 'end_date' => now()->format('Y-m-d')]) }}"
+                            class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-md transition">
+                            Today
+                        </a>
+                        <a href="{{ route('reports.sales', ['start_date' => now()->startOfWeek()->format('Y-m-d'), 'end_date' => now()->endOfWeek()->format('Y-m-d')]) }}"
+                            class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-md transition">
+                            This Week
+                        </a>
+                        <a href="{{ route('reports.sales', ['start_date' => now()->startOfMonth()->format('Y-m-d'), 'end_date' => now()->endOfMonth()->format('Y-m-d')]) }}"
+                            class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-md transition">
+                            This Month
+                        </a>
+                        <a href="{{ route('reports.sales', ['start_date' => now()->startOfYear()->format('Y-m-d'), 'end_date' => now()->endOfYear()->format('Y-m-d')]) }}"
+                            class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-md transition">
+                            This Year
+                        </a>
+                    </div>
+
                     <form method="GET" action="{{ route('reports.sales') }}" class="space-y-4">
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>

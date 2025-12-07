@@ -102,7 +102,32 @@
                     <div class="p-6">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Cost Components</h3>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                        <!-- Cost Calculation Method -->
+                        <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg">
+                            <label for="cost_calculation_method"
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Cost Calculation Method
+                            </label>
+                            <select name="cost_calculation_method" id="cost_calculation_method"
+                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <option value="manual" {{ old('cost_calculation_method', $product->cost_calculation_method ?? 'manual') == 'manual' ? 'selected' : '' }}>
+                                    Manual Entry - Enter all costs manually
+                                </option>
+                                <option value="weighted_average" {{ old('cost_calculation_method', $product->cost_calculation_method) == 'weighted_average' ? 'selected' : '' }}>
+                                    Weighted Average - Auto-calculate from purchase history
+                                </option>
+                                <option value="latest_purchase" {{ old('cost_calculation_method', $product->cost_calculation_method) == 'latest_purchase' ? 'selected' : '' }}>
+                                    Latest Purchase Price - Use most recent purchase cost
+                                </option>
+                            </select>
+                            <p class="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                                <strong>Manual:</strong> Enter costs manually (for manufactured products).<br>
+                                <strong>Weighted Average:</strong> System calculates average cost from all purchases (recommended for resold products).<br>
+                                <strong>Latest Purchase:</strong> Uses the most recent purchase price as raw material cost.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2" id="cost-inputs">
                             <!-- Raw Material Cost -->
                             <div>
                                 <label for="raw_material_cost"
@@ -112,7 +137,7 @@
                                 <input type="number" name="raw_material_cost" id="raw_material_cost" step="0.01"
                                     min="0" value="{{ old('raw_material_cost', $product->raw_material_cost) }}"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Cost of materials per unit</p>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Cost of materials per unit (auto-calculated if using weighted average)</p>
                             </div>
 
                             <!-- Labor Cost -->
@@ -241,6 +266,26 @@
                     'handling_cost'
                 ];
 
+                const methodSelect = document.getElementById('cost_calculation_method');
+                const rawMaterialInput = document.getElementById('raw_material_cost');
+
+                // Handle cost calculation method changes
+                function handleMethodChange() {
+                    const method = methodSelect.value;
+                    
+                    if (method === 'weighted_average' || method === 'latest_purchase') {
+                        // Disable raw material cost input for automatic methods
+                        rawMaterialInput.disabled = true;
+                        rawMaterialInput.classList.add('bg-gray-200', 'dark:bg-gray-600');
+                        rawMaterialInput.title = 'This field is automatically calculated from purchase history';
+                    } else {
+                        // Enable for manual entry
+                        rawMaterialInput.disabled = false;
+                        rawMaterialInput.classList.remove('bg-gray-200', 'dark:bg-gray-600');
+                        rawMaterialInput.title = '';
+                    }
+                }
+
                 function calculateCosts() {
                     const rawMaterial = parseFloat(document.getElementById('raw_material_cost').value) || 0;
                     const labor = parseFloat(document.getElementById('labor_cost').value) || 0;
@@ -257,6 +302,8 @@
                 }
 
                 // Add event listeners
+                methodSelect.addEventListener('change', handleMethodChange);
+                
                 inputs.forEach(inputId => {
                     const element = document.getElementById(inputId);
                     if (element) {
@@ -264,7 +311,8 @@
                     }
                 });
 
-                // Initial calculation
+                // Initial setup
+                handleMethodChange();
                 calculateCosts();
             });
         </script>

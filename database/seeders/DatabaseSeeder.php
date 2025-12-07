@@ -21,12 +21,12 @@ class DatabaseSeeder extends Seeder
 
         // Create super admin user
         $superAdmin = User::firstOrCreate(
-            ['email' => 'superadmin@checkpoint.com'],
+            ['email' => 'anthonysarmiento726@gmail.com'],
             [
                 'name' => 'Super Administrator',
                 'first_name' => 'Super',
                 'last_name' => 'Admin',
-                'email' => 'superadmin@checkpoint.com',
+                'email' => 'anthonysarmiento726@gmail.com',
                 'password' => bcrypt('SuperAdmin@2025'),
                 'is_active' => true,
                 'status' => 'active',

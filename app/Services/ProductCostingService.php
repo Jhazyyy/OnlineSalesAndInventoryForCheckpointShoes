@@ -289,4 +289,108 @@ class ProductCostingService
             ],
         ];
     }
+
+    /**
+     * Update product costs from inventory weighted average (for purchased/resold products)
+     * This updates the product's total_cost which is used as Cost of Goods Sold (COGS)
+     * 
+     * @param Product $product
+     * @return bool True if cost was updated
+     */
+    public function updateCostFromInventory(Product $product): bool
+    {
+        // Check if product uses automatic costing from purchases
+        $costMethod = $product->cost_calculation_method ?? 'manual';
+        
+        // Only skip if explicitly set to manual AND has existing costs
+        // For new products or products without costs, we should calculate from purchases
+        if ($costMethod === 'manual' && $product->total_cost > 0) {
+            return false; // Skip if product uses manual costing and already has costs
+        }
+        
+        if ($costMethod !== 'weighted_average' && $costMethod !== 'automatic' && $costMethod !== 'latest_purchase') {
+            return false; // Skip if using unsupported method
+        }
+
+        // Get weighted average cost from all inventory records for this product
+        $inventories = \App\Models\Inventory::where('product_id', $product->product_id)
+            ->whereNotNull('unit_cost')
+            ->where('unit_cost', '>', 0)
+            ->get();
+
+        if ($inventories->isEmpty()) {
+            return false; // No inventory cost data available
+        }
+
+        // Calculate weighted average across all inventory locations
+        $totalValue = 0;
+        $totalQuantity = 0;
+
+        foreach ($inventories as $inventory) {
+            $qty = (int) $inventory->quantity_on_hand;
+            $cost = (float) $inventory->unit_cost;
+            
+            if ($qty > 0 && $cost > 0) {
+                $totalValue += ($qty * $cost);
+                $totalQuantity += $qty;
+            }
+        }
+
+        if ($totalQuantity <= 0) {
+            return false; // No stock to calculate from
+        }
+
+        $weightedAverageCost = $totalValue / $totalQuantity;
+
+        // Update product's total_cost directly with weighted average from purchases
+        // This is the COGS (Cost of Goods Sold) that will be used in sales reports
+        $product->enableCostingFields();
+        $product->update([
+            'raw_material_cost' => (string) round($weightedAverageCost, 2),
+            'total_cost' => (string) round($weightedAverageCost, 2),
+            'last_cost_update' => now(),
+            'cost_notes' => 'Auto-updated from weighted average purchase cost'
+        ]);
+
+        // Recalculate profit margin based on selling price
+        $price = $product->price ?? 0;
+        $profitAmount = $price - $weightedAverageCost;
+        $profitMargin = $weightedAverageCost > 0 ? (($profitAmount / $weightedAverageCost) * 100) : 0;
+        
+        $product->update([
+            'profit_amount' => (string) round($profitAmount, 2),
+            'profit_margin' => (string) round($profitMargin, 2)
+        ]);
+
+        return true;
+    }
+
+    /**
+     * Update costs from latest purchase price (alternative to weighted average)
+     * 
+     * @param Product $product
+     * @param float $latestPurchasePrice
+     * @return bool
+     */
+    public function updateCostFromLatestPurchase(Product $product, float $latestPurchasePrice): bool
+    {
+        $costMethod = $product->cost_calculation_method ?? 'manual';
+        
+        if ($costMethod !== 'latest_purchase' && $costMethod !== 'automatic') {
+            return false;
+        }
+
+        if ($latestPurchasePrice <= 0) {
+            return false;
+        }
+
+        $product->enableCostingFields();
+        $product->raw_material_cost = (string) round($latestPurchasePrice, 2);
+
+        // Recalculate total cost and profit margin
+        $calculatedCosts = $this->calculateTotalCost($product);
+        $product->update($calculatedCosts);
+
+        return true;
+    }
 }
