@@ -510,7 +510,7 @@
                             <div>
                                 <label for="modal_size"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Size <span class="text-gray-400 text-xs">(Optional)</span>
+                                    Size
                                 </label>
                                 <input type="text" id="modal_size" name="size"
                                     placeholder="e.g., 42, Large, XL"
@@ -521,7 +521,7 @@
                             <div>
                                 <label for="modal_color"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Color <span class="text-gray-400 text-xs">(Optional)</span>
+                                    Color
                                 </label>
                                 <input type="text" id="modal_color" name="color"
                                     placeholder="e.g., Black, Red, Blue"
@@ -613,7 +613,7 @@
                                     <option value="manual" selected>Manual Price</option>
                                 </select>
                                 <p class="mt-1 text-xs text-gray-500">
-                                    Manual: Fixed price (Markup pricing available after product creation with costing)
+                                    Manual: Fixed Price (Markup pricing available after product creation with costing)
                                 </p>
                             </div>
 
@@ -649,8 +649,6 @@
                                         min="0" required
                                         class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 </div>
-                                <p class="mt-1 text-xs text-gray-500" id="modal_price_helper">Base price for the
-                                    product</p>
                             </div>
 
                             <!-- Description -->
@@ -966,7 +964,6 @@
                         modalMarkupPriceSelect.removeAttribute('required');
                         modalPriceInput.setAttribute('required', 'required');
                         modalPriceRequired.style.display = 'inline';
-                        modalPriceHelper.textContent = 'Base price for the product';
                     }
                 }
 

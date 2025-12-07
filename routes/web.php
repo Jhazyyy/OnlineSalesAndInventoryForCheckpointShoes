@@ -1228,6 +1228,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{order}', [POSController::class, 'show'])->middleware('permission:view sales')->name('show');
         Route::patch('/{order}/complete-payment', [POSController::class, 'completePayment'])->middleware('permission:edit sales')->name('complete-payment');
         
+        // Customer creation from POS
+        Route::post('/customers', [POSController::class, 'createCustomer'])->middleware('permission:create customers')->name('customers.store');
+        
         // AJAX endpoints
         Route::get('/search/customers', [POSController::class, 'searchCustomers'])->middleware('permission:view customers')->name('search.customers');
     });

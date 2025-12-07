@@ -197,50 +197,17 @@
                                     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-3">Customer</h3>
 
                                     <!-- Existing Customer -->
-                                    <div x-show="!showNewCustomerForm">
-                                        <select x-model="selectedCustomerId" name="customer_id"
-                                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white mb-2">
-                                            <option value="">Select existing customer...</option>
-                                            <template x-for="customer in customers" :key="customer.id">
-                                                <option :value="customer.id" x-text="customer.name"></option>
-                                            </template>
-                                        </select>
-                                        <button type="button"
-                                            @click="showNewCustomerForm = true; selectedCustomerId = ''"
-                                            class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400">
-                                            Add New Customer
-                                        </button>
-                                    </div>
-
-                                    <!-- New Customer Form -->
-                                    <div x-show="showNewCustomerForm" class="space-y-3">
-                                        <div>
-                                            <input type="text" name="new_customer_first_name"
-                                                x-model="newCustomer.first_name" placeholder="First Name"
-                                                :required="showNewCustomerForm"
-                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
-                                        </div>
-                                        <div>
-                                            <input type="text" name="new_customer_last_name"
-                                                x-model="newCustomer.last_name" placeholder="Last Name"
-                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
-                                        </div>
-                                        <div>
-                                            <input type="tel" name="new_customer_phone"
-                                                x-model="newCustomer.phone" placeholder="Phone Number"
-                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
-                                        </div>
-                                        <div>
-                                            <input type="email" name="new_customer_email"
-                                                x-model="newCustomer.email" placeholder="Email (Optional)"
-                                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm">
-                                        </div>
-                                        <button type="button"
-                                            @click="showNewCustomerForm = false; clearNewCustomer()"
-                                            class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400">
-                                            Use Existing Customer
-                                        </button>
-                                    </div>
+                                    <select x-model="selectedCustomerId" name="customer_id"
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white mb-2">
+                                        <option value="">Select existing customer...</option>
+                                        <template x-for="customer in customers" :key="customer.id">
+                                            <option :value="customer.id" x-text="customer.name"></option>
+                                        </template>
+                                    </select>
+                                    <button type="button" onclick="openCustomerModal()"
+                                        class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400">
+                                        Add New Customer
+                                    </button>
                                 </div>
 
                                 <!-- Cart Items -->
@@ -1276,4 +1243,96 @@
             background-color: rgba(75, 85, 99, 0.9);
         }
     </style>
+
+    <!-- Add New Customer Modal -->
+    <div id="customerModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="flex items-center justify-between pb-3 border-b dark:border-gray-700">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Add New Customer</h3>
+                <button type="button" onclick="closeCustomerModal()" class="text-gray-400 hover:text-gray-500">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <form id="customerForm" action="{{ route('pos.customers.store') }}" method="POST" class="mt-4">
+                @csrf
+                <div class="space-y-4">
+                    <!-- Full Name -->
+                    <div>
+                        <label for="full_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name <span class="text-red-500">*</span></label>
+                        <input type="text" id="full_name" name="full_name" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            placeholder="Full Name"
+                            oninvalid="this.setCustomValidity('Please fill out this field')"
+                            oninput="this.setCustomValidity('')">
+                    </div>
+
+                    <!-- Email Address -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
+                        <input type="email" id="email" name="email"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            placeholder="Email Address"
+                            oninvalid="this.setCustomValidity('Please enter a valid email address')"
+                            oninput="this.setCustomValidity('')">
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</label>
+                        <input type="tel" id="phone" name="phone"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            placeholder="Phone Number"
+                            pattern="[0-9+\-\s()]+"
+                            oninvalid="this.setCustomValidity('Please enter a valid phone number')"
+                            oninput="this.setCustomValidity('')">
+                    </div>
+
+                    <!-- Address -->
+                    <div>
+                        <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Address</label>
+                        <textarea id="address" name="address" rows="2"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                            placeholder="Address"
+                            oninvalid="this.setCustomValidity('Please fill out this field')"
+                            oninput="this.setCustomValidity('')"></textarea>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3 mt-6 pt-4 border-t dark:border-gray-700">
+                    <button type="button" onclick="closeCustomerModal()"
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 transition">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                        </svg>
+                        Save Customer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openCustomerModal() {
+            document.getElementById('customerModal').classList.remove('hidden');
+        }
+
+        function closeCustomerModal() {
+            document.getElementById('customerModal').classList.add('hidden');
+            document.getElementById('customerForm').reset();
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('customerModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCustomerModal();
+            }
+        });
+    </script>
 </x-app-layout>

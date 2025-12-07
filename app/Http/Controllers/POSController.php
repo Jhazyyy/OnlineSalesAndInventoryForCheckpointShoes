@@ -496,6 +496,74 @@ class POSController extends Controller
     }
 
     /**
+     * Store a new customer from POS
+     */
+    public function createCustomer(Request $request)
+    {
+        // Parse full name into first and last name
+        $fullName = trim($request->full_name ?? '');
+        $nameParts = explode(' ', $fullName, 2);
+        $firstName = $nameParts[0] ?? '';
+        $lastName = $nameParts[1] ?? '';
+
+        $validator = Validator::make($request->all(), [
+            'full_name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255|unique:customers,email',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('error', 'Please check the form for errors.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Create unique email for customers without email
+            $email = $request->email;
+            if (empty($email)) {
+                $email = 'customer_' . time() . '_' . rand(1000, 9999) . '@pos.local';
+            }
+
+            $customer = Customer::create([
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'email' => $email,
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'customer_type' => 'individual',
+                'status' => 'active',
+            ]);
+
+            DB::commit();
+
+            Log::info('New customer created from POS:', [
+                'customer_id' => $customer->customer_id,
+                'name' => $customer->full_name,
+                'email' => $customer->email,
+            ]);
+
+            return redirect()->route('pos.create')
+                ->with('success', 'Customer created successfully! Customer: ' . $customer->full_name);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Customer creation failed:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->back()
+                ->withErrors(['error' => 'Failed to create customer: ' . $e->getMessage()])
+                ->withInput();
+        }
+    }
+
+    /**
      * Quick customer search for autocomplete
      */
     public function searchCustomers(Request $request)
