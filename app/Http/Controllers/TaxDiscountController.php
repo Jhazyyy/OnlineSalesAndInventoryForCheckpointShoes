@@ -44,13 +44,13 @@ class TaxDiscountController extends Controller
         }
 
         // Sorting
-        $sortField = $request->get('sort', 'priority');
-        $sortDirection = $request->get('order', 'asc');
+        $sortField = $request->get('sort', 'updated_at');
+        $sortDirection = $request->get('order', 'desc');
         
-        if (in_array($sortField, ['name', 'code', 'type', 'rate', 'priority', 'created_at'])) {
+        if (in_array($sortField, ['name', 'code', 'type', 'rate', 'priority', 'created_at', 'updated_at'])) {
             $query->orderBy($sortField, $sortDirection);
         } else {
-            $query->orderBy('priority', 'asc');
+            $query->orderBy('updated_at', 'desc');
         }
 
         $taxDiscounts = $query->paginate(10)->withQueryString();

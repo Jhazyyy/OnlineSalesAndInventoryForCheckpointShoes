@@ -32,7 +32,7 @@
 
             <!-- Tax/Discount Information -->
             <div
-                class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                class="bg-white dark:bg-gray-800 border dark:border-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                         <!-- Basic Information -->

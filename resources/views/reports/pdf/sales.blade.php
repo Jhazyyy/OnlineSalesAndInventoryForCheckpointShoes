@@ -22,16 +22,38 @@
         }
 
         .summary {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
+            border: 1px solid #ddd;
+            padding: 8px 12px;
             margin: 12px 0 12px;
+            background: #f9f9f9;
         }
 
-        .card {
-            border: 1px solid #ddd;
-            padding: 8px;
-            border-radius: 6px;
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-item {
+            display: inline-block;
+            margin-right: 20px;
+        }
+
+        .summary-item:last-child {
+            margin-right: 0;
+        }
+
+        .summary-label {
+            font-size: 9px;
+            color: #666;
+            display: inline;
+            margin-right: 5px;
+        }
+
+        .summary-value {
+            font-size: 13px;
+            font-weight: 700;
+            display: inline;
         }
 
         .breakdown {
@@ -99,33 +121,27 @@
         {{ $filters['end_date'] ?? ($report['period']['end_date'] ?? '') }}</div>
 
     <div class="summary">
-        <div class="card">
-            <div class="small muted">Total Orders</div>
-            <div style="font-size:16px; font-weight:700">{{ $report['summary']['total_orders'] ?? 0 }}</div>
-        </div>
-        <div class="card">
-            <div class="small muted">Total Revenue</div>
-            <div style="font-size:16px; font-weight:700">
-                ₱{{ number_format($report['summary']['total_revenue'] ?? 0, 2) }}</div>
-            <div class="small muted" style="font-size:9px; margin-top:2px">(Customer Payment)</div>
-        </div>
-        <div class="card">
-            <div class="small muted">Gross Revenue</div>
-            <div style="font-size:16px; font-weight:700">
-                ₱{{ number_format($report['summary']['gross_revenue'] ?? 0, 2) }}</div>
-            <div class="small muted" style="font-size:9px; margin-top:2px">(Product Sales)</div>
-        </div>
-        <div class="card">
-            <div class="small muted">Gross Profit</div>
-            <div style="font-size:16px; font-weight:700">
-                ₱{{ number_format($report['summary']['total_profit'] ?? 0, 2) }}</div>
-            <div class="small muted" style="font-size:9px; margin-top:2px">(Net Revenue - COGS)</div>
-        </div>
-        <div class="card">
-            <div class="small muted">Profit Margin</div>
-            <div style="font-size:16px; font-weight:700">
-                {{ number_format($report['summary']['profit_margin'] ?? 0, 1) }}%</div>
-            <div class="small muted" style="font-size:9px; margin-top:2px">(Profit / Net Revenue)</div>
+        <div class="summary-row">
+            <span class="summary-item">
+                <span class="summary-label">Total Orders:</span>
+                <span class="summary-value">{{ $report['summary']['total_orders'] ?? 0 }}</span>
+            </span>
+            <span class="summary-item">
+                <span class="summary-label">Total Revenue:</span>
+                <span class="summary-value">₱{{ number_format($report['summary']['total_revenue'] ?? 0, 2) }}</span>
+            </span>
+            <span class="summary-item">
+                <span class="summary-label">Gross Revenue:</span>
+                <span class="summary-value">₱{{ number_format($report['summary']['gross_revenue'] ?? 0, 2) }}</span>
+            </span>
+            <span class="summary-item">
+                <span class="summary-label">Gross Profit:</span>
+                <span class="summary-value">₱{{ number_format($report['summary']['total_profit'] ?? 0, 2) }}</span>
+            </span>
+            <span class="summary-item">
+                <span class="summary-label">Profit Margin:</span>
+                <span class="summary-value">{{ number_format($report['summary']['profit_margin'] ?? 0, 1) }}%</span>
+            </span>
         </div>
     </div>
 

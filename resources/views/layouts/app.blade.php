@@ -30,9 +30,10 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.store('sidebar', {
-                open: false,
+                open: localStorage.getItem('sidebar_open') === 'true',
                 toggle() {
                     this.open = !this.open;
+                    localStorage.setItem('sidebar_open', this.open);
                 }
             });
         });

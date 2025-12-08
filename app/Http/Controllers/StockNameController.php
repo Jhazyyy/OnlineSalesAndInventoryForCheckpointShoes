@@ -32,13 +32,13 @@ class StockNameController extends Controller
         }
 
         // Sorting
-        $sortField = $request->get('sort', 'name');
-        $sortDirection = $request->get('order', 'asc');
+        $sortField = $request->get('sort', 'updated_at');
+        $sortDirection = $request->get('order', 'desc');
         
-        if (in_array($sortField, ['name', 'stock_code', 'created_at'])) {
+        if (in_array($sortField, ['name', 'stock_code', 'created_at', 'updated_at'])) {
             $query->orderBy($sortField, $sortDirection);
         } else {
-            $query->orderBy('name', 'asc');
+            $query->orderBy('updated_at', 'desc');
         }
 
         $stockNames = $query->paginate(10)->withQueryString();
@@ -114,7 +114,7 @@ class StockNameController extends Controller
     public function update(Request $request, StockName $stockName)
     {
         $validator = Validator::make($request->all(), [
-            'stock_code' => 'required|max:20|alpha_dash|unique:stock_names, stock_code,' . $stockName->id,
+            'stock_code' => 'required|max:20|alpha_dash|unique:stock_names,stock_code,' . $stockName->id,
             'name' => 'required|string|max:100',
             'description' => 'nullable|string|max:500',
             'is_active' => 'boolean'

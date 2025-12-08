@@ -49,8 +49,24 @@
 @endphp
 
 @if ($isDropdown)
-    <div x-data="{ open: {{ $isActive || $showDropdown ? 'true' : 'false' }} }" class="relative">
-        <button @click="open = !open"
+    <div x-data="{ 
+        storageKey: 'sidebar_dropdown_{{ str_replace('.', '_', $routePattern ?? 'default') }}',
+        open: false,
+        init() {
+            // Initialize from localStorage or default to active state
+            const stored = localStorage.getItem(this.storageKey);
+            if (stored !== null) {
+                this.open = stored === 'true';
+            } else {
+                this.open = {{ $isActive || $showDropdown ? 'true' : 'false' }};
+            }
+        },
+        toggle() {
+            this.open = !this.open;
+            localStorage.setItem(this.storageKey, this.open);
+        }
+    }" class="relative">
+        <button @click="toggle()"
             class="{{ $classes }} justify-between w-full">
             <div class="flex items-center">
                 @if ($icon)

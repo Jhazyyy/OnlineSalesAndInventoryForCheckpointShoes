@@ -1407,15 +1407,6 @@
                         document.getElementById('view_color_container').style.display = 'none';
                     }
 
-                    // Preferred Supplier
-                    if (data.preferred_supplier) {
-                        document.getElementById('view_preferred_supplier_container').style.display = 'block';
-                        document.getElementById('view_preferred_supplier').textContent = data.preferred_supplier
-                            .supplier_name || data.preferred_supplier.name;
-                    } else {
-                        document.getElementById('view_preferred_supplier_container').style.display = 'none';
-                    }
-
                     // Assigned Suppliers
                     const assignedSuppliersContainer = document.getElementById('view_assigned_suppliers_container');
                     const assignedSuppliersList = document.getElementById('view_assigned_suppliers_list');
@@ -1506,7 +1497,7 @@
                     }
 
                     // Show/hide no supplier message
-                    if (!data.last_supplier && !data.preferred_supplier && !data.last_purchase_price) {
+                    if (!data.last_supplier && (!data.suppliers || data.suppliers.length === 0) && !data.last_purchase_price) {
                         document.getElementById('view_no_supplier').style.display = 'block';
                     }
 

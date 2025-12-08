@@ -19,7 +19,7 @@
             </div>
 
             <!-- Form Section -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <!-- Validation Errors -->
                     @if ($errors->any())
@@ -222,7 +222,7 @@
 
                         <!-- Additional Options -->
                         <div>
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Additional Options</h3>
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Additional Options</h3>
                             <div class="space-y-4">
                                 <!-- Compound -->
                                 <div class="flex items-center">

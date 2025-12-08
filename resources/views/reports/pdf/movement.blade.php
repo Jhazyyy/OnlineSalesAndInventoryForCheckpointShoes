@@ -9,10 +9,12 @@
         h1 { font-size: 20px; margin: 0 0 6px; }
         h2 { font-size: 16px; margin: 20px 0 10px; border-bottom: 2px solid #333; padding-bottom: 4px; }
         .muted { color: #666; }
-        .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0 18px; }
-        .card { border: 1px solid #ddd; padding: 10px; border-radius: 6px; }
-        .card-title { font-size: 10px; color: #666; margin-bottom: 4px; }
-        .card-value { font-size: 16px; font-weight: 700; }
+        .summary { border: 1px solid #ddd; padding: 8px 12px; margin: 12px 0 18px; background: #f9f9f9; }
+        .summary-row { display: flex; justify-content: space-between; align-items: center; }
+        .summary-item { display: inline-block; margin-right: 30px; }
+        .summary-item:last-child { margin-right: 0; }
+        .summary-label { font-size: 9px; color: #666; display: inline; margin-right: 5px; }
+        .summary-value { font-size: 13px; font-weight: 700; display: inline; }
         table { width: 100%; border-collapse: collapse; margin: 10px 0; }
         th, td { padding: 8px 6px; border-bottom: 1px solid #e5e5e5; }
         th { text-align: left; background: #f7f7f7; font-size: 11px; }
@@ -33,21 +35,23 @@
 
     <!-- Summary Cards -->
     <div class="summary">
-        <div class="card">
-            <div class="card-title">Total Movements</div>
-            <div class="card-value">{{ number_format($report['summary']['total_movements'] ?? 0) }}</div>
-        </div>
-        <div class="card">
-            <div class="card-title">Stock In</div>
-            <div class="card-value" style="color: #4caf50;">{{ number_format($report['summary']['stock_in'] ?? 0) }}</div>
-        </div>
-        <div class="card">
-            <div class="card-title">Stock Out</div>
-            <div class="card-value" style="color: #f44336;">{{ number_format($report['summary']['stock_out'] ?? 0) }}</div>
-        </div>
-        <div class="card">
-            <div class="card-title">Adjustments</div>
-            <div class="card-value" style="color: #ff9800;">{{ number_format($report['summary']['adjustments'] ?? 0) }}</div>
+        <div class="summary-row">
+            <span class="summary-item">
+                <span class="summary-label">Total Movements:</span>
+                <span class="summary-value">{{ number_format($report['summary']['total_movements'] ?? 0) }}</span>
+            </span>
+            <span class="summary-item">
+                <span class="summary-label">Stock In:</span>
+                <span class="summary-value" style="color: #4caf50;">{{ number_format($report['summary']['stock_in'] ?? 0) }}</span>
+            </span>
+            <span class="summary-item">
+                <span class="summary-label">Stock Out:</span>
+                <span class="summary-value" style="color: #f44336;">{{ number_format($report['summary']['stock_out'] ?? 0) }}</span>
+            </span>
+            <span class="summary-item">
+                <span class="summary-label">Adjustments:</span>
+                <span class="summary-value" style="color: #ff9800;">{{ number_format($report['summary']['adjustments'] ?? 0) }}</span>
+            </span>
         </div>
     </div>
 

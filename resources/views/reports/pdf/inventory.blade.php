@@ -9,10 +9,12 @@
         h1 { font-size: 20px; margin: 0 0 6px; }
         h2 { font-size: 16px; margin: 20px 0 10px; border-bottom: 2px solid #333; padding-bottom: 4px; }
         .muted { color: #666; }
-        .summary { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 12px 0 18px; }
-        .card { border: 1px solid #ddd; padding: 8px; border-radius: 6px; }
-        .card-title { font-size: 10px; color: #666; margin-bottom: 4px; }
-        .card-value { font-size: 16px; font-weight: 700; }
+        .summary { border: 1px solid #ddd; padding: 8px 12px; margin: 12px 0 18px; background: #f9f9f9; }
+        .summary-row { display: flex; justify-content: space-between; align-items: center; }
+        .summary-item { display: inline-block; margin-right: 25px; }
+        .summary-item:last-child { margin-right: 0; }
+        .summary-label { font-size: 9px; color: #666; display: inline; margin-right: 5px; }
+        .summary-value { font-size: 13px; font-weight: 700; display: inline; }
         table { width: 100%; border-collapse: collapse; margin: 10px 0; }
         th, td { padding: 8px 6px; border-bottom: 1px solid #e5e5e5; }
         th { text-align: left; background: #f7f7f7; font-size: 11px; }
@@ -41,25 +43,27 @@
 
     <!-- Summary Cards -->
     <div class="summary">
-        <div class="card">
-            <div class="card-title">Total Products</div>
-            <div class="card-value">{{ $report['summary']['total_products'] ?? 0 }}</div>
-        </div>
-        <div class="card">
-            <div class="card-title">Total Stock</div>
-            <div class="card-value">{{ number_format($report['summary']['total_stock'] ?? 0) }}</div>
-        </div>
-        <div class="card">
-            <div class="card-title">Total Value</div>
-            <div class="card-value">₱{{ number_format($report['summary']['total_value'] ?? 0, 2) }}</div>
-        </div>
-        <div class="card">
-            <div class="card-title">Low Stock</div>
-            <div class="card-value" style="color: #ff9800;">{{ $report['summary']['low_stock'] ?? 0 }}</div>
-        </div>
-        <div class="card">
-            <div class="card-title">Out of Stock</div>
-            <div class="card-value" style="color: #f44336;">{{ $report['summary']['out_of_stock'] ?? 0 }}</div>
+        <div class="summary-row">
+            <span class="summary-item">
+                <span class="summary-label">Total Products:</span>
+                <span class="summary-value">{{ $report['summary']['total_products'] ?? 0 }}</span>
+            </span>
+            <span class="summary-item">
+                <span class="summary-label">Total Stock:</span>
+                <span class="summary-value">{{ number_format($report['summary']['total_stock'] ?? 0) }}</span>
+            </span>
+            <span class="summary-item">
+                <span class="summary-label">Total Value:</span>
+                <span class="summary-value">₱{{ number_format($report['summary']['total_value'] ?? 0, 2) }}</span>
+            </span>
+            <span class="summary-item">
+                <span class="summary-label">Low Stock:</span>
+                <span class="summary-value" style="color: #ff9800;">{{ $report['summary']['low_stock'] ?? 0 }}</span>
+            </span>
+            <span class="summary-item">
+                <span class="summary-label">Out of Stock:</span>
+                <span class="summary-value" style="color: #f44336;">{{ $report['summary']['out_of_stock'] ?? 0 }}</span>
+            </span>
         </div>
     </div>
 

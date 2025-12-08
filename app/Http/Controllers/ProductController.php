@@ -298,13 +298,13 @@ class ProductController extends Controller
         // Check if request wants JSON (AJAX request for modal)
         if (request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
             // Load relationships for modal view
-            $product->load(['lastSupplier', 'preferredSupplier', 'markupPrice']);
+            $product->load(['lastSupplier', 'suppliers', 'markupPrice']);
 
             return response()->json($product);
         }
 
         // Load relationships for detailed view
-        $product->load(['sales', 'purchases', 'returns', 'lastSupplier', 'preferredSupplier']);
+        $product->load(['sales', 'purchases', 'returns', 'lastSupplier', 'suppliers']);
 
         // Calculate additional metrics
         $stockMovement = $product->stock_movement;

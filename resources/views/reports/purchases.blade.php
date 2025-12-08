@@ -14,9 +14,6 @@
 
                     <a href="{{ route('reports.index') }}"
                         class="inline-flex items-center px-3 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150 ease-in-out w-fit">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
                         Back to Reports
                     </a>
                 </div>
@@ -176,13 +173,13 @@
             @if(!empty($report['product_purchases']) && count($report['product_purchases']) > 0)
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-4 sm:p-6">
-                    <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Purchase Order Master (By Product)</h3>
+                    <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Purchase Order(By Product)</h3>
 
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm sm:text-base">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-xs sm:text-base">
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
-                                    @foreach (['SKU', 'Product Name', 'Brand', 'Category', 'Qty Ordered', 'Qty Received', 'Avg. Unit Price', 'Total Cost', 'Current Stock'] as $header)
+                                    @foreach (['SKU', 'Product Name', 'Brand', 'Category', 'Qty Ordered', 'Qty Received', 'Avg. Unit Price', 'Total Cost'] as $header)
                                         <th
                                             class="px-4 py-3 sm:px-6 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">
                                             {{ $header }}</th>
@@ -191,7 +188,7 @@
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                                 @foreach($report['product_purchases'] as $product)
-                                    <tr class="hover:bg-blue-50 dark:hover:bg-gray-700 transition">
+                                    <tr class="hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200">
                                         <td class="px-4 py-3 sm:px-6 font-medium text-gray-900 dark:text-white">
                                             {{ $product->sku ?? 'N/A' }}</td>
                                         <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
@@ -208,8 +205,8 @@
                                             ₱{{ number_format($product->avg_unit_price ?? 0, 2) }}</td>
                                         <td class="px-4 py-3 sm:px-6 text-left text-gray-800 dark:text-gray-300">
                                             ₱{{ number_format($product->total_cost ?? 0, 2) }}</td>
-                                        <td class="px-4 py-3 sm:px-6 text-left text-gray-800 dark:text-gray-300">
-                                            {{ number_format($product->current_stock ?? 0) }}</td>
+                                        {{-- <td class="px-4 py-3 sm:px-6 text-left text-gray-800 dark:text-gray-300">
+                                            {{ number_format($product->current_stock ?? 0) }}</td> --}}
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -225,7 +222,7 @@
                     <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Purchase Orders (By Order)</h3>
 
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm sm:text-base">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-xs sm:text-base">
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
                                     @foreach (['PO Number', 'Supplier', 'Order Date', 'Amount Due', 'Due Date', 'Total Paid', 'Status'] as $header)
@@ -237,7 +234,7 @@
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                                 @forelse(($report['orders'] ?? []) as $order)
-                                    <tr class="hover:bg-blue-50 dark:hover:bg-gray-700 transition">
+                                    <tr class="hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200">
                                         <td class="px-4 py-3 sm:px-6 font-medium text-gray-900 dark:text-white">
                                             {{ $order->order_number ?? 'N/A' }}</td>
                                         <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">

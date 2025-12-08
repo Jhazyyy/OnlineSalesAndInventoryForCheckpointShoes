@@ -205,8 +205,8 @@
                                 <!-- Markup Prices (Admin Only) -->
                                 <x-nav-item route="master_data.markup_prices.index" route-pattern="master_data.markup_prices.*"
                                     :icon="App\Helpers\NavigationHelper::getIcon(
-                                        'markup_prices',
-                                        'w-4 h-4 mr-3',
+                                        'markup_price',
+                                        'w-5 h-5 mr-3',
                                     )" title="Markup Prices" size="small" />
                             </x-nav-item>
                         @endcan
