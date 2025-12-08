@@ -145,7 +145,7 @@ class ProductController extends Controller
             'product_category' => 'nullable|string|max:255',
             'custom_category' => 'nullable|string|max:255',
             'price' => 'nullable|numeric|min:0',
-            'pricing_method' => 'required|in:manual,costing,markup',
+            'pricing_method' => 'nullable|in:manual,costing,markup',
             'markup_price_id' => 'nullable|required_if:pricing_method,markup|exists:markup_prices,id',
             'description' => 'nullable|string|max:1000',
             'image_url' => 'nullable|url|max:500',
@@ -247,6 +247,15 @@ class ProductController extends Controller
             while (Product::where('sku', $data['sku'])->exists()) {
                 $data['sku'] = "{$originalSku}-{$counter}";
                 $counter++;
+            }
+        }
+
+        // Auto-determine pricing_method if not provided
+        if (empty($data['pricing_method'])) {
+            if (!empty($data['markup_price_id'])) {
+                $data['pricing_method'] = 'markup';
+            } else {
+                $data['pricing_method'] = 'manual';
             }
         }
 

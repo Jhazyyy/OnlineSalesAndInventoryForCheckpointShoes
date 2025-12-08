@@ -1,6 +1,23 @@
 <x-app-layout>
     <div class="py-2">
         <div class="w-full mx-auto sm:px-6 lg:px-8">
+            <!-- Success/Error Messages -->
+            @if(session('error'))
+                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative dark:bg-red-900 dark:border-red-700 dark:text-red-200" role="alert">
+                    <span class="block sm:inline">{{ session('error') }}</span>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative dark:bg-red-900 dark:border-red-700 dark:text-red-200" role="alert">
+                    <ul class="list-disc list-inside">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <!-- Header Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
@@ -319,6 +336,9 @@
                                                         $calculatedMarkupPrice =
                                                             $baseCost *
                                                             (1 + $product->markupPrice->markup_percentage / 100);
+                                                        // Check if selling price is already applied (within 0.01 tolerance for floating point)
+                                                        $isSellingPriceApplied = $product->selling_price && 
+                                                            abs($product->selling_price - $calculatedMarkupPrice) < 0.01;
                                                     @endphp
                                                     <div class="space-y-1">
                                                         <div class="text-xs text-gray-500 dark:text-gray-400 font-mono">
@@ -340,11 +360,17 @@
                                                                 ₱{{ number_format($calculatedMarkupPrice, 2) }}
                                                             </span>
                                                         </div>
-                                                        <button type="button"
-                                                            onclick="applyMarkupPrice({{ $product->product_id }}, {{ $calculatedMarkupPrice }})"
-                                                            class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">
-                                                            Apply to selling price
-                                                        </button>
+                                                        @if($isSellingPriceApplied)
+                                                            <span class="text-xs text-green-600 dark:text-green-400 font-medium">
+                                                                Applied
+                                                            </span>
+                                                        @else
+                                                            <button type="button"
+                                                                onclick="applyMarkupPrice({{ $product->product_id }}, {{ $calculatedMarkupPrice }})"
+                                                                class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">
+                                                                Apply to selling price
+                                                            </button>
+                                                        @endif
                                                     </div>
                                                 @else
                                                     <span class="text-xs font-mono text-gray-500 dark:text-gray-400">No
@@ -693,14 +719,37 @@
 
     {{-- Create Product Modal --}}
     <script>
+        // Verify function is loaded
+        console.log('Product modal script loaded');
+        
         function openCreateProductModal() {
-            document.getElementById('createProductModal').classList.remove('hidden');
+            console.log('Opening create product modal...');
+            const modal = document.getElementById('createProductModal');
+            
+            if (!modal) {
+                console.error('Create product modal not found!');
+                alert('Error: Modal not found. Please refresh the page.');
+                return;
+            }
+            
+            modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
 
-            // Clear and add one empty supplier row
-            clearSupplierRows('modal');
-            addSupplierRow('modal');
+            // Try to clear and add supplier row, but don't fail if it errors
+            try {
+                console.log('Clearing supplier rows...');
+                clearSupplierRows('modal');
+                console.log('Adding supplier row...');
+                addSupplierRow('modal');
+                console.log('Supplier row added successfully');
+            } catch (error) {
+                console.error('Error with supplier rows (non-critical):', error);
+                // Don't prevent modal from opening, just log the error
+            }
         }
+        
+        // Make function available globally
+        window.openCreateProductModal = openCreateProductModal;
 
         function closeCreateProductModal() {
             document.getElementById('createProductModal').classList.add('hidden');
@@ -1593,11 +1642,11 @@
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Markup Configuration
                                 </label>
-                                <select id="edit_markup_price_id" name="markup_price_id" onchange="calculateEditSellingPrice()"
+                                <select id="edit_markup_price_id" name="markup_price_id"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                     <option value="">No markup (manual price)</option>
                                     @foreach ($markupPrices as $markup)
-                                        <option value="{{ $markup->id }}" data-percentage="{{ $markup->markup_percentage }}">{{ $markup->name }}
+                                        <option value="{{ $markup->id }}">{{ $markup->name }}
                                             ({{ $markup->markup_percentage }}%)
                                         </option>
                                     @endforeach
@@ -1608,45 +1657,16 @@
                             <div>
                                 <label for="edit_price"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Base Price<span class="text-red-500">*</span>
+                                    Price<span class="text-red-500">*</span>
                                 </label>
                                 <div class="mt-1 relative rounded-md shadow-sm">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <span class="text-gray-500 sm:text-sm">₱</span>
                                     </div>
                                     <input type="number" id="edit_price" name="price" step="0.01"
-                                        min="0" required oninput="calculateEditSellingPrice()"
+                                        min="0" required
                                         class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 </div>
-                                <p class="mt-1 text-xs text-gray-500">Base price (won't change with markup)</p>
-                            </div>
-                        </div>
-
-                        <!-- Selling Price Section -->
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label for="edit_calculated_selling_price"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Calculated Selling Price
-                                </label>
-                                <div class="mt-1 relative rounded-md shadow-sm">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <span class="text-gray-500 sm:text-sm">₱</span>
-                                    </div>
-                                    <input type="text" id="edit_calculated_selling_price" readonly
-                                        class="pl-7 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100 dark:bg-gray-600 dark:border-gray-600 dark:text-white cursor-not-allowed">
-                                </div>
-                                <p class="mt-1 text-xs text-gray-500">Preview with markup applied</p>
-                            </div>
-
-                            <div class="flex items-end">
-                                <button type="button" id="edit_apply_selling_price_btn" onclick="applyEditSellingPrice()"
-                                    class="w-full inline-flex justify-center items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                    Apply Selling Price
-                                </button>
                             </div>
 
                             <!-- Cost (Read-only display) -->
@@ -2104,9 +2124,18 @@
             // Supplier row management
             let supplierRowIndex = 0;
             const allSuppliers = @json($suppliers);
+            
+            console.log('All suppliers loaded:', allSuppliers);
+            console.log('Number of suppliers:', allSuppliers ? allSuppliers.length : 0);
 
             function addSupplierRow(prefix, existingData = null) {
                 const container = document.getElementById(`${prefix}_assigned_suppliers_container`);
+                
+                if (!container) {
+                    console.error(`Container not found: ${prefix}_assigned_suppliers_container`);
+                    return;
+                }
+                
                 const index = supplierRowIndex++;
 
                 const row = document.createElement('div');
@@ -2114,11 +2143,16 @@
                 row.id = `${prefix}_supplier_row_${index}`;
 
                 let supplierOptions = '<option value="">Select supplier...</option>';
-                allSuppliers.forEach(supplier => {
-                    const selected = existingData && existingData.supplier_id == supplier.supplier_id ? 'selected' : '';
-                    supplierOptions +=
-                        `<option value="${supplier.supplier_id}" ${selected}>${supplier.supplier_name}</option>`;
-                });
+                
+                if (!allSuppliers || allSuppliers.length === 0) {
+                    console.warn('No suppliers available');
+                } else {
+                    allSuppliers.forEach(supplier => {
+                        const selected = existingData && existingData.supplier_id == supplier.supplier_id ? 'selected' : '';
+                        supplierOptions +=
+                            `<option value="${supplier.supplier_id}" ${selected}>${supplier.supplier_name}</option>`;
+                    });
+                }
 
                 row.innerHTML = `
                 <div class="col-span-5">
@@ -2169,6 +2203,9 @@
                 const container = document.getElementById(`${prefix}_assigned_suppliers_container`);
                 if (container) {
                     container.innerHTML = '';
+                    console.log(`Cleared supplier rows for: ${prefix}`);
+                } else {
+                    console.error(`Container not found when clearing: ${prefix}_assigned_suppliers_container`);
                 }
             }
 
