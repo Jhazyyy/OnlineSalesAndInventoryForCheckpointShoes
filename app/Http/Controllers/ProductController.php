@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -680,5 +681,65 @@ class ProductController extends Controller
             'total_products' => Product::count(),
             'total_inventory_value' => Product::totalInventoryValue(),
         ]);
+    }
+
+    /**
+     * Apply markup price to product's selling price
+     */
+    public function applyMarkup(Request $request, Product $product)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'selling_price' => 'required|numeric|min:0',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid selling price',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            $newPrice = $request->input('selling_price');
+
+            // Update the product's price
+            $oldPrice = $product->price;
+            $product->update(['price' => $newPrice]);
+
+            // Log the action
+            \App\Models\AuditLog::logAction(
+                \App\Models\AuditLog::ACTION_UPDATE,
+                \App\Models\AuditLog::MODULE_INVENTORY,
+                "Product {$product->product_name} price updated from ₱{$oldPrice} to ₱{$newPrice} using markup",
+                'Product',
+                $product->product_id,
+                $product->product_name,
+                [
+                    'price' => $oldPrice,
+                ],
+                [
+                    'price' => $newPrice,
+                    'markup_applied' => true,
+                    'markup_price_id' => $product->markup_price_id,
+                ]
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Markup price applied successfully',
+                'new_price' => $newPrice,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error applying markup price:', [
+                'product_id' => $product->product_id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to apply markup price: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }

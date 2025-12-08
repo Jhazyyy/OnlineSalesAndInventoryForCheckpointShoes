@@ -144,7 +144,6 @@
                     <th class="left">Ordered</th>
                     <th class="left">Received</th>
                     <th class="left">Avg. Price</th>
-                    <th class="left">Total Cost</th>
                 </tr>
             </thead>
             <tbody>
@@ -157,7 +156,6 @@
                         <td class="left">{{ number_format($p->total_ordered ?? 0) }}</td>
                         <td class="left">{{ number_format($p->total_received ?? 0) }}</td>
                         <td class="left">₱{{ number_format($p->avg_unit_price ?? 0, 2) }}</td>
-                        <td class="left">₱{{ number_format($p->total_cost ?? 0, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>

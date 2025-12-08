@@ -9,20 +9,6 @@
                             <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Customer Management</h2>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
-                            {{-- <a href="{{ route('sales.customers.export', request()->query()) }}" 
-                               class="inline-flex items-center px-4 py-2 bg-purple-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700 focus:bg-purple-700 active:bg-purple-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
-                                </svg>
-                                Export Customers
-                            </a> --}}
-                            {{-- <a href="{{ route('sales.customers.import') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                                </svg>
-                                Import Customers
-                            </a> --}}
                             <a href="{{ route('sales.customers.create') }}" 
                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,56 +33,6 @@
                                        placeholder="Search customers..." 
                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
-
-                            <!-- Customer Type -->
-                            {{-- <div>
-                                <label for="customer_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Customer Type</label>
-                                <select id="customer_type" name="customer_type" 
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">All Types</option>
-                                    <option value="individual" {{ request('customer_type') == 'individual' ? 'selected' : '' }}>Individual</option>
-                                    <option value="business" {{ request('customer_type') == 'business' ? 'selected' : '' }}>Business</option>
-                                </select>
-                            </div> --}}
-
-                            <!-- Status -->
-                            {{-- <div>
-                                <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-                                <select id="status" name="status" 
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">All Status</option>
-                                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                                    <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                                </select>
-                            </div> --}}
-
-                            <!-- City -->
-                            {{-- <div>
-                                <label for="city" class="block text-sm font-medium text-gray-700 dark:text-gray-300">City</label>
-                                <select id="city" name="city" 
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">All Cities</option>
-                                    @foreach($cities as $city)
-                                        <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
-                                            {{ $city }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div> --}}
-
-                            <!-- Country -->
-                            {{-- <div>
-                                <label for="country" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Country</label>
-                                <select id="country" name="country" 
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">All Countries</option>
-                                    @foreach($countries as $country)
-                                        <option value="{{ $country }}" {{ request('country') == $country ? 'selected' : '' }}>
-                                            {{ $country }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div> --}}
                         </div>
 
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -118,19 +54,6 @@
                 </div>
             </div>
 
-            <!-- Success/Error Messages -->
-            @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
-                    <span class="block sm:inline">{{ session('error') }}</span>
-                </div>
-            @endif
-
             <!-- Customers Table -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
@@ -139,7 +62,7 @@
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a href="{{ request()->fullUrlWithQuery(['sort' => 'first_name', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
                                                 Name
                                                 @if(request('sort') === 'first_name')
@@ -147,7 +70,7 @@
                                                 @endif
                                             </a>
                                         </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a href="{{ request()->fullUrlWithQuery(['sort' => 'email', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
                                                 Email
                                                 @if(request('sort') === 'email')
@@ -155,8 +78,8 @@
                                                 @endif
                                             </a>
                                         </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Phone</th>
-                                        {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">Phone</th>
+                                        {{-- <th class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a href="{{ request()->fullUrlWithQuery(['sort' => 'customer_type', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
                                                 Type
                                                 @if(request('sort') === 'customer_type')
@@ -166,7 +89,7 @@
                                         </th> --}}
                                         {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Location</th> --}}
                                         {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th> --}}
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">

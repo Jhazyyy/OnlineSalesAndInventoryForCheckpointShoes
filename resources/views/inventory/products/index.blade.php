@@ -153,7 +153,7 @@
                                                 </a>
                                             </th> --}}
                                         <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a
                                                 href="{{ request()->fullUrlWithQuery(['sort' => 'product_name', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
                                                 Product Name
@@ -164,7 +164,7 @@
                                             </a>
                                         </th>
                                         <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a
                                                 href="{{ request()->fullUrlWithQuery(['sort' => 'product_brand', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
                                                 Brand
@@ -175,7 +175,7 @@
                                             </a>
                                         </th>
                                         <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a
                                                 href="{{ request()->fullUrlWithQuery(['sort' => 'product_category', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
                                                 Category
@@ -186,7 +186,7 @@
                                             </a>
                                         </th>
                                         <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a
                                                 href="{{ request()->fullUrlWithQuery(['sort' => 'quantity', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
                                                 Quantity
@@ -197,7 +197,7 @@
                                             </a>
                                         </th>
                                         <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a
                                                 href="{{ request()->fullUrlWithQuery(['sort' => 'price', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
                                                 Price
@@ -207,14 +207,18 @@
                                                 @endif
                                             </a>
                                         </th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Markup to Selling Price
+                                        </th>
                                         {{-- <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             Last Supplier</th> --}}
                                         <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             Status</th>
                                         <th
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             Actions</th>
                                     </tr>
                                 </thead>
@@ -280,13 +284,6 @@
                                                                     @endif
                                                                 </div>
                                                         @endif
-
-                                                        {{-- @if ($product->description)
-                                                            <div
-                                                                class="text-xs font-mono text-gray-500 dark:text-gray-400 break-words">
-                                                                {{ $product->description }}
-                                                            </div>
-                                                        @endif --}}
                                                     </div>
                                                 </div>
                                             </td>
@@ -302,20 +299,51 @@
                                             {{-- Product Price --}}
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-white break-words">
                                                 ₱{{ number_format($product->calculateSellingPrice(), 2) }}</td>
-                                            {{-- Last Supplier --}}
-                                            {{-- <td class="px-6 py-4 whitespace-nowrap">
-                                                @if ($product->lastSupplier)
-                                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                                        {{ $product->lastSupplier->supplier_name ?? $product->lastSupplier->name }}
+                                            {{-- Markup / Selling Price --}}
+                                            <td class="px-6 py-4 text-sm break-words">
+                                                @if ($product->pricing_method === 'markup' && $product->markupPrice)
+                                                    @php
+                                                        // Use total_cost if available, otherwise use current price as base
+                                                        $baseCost =
+                                                            $product->total_cost && $product->total_cost > 0
+                                                                ? $product->total_cost
+                                                                : $product->price;
+                                                        $calculatedMarkupPrice =
+                                                            $baseCost *
+                                                            (1 + $product->markupPrice->markup_percentage / 100);
+                                                    @endphp
+                                                    <div class="space-y-1">
+                                                        <div class="text-xs text-gray-500 dark:text-gray-400 font-mono">
+                                                            {{-- <span
+                                                                class="font-mono">{{ $product->markupPrice->name }}</span> --}}
+                                                            @if ($product->total_cost && $product->total_cost > 0)
+                                                                <span class="text-green-600">(from cost)</span>
+                                                            @else
+                                                                <span class="text-blue-600">(from current price)</span>
+                                                            @endif
+                                                        </div>
+                                                        <div class="flex items-center gap-2">
+                                                            <span
+                                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200">
+                                                                +{{ $product->markupPrice->markup_percentage }}%
+                                                            </span>
+                                                            <span
+                                                                class="font-semibold text-indigo-600 dark:text-indigo-400">
+                                                                ₱{{ number_format($calculatedMarkupPrice, 2) }}
+                                                            </span>
+                                                        </div>
+                                                        <button type="button"
+                                                            onclick="applyMarkupPrice({{ $product->product_id }}, {{ $calculatedMarkupPrice }})"
+                                                            class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline">
+                                                            Apply to selling price
+                                                        </button>
                                                     </div>
-                                                    @if ($product->last_received_at)
-                                                        <div class="text-xs text-gray-500">
-                                                            {{ $product->last_received_at->format('M d, Y') }}</div>
-                                                    @endif
                                                 @else
-                                                    <span class="text-sm text-gray-500 dark:text-gray-400">-</span>
+                                                    <span class="text-xs font-mono text-gray-500 dark:text-gray-400">No
+                                                        markup</span>
                                                 @endif
-                                            </td> --}}
+                                            </td>
+                                            {{-- Status --}}
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 @if ($product->quantity == 0)
                                                     <span
@@ -556,64 +584,11 @@
                                     class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
 
-                            <!-- Assigned Suppliers -->
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Assigned Suppliers & Costs
-                                </label>
-                                <div id="modal_assigned_suppliers_container" class="space-y-2">
-                                    <!-- Suppliers will be added here dynamically -->
-                                </div>
-                                <button type="button" onclick="addSupplierRow('modal')"
-                                    class="mt-2 inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                    </svg>
-                                    Add Supplier
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Pricing Method and Markup Price -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                            <!-- Pricing Method -->
-                            <div>
-                                <label for="modal_pricing_method"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Pricing Method<span class="text-red-500">*</span>
-                                </label>
-                                <select id="modal_pricing_method" name="pricing_method" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="manual" selected>Manual Price</option>
-                                </select>
-                                <p class="mt-1 text-xs text-gray-500">
-                                    Manual: Fixed Price (Markup pricing available after product creation with costing)
-                                </p>
-                            </div>
-
-                            <!-- Markup Price Configuration -->
-                            <div id="modal_markup_price_field" style="display: none;">
-                                <label for="modal_markup_price_id"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Markup Configuration<span class="text-red-500">*</span>
-                                </label>
-                                <select id="modal_markup_price_id" name="markup_price_id"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">Select markup...</option>
-                                    @foreach ($markupPrices as $markup)
-                                        <option value="{{ $markup->id }}">{{ $markup->name }}
-                                            ({{ $markup->markup_percentage }}%)
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <p class="mt-1 text-xs text-gray-500">Price = Cost + Markup %</p>
-                            </div>
-
                             <!-- Price -->
                             <div>
                                 <label for="modal_price"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Price<span class="text-red-500" id="modal_price_required">*</span>
+                                    Price<span class="text-red-500">*</span>
                                 </label>
                                 <div class="mt-1 relative rounded-md shadow-sm">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -625,79 +600,87 @@
                                 </div>
                             </div>
 
-                            <!-- Description -->
-                            {{-- <div>
-                                <label for="modal_description"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Description
-                                </label>
-                                <textarea id="modal_description" name="description" rows="1" placeholder="Enter product description..."
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
-                            </div> --}}
-
-                            <!-- Image Upload/URL -->
-                            <div>
+                            <!-- Assigned Suppliers -->
+                            <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Product Image <span class="text-gray-400 text-xs">(Optional)</span>
+                                    Assigned Suppliers & Costs
                                 </label>
-
-                                <!-- Tab Buttons -->
-                                <div class="flex gap-2 mb-3">
-                                    <button type="button" onclick="switchCreateImageTab('url')" id="modal_url_tab"
-                                        class="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white">
-                                        URL
-                                    </button>
-                                    <button type="button" onclick="switchCreateImageTab('upload')"
-                                        id="modal_upload_tab"
-                                        class="px-4 py-2 text-sm font-medium rounded-md bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300">
-                                        Upload
-                                    </button>
+                                <div id="modal_assigned_suppliers_container" class="space-y-2">
+                                    <!-- Suppliers will be added here dynamically -->
                                 </div>
+                                <button type="button" onclick="addSupplierRow('modal')"
+                                    class="mt-2 inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    Add Supplier
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Image Upload/URL -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Product Image <span class="text-gray-400 text-xs">(Optional)</span>
+                            </label>
 
-                                <!-- URL Input Section -->
-                                <div id="modal_url_section">
-                                    <input type="url" id="modal_image_url" name="image_url"
-                                        placeholder="https://example.com/image.jpg" oninput="previewCreateImage()"
-                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <p class="mt-1 text-xs text-gray-500">Enter a direct link to an image</p>
-                                </div>
+                            <!-- Tab Buttons -->
+                            <div class="flex gap-2 mb-3">
+                                <button type="button" onclick="switchCreateImageTab('url')" id="modal_url_tab"
+                                    class="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white">
+                                    URL
+                                </button>
+                                <button type="button" onclick="switchCreateImageTab('upload')" id="modal_upload_tab"
+                                    class="px-4 py-2 text-sm font-medium rounded-md bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+                                    Upload
+                                </button>
+                            </div>
 
-                                <!-- Upload Input Section -->
-                                <div id="modal_upload_section" class="hidden">
-                                    <input type="file" id="modal_image_file" name="image_file" accept="image/*"
-                                        onchange="previewCreateUpload()"
-                                        class="block w-full text-sm text-gray-500 dark:text-gray-400
+                            <!-- URL Input Section -->
+                            <div id="modal_url_section">
+                                <input type="url" id="modal_image_url" name="image_url"
+                                    placeholder="https://example.com/image.jpg" oninput="previewCreateImage()"
+                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <p class="mt-1 text-xs text-gray-500">Enter a direct link to an image</p>
+                            </div>
+
+                            <!-- Upload Input Section -->
+                            <div id="modal_upload_section" class="hidden">
+                                <input type="file" id="modal_image_file" name="image_file" accept="image/*"
+                                    onchange="previewCreateUpload()"
+                                    class="block w-full text-sm text-gray-500 dark:text-gray-400
                                             file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0
                                             file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700
                                             hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-300">
-                                    <p class="mt-1 text-xs text-gray-500">Upload an image file (JPG, PNG, GIF, etc.)
-                                    </p>
-                                </div>
+                                <p class="mt-1 text-xs text-gray-500">Upload an image file (JPG, PNG, GIF, etc.)
+                                </p>
+                            </div>
 
-                                <!-- Image Preview -->
-                                <div id="modal_image_preview" class="mt-2 hidden">
-                                    <img id="modal_preview_img" src="" alt="Preview"
-                                        class="w-32 h-32 object-cover rounded-lg border border-gray-300 dark:border-gray-600"
-                                        onerror="this.parentElement.classList.add('hidden')">
-                                </div>
+                            <!-- Image Preview -->
+                            <div id="modal_image_preview" class="mt-2 hidden">
+                                <img id="modal_preview_img" src="" alt="Preview"
+                                    class="w-32 h-32 object-cover rounded-lg border border-gray-300 dark:border-gray-600"
+                                    onerror="this.parentElement.classList.add('hidden')">
                             </div>
                         </div>
                     </div>
-
-                    <!-- Modal Footer -->
-                    <div class="flex justify-end gap-3 mt-6 pt-4 border-t dark:border-gray-700">
-                        <button type="button" onclick="closeCreateProductModal()"
-                            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
-                            Cancel
-                        </button>
-                        <button type="submit"
-                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            Create Product
-                        </button>
-                    </div>
-                </form>
             </div>
+
+            <!-- Modal Footer -->
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t dark:border-gray-700">
+                <button type="button" onclick="closeCreateProductModal()"
+                    class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+                    Cancel
+                </button>
+                <button type="submit"
+                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Create Product
+                </button>
+            </div>
+            </form>
         </div>
+    </div>
     </div>
 
     {{-- Create Product Modal --}}
@@ -705,7 +688,7 @@
         function openCreateProductModal() {
             document.getElementById('createProductModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
-            
+
             // Clear and add one empty supplier row
             clearSupplierRows('modal');
             addSupplierRow('modal');
@@ -727,7 +710,7 @@
             // Hide custom brand/category inputs
             document.getElementById('modal_custom_brand').style.display = 'none';
             document.getElementById('modal_custom_category').style.display = 'none';
-            
+
             // Clear supplier rows
             clearSupplierRows('modal');
         }
@@ -921,36 +904,6 @@
                     }
                 });
             }
-
-            // Handle pricing method changes for create modal
-            const modalPricingMethodSelect = document.getElementById('modal_pricing_method');
-            const modalMarkupPriceField = document.getElementById('modal_markup_price_field');
-            const modalMarkupPriceSelect = document.getElementById('modal_markup_price_id');
-            const modalPriceInput = document.getElementById('modal_price');
-            const modalPriceRequired = document.getElementById('modal_price_required');
-            const modalPriceHelper = document.getElementById('modal_price_helper');
-
-            if (modalPricingMethodSelect) {
-                function updateModalPricingFields() {
-                    const method = modalPricingMethodSelect.value;
-
-                    if (method === 'markup') {
-                        modalMarkupPriceField.style.display = 'block';
-                        modalMarkupPriceSelect.setAttribute('required', 'required');
-                        modalPriceInput.removeAttribute('required');
-                        modalPriceRequired.style.display = 'none';
-                        modalPriceHelper.textContent = 'Optional (calculated from markup)';
-                    } else {
-                        modalMarkupPriceField.style.display = 'none';
-                        modalMarkupPriceSelect.removeAttribute('required');
-                        modalPriceInput.setAttribute('required', 'required');
-                        modalPriceRequired.style.display = 'inline';
-                    }
-                }
-
-                modalPricingMethodSelect.addEventListener('change', updateModalPricingFields);
-                updateModalPricingFields(); // Initialize on load
-            }
         });
 
         // Close on Escape key
@@ -1070,54 +1023,28 @@
                         addSupplierRow('edit');
                     }
 
-                    // Populate pricing method and markup price
-                    const pricingMethodSelect = document.getElementById('edit_pricing_method');
-                    const hasCostingData = data.product.total_cost && data.product.total_cost > 0;
-                    
-                    // Clear and rebuild pricing method options
-                    pricingMethodSelect.innerHTML = '<option value="manual">Manual Price</option>';
-                    
-                    // Only add markup option if product has costing data
-                    if (hasCostingData) {
-                        const markupOption = document.createElement('option');
-                        markupOption.value = 'markup';
-                        markupOption.textContent = 'Markup Price';
-                        pricingMethodSelect.appendChild(markupOption);
-                    }
-                    
-                    // Set the selected value
-                    pricingMethodSelect.value = data.product.pricing_method || 'manual';
-                    
-                    // Update help text
-                    const helpText = pricingMethodSelect.parentElement.querySelector('.text-gray-500');
-                    if (helpText) {
-                        helpText.textContent = hasCostingData 
-                            ? 'Manual: Fixed price | Markup: From markup %'
-                            : 'Manual: Fixed price (Markup pricing available after purchases update cost)';
-                    }
-
+                    // Show markup field only if product has markup assigned
+                    const markupPriceField = document.getElementById('edit_markup_price_field');
                     const markupPriceSelect = document.getElementById('edit_markup_price_id');
-                    if (data.markupPrices) {
-                        markupPriceSelect.innerHTML = '<option value="">Select markup...</option>';
-                        data.markupPrices.forEach(markup => {
-                            const option = document.createElement('option');
-                            option.value = markup.id;
-                            option.textContent = `${markup.name} (${markup.markup_percentage}%)`;
-                            option.selected = data.product.markup_price_id === markup.id;
-                            markupPriceSelect.appendChild(option);
-                        });
-                    }
 
-                    // Populate total cost
-                    const totalCostField = document.getElementById('edit_total_cost');
-                    if (data.product.total_cost) {
-                        totalCostField.value = parseFloat(data.product.total_cost).toFixed(2);
+                    if (data.product.markup_price_id) {
+                        // Product has markup - show field for removing it
+                        markupPriceField.style.display = 'block';
+
+                        if (data.markupPrices) {
+                            markupPriceSelect.innerHTML = '<option value="">Remove markup (set to manual)</option>';
+                            data.markupPrices.forEach(markup => {
+                                const option = document.createElement('option');
+                                option.value = markup.id;
+                                option.textContent = `${markup.name} (${markup.markup_percentage}%)`;
+                                option.selected = data.product.markup_price_id === markup.id;
+                                markupPriceSelect.appendChild(option);
+                            });
+                        }
                     } else {
-                        totalCostField.value = '0.00';
+                        // Product has no markup - hide field
+                        markupPriceField.style.display = 'none';
                     }
-
-                    // Trigger pricing field update
-                    updateEditPricingFields();
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -1141,37 +1068,7 @@
             document.getElementById('edit_urlPreviewContainer').classList.add('hidden');
         }
 
-        // Handle pricing method changes for edit modal
-        function updateEditPricingFields() {
-            const pricingMethodSelect = document.getElementById('edit_pricing_method');
-            const markupPriceField = document.getElementById('edit_markup_price_field');
-            const markupPriceSelect = document.getElementById('edit_markup_price_id');
-            const priceInput = document.getElementById('edit_price');
-            const priceRequired = document.getElementById('edit_price_required');
 
-            const method = pricingMethodSelect.value;
-
-            if (method === 'markup') {
-                markupPriceField.style.display = 'block';
-                markupPriceSelect.setAttribute('required', 'required');
-                priceInput.removeAttribute('required');
-                priceRequired.style.display = 'none';
-        
-            } else {
-                markupPriceField.style.display = 'none';
-                markupPriceSelect.removeAttribute('required');
-                priceInput.setAttribute('required', 'required');
-                priceRequired.style.display = 'inline';
-            }
-        }
-
-        // Attach event listener for edit pricing method
-        document.addEventListener('DOMContentLoaded', function() {
-            const editPricingMethodSelect = document.getElementById('edit_pricing_method');
-            if (editPricingMethodSelect) {
-                editPricingMethodSelect.addEventListener('change', updateEditPricingFields);
-            }
-        });
 
         // STOCK ADJUSTMENT MODAL
         let currentProductStock = 0;
@@ -1356,10 +1253,7 @@
                     // }
 
                     // Total Cost
-                    const totalCost = data.total_cost || 0;
-                    document.getElementById('view_total_cost').textContent = '₱' + new Intl.NumberFormat('en-PH', {
-                        minimumFractionDigits: 2
-                    }).format(totalCost);
+
 
                     // Markup
                     if (data.pricing_method === 'markup' && data.markup_price) {
@@ -1397,39 +1291,41 @@
                     // Assigned Suppliers
                     const assignedSuppliersContainer = document.getElementById('view_assigned_suppliers_container');
                     const assignedSuppliersList = document.getElementById('view_assigned_suppliers_list');
-                    
+
                     if (data.suppliers && data.suppliers.length > 0) {
                         assignedSuppliersContainer.style.display = 'block';
                         assignedSuppliersList.innerHTML = '';
-                        
+
                         data.suppliers.forEach(supplier => {
                             const supplierDiv = document.createElement('div');
-                            supplierDiv.className = 'flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded';
-                            
+                            supplierDiv.className =
+                                'flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded';
+
                             const nameAndBadge = document.createElement('div');
                             nameAndBadge.className = 'flex items-center gap-2';
-                            
+
                             const nameSpan = document.createElement('span');
                             nameSpan.className = 'text-sm text-gray-900 dark:text-white';
                             nameSpan.textContent = supplier.supplier_name;
                             nameAndBadge.appendChild(nameSpan);
-                            
+
                             if (supplier.pivot.is_primary) {
                                 const badge = document.createElement('span');
-                                badge.className = 'px-2 py-0.5 text-xs font-semibold text-yellow-800 bg-yellow-200 rounded';
+                                badge.className =
+                                    'px-2 py-0.5 text-xs font-semibold text-yellow-800 bg-yellow-200 rounded';
                                 badge.textContent = 'Primary';
                                 nameAndBadge.appendChild(badge);
                             }
-                            
+
                             supplierDiv.appendChild(nameAndBadge);
-                            
+
                             if (supplier.pivot.cost) {
                                 const costSpan = document.createElement('span');
                                 costSpan.className = 'text-sm font-medium text-gray-700 dark:text-gray-300';
                                 costSpan.textContent = '₱' + parseFloat(supplier.pivot.cost).toFixed(2);
                                 supplierDiv.appendChild(costSpan);
                             }
-                            
+
                             assignedSuppliersList.appendChild(supplierDiv);
                         });
                     } else {
@@ -1484,7 +1380,8 @@
                     }
 
                     // Show/hide no supplier message
-                    if (!data.last_supplier && (!data.suppliers || data.suppliers.length === 0) && !data.last_purchase_price) {
+                    if (!data.last_supplier && (!data.suppliers || data.suppliers.length === 0) && !data
+                        .last_purchase_price) {
                         document.getElementById('view_no_supplier').style.display = 'block';
                     }
 
@@ -1654,8 +1551,10 @@
                                 </div>
                                 <button type="button" onclick="addSupplierRow('edit')"
                                     class="mt-2 inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                     </svg>
                                     Add Supplier
                                 </button>
@@ -1684,46 +1583,30 @@
                             </div>
                         </div>
 
-                        <!-- Pricing Method and Markup Price -->
-                        <div class="grid grid-cols-3 gap-2">
-                            <!-- Pricing Method -->
-                            <div>
-                                <label for="edit_pricing_method"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Pricing Method<span class="text-red-500">*</span>
-                                </label>
-                                <select id="edit_pricing_method" name="pricing_method" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="manual">Manual Price</option>
-                                    <option value="markup">Markup Price</option>
-                                </select>
-                                <p class="mt-1 text-xs text-gray-500">
-                                    Manual: Fixed price | Markup: From markup %
-                                </p>
-                            </div>
-
-                            <!-- Markup Price Configuration -->
+                        <!-- Price and Markup Configuration -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <!-- Markup Price Configuration (For removing markup) -->
                             <div id="edit_markup_price_field" style="display: none;">
                                 <label for="edit_markup_price_id"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Markup Configuration<span class="text-red-500">*</span>
+                                    Markup Configuration
                                 </label>
                                 <select id="edit_markup_price_id" name="markup_price_id"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">Select markup...</option>
+                                    <option value="">Remove markup (set to manual)</option>
                                     @foreach ($markupPrices as $markup)
                                         <option value="{{ $markup->id }}">{{ $markup->name }}
                                             ({{ $markup->markup_percentage }}%)
                                         </option>
                                     @endforeach
                                 </select>
-                                <p class="mt-1 text-xs text-gray-500">Price = Cost + Markup %</p>
+                                <p class="mt-1 text-xs text-gray-500">Clear selection to remove markup</p>
                             </div>
 
                             <div>
                                 <label for="edit_price"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Price<span class="text-red-500" id="edit_price_required">*</span>
+                                    Price<span class="text-red-500">*</span>
                                 </label>
                                 <div class="mt-1 relative rounded-md shadow-sm">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -1736,20 +1619,6 @@
                             </div>
 
                             <!-- Cost (Read-only display) -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Total Cost
-                                </label>
-                                <div class="mt-1 relative rounded-md shadow-sm">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <span class="text-gray-500 sm:text-sm">₱</span>
-                                    </div>
-                                    <input type="text" id="edit_total_cost" readonly
-                                        class="pl-7 block w-full rounded-md border-gray-300 bg-gray-50 dark:bg-gray-600 shadow-sm dark:border-gray-600 dark:text-white cursor-not-allowed"
-                                        placeholder="0.00">
-                                </div>
-                                <p class="mt-1 text-xs text-gray-500">From Purchase History</p>
-                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -2019,7 +1888,8 @@
                                 <div id="view_stock_name_container" style="display:none;" class="min-w-0">
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
                                         Name</label>
-                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden" id="view_stock_name"></p>
+                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden"
+                                        id="view_stock_name"></p>
                                 </div>
                                 <div class="min-w-0">
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Product
@@ -2031,7 +1901,8 @@
                                 <div class="min-w-0">
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">SKU</label>
-                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden" id="view_sku"></p>
+                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden"
+                                        id="view_sku"></p>
                                 </div>
                             </div>
 
@@ -2039,17 +1910,20 @@
                                 <div class="min-w-0">
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">Brand</label>
-                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden" id="view_brand"></p>
+                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden"
+                                        id="view_brand"></p>
                                 </div>
                                 <div id="view_size_container" style="display:none;" class="min-w-0">
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">Size</label>
-                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden" id="view_size"></p>
+                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden"
+                                        id="view_size"></p>
                                 </div>
                                 <div id="view_color_container" style="display:none;" class="min-w-0">
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">Color</label>
-                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden" id="view_color"></p>
+                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden"
+                                        id="view_color"></p>
                                 </div>
                             </div>
 
@@ -2057,10 +1931,14 @@
                                 <div class="min-w-0">
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">Category</label>
-                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden" id="view_category"></p>
+                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden"
+                                        id="view_category"></p>
                                 </div>
-                                <div id="view_assigned_suppliers_container" style="display:none;" class="col-span-2 min-w-0">
-                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Assigned Suppliers</label>
+                                <div id="view_assigned_suppliers_container" style="display:none;"
+                                    class="col-span-2 min-w-0">
+                                    <label
+                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Assigned
+                                        Suppliers</label>
                                     <div id="view_assigned_suppliers_list" class="space-y-2">
                                         <!-- Suppliers will be populated here -->
                                     </div>
@@ -2071,145 +1949,147 @@
                                 <div class="min-w-0">
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">Quantity</label>
-                                    <p class="text-lg font-semibold text-gray-900 dark:text-white break-words overflow-hidden" id="view_quantity">
+                                    <p class="text-lg font-semibold text-gray-900 dark:text-white break-words overflow-hidden"
+                                        id="view_quantity">
                                     </p>
                                 </div>
 
-                            <div class="grid grid-cols-3 gap-2">
-                                <div class="min-w-0">
-                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Price</label>
-                                    <p class="text-lg font-semibold text-green-600 dark:text-green-400 break-words overflow-hidden"
-                                        id="view_price"></p>
-                                </div>
-                                <div class="min-w-0">
-                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Total
-                                        Cost</label>
-                                    <p class="text-lg font-semibold text-blue-600 dark:text-blue-400 break-words overflow-hidden"
-                                        id="view_total_cost">₱0.00</p>
-                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="min-w-0">
+                                        <label
+                                            class="block text-sm font-medium text-gray-500 dark:text-gray-400">Price</label>
+                                        <p class="text-lg font-semibold text-green-600 dark:text-green-400 break-words overflow-hidden"
+                                            id="view_price"></p>
+                                    </div>
 
-                                {{-- <div class="min-w-0">
+                                    {{-- <div class="min-w-0">
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Inventory
                                         Value</label>
                                     <p class="text-lg font-semibold text-gray-900 dark:text-white break-words overflow-hidden"
                                         id="view_inventory_value"></p>
                                 </div> --}}
-                            </div>
-
-                            <div class="grid grid-cols-3 gap-2">
-                                <div id="view_markup_container" style="display:none;" class="min-w-0">
-                                    <label
-                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400">Markup</label>
-                                    <p class="text-lg font-semibold text-gray-600 dark:text-white break-words overflow-hidden" id="view_markup">
-                                    </p>
                                 </div>
-                                <div class="min-w-0">
-                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
-                                        Status</label>
-                                    <div id="view_stock_status"></div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- Right: Supplier & Product Info -->
-                        <div class="lg:col-span-5 space-y-2">
-
-                            <div class="grid grid-cols-2 gap-2">
-                                <!-- Supplier Information -->
-                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                                    <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Supplier
-                                        Information
-                                    </h4>
-                                    <div class="space-y-3">
-                                        <div id="view_last_supplier_container" style="display:none;">
-                                            <label
-                                                class="block text-xs font-medium text-gray-500 dark:text-gray-400">Last
-                                                Supplier</label>
-                                            <p class="text-sm font-medium text-gray-900 dark:text-white"
-                                                id="view_last_supplier"></p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-3"
-                                                id="view_last_received">
-                                            </p>
-                                        </div>
-                                        <div id="view_last_purchase_price_container" style="display:none;">
-                                            <label
-                                                class="block text-xs font-medium text-gray-500 dark:text-gray-400">Last
-                                                Purchase Price</label>
-                                            <p class="text-sm font-medium text-gray-900 dark:text-white"
-                                                id="view_last_purchase_price"></p>
-                                            <p class="text-xs text-green-600" id="view_price_margin"
-                                                style="display:none;"></p>
-                                        </div>
-                                        <div id="view_no_supplier" class="text-sm text-gray-500 dark:text-gray-400">No
-                                            supplier information available</div>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div id="view_markup_container" style="display:none;" class="min-w-0">
+                                        <label
+                                            class="block text-sm font-medium text-gray-500 dark:text-gray-400">Markup</label>
+                                        <p class="text-lg font-semibold text-gray-600 dark:text-white break-words overflow-hidden"
+                                            id="view_markup">
+                                        </p>
                                     </div>
-                                </div>
-
-                                <!-- Product Info -->
-                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                                    <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Product Info
-                                    </h4>
-                                    <div class="space-y-3">
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-xs text-gray-500 dark:text-gray-400">Product ID</span>
-                                            <span class="text-sm font-medium text-gray-900 dark:text-white"
-                                                id="view_product_id"></span>
-                                        </div>
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-xs text-gray-500 dark:text-gray-400">Created</span>
-                                            <span class="text-sm font-medium text-gray-900 dark:text-white"
-                                                id="view_created_at"></span>
-                                        </div>
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-xs text-gray-500 dark:text-gray-400">Last Updated</span>
-                                            <span class="text-sm font-medium text-gray-900 dark:text-white"
-                                                id="view_updated_at"></span>
-                                        </div>
+                                    <div class="min-w-0">
+                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
+                                            Status</label>
+                                        <div id="view_stock_status"></div>
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Right: Supplier & Product Info -->
+                            <div class="lg:col-span-5 space-y-2">
+
+                                <div class="grid grid-cols-2 gap-2">
+                                    <!-- Supplier Information -->
+                                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                                        <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Supplier
+                                            Information
+                                        </h4>
+                                        <div class="space-y-3">
+                                            <div id="view_last_supplier_container" style="display:none;">
+                                                <label
+                                                    class="block text-xs font-medium text-gray-500 dark:text-gray-400">Last
+                                                    Supplier</label>
+                                                <p class="text-sm font-medium text-gray-900 dark:text-white"
+                                                    id="view_last_supplier"></p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-3"
+                                                    id="view_last_received">
+                                                </p>
+                                            </div>
+                                            <div id="view_last_purchase_price_container" style="display:none;">
+                                                <label
+                                                    class="block text-xs font-medium text-gray-500 dark:text-gray-400">Last
+                                                    Purchase Price</label>
+                                                <p class="text-sm font-medium text-gray-900 dark:text-white"
+                                                    id="view_last_purchase_price"></p>
+                                                <p class="text-xs text-green-600" id="view_price_margin"
+                                                    style="display:none;"></p>
+                                            </div>
+                                            <div id="view_no_supplier"
+                                                class="text-sm text-gray-500 dark:text-gray-400">No
+                                                supplier information available</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Product Info -->
+                                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                                        <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Product Info
+                                        </h4>
+                                        <div class="space-y-3">
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs text-gray-500 dark:text-gray-400">Product
+                                                    ID</span>
+                                                <span class="text-sm font-medium text-gray-900 dark:text-white"
+                                                    id="view_product_id"></span>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs text-gray-500 dark:text-gray-400">Created</span>
+                                                <span class="text-sm font-medium text-gray-900 dark:text-white"
+                                                    id="view_created_at"></span>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs text-gray-500 dark:text-gray-400">Last
+                                                    Updated</span>
+                                                <span class="text-sm font-medium text-gray-900 dark:text-white"
+                                                    id="view_updated_at"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6" id="view_description_container" style="display:none;">
+                            <label
+                                class="block text-sm font-medium text-gray-500 dark:text-gray-400">Description</label>
+                            <p class="mt-1 text-gray-900 dark:text-white" id="view_description"></p>
                         </div>
                     </div>
-                    <div class="mt-6" id="view_description_container" style="display:none;">
-                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Description</label>
-                        <p class="mt-1 text-gray-900 dark:text-white" id="view_description"></p>
-                    </div>
-                </div>
 
-                <div class="flex justify-end gap-3 mt-6 pt-4 border-t dark:border-gray-700">
-                    <button type="button" onclick="closeViewProductModal()"
-                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
-                        Close
-                    </button>
-                    <button type="button" onclick="openEditFromView()"
-                        class="inline-flex items-center px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700">
-                        Edit Product
-                    </button>
+                    <div class="flex justify-end gap-3 mt-6 pt-4 border-t dark:border-gray-700">
+                        <button type="button" onclick="closeViewProductModal()"
+                            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+                            Close
+                        </button>
+                        <button type="button" onclick="openEditFromView()"
+                            class="inline-flex items-center px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700">
+                            Edit Product
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script>
-        // Supplier row management
-        let supplierRowIndex = 0;
-        const allSuppliers = @json($suppliers);
+        <script>
+            // Supplier row management
+            let supplierRowIndex = 0;
+            const allSuppliers = @json($suppliers);
 
-        function addSupplierRow(prefix, existingData = null) {
-            const container = document.getElementById(`${prefix}_assigned_suppliers_container`);
-            const index = supplierRowIndex++;
-            
-            const row = document.createElement('div');
-            row.className = 'grid grid-cols-12 gap-2 items-start';
-            row.id = `${prefix}_supplier_row_${index}`;
-            
-            let supplierOptions = '<option value="">Select supplier...</option>';
-            allSuppliers.forEach(supplier => {
-                const selected = existingData && existingData.supplier_id == supplier.supplier_id ? 'selected' : '';
-                supplierOptions += `<option value="${supplier.supplier_id}" ${selected}>${supplier.supplier_name}</option>`;
-            });
-            
-            row.innerHTML = `
+            function addSupplierRow(prefix, existingData = null) {
+                const container = document.getElementById(`${prefix}_assigned_suppliers_container`);
+                const index = supplierRowIndex++;
+
+                const row = document.createElement('div');
+                row.className = 'grid grid-cols-12 gap-2 items-start';
+                row.id = `${prefix}_supplier_row_${index}`;
+
+                let supplierOptions = '<option value="">Select supplier...</option>';
+                allSuppliers.forEach(supplier => {
+                    const selected = existingData && existingData.supplier_id == supplier.supplier_id ? 'selected' : '';
+                    supplierOptions +=
+                        `<option value="${supplier.supplier_id}" ${selected}>${supplier.supplier_name}</option>`;
+                });
+
+                row.innerHTML = `
                 <div class="col-span-5">
                     <select name="assigned_suppliers[${index}][supplier_id]" required
                         class="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
@@ -2227,40 +2107,79 @@
                             class="pl-6 w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                     </div>
                 </div>
-                <div class="col-span-2 flex items-center">
+                <div class="col-span-4 flex flex-col gap-1">
                     <label class="flex items-center cursor-pointer">
                         <input type="checkbox" name="assigned_suppliers[${index}][is_primary]" value="1"
                             ${existingData && existingData.pivot.is_primary ? 'checked' : ''}
                             class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600">
                         <span class="ml-1 text-xs text-gray-600 dark:text-gray-400">Primary</span>
                     </label>
-                </div>
-                <div class="col-span-2 flex justify-end">
                     <button type="button" onclick="removeSupplierRow('${prefix}', ${index})"
-                        class="text-red-600 hover:text-red-800 dark:text-red-400">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="text-red-600 hover:text-red-800 dark:text-red-400 flex items-center gap-1 text-xs">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                         </svg>
+                        Remove
                     </button>
                 </div>
             `;
-            
-            container.appendChild(row);
-        }
 
-        function removeSupplierRow(prefix, index) {
-            const row = document.getElementById(`${prefix}_supplier_row_${index}`);
-            if (row) {
-                row.remove();
+                container.appendChild(row);
             }
-        }
 
-        function clearSupplierRows(prefix) {
-            const container = document.getElementById(`${prefix}_assigned_suppliers_container`);
-            if (container) {
-                container.innerHTML = '';
+            function removeSupplierRow(prefix, index) {
+                const row = document.getElementById(`${prefix}_supplier_row_${index}`);
+                if (row) {
+                    row.remove();
+                }
             }
-        }
-    </script>
+
+            function clearSupplierRows(prefix) {
+                const container = document.getElementById(`${prefix}_assigned_suppliers_container`);
+                if (container) {
+                    container.innerHTML = '';
+                }
+            }
+
+            /**
+             * Apply markup price to product's selling price
+             */
+            function applyMarkupPrice(productId, markupPrice) {
+                if (!confirm(`Apply markup price ₱${markupPrice.toFixed(2)} to this product's selling price?`)) {
+                    return;
+                }
+
+                fetch(`/inventory/products/${productId}/apply-markup`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            selling_price: markupPrice
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to apply markup price');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            // Show success message
+                            alert('Markup price applied successfully!');
+                            // Reload the page to reflect changes
+                            window.location.reload();
+                        } else {
+                            alert('Error: ' + (data.message || 'Failed to apply markup price'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred: ' + error.message);
+                    });
+            }
+        </script>
 
 </x-app-layout>

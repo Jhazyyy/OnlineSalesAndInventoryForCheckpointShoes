@@ -902,6 +902,7 @@ Route::get('dashboard/top-purchase-items', function (Illuminate\Http\Request $re
         // API routes
         Route::post('/bulk-update-stock', [ProductController::class, 'bulkUpdateStock'])->middleware('permission:manage stock')->name('bulk-update-stock');
         Route::get('/alerts', [ProductController::class, 'getAlertsData'])->middleware('permission:view products')->name('alerts');
+        Route::post('/{product}/apply-markup', [ProductController::class, 'applyMarkup'])->middleware('permission:edit products')->name('apply-markup');
     });
 
     // Stock Adjustment Routes
@@ -1117,6 +1118,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Status management routes
         Route::post('/{order}/change-status', [PurchaseOrderController::class, 'changeStatus'])->middleware('permission:edit purchases')->name('change-status');
+
+        // AJAX routes
+        Route::post('/get-supplier-cost', [PurchaseOrderController::class, 'getSupplierCost'])->middleware('permission:view purchases')->name('get-supplier-cost');
 
         // Analytics and Reports
         Route::get('/analytics', [PurchaseOrderController::class, 'analytics'])->middleware('permission:view purchases')->name('analytics');

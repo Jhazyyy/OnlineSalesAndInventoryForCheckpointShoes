@@ -107,20 +107,6 @@
                     </form>
                 </div>
             </div>
-
-            <!-- Success/Error Messages -->
-            @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
-                    <span class="block sm:inline">{{ session('error') }}</span>
-                </div>
-            @endif
-
             <!-- Orders Table -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
@@ -129,7 +115,7 @@
                             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                 <thead class="bg-gray-50 dark:bg-gray-700">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a href="{{ request()->fullUrlWithQuery(['sort' => 'order_number', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
                                                 Order #
                                                 @if(request('sort') === 'order_number')
@@ -137,8 +123,8 @@
                                                 @endif
                                             </a>
                                         </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supplier & Contact</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">Supplier & Contact</th>
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a href="{{ request()->fullUrlWithQuery(['sort' => 'order_date', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
                                                 Order Date
                                                 @if(request('sort') === 'order_date')
@@ -146,10 +132,10 @@
                                                 @endif
                                             </a>
                                         </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Expected Date</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Received Date</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Items</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">Expected Date</th>
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">Received Date</th>
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">Items</th>
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             <a href="{{ request()->fullUrlWithQuery(['sort' => 'total_amount', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
                                                 Total
                                                 @if(request('sort') === 'total_amount')
@@ -157,9 +143,9 @@
                                                 @endif
                                             </a>
                                         </th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">Priority</th>
+                                        <th class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">

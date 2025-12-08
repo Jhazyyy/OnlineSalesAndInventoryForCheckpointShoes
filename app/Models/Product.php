@@ -371,18 +371,18 @@ class Product extends Model
     {
         switch ($this->pricing_method) {
             case 'manual':
-                // Use the manually set price
-                return $this->price;
+                // Use the manually set price (raw stored value)
+                return $this->attributes['price'] ?? 0;
                 
             case 'markup':
                 // Calculate from markup price if set
                 if ($this->markupPrice && $this->total_cost) {
                     return $this->markupPrice->calculatePrice($this->total_cost);
                 }
-                return $this->price; // Fallback to manual price
+                return $this->attributes['price'] ?? 0; // Fallback to manual price
                 
             default:
-                return $this->price;
+                return $this->attributes['price'] ?? 0;
         }
     }
 

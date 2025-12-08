@@ -169,34 +169,34 @@
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
                                     <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Order #</th>
                                     <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Date</th>
                                     <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Customer</th>
                                     <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Items</th>
                                     <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        class="px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Payment</th>
                                     <th
-                                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        class="px-6 py-3 text-center text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Payment Status</th>
                                     <th
-                                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        class="px-6 py-3 text-center text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Subtotal</th>
                                     <th
-                                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        class="px-6 py-3 text-center text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Tax</th>
                                     <th
-                                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        class="px-6 py-3 text-center text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Total</th>
                                     <th
-                                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        class="px-6 py-3 text-center text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Actions</th>
                                 </tr>
                             </thead>
@@ -228,7 +228,7 @@
                                             <div class="text-sm text-gray-900 dark:text-white capitalize">
                                                 {{ str_replace('_', ' ', $order->payment_method) }}</div>
                                         </td>
-                                        <td class="px-6 py-4 text-center">
+                                        <td class="px-6 py-4 text-center whitespace-nowrap">
                                             <span
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $order->payment_status === 'paid' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' }}">
                                                 {{ ucfirst($order->payment_status) }}

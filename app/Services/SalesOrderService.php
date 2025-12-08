@@ -108,16 +108,36 @@ class SalesOrderService
                                          'name' => $customer->display_name,
                                      ];
                                  }),
-            'products' => Product::orderBy('product_name')
+            'products' => Product::with('markupPrice')
+                               ->orderBy('product_name')
                                ->get()
                                ->map(function ($product) {
                                    // Use quantity from product
                                    $stock = $product->quantity;
                                    
+                                   // Use the product's calculated selling price which includes markup if applied
+                                   $sellingPrice = $product->calculateSellingPrice();
+                                   
+                                   // For display purposes, also calculate what the markup price would be
+                                   $markupPrice = null;
+                                   $markupPercentage = null;
+                                   if ($product->pricing_method === 'markup' && $product->markupPrice) {
+                                       // Use total_cost if available, otherwise use current price as base
+                                       $baseCost = $product->total_cost && $product->total_cost > 0 
+                                           ? $product->total_cost 
+                                           : $product->price;
+                                       $markupPrice = $baseCost * (1 + ($product->markupPrice->markup_percentage / 100));
+                                       $markupPercentage = $product->markupPrice->markup_percentage;
+                                   }
+                                   
                                    return [
                                        'id' => $product->product_id,
                                        'name' => $product->product_name . ' - ' . $product->product_brand,
-                                       'price' => $product->price,
+                                       'price' => $sellingPrice, // Use calculated selling price
+                                       'markup_price' => $markupPrice,
+                                       'markup_percentage' => $markupPercentage,
+                                       'pricing_method' => $product->pricing_method,
+                                       'markup_price_id' => $product->markup_price_id,
                                        'stock' => $stock,
                                        'category' => $product->product_category,
                                        'brand' => $product->product_brand,

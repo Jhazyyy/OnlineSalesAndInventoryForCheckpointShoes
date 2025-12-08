@@ -193,7 +193,6 @@
                 <th>Category</th>
                 <th class="left">Sold Qty</th>
                 <th class="left">Sold Amount</th>
-                <th class="left">Stock</th>
             </tr>
         </thead>
         <tbody>
@@ -205,7 +204,6 @@
                     <td>{{ $row->product_category }}</td>
                     <td class="left">{{ (int) ($row->total_quantity ?? 0) }}</td>
                     <td class="left">₱{{ number_format($row->total_revenue ?? 0, 2) }}</td>
-                    <td class="left">{{ (int) ($row->instock_qty ?? 0) }}</td>
                 </tr>
             @endforeach
         </tbody>

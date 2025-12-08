@@ -220,18 +220,12 @@
                                     <option value="manual"
                                         {{ old('pricing_method', $product->pricing_method ?? 'manual') == 'manual' ? 'selected' : '' }}>
                                         Manual Price</option>
-                                    @if($product->total_cost && $product->total_cost > 0)
                                     <option value="markup"
                                         {{ old('pricing_method', $product->pricing_method) == 'markup' ? 'selected' : '' }}>
                                         Markup Price</option>
-                                    @endif
                                 </select>
                                 <p class="mt-1 text-xs text-gray-500">
-                                    @if($product->total_cost && $product->total_cost > 0)
-                                        Manual: Fixed price | Markup: Applied from markup configuration
-                                    @else
-                                        Manual: Fixed price (Markup pricing available after purchases update cost)
-                                    @endif
+                                    Manual: Fixed price | Markup: Applied from markup configuration
                                 </p>
                                 @error('pricing_method')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -277,10 +271,15 @@
                                     <input type="number" id="price" name="price"
                                         value="{{ old('price', $product->price) }}" step="0.01" min="0"
                                         required
-                                        class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('price') border-red-500 @enderror">
+                                        class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white @error('price') border-red-500 @enderror"
+                                        {{ $product->pricing_method === 'markup' ? 'readonly' : '' }}>
                                 </div>
                                 <p class="mt-1 text-xs text-gray-500" id="price_helper">
-                                    Base price for the product
+                                    @if($product->pricing_method === 'markup')
+                                        Auto-calculated from cost (₱{{ number_format($product->total_cost ?? 0, 2) }}) + markup ({{ $product->markupPrice->markup_percentage ?? 0 }}%)
+                                    @else
+                                        Selling Price
+                                    @endif
                                 </p>
                                 @error('price')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

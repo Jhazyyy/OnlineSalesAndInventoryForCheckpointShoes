@@ -353,11 +353,57 @@
                         const priceInput = row.querySelector('.unit-price-input');
                         const productNameDisplay = row.querySelector('.item-product-name');
 
-                        priceInput.value = price;
+                        // Get selected supplier
+                        const supplierSelect = document.getElementById('supplier_id');
+                        const supplierId = supplierSelect ? supplierSelect.value : '';
+                        const productId = e.target.value;
+
                         if (productNameDisplay) {
                             productNameDisplay.textContent = productName;
                         }
-                        calculateLineTotal(row);
+
+                        // Fetch supplier cost if product and supplier selected
+                        if (productId && supplierId) {
+                            console.log('Fetching cost for product:', productId, 'supplier:', supplierId);
+                            fetch('{{ route('purchases.purchase-orders.get-supplier-cost') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    product_id: productId,
+                                    supplier_id: supplierId
+                                })
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                console.log('Received cost data:', data);
+                                if (data.cost !== null && data.cost !== undefined) {
+                                    priceInput.value = data.cost;
+                                    console.log('Set price to supplier cost:', data.cost);
+                                } else {
+                                    priceInput.value = price;
+                                    console.log('No supplier cost found, using default price:', price);
+                                }
+                                calculateLineTotal(row);
+                            })
+                            .catch(error => {
+                                console.error('Error fetching supplier cost:', error);
+                                priceInput.value = price;
+                                calculateLineTotal(row);
+                            });
+                        } else {
+                            console.log('Product or supplier not selected, using default price');
+                            priceInput.value = price;
+                            calculateLineTotal(row);
+                        }
                     }
                 });
 
@@ -544,6 +590,47 @@
 
                     document.getElementById('subtotal-display').textContent = '₱' + subtotal.toFixed(2);
                     document.getElementById('total-display').textContent = '₱' + total.toFixed(2);
+                }
+
+                // Handle supplier change - update all product prices
+                const supplierSelect = document.getElementById('supplier_id');
+                if (supplierSelect) {
+                    supplierSelect.addEventListener('change', function() {
+                        const supplierId = this.value;
+                        
+                        if (!supplierId) return;
+
+                        // Update prices for all selected products
+                        document.querySelectorAll('.item-row').forEach(row => {
+                            const productSelect = row.querySelector('.product-select');
+                            const productId = productSelect ? productSelect.value : '';
+                            const priceInput = row.querySelector('.unit-price-input');
+
+                            if (productId) {
+                                fetch('{{ route('purchases.purchase-orders.get-supplier-cost') }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body: JSON.stringify({
+                                        product_id: productId,
+                                        supplier_id: supplierId
+                                    })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.cost) {
+                                        priceInput.value = data.cost;
+                                        calculateLineTotal(row);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching supplier cost:', error);
+                                });
+                            }
+                        });
+                    });
                 }
             });
         </script>

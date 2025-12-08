@@ -182,7 +182,7 @@
                                     Quantity <span class="text-red-500">*</span>
                                 </label>
                                 <input type="number" id="quantity" name="quantity"
-                                    value="{{ old('quantity', $return->quantity) }}" required min="1"
+                                    value="{{ old('quantity', $return->quantity) }}" required min="1" readonly disabled
                                     @if($return->salesOrder)
                                         @php
                                             $orderItem = $return->salesOrder->items->where('product_id', $return->product_id)->first();
@@ -223,7 +223,7 @@
                                     </div>
                                     <input type="number" id="price" name="price"
                                         value="{{ old('price', $return->price) }}" required min="0"
-                                        step="0.01"
+                                        step="0.01" readonly disabled
                                         class="mt-1 block w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 </div>
                                 @error('price')
@@ -295,7 +295,7 @@
                                     </h3>
                                     <div class="mt-2 text-sm text-blue-700 dark:text-blue-300">
                                         @if ($return->isPending())
-                                            <p>This return is currently pending approval. You can modify all fields.</p>
+                                            <p>This return is currently pending approval. You can modify some fields.</p>
                                         @else
                                             <p>This return has been {{ $return->return_status }}. Some restrictions may
                                                 apply to editing.</p>

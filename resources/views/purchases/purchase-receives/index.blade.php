@@ -112,19 +112,6 @@
                 </div>
             </div>
 
-            <!-- Success/Error Messages -->
-            @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
-                    <span class="block sm:inline">{{ session('error') }}</span>
-                </div>
-            @endif
-
             <!-- Receives Table -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg break-words">
                 <div class="p-4 sm:p-6">
@@ -134,7 +121,7 @@
                                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                     <thead class="bg-gray-50 dark:bg-gray-700">
                                         <tr>
-                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
+                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
                                                 <a href="{{ request()->fullUrlWithQuery(['sort' => 'receive_date', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
                                                     Date
                                                     @if(request('sort') === 'receive_date')
@@ -142,7 +129,7 @@
                                                     @endif
                                                 </a>
                                             </th>
-                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
+                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
                                                 <a href="{{ request()->fullUrlWithQuery(['sort' => 'receive_number', 'order' => request('order') === 'asc' ? 'desc' : 'asc']) }}">
                                                     Receive#
                                                     @if(request('sort') === 'receive_number')
@@ -150,13 +137,13 @@
                                                     @endif
                                                 </a>
                                             </th>
-                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">PO#</th>
-                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Supplier</th>
-                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Received By</th>
-                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Status</th>
-                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Quantity</th>
-                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Progress</th>
-                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Actions</th>
+                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">PO#</th>
+                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Supplier</th>
+                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Received By</th>
+                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Status</th>
+                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Quantity</th>
+                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-left text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Progress</th>
+                                            <th class="px-3 sm:px-4 lg:px-6 py-3 text-center text-xs font-mono text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">

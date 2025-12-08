@@ -430,6 +430,21 @@ class PurchaseReceiveService
                 
                 // Always update cost from inventory for purchased products
                 $costingService->updateCostFromInventory($product->fresh());
+                
+                // After updating cost, update selling price if using markup pricing
+                $product = $product->fresh();
+                if ($product->pricing_method === 'markup' && $product->markupPrice && $product->total_cost) {
+                    $newPrice = $product->markupPrice->calculatePrice($product->total_cost);
+                    $product->update(['price' => $newPrice]);
+                    
+                    Log::info('Auto-updated product price from markup', [
+                        'product_id' => $product->product_id,
+                        'product_name' => $product->product_name,
+                        'total_cost' => $product->total_cost,
+                        'new_price' => $newPrice,
+                        'markup_percentage' => $product->markupPrice->markup_percentage
+                    ]);
+                }
             } catch (\Exception $e) {
                 Log::warning('Failed to auto-update product cost', [
                     'product_id' => $product->product_id,

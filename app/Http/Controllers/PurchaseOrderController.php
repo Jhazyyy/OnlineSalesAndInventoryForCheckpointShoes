@@ -222,4 +222,53 @@ class PurchaseOrderController extends Controller
             'suppliers' => $filterOptions['suppliers'],
         ]);
     }
+
+    /**
+     * Get supplier cost for a product
+     */
+    public function getSupplierCost(Request $request)
+    {
+        try {
+            $productId = $request->input('product_id');
+            $supplierId = $request->input('supplier_id');
+
+            if (!$productId) {
+                return response()->json(['cost' => null]);
+            }
+
+            $product = Product::find($productId);
+            
+            if (!$product) {
+                return response()->json(['cost' => null]);
+            }
+
+            // If supplier is selected, try to get cost from that supplier
+            if ($supplierId) {
+                $supplier = $product->suppliers()->where('suppliers.supplier_id', $supplierId)->first();
+                
+                if ($supplier && $supplier->pivot && $supplier->pivot->cost) {
+                    return response()->json(['cost' => (float) $supplier->pivot->cost]);
+                }
+            }
+
+            // Fallback to primary supplier cost
+            $primarySupplier = $product->suppliers()->where('product_supplier.is_primary', true)->first();
+
+            if ($primarySupplier && $primarySupplier->pivot && $primarySupplier->pivot->cost) {
+                return response()->json(['cost' => (float) $primarySupplier->pivot->cost]);
+            }
+
+            // Fallback to any supplier cost
+            $anySupplier = $product->suppliers()->first();
+            if ($anySupplier && $anySupplier->pivot && $anySupplier->pivot->cost) {
+                return response()->json(['cost' => (float) $anySupplier->pivot->cost]);
+            }
+
+            // No supplier cost found
+            return response()->json(['cost' => null]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching supplier cost: ' . $e->getMessage());
+            return response()->json(['cost' => null, 'error' => $e->getMessage()], 500);
+        }
+    }
 }

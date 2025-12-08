@@ -339,16 +339,16 @@
                     <!-- Sales Order Master Table -->
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
                         <div class="p-4 sm:p-6">
-                            <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Sales Order
+                            <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Sales Orders
                             </h3>
                             <div class="overflow-x-auto">
                                 <table
                                     class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm sm:text-base">
                                     <thead class="bg-gray-50 dark:bg-gray-700">
                                         <tr>
-                                            @foreach (['SKU', 'Product Name', 'Brand', 'Category', 'Sold Qty', 'Sold Amount', 'Stock'] as $header)
+                                            @foreach (['SKU', 'Product Name', 'Brand', 'Category', 'Sold Qty', 'Sold Amount'] as $header)
                                                 <th
-                                                    class="px-4 py-3 sm:px-6 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">
+                                                    class="px-4 py-3 sm:px-6 text-left text-xs font-mono text-gray-700 dark:text-gray-300 uppercase">
                                                     {{ $header }}</th>
                                             @endforeach
                                         </tr>
@@ -370,12 +370,12 @@
                                                     {{ (int) ($row->total_quantity ?? 0) }}</td>
                                                 <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
                                                     ₱{{ number_format($row->total_revenue ?? 0, 2) }}</td>
-                                                <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
-                                                    {{ (int) ($row->instock_qty ?? 0) }}</td>
+                                                {{-- <td class="px-4 py-3 sm:px-6 text-gray-800 dark:text-gray-300">
+                                                    {{ (int) ($row->instock_qty ?? 0) }}</td> --}}
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="7"
+                                                <td colspan="6"
                                                     class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                                                     No sales in selected period.
                                                 </td>

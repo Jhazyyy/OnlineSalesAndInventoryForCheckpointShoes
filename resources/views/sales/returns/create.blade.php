@@ -19,18 +19,6 @@
                 </div>
             </div>
 
-            <!-- Error Messages -->
-            @if ($errors->any())
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
-                    <strong class="font-bold">Please fix the following errors:</strong>
-                    <ul class="mt-2 list-disc list-inside">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
             <!-- Return Form -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
@@ -130,15 +118,6 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                                    <svg class="inline w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                    You can return products even if they are currently out of stock. The returned items
-                                    will be added back to inventory.
-                                </p>
                                 @error('product_id')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror

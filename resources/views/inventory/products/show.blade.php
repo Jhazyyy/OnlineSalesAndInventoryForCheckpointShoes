@@ -78,16 +78,16 @@
                                 </div>
                                 <div>
                                     <label
-                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400">Price</label>
+                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400">Selling Price</label>
                                     <p class="text-xl font-bold text-green-600 dark:text-green-400">
                                         ₱{{ number_format($product->price, 2) }}</p>
                                 </div>
-                                <div>
+                                {{-- <div>
                                     <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Inventory
                                         Value</label>
                                     <p class="text-lg font-semibold text-gray-900 dark:text-white">
                                         ₱{{ number_format($product->inventory_value, 2) }}</p>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>

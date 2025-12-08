@@ -173,15 +173,15 @@
             @if(!empty($report['product_purchases']) && count($report['product_purchases']) > 0)
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-4 sm:p-6">
-                    <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Purchase Order(By Product)</h3>
+                    <h3 class="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white">Purchase Order (By Product)</h3>
 
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-xs sm:text-base">
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
-                                    @foreach (['SKU', 'Product Name', 'Brand', 'Category', 'Qty Ordered', 'Qty Received', 'Avg. Unit Price', 'Total Cost'] as $header)
+                                    @foreach (['SKU', 'Product Name', 'Brand', 'Category', 'Qty Ordered', 'Qty Received', 'Avg. Unit Price'] as $header)
                                         <th
-                                            class="px-4 py-3 sm:px-6 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">
+                                            class="px-4 py-3 sm:px-6 text-left text-xs font-mono text-gray-700 dark:text-gray-300 uppercase">
                                             {{ $header }}</th>
                                     @endforeach
                                 </tr>
@@ -203,8 +203,6 @@
                                             {{ number_format($product->total_received ?? 0) }}</td>
                                         <td class="px-4 py-3 sm:px-6 text-left text-gray-800 dark:text-gray-300">
                                             ₱{{ number_format($product->avg_unit_price ?? 0, 2) }}</td>
-                                        <td class="px-4 py-3 sm:px-6 text-left text-gray-800 dark:text-gray-300">
-                                            ₱{{ number_format($product->total_cost ?? 0, 2) }}</td>
                                         {{-- <td class="px-4 py-3 sm:px-6 text-left text-gray-800 dark:text-gray-300">
                                             {{ number_format($product->current_stock ?? 0) }}</td> --}}
                                     </tr>
@@ -227,7 +225,7 @@
                                 <tr>
                                     @foreach (['PO Number', 'Supplier', 'Order Date', 'Amount Due', 'Due Date', 'Total Paid', 'Status'] as $header)
                                         <th
-                                            class="px-4 py-3 sm:px-6 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">
+                                            class="px-4 py-3 sm:px-6 text-left text-xs font-mono text-gray-700 dark:text-gray-300 uppercase">
                                             {{ $header }}</th>
                                     @endforeach
                                 </tr>

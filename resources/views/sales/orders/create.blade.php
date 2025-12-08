@@ -58,7 +58,12 @@
                                             <h3 class="font-medium text-gray-900 dark:text-white text-sm mb-1 truncate" title="{{ $product['name'] }}">
                                                 {{ $product['name'] }}
                                             </h3>
-                                            <p class="text-lg font-bold text-gray-900 dark:text-white">₱{{ number_format($product['price'], 2) }}</p>
+                                            <div class="flex items-baseline gap-2">
+                                                <p class="text-lg font-bold text-gray-900 dark:text-white">₱{{ number_format($product['price'], 2) }}</p>
+                                                @if($product['markup_percentage'])
+                                                    <span class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900 px-2 py-0.5 rounded">+{{ $product['markup_percentage'] }}%</span>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                     
@@ -101,10 +106,16 @@
                                                     <span class="text-gray-600 dark:text-gray-400">Brand:</span>
                                                     <span class="font-medium text-gray-900 dark:text-white truncate ml-2">{{ $product['brand'] ?? 'N/A' }}</span>
                                                 </div>
-                                                <div class="flex justify-between">
+                                                <div class="flex justify-between bg-indigo-50 dark:bg-indigo-900/30 -mx-2 px-2 py-1 rounded">
                                                     <span class="text-gray-600 dark:text-gray-400">Price:</span>
-                                                    <span class="font-bold text-base text-blue-600 dark:text-blue-400">₱{{ number_format($product['price'], 2) }}</span>
+                                                    <span class="font-bold text-base text-indigo-600 dark:text-indigo-400">₱{{ number_format($product['price'], 2) }}</span>
                                                 </div>
+                                                @if($product['markup_percentage'])
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600 dark:text-gray-400">Markup:</span>
+                                                    <span class="font-semibold text-indigo-600 dark:text-indigo-400">+{{ $product['markup_percentage'] }}%</span>
+                                                </div>
+                                                @endif
                                                 <div class="flex justify-between">
                                                     <span class="text-gray-600 dark:text-gray-400">Stock:</span>
                                                     <span class="font-semibold" 
