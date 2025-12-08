@@ -132,20 +132,6 @@
                     </form>
                 </div>
             </div>
-
-            <!-- Success/Error Messages -->
-            @if (session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
-                    <span class="block sm:inline">{{ session('error') }}</span>
-                </div>
-            @endif
-
             <!-- Products Table -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
@@ -583,20 +569,21 @@
                                     class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
 
-                            <!-- Preferred Supplier -->
-                            <div>
-                                <label for="modal_preferred_supplier_id"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Preferred Supplier <span class="text-gray-400 text-xs">(Optional)</span>
+                            <!-- Assigned Suppliers -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Assigned Suppliers & Costs
                                 </label>
-                                <select id="modal_preferred_supplier_id" name="preferred_supplier_id"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">Select a supplier...</option>
-                                    @foreach ($suppliers as $supplier)
-                                        <option value="{{ $supplier->supplier_id }}">{{ $supplier->supplier_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <div id="modal_assigned_suppliers_container" class="space-y-2">
+                                    <!-- Suppliers will be added here dynamically -->
+                                </div>
+                                <button type="button" onclick="addSupplierRow('modal')"
+                                    class="mt-2 inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    Add Supplier
+                                </button>
                             </div>
                         </div>
 
@@ -731,6 +718,10 @@
         function openCreateProductModal() {
             document.getElementById('createProductModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+            
+            // Clear and add one empty supplier row
+            clearSupplierRows('modal');
+            addSupplierRow('modal');
         }
 
         function closeCreateProductModal() {
@@ -749,6 +740,9 @@
             // Hide custom brand/category inputs
             document.getElementById('modal_custom_brand').style.display = 'none';
             document.getElementById('modal_custom_category').style.display = 'none';
+            
+            // Clear supplier rows
+            clearSupplierRows('modal');
         }
 
         // Image preview functions
@@ -1078,15 +1072,16 @@
                         categorySelect.appendChild(option);
                     });
 
-                    const supplierSelect = document.getElementById('edit_preferred_supplier_id');
-                    supplierSelect.innerHTML = '<option value="">Select a supplier...</option>';
-                    data.suppliers.forEach(supplier => {
-                        const option = document.createElement('option');
-                        option.value = supplier.supplier_id;
-                        option.textContent = supplier.supplier_name;
-                        option.selected = data.product.preferred_supplier_id === supplier.supplier_id;
-                        supplierSelect.appendChild(option);
-                    });
+                    // Clear and populate assigned suppliers
+                    clearSupplierRows('edit');
+                    if (data.product.suppliers && data.product.suppliers.length > 0) {
+                        data.product.suppliers.forEach(supplier => {
+                            addSupplierRow('edit', supplier);
+                        });
+                    } else {
+                        // Add one empty row if no suppliers assigned
+                        addSupplierRow('edit');
+                    }
 
                     // Populate pricing method and markup price
                     const pricingMethodSelect = document.getElementById('edit_pricing_method');
@@ -1421,6 +1416,48 @@
                         document.getElementById('view_preferred_supplier_container').style.display = 'none';
                     }
 
+                    // Assigned Suppliers
+                    const assignedSuppliersContainer = document.getElementById('view_assigned_suppliers_container');
+                    const assignedSuppliersList = document.getElementById('view_assigned_suppliers_list');
+                    
+                    if (data.suppliers && data.suppliers.length > 0) {
+                        assignedSuppliersContainer.style.display = 'block';
+                        assignedSuppliersList.innerHTML = '';
+                        
+                        data.suppliers.forEach(supplier => {
+                            const supplierDiv = document.createElement('div');
+                            supplierDiv.className = 'flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded';
+                            
+                            const nameAndBadge = document.createElement('div');
+                            nameAndBadge.className = 'flex items-center gap-2';
+                            
+                            const nameSpan = document.createElement('span');
+                            nameSpan.className = 'text-sm text-gray-900 dark:text-white';
+                            nameSpan.textContent = supplier.supplier_name;
+                            nameAndBadge.appendChild(nameSpan);
+                            
+                            if (supplier.pivot.is_primary) {
+                                const badge = document.createElement('span');
+                                badge.className = 'px-2 py-0.5 text-xs font-semibold text-yellow-800 bg-yellow-200 rounded';
+                                badge.textContent = 'Primary';
+                                nameAndBadge.appendChild(badge);
+                            }
+                            
+                            supplierDiv.appendChild(nameAndBadge);
+                            
+                            if (supplier.pivot.cost) {
+                                const costSpan = document.createElement('span');
+                                costSpan.className = 'text-sm font-medium text-gray-700 dark:text-gray-300';
+                                costSpan.textContent = '₱' + parseFloat(supplier.pivot.cost).toFixed(2);
+                                supplierDiv.appendChild(costSpan);
+                            }
+                            
+                            assignedSuppliersList.appendChild(supplierDiv);
+                        });
+                    } else {
+                        assignedSuppliersContainer.style.display = 'none';
+                    }
+
                     // Inventory Value
                     const inventoryValue = data.quantity * data.price;
                     document.getElementById('view_inventory_value').textContent = '₱' + new Intl.NumberFormat('en-PH', {
@@ -1628,16 +1665,22 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                            <div>
-                                <label for="edit_preferred_supplier_id"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Preferred Supplier <span class="text-gray-400 text-xs"></span>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <!-- Assigned Suppliers -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Assigned Suppliers & Costs <span class="text-gray-400 text-xs">(Optional)</span>
                                 </label>
-                                <select id="edit_preferred_supplier_id" name="preferred_supplier_id"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">Select a supplier...</option>
-                                </select>
+                                <div id="edit_assigned_suppliers_container" class="space-y-2">
+                                    <!-- Suppliers will be loaded here dynamically -->
+                                </div>
+                                <button type="button" onclick="addSupplierRow('edit')"
+                                    class="mt-2 inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    Add Supplier
+                                </button>
                             </div>
 
                             <div>
@@ -1732,12 +1775,6 @@
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            {{-- <div>
-                                <label for="edit_description"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-                                <textarea id="edit_description" name="description" rows="1"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
-                            </div> --}}
 
                             <!-- Image URL -->
                             <div>
@@ -2044,18 +2081,21 @@
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">Category</label>
                                     <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden" id="view_category"></p>
                                 </div>
-                                <div id="view_preferred_supplier_container" style="display:none;" class="min-w-0">
-                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Preferred
-                                        Supplier</label>
-                                    <p class="text-lg text-gray-900 dark:text-white break-words overflow-hidden" id="view_preferred_supplier"></p>
+                                <div id="view_assigned_suppliers_container" style="display:none;" class="col-span-2 min-w-0">
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Assigned Suppliers</label>
+                                    <div id="view_assigned_suppliers_list" class="space-y-2">
+                                        <!-- Suppliers will be populated here -->
+                                    </div>
                                 </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-2">
                                 <div class="min-w-0">
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">Quantity</label>
                                     <p class="text-lg font-semibold text-gray-900 dark:text-white break-words overflow-hidden" id="view_quantity">
                                     </p>
                                 </div>
-                            </div>
 
                             <div class="grid grid-cols-3 gap-2">
                                 <div class="min-w-0">
@@ -2456,6 +2496,77 @@
                 });
             }
         });
+
+        // Supplier row management
+        let supplierRowIndex = 0;
+        const allSuppliers = @json($suppliers);
+
+        function addSupplierRow(prefix, existingData = null) {
+            const container = document.getElementById(`${prefix}_assigned_suppliers_container`);
+            const index = supplierRowIndex++;
+            
+            const row = document.createElement('div');
+            row.className = 'grid grid-cols-12 gap-2 items-start';
+            row.id = `${prefix}_supplier_row_${index}`;
+            
+            let supplierOptions = '<option value="">Select supplier...</option>';
+            allSuppliers.forEach(supplier => {
+                const selected = existingData && existingData.supplier_id == supplier.supplier_id ? 'selected' : '';
+                supplierOptions += `<option value="${supplier.supplier_id}" ${selected}>${supplier.supplier_name}</option>`;
+            });
+            
+            row.innerHTML = `
+                <div class="col-span-5">
+                    <select name="assigned_suppliers[${index}][supplier_id]" required
+                        class="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        ${supplierOptions}
+                    </select>
+                </div>
+                <div class="col-span-3">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                            <span class="text-gray-500 text-sm">₱</span>
+                        </div>
+                        <input type="number" name="assigned_suppliers[${index}][cost]" step="0.01" min="0"
+                            value="${existingData ? existingData.pivot.cost || '' : ''}"
+                            placeholder="Cost"
+                            class="pl-6 w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    </div>
+                </div>
+                <div class="col-span-2 flex items-center">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" name="assigned_suppliers[${index}][is_primary]" value="1"
+                            ${existingData && existingData.pivot.is_primary ? 'checked' : ''}
+                            class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600">
+                        <span class="ml-1 text-xs text-gray-600 dark:text-gray-400">Primary</span>
+                    </label>
+                </div>
+                <div class="col-span-2 flex justify-end">
+                    <button type="button" onclick="removeSupplierRow('${prefix}', ${index})"
+                        class="text-red-600 hover:text-red-800 dark:text-red-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(row);
+        }
+
+        function removeSupplierRow(prefix, index) {
+            const row = document.getElementById(`${prefix}_supplier_row_${index}`);
+            if (row) {
+                row.remove();
+            }
+        }
+
+        function clearSupplierRows(prefix) {
+            const container = document.getElementById(`${prefix}_assigned_suppliers_container`);
+            if (container) {
+                container.innerHTML = '';
+            }
+        }
     </script>
 
 </x-app-layout>

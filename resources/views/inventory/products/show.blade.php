@@ -10,7 +10,7 @@
                                 {{ $product->product_name }}</h2>
                             <p class="text-gray-600 dark:text-gray-400">{{ $product->sku }}</p>
                         </div>
-                        @hasanyrole('super_admin|admin')
+                        {{-- @hasanyrole('super_admin|admin')
                             <div class="flex space-x-3 mt-4 sm:mt-0">
                                 <a href="{{ route('inventory.products.edit', $product) }}"
                                     class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:bg-yellow-700 active:bg-yellow-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
@@ -21,14 +21,10 @@
                                     </svg>
                                     Edit Product
                                 </a>
-                            @endhasanyrole
+                            @endhasanyrole --}}
                             <a href="{{ route('inventory.products.index') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 19l-7-7 7-7" />
-                                </svg>
-                                Back to List
+                                Back to Product List
                             </a>
                         </div>
                     </div>
@@ -40,7 +36,7 @@
                 <div class="lg:col-span-2 space-y-6">
                     <!-- Basic Information -->
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div class="p-6">
+                        <div class="p-6 ml-5">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Product Information</h3>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

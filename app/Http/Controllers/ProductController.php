@@ -136,6 +136,11 @@ class ProductController extends Controller
             'size' => 'nullable|string|max:50',
             'color' => 'nullable|string|max:50',
             'preferred_supplier_id' => 'nullable|exists:suppliers,supplier_id',
+            'assigned_suppliers' => 'nullable|array',
+            'assigned_suppliers.*.supplier_id' => 'required|exists:suppliers,supplier_id',
+            'assigned_suppliers.*.cost' => 'nullable|numeric|min:0',
+            'assigned_suppliers.*.is_primary' => 'nullable|boolean',
+            'assigned_suppliers.*.notes' => 'nullable|string|max:500',
             'product_category' => 'nullable|string|max:255',
             'custom_category' => 'nullable|string|max:255',
             'price' => 'nullable|numeric|min:0',
@@ -247,6 +252,21 @@ class ProductController extends Controller
         // Create the product
         $product = Product::create($data);
 
+        // Sync assigned suppliers if provided
+        if ($request->has('assigned_suppliers') && is_array($request->assigned_suppliers)) {
+            $syncData = [];
+            foreach ($request->assigned_suppliers as $supplier) {
+                if (!empty($supplier['supplier_id'])) {
+                    $syncData[$supplier['supplier_id']] = [
+                        'cost' => $supplier['cost'] ?? null,
+                        'is_primary' => !empty($supplier['is_primary']),
+                        'notes' => $supplier['notes'] ?? null,
+                    ];
+                }
+            }
+            $product->suppliers()->sync($syncData);
+        }
+
         // Log to audit trail
         \App\Models\AuditLog::logAction(
             \App\Models\AuditLog::ACTION_CREATE,
@@ -309,7 +329,7 @@ class ProductController extends Controller
 
         // Check if request wants JSON (AJAX request for modal)
         if (request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
-            $product->load('markupPrice');
+            $product->load('markupPrice', 'suppliers');
             return response()->json([
                 'product' => $product,
                 'stockNames' => $stockNames,
@@ -320,6 +340,7 @@ class ProductController extends Controller
             ]);
         }
 
+        $product->load('suppliers');
         return view('inventory.products.edit', compact('product', 'stockNames', 'brands', 'categories', 'suppliers', 'markupPrices'));
     }
 
@@ -336,6 +357,11 @@ class ProductController extends Controller
             'size' => 'nullable|string|max:50',
             'color' => 'nullable|string|max:50',
             'preferred_supplier_id' => 'nullable|exists:suppliers,supplier_id',
+            'assigned_suppliers' => 'nullable|array',
+            'assigned_suppliers.*.supplier_id' => 'required|exists:suppliers,supplier_id',
+            'assigned_suppliers.*.cost' => 'nullable|numeric|min:0',
+            'assigned_suppliers.*.is_primary' => 'nullable|boolean',
+            'assigned_suppliers.*.notes' => 'nullable|string|max:500',
             'product_category' => 'nullable|string|max:255',
             'custom_category' => 'nullable|string|max:255',
             'quantity' => 'nullable|integer|min:0',
@@ -450,6 +476,21 @@ class ProductController extends Controller
 
         // Refresh product data
         $product->refresh();
+
+        // Sync assigned suppliers if provided
+        if ($request->has('assigned_suppliers') && is_array($request->assigned_suppliers)) {
+            $syncData = [];
+            foreach ($request->assigned_suppliers as $supplier) {
+                if (!empty($supplier['supplier_id'])) {
+                    $syncData[$supplier['supplier_id']] = [
+                        'cost' => $supplier['cost'] ?? null,
+                        'is_primary' => !empty($supplier['is_primary']),
+                        'notes' => $supplier['notes'] ?? null,
+                    ];
+                }
+            }
+            $product->suppliers()->sync($syncData);
+        }
 
 
         // Capture new values after update

@@ -26,7 +26,7 @@
 }" 
 x-init="init()"
 @toast.window="showToast($event.detail.message, $event.detail.type || 'success')"
-class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md px-4" 
+class="fixed top-20 right-4 z-50 w-full max-w-md px-4" 
 style="pointer-events: none;">
     
     <div x-show="show" 

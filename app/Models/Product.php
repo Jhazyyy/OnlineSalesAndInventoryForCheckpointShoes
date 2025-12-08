@@ -298,6 +298,29 @@ class Product extends Model
     }
 
     /**
+     * Get all assigned suppliers for this product (many-to-many).
+     */
+    public function suppliers()
+    {
+        return $this->belongsToMany(Supplier::class, 'product_supplier', 'product_id', 'supplier_id')
+                    ->withPivot('cost', 'is_primary', 'notes')
+                    ->withTimestamps()
+                    ->orderByDesc('is_primary');
+    }
+
+    /**
+     * Get the primary assigned supplier.
+     */
+    public function primarySupplier()
+    {
+        return $this->belongsToMany(Supplier::class, 'product_supplier', 'product_id', 'supplier_id')
+                    ->withPivot('cost', 'is_primary', 'notes')
+                    ->wherePivot('is_primary', true)
+                    ->withTimestamps()
+                    ->first();
+    }
+
+    /**
      * Check if the product has property information (size, color, etc.).
      */
     public function hasProperties(): bool

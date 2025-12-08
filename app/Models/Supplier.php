@@ -84,6 +84,16 @@ class Supplier extends Model
     }
 
     /**
+     * Get all assigned products for this supplier (many-to-many).
+     */
+    public function assignedProducts()
+    {
+        return $this->belongsToMany(Product::class, 'product_supplier', 'supplier_id', 'product_id')
+                    ->withPivot('cost', 'is_primary', 'notes')
+                    ->withTimestamps();
+    }
+
+    /**
      * Get the supplier's full address.
      */
     public function getFullAddressAttribute(): string

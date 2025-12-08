@@ -176,7 +176,7 @@ class SupplierController extends Controller
         );
 
         return redirect()->route('master_data.suppliers.index')
-            ->with('success');
+            ->with('success', 'Supplier updated successfully!');
     }
 
     /**
