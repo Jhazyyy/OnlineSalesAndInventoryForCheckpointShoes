@@ -86,7 +86,7 @@ class ProductCostingController extends Controller
     /**
      * Update product costing
      */
-    public function update(Request $request, Product $product): RedirectResponse
+    public function update(Request $request, Product $product)
     {
         $validated = $request->validate([
             'raw_material_cost' => 'nullable|numeric|min:0',
@@ -102,19 +102,30 @@ class ProductCostingController extends Controller
         try {
             $this->costingService->updateProductCosting($product, $validated);
             
-            // Check if request is from inventory products page (AJAX/modal)
+            $refreshedProduct = $product->fresh();
+            $totalCost = $refreshedProduct->total_cost ? (float) $refreshedProduct->total_cost : 0;
+            
+            // Check if request is AJAX (from modal)
             if ($request->wantsJson() || $request->ajax()) {
-                return redirect()->route('inventory.products.index')->with('success', 
-                    "Costing updated for {$product->product_name}. Total Cost: ₱" . 
-                    number_format($product->fresh()->total_cost, 2)
-                );
+                return response()->json([
+                    'success' => true,
+                    'message' => "Costing updated for {$product->product_name}. Total Cost: ₱" . 
+                        number_format($totalCost, 2),
+                    'product' => $refreshedProduct
+                ]);
             }
             
             return redirect()->back()->with('success', 
                 "Costing updated for {$product->product_name}. Total Cost: ₱" . 
-                number_format($product->fresh()->total_cost, 2)
+                number_format($totalCost, 2)
             );
         } catch (\Exception $e) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error updating costing: ' . $e->getMessage()
+                ], 422);
+            }
             return redirect()->back()->with('error', 'Error updating costing: ' . $e->getMessage());
         }
     }

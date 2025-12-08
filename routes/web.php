@@ -1046,23 +1046,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Product Costing Management Routes (Admin only - affects pricing)
-    Route::prefix('inventory/product-costing')->name('inventory.product-costing.')->middleware('role:super_admin,admin')->group(function () {
-        Route::get('/', [\App\Http\Controllers\ProductCostingController::class, 'index'])->name('index');
-        Route::get('/{product}/edit', [\App\Http\Controllers\ProductCostingController::class, 'edit'])->name('edit');
-        Route::put('/{product}', [\App\Http\Controllers\ProductCostingController::class, 'update'])->name('update');
-        
-        // Bulk operations
-        Route::post('/bulk-update', [\App\Http\Controllers\ProductCostingController::class, 'bulkUpdate'])->name('bulk-update');
-        
-        // Special views
-        Route::get('/low-margin', [\App\Http\Controllers\ProductCostingController::class, 'lowMargin'])->name('low-margin');
-        Route::get('/negative-margin', [\App\Http\Controllers\ProductCostingController::class, 'negativeMargin'])->name('negative-margin');
-        
-        // AJAX endpoints
-        Route::get('/{product}/suggest-price', [\App\Http\Controllers\ProductCostingController::class, 'suggestPrice'])->name('suggest-price');
-        Route::get('/{product}/cost-breakdown', [\App\Http\Controllers\ProductCostingController::class, 'costBreakdown'])->name('cost-breakdown');
-        Route::get('/analytics', [\App\Http\Controllers\ProductCostingController::class, 'analytics'])->name('analytics');
-    });
+    // Product Costing Routes - REMOVED
+    // Product costs are now automatically updated from purchase transactions
+    // See: PurchaseReceiveService::updateProductInventory() for cost calculation logic
 
     // Supplier Management Routes
     Route::prefix('master_data/suppliers')->name('master_data.suppliers.')->group(function () {

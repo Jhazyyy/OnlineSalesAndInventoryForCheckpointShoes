@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="py-2">
-        <div class="max-w-full mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Header Section -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
@@ -10,18 +10,7 @@
                                 {{ $product->product_name }}</h2>
                             <p class="text-gray-600 dark:text-gray-400">{{ $product->sku }}</p>
                         </div>
-                        {{-- @hasanyrole('super_admin|admin')
-                            <div class="flex space-x-3 mt-4 sm:mt-0">
-                                <a href="{{ route('inventory.products.edit', $product) }}"
-                                    class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:bg-yellow-700 active:bg-yellow-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                        </path>
-                                    </svg>
-                                    Edit Product
-                                </a>
-                            @endhasanyrole --}}
+                        <div class="flex space-x-3 mt-4 sm:mt-0">
                             <a href="{{ route('inventory.products.index') }}"
                                 class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Back to Product List
@@ -31,220 +20,199 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-2">
-                <!-- Product Details -->
-                <div class="lg:col-span-2 space-y-6">
-                    <!-- Basic Information -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-2">
+                <!-- Product Image and Basic Info -->
+                <div class="lg:col-span-1">
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div class="p-6 ml-5">
+                        <div class="p-6">
+                            <!-- Product Image -->
+                            @if ($product->image)
+                                <img src="{{ $product->image_url }}" alt="{{ $product->product_name }}"
+                                    class="w-full h-auto object-cover rounded-lg border mb-4">
+                            @else
+                                <div
+                                    class="w-full h-48 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center border mb-4">
+                                    <div class="text-center">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                            </path>
+                                        </svg>
+                                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">No image</p>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- Stock Status -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Stock
+                                    Status</label>
+                                @if ($product->quantity == 0)
+                                    <span
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Out
+                                        of Stock</span>
+                                @elseif($product->quantity <= 10 && $product->quantity > 5)
+                                    <span
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Low
+                                        Stock</span>
+                                @elseif($product->quantity <= 5)
+                                    <span
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-600">Critical
+                                        Stock</span>
+                                @else
+                                    <span
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">In
+                                        Stock</span>
+                                @endif
+                            </div>
+
+                            <!-- Key Metrics -->
+                            <div class="space-y-3">
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400">Quantity</label>
+                                    <p class="text-xl font-bold text-gray-900 dark:text-white">
+                                        {{ number_format($product->quantity) }}</p>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400">Price</label>
+                                    <p class="text-xl font-bold text-green-600 dark:text-green-400">
+                                        ₱{{ number_format($product->price, 2) }}</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Inventory
+                                        Value</label>
+                                    <p class="text-lg font-semibold text-gray-900 dark:text-white">
+                                        ₱{{ number_format($product->inventory_value, 2) }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Details -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="p-6">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Product Information</h3>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <!-- Product Image -->
+                            <div class="grid grid-cols-2 gap-4">
+                                @if ($product->stock_name)
+                                    <div>
+                                        <label
+                                            class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
+                                            Name</label>
+                                        <p class="text-sm text-gray-900 dark:text-white">{{ $product->stock_name }}
+                                        </p>
+                                    </div>
+                                @endif
+
                                 <div>
-                                    @if ($product->image)
-                                        <img src="{{ $product->image_url }}" alt="{{ $product->product_name }}"
-                                            class="w-full h-auto object-cover rounded-lg border">
-                                    @else
-                                        <div
-                                            class="w-full h-64 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center border">
-                                            <div class="text-center">
-                                                <svg class="mx-auto h-16 w-16 text-gray-400" fill="none"
-                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                                    </path>
-                                                </svg>
-                                                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No image
-                                                    available
-                                                </p>
-                                            </div>
-                                        </div>
-                                    @endif
+                                    <label
+                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400">Product
+                                        Name</label>
+                                    <p class="text-sm text-gray-900 dark:text-white">{{ $product->product_name }}
+                                    </p>
                                 </div>
 
-                                <!-- Product Details -->
-                                <div class="space-y-4">
-                                    @if ($product->stock_name)
-                                        <div>
-                                            <label
-                                                class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
-                                                Name</label>
-                                            <p class="text-lg text-gray-900 dark:text-white">{{ $product->stock_name }}
-                                            </p>
-                                        </div>
-                                    @endif
-
+                                @if ($product->size)
                                     <div>
                                         <label
-                                            class="block text-sm font-medium text-gray-500 dark:text-gray-400">Product
-                                            Name</label>
-                                        <p class="text-lg text-gray-900 dark:text-white">{{ $product->product_name }}
-                                        </p>
+                                            class="block text-sm font-medium text-gray-500 dark:text-gray-400">Size</label>
+                                        <p class="text-sm text-gray-900 dark:text-white">{{ $product->size }}</p>
                                     </div>
+                                @endif
 
-                                    @if ($product->size)
-                                        <div>
-                                            <label
-                                                class="block text-sm font-medium text-gray-500 dark:text-gray-400">Size</label>
-                                            <p class="text-lg text-gray-900 dark:text-white">{{ $product->size }}</p>
-                                        </div>
-                                    @endif
-
-                                    @if ($product->color)
-                                        <div>
-                                            <label
-                                                class="block text-sm font-medium text-gray-500 dark:text-gray-400">Color</label>
-                                            <p class="text-lg text-gray-900 dark:text-white">{{ $product->color }}</p>
-                                        </div>
-                                    @endif
-
+                                @if ($product->color)
                                     <div>
                                         <label
-                                            class="block text-sm font-medium text-gray-500 dark:text-gray-400">Brand</label>
-                                        <p class="text-lg text-gray-900 dark:text-white">{{ $product->product_brand }}
-                                        </p>
+                                            class="block text-sm font-medium text-gray-500 dark:text-gray-400">Color</label>
+                                        <p class="text-sm text-gray-900 dark:text-white">{{ $product->color }}</p>
                                     </div>
+                                @endif
 
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400">Brand</label>
+                                    <p class="text-sm text-gray-900 dark:text-white">{{ $product->product_brand }}
+                                    </p>
+                                </div>
 
-                                    <div>
-                                        <label
-                                            class="block text-sm font-medium text-gray-500 dark:text-gray-400">Category</label>
-                                        <p class="text-lg text-gray-900 dark:text-white">
-                                            {{ $product->product_category }}
-                                        </p>
-                                    </div>
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium text-gray-500 dark:text-gray-400">Category</label>
+                                    <p class="text-sm text-gray-900 dark:text-white">
+                                        {{ $product->product_category }}
+                                    </p>
+                                </div>
 
-                                    @if ($product->preferredSupplier)
-                                        <div>
-                                            <label
-                                                class="block text-sm font-medium text-gray-500 dark:text-gray-400">Preferred
-                                                Supplier</label>
-                                            <p class="text-lg text-gray-900 dark:text-white">
-                                                {{ $product->preferredSupplier->supplier_name }}</p>
-                                        </div>
-                                    @endif
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">SKU</label>
+                                    <p class="text-sm text-gray-900 dark:text-white">{{ $product->sku }}</p>
+                                </div>
 
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label
-                                                class="block text-sm font-medium text-gray-500 dark:text-gray-400">Quantity</label>
-                                            <p class="text-lg font-semibold text-gray-900 dark:text-white">
-                                                {{ number_format($product->quantity) }}</p>
-                                        </div>
-                                        <div>
-                                            <label
-                                                class="block text-sm font-medium text-gray-500 dark:text-gray-400">Price</label>
-                                            <p class="text-lg font-semibold text-green-600 dark:text-green-400">
-                                                ₱{{ number_format($product->price, 2) }}</p>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
-                                            Status</label>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            @if ($product->quantity == 0)
-                                                <span
-                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Out
-                                                    of Stock</span>
-                                            @elseif($product->quantity <= 10 && $product->quantity > 5)
-                                                <span
-                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Low
-                                                    Stock</span>
-                                            @elseif($product->quantity <= 5)
-                                                <span
-                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-600">Critical
-                                                    Stock</span>
-                                            @else
-                                                <span
-                                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">In
-                                                    Stock</span>
-                                            @endif
-                                        </td>
-                                    </div>
-
-                                    <div>
-                                        <label
-                                            class="block text-sm font-medium text-gray-500 dark:text-gray-400">Inventory
-                                            Value</label>
-                                        <p class="text-lg font-semibold text-gray-900 dark:text-white">
-                                            ₱{{ number_format($product->inventory_value, 2) }}</p>
-                                    </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Product ID</label>
+                                    <p class="text-sm text-gray-900 dark:text-white">#{{ $product->product_id }}</p>
                                 </div>
                             </div>
 
                             @if ($product->description)
-                                <div class="mt-6">
+                                <div class="mt-4">
                                     <label
                                         class="block text-sm font-medium text-gray-500 dark:text-gray-400">Description</label>
-                                    <p class="mt-1 text-gray-900 dark:text-white">{{ $product->description }}</p>
+                                    <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $product->description }}</p>
                                 </div>
                             @endif
-                        </div>
-                    </div>
 
-                    <!-- Recent Activity -->
-                    {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div class="p-6">
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Activity</h3>
-
-                            <div class="space-y-4">
-                                @if ($recentSales->count() > 0)
+                            <!-- Timestamps -->
+                            <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <div class="grid grid-cols-2 gap-4 text-xs text-gray-500 dark:text-gray-400">
                                     <div>
-                                        <h4 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-2">Recent Sales
-                                        </h4>
-                                        <div class="space-y-2">
-                                            @foreach ($recentSales->take(3) as $sale)
-                                                <div class="flex items-center justify-between text-sm">
-                                                    <span
-                                                        class="text-gray-600 dark:text-gray-400">{{ $sale->date->format('M d, Y') }}</span>
-                                                    <span class="text-red-600 dark:text-red-400">-{{ $sale->quantity }}
-                                                        units</span>
-                                                    <span
-                                                        class="text-green-600 dark:text-green-400">₱{{ number_format($sale->total_amount, 2) }}</span>
-                                                </div>
-                                            @endforeach
-                                        </div>
+                                        <span class="font-medium">Created:</span> {{ $product->created_at->format('M d, Y h:i A') }}
                                     </div>
-                                @endif
-
-                                @if ($recentPurchases->count() > 0)
                                     <div>
-                                        <h4 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-2">Recent
-                                            Purchases</h4>
-                                        <div class="space-y-2">
-                                            @foreach ($recentPurchases->take(3) as $purchase)
-                                                <div class="flex items-center justify-between text-sm">
-                                                    <span
-                                                        class="text-gray-600 dark:text-gray-400">{{ $purchase->purchase_date->format('M d, Y') }}</span>
-                                                    <span class="text-green-600 dark:text-green-400">+{{ $purchase->quantity }}
-                                                        units</span>
-                                                    <span
-                                                        class="text-blue-600 dark:text-blue-400">₱{{ number_format($purchase->total_amount, 2) }}</span>
-                                                </div>
-                                            @endforeach
-                                        </div>
+                                        <span class="font-medium">Last Updated:</span> {{ $product->updated_at->format('M d, Y h:i A') }}
                                     </div>
-                                @endif
-
-                                @if ($recentSales->count() == 0 && $recentPurchases->count() == 0)
-                                    <p class="text-gray-500 dark:text-gray-400 text-center py-4">No recent activity</p>
-                                @endif
+                                </div>
                             </div>
                         </div>
-                    </div> --}}
+                    </div>
                 </div>
 
-                <!-- Statistics Sidebar -->
-                <div class="space-y-2">
-                    <!-- Supplier Information -->
+                <!-- Supplier Information -->
+                <div class="lg:col-span-1">
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Supplier Information</h3>
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Supplier Info</h3>
 
-                            <div class="space-y-2">
+                            <div class="space-y-4">
+                                @if ($product->suppliers && $product->suppliers->count() > 0)
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Assigned Suppliers</label>
+                                        <div class="space-y-2">
+                                            @foreach ($product->suppliers as $supplier)
+                                                <div class="p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                                                    <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                                        {{ $supplier->supplier_name }}
+                                                        @if ($supplier->pivot->is_primary)
+                                                            <span class="ml-1 px-1.5 py-0.5 text-xs font-semibold rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">Primary</span>
+                                                        @endif
+                                                    </p>
+                                                    @if ($supplier->pivot->cost)
+                                                        <p class="text-xs text-gray-600 dark:text-gray-400">
+                                                            Cost: ₱{{ number_format($supplier->pivot->cost, 2) }}
+                                                        </p>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+
                                 @if ($product->lastSupplier)
                                     <div>
                                         <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Last
@@ -258,21 +226,11 @@
                                         @endif
                                     </div>
                                 @endif
-                                @if ($product->preferredSupplier)
-                                    <div>
-                                        <label
-                                            class="block text-sm font-medium text-gray-500 dark:text-gray-400">Preferred
-                                            Supplier</label>
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ $product->preferredSupplier->supplier_name ?? $product->preferredSupplier->name }}
-                                        </p>
-                                    </div>
-                                @endif
 
                                 @if ($product->last_purchase_price)
                                     <div>
                                         <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Last
-                                            Price Upon Purchase</label>
+                                            Purchase Price</label>
                                         <p class="text-sm font-medium text-gray-900 dark:text-white">
                                             ₱{{ number_format($product->last_purchase_price, 2) }}</p>
                                         @if ($product->price > $product->last_purchase_price)
@@ -283,71 +241,10 @@
                                     </div>
                                 @endif
 
-                                @if (!$product->lastSupplier && !$product->preferredSupplier)
+                                @if (!$product->lastSupplier && (!$product->suppliers || $product->suppliers->count() == 0))
                                     <p class="text-sm text-gray-500 dark:text-gray-400">No supplier information
                                         available</p>
                                 @endif
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Key Metrics -->
-                    {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div class="p-6">
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Key Metrics</h3>
-
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">Total Sold</span>
-                                    <span
-                                        class="text-sm font-medium text-gray-900 dark:text-white">{{ number_format($product->total_sold) }}</span>
-                                </div>
-
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">Total Purchased</span>
-                                    <span
-                                        class="text-sm font-medium text-gray-900 dark:text-white">{{ number_format($product->total_purchased) }}</span>
-                                </div>
-
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">Total Revenue</span>
-                                    <span
-                                        class="text-sm font-medium text-green-600 dark:text-green-400">₱{{ number_format($product->total_revenue, 2) }}</span>
-                                </div>
-
-                                @if ($product->profit_margin > 0)
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-gray-500 dark:text-gray-400">Profit Margin</span>
-                                        <span
-                                            class="text-sm font-medium text-blue-600 dark:text-blue-400">{{ number_format($product->profit_margin, 1) }}%</span>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    </div> --}}
-
-                    <!-- Product Info -->
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div class="p-6">
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Product Info</h3>
-
-                            <div class="space-y-2">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">Product ID</span>
-                                    <span
-                                        class="text-sm font-medium text-gray-900 dark:text-white">#{{ $product->product_id }}</span>
-                                </div>
-
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">Created</span>
-                                    <span
-                                        class="text-sm font-medium text-gray-900 dark:text-white">{{ $product->created_at->format('M d, Y') }}</span>
-                                </div>
-
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">Last Updated</span>
-                                    <span
-                                        class="text-sm font-medium text-gray-900 dark:text-white">{{ $product->updated_at->format('M d, Y') }}</span>
-                                </div>
                             </div>
                         </div>
                     </div>

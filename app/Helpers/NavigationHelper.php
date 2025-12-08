@@ -294,15 +294,7 @@ class NavigationHelper
                 ['label' => 'Products', 'url' => route('inventory.products.index')],
             ],
 
-            'inventory.product-costing.index' => [
-                ['label' => 'Inventory', 'url' => route('inventory.products.index')],
-                ['label' => 'Product Costing', 'url' => route('inventory.product-costing.index')],
-            ],
-
-            'inventory.product-costing.edit' => [
-                ['label' => 'Inventory', 'url' => route('inventory.products.index')],
-                ['label' => 'Product Costing', 'url' => null],
-            ],
+            // Product costing routes removed - costs now auto-updated from purchases
             
             'master_data.products.index' => [
                 ['label' => 'Inventory', 'url' => null],

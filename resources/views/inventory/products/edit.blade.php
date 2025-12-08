@@ -230,7 +230,7 @@
                                     @if($product->total_cost && $product->total_cost > 0)
                                         Manual: Fixed price | Markup: Applied from markup configuration
                                     @else
-                                        Manual: Fixed price (Markup pricing available after adding product costing)
+                                        Manual: Fixed price (Markup pricing available after purchases update cost)
                                     @endif
                                 </p>
                                 @error('pricing_method')
