@@ -56,14 +56,6 @@ Route::post('/csrf-test', function () {
     return response()->json(['success' => true, 'message' => 'CSRF token is working!']);
 });
 
-// Livewire demo pages (non-invasive)
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/livewire/products', fn () => view('livewire-pages.products'))->name('livewire.products');
-    Route::get('/livewire/inventory', fn () => view('livewire-pages.inventory'))->name('livewire.inventory');
-    Route::get('/livewire/customers', fn () => view('livewire-pages.customers'))->name('livewire.customers');
-    Route::get('/livewire/sales-orders', fn () => view('livewire-pages.sales-orders'))->name('livewire.sales-orders');
-});
-
 // Main Route
 Route::get('dashboard', function() {
     // Debug: Check if user is authenticated

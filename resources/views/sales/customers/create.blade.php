@@ -34,44 +34,6 @@
             <!-- Customer Form -->
             <form action="{{ route('sales.customers.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-
-                <!-- Customer Type Selection -->
-                {{-- <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Customer Type</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 {{ old('customer_type', 'individual') == 'individual' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600' }}">
-                                    <input type="radio" name="customer_type" value="individual" class="sr-only" 
-                                           {{ old('customer_type', 'individual') == 'individual' ? 'checked' : '' }} 
-                                           onchange="toggleCustomerType()">
-                                    <div class="flex-1">
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Individual Customer</div>
-                                        <div class="text-sm text-gray-500 dark:text-gray-400">Personal customer account</div>
-                                    </div>
-                                    <svg class="w-5 h-5 text-blue-600 customer-type-check {{ old('customer_type', 'individual') == 'individual' ? '' : 'hidden' }}" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                </label>
-                            </div>
-                            <div>
-                                <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 {{ old('customer_type') == 'business' ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20' : 'border-gray-300 dark:border-gray-600' }}">
-                                    <input type="radio" name="customer_type" value="business" class="sr-only" 
-                                           {{ old('customer_type') == 'business' ? 'checked' : '' }} 
-                                           onchange="toggleCustomerType()">
-                                    <div class="flex-1">
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">Business Customer</div>
-                                        <div class="text-sm text-gray-500 dark:text-gray-400">Company or business account</div>
-                                    </div>
-                                    <svg class="w-5 h-5 text-purple-600 customer-type-check {{ old('customer_type') == 'business' ? '' : 'hidden' }}" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div> --}}
-
                 <!-- Basic Information -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
@@ -118,15 +80,6 @@
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             </div>
 
-                            <!-- Status -->
-                            {{-- <div>
-                                <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-                                <select id="status" name="status" 
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>Active</option>
-                                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                                </select>
-                            </div> --}}
                         </div>
                     </div>
                 </div>

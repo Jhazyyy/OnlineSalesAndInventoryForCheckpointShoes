@@ -25,10 +25,7 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
-    <!-- Livewire Styles -->
-    @livewireStyles
-    
+
     <!-- Sidebar Toggle Script with Alpine.js Store -->
     <script>
         document.addEventListener('alpine:init', () => {
@@ -39,7 +36,7 @@
                 }
             });
         });
-        
+
         document.addEventListener('DOMContentLoaded', function() {
             const sidebarToggle = document.getElementById('sidebar-toggle');
             if (sidebarToggle) {
@@ -53,17 +50,16 @@
 
 
 <body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-900"> {{--Control this!--}}
+    <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
         @include('layouts.navigation')
-        
+
         <!-- Shared Sidebar Navigation -->
         <x-sidebar-navigation />
 
         <!-- Main Content Wrapper with responsive margin -->
-        <div class="pt-14 transition-all duration-100 ease-in-out" 
-             x-data 
-             :class="$store.sidebar.open ? 'lg:ml-72' : 'ml-0'">
-            
+        <div class="pt-14 transition-all duration-100 ease-in-out" x-data
+            :class="$store.sidebar.open ? 'lg:ml-72' : 'ml-0'">
+
             <!-- Breadcrumb Navigation -->
             {{-- @isset($breadcrumbs)
                 <x-breadcrumb :items="$breadcrumbs" />
@@ -84,10 +80,10 @@
                 {{ $slot }}
             </main>
         </div>
+
+        <!-- Toast Notification -->
+        <x-toast />
     </div>
-    
-    <!-- Livewire Scripts -->
-    @livewireScripts
 </body>
 
 </html>
