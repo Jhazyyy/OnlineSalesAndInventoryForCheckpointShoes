@@ -367,8 +367,7 @@ class ProductController extends Controller
             'custom_category' => 'nullable|string|max:255',
             'quantity' => 'nullable|integer|min:0',
             'price' => 'nullable|numeric|min:0',
-            'pricing_method' => 'required|in:manual,markup',
-            'markup_price_id' => 'nullable|required_if:pricing_method,markup|exists:markup_prices,id',
+            'markup_price_id' => 'nullable|exists:markup_prices,id',
             'description' => 'nullable|string|max:1000',
             'image_url' => 'nullable|url|max:500',
             'image_file' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
@@ -381,6 +380,16 @@ class ProductController extends Controller
         }
 
         $data = $validator->validated();
+        
+        // Handle pricing method based on markup_price_id
+        if (!empty($request->markup_price_id)) {
+            $data['pricing_method'] = 'markup';
+            // Don't recalculate price - keep the current price as is
+            // The user can manually change the price if needed
+        } else {
+            $data['pricing_method'] = 'manual';
+            $data['markup_price_id'] = null;
+        }
 
         // Handle stock name selection/creation
         $stockNameId = null;
@@ -701,25 +710,27 @@ class ProductController extends Controller
                 ], 422);
             }
 
-            $newPrice = $request->input('selling_price');
+            $newSellingPrice = $request->input('selling_price');
 
-            // Update the product's price
-            $oldPrice = $product->price;
-            $product->update(['price' => $newPrice]);
+            // Update the product's selling_price (NOT the base price)
+            $oldSellingPrice = $product->selling_price;
+            $product->update(['selling_price' => $newSellingPrice]);
 
             // Log the action
             \App\Models\AuditLog::logAction(
                 \App\Models\AuditLog::ACTION_UPDATE,
                 \App\Models\AuditLog::MODULE_INVENTORY,
-                "Product {$product->product_name} price updated from ₱{$oldPrice} to ₱{$newPrice} using markup",
+                "Product {$product->product_name} selling price updated from ₱{$oldSellingPrice} to ₱{$newSellingPrice} using markup",
                 'Product',
                 $product->product_id,
                 $product->product_name,
                 [
-                    'price' => $oldPrice,
+                    'selling_price' => $oldSellingPrice,
+                    'base_price' => $product->price,
                 ],
                 [
-                    'price' => $newPrice,
+                    'selling_price' => $newSellingPrice,
+                    'base_price' => $product->price,
                     'markup_applied' => true,
                     'markup_price_id' => $product->markup_price_id,
                 ]
@@ -728,7 +739,7 @@ class ProductController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Markup price applied successfully',
-                'new_price' => $newPrice,
+                'new_selling_price' => $newSellingPrice,
             ]);
         } catch (\Exception $e) {
             \Log::error('Error applying markup price:', [

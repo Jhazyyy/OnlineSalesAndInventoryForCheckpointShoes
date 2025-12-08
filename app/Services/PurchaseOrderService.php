@@ -102,11 +102,15 @@ class PurchaseOrderService
                                          'name' => $supplier->supplier_name,
                                      ];
                                  }),
-            'products' => Product::orderBy('product_name')
+            'products' => Product::with('suppliers')
+                               ->orderBy('product_name')
                                ->get()
                                ->map(function ($product) {
                                    // Use quantity from product
                                    $stock = $product->quantity;
+                                   
+                                   // Get assigned supplier IDs
+                                   $supplierIds = $product->suppliers->pluck('supplier_id')->toArray();
                                    
                                    return [
                                        'id' => $product->product_id,
@@ -117,6 +121,7 @@ class PurchaseOrderService
                                        'product_category' => $product->product_category,
                                        'price' => $product->price,
                                        'stock' => $stock,
+                                       'supplier_ids' => $supplierIds, // Array of supplier IDs this product is assigned to
                                    ];
                                }),
         ];

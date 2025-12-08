@@ -96,8 +96,8 @@
                                             Received Date <span class="text-red-500">*</span>
                                         </label>
                                         <input type="date" id="receive_date" name="receive_date"
-                                            value="{{ old('receive_date', date('Y-m-d')) }}" required
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                            value="{{ old('receive_date', date('Y-m-d')) }}" required 
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" min="{{ date('Y-m-d') }}">
                                         @error('receive_date')
                                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                         @enderror

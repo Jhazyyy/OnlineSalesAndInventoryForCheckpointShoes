@@ -313,12 +313,15 @@ class PurchaseReceiveService
             if ($quantityReceived > 0) {
                 $this->updateProductInventory($product, $quantityReceived, $receive->supplier_id, $unitPrice);
 
-                // Always update last_purchase_price when products are successfully received
+                // Always update last_purchase_price and total_cost when products are successfully received
                 $product->enableSupplierTrackingFields();
+                $product->enableCostingFields();
+                
                 $updateData = [
                     'last_purchase_price' => $unitPrice,
                     'last_supplier_id' => $receive->supplier_id,
                     'last_received_at' => now(),
+                    'total_cost' => $unitPrice, // Update total_cost with the purchase price for COGS calculation
                 ];
 
                 // Update product master price only if flag is set and receive is successful

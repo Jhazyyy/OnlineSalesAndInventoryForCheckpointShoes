@@ -36,6 +36,7 @@ class Product extends Model
         'product_category',
         'preferred_supplier_id',
         'price',
+        'selling_price',
         'pricing_method',
         'markup_price_id',
         'image',
@@ -369,21 +370,13 @@ class Product extends Model
      */
     public function calculateSellingPrice()
     {
-        switch ($this->pricing_method) {
-            case 'manual':
-                // Use the manually set price (raw stored value)
-                return $this->attributes['price'] ?? 0;
-                
-            case 'markup':
-                // Calculate from markup price if set
-                if ($this->markupPrice && $this->total_cost) {
-                    return $this->markupPrice->calculatePrice($this->total_cost);
-                }
-                return $this->attributes['price'] ?? 0; // Fallback to manual price
-                
-            default:
-                return $this->attributes['price'] ?? 0;
+        // If selling_price is set (markup was applied), use it
+        if ($this->selling_price !== null && $this->selling_price > 0) {
+            return $this->selling_price;
         }
+        
+        // Otherwise, use the base price
+        return $this->price ?? 0;
     }
 
 

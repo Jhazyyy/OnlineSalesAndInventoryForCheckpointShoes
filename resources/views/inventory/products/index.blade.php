@@ -296,9 +296,17 @@
                                             {{-- Product Quantity --}}
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-white break-words">
                                                 {{ number_format($product->quantity) }}</td>
-                                            {{-- Product Price --}}
+                                            {{-- Product Base Price --}}
                                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-white break-words">
-                                                ₱{{ number_format($product->calculateSellingPrice(), 2) }}</td>
+                                                <div class="flex flex-col">
+                                                    <span class="font-semibold">₱{{ number_format($product->price, 2) }}</span>
+                                                    @if($product->selling_price && $product->selling_price != $product->price)
+                                                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                                                            Selling: ₱{{ number_format($product->selling_price, 2) }}
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                            </td>
                                             {{-- Markup / Selling Price --}}
                                             <td class="px-6 py-4 text-sm break-words">
                                                 @if ($product->pricing_method === 'markup' && $product->markupPrice)
@@ -1023,27 +1031,21 @@
                         addSupplierRow('edit');
                     }
 
-                    // Show markup field only if product has markup assigned
+                    // Show markup field for all products
                     const markupPriceField = document.getElementById('edit_markup_price_field');
                     const markupPriceSelect = document.getElementById('edit_markup_price_id');
+                    
+                    markupPriceField.style.display = 'block';
 
-                    if (data.product.markup_price_id) {
-                        // Product has markup - show field for removing it
-                        markupPriceField.style.display = 'block';
-
-                        if (data.markupPrices) {
-                            markupPriceSelect.innerHTML = '<option value="">Remove markup (set to manual)</option>';
-                            data.markupPrices.forEach(markup => {
-                                const option = document.createElement('option');
-                                option.value = markup.id;
-                                option.textContent = `${markup.name} (${markup.markup_percentage}%)`;
-                                option.selected = data.product.markup_price_id === markup.id;
-                                markupPriceSelect.appendChild(option);
-                            });
-                        }
-                    } else {
-                        // Product has no markup - hide field
-                        markupPriceField.style.display = 'none';
+                    if (data.markupPrices) {
+                        markupPriceSelect.innerHTML = '<option value="">No markup (manual price)</option>';
+                        data.markupPrices.forEach(markup => {
+                            const option = document.createElement('option');
+                            option.value = markup.id;
+                            option.textContent = `${markup.name} (${markup.markup_percentage}%)`;
+                            option.selected = data.product.markup_price_id === markup.id;
+                            markupPriceSelect.appendChild(option);
+                        });
                     }
                 })
                 .catch(error => {
@@ -1421,7 +1423,7 @@
                         statusHTML =
                             '<span class="inline-flex items-start py-1 rounded-full text-xs font-medium text-green-800"></span>In Stock</span>';
                     }
-                    document.getElementById('view_stock_status').innerHTML = statusHTML;
+                    // document.getElementById('view_stock_status').innerHTML = statusHTML;
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -1585,37 +1587,66 @@
 
                         <!-- Price and Markup Configuration -->
                         <div class="grid grid-cols-2 gap-2">
-                            <!-- Markup Price Configuration (For removing markup) -->
-                            <div id="edit_markup_price_field" style="display: none;">
+                            <!-- Markup Price Configuration -->
+                            <div id="edit_markup_price_field">
                                 <label for="edit_markup_price_id"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Markup Configuration
                                 </label>
-                                <select id="edit_markup_price_id" name="markup_price_id"
+                                <select id="edit_markup_price_id" name="markup_price_id" onchange="calculateEditSellingPrice()"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                    <option value="">Remove markup (set to manual)</option>
+                                    <option value="">No markup (manual price)</option>
                                     @foreach ($markupPrices as $markup)
-                                        <option value="{{ $markup->id }}">{{ $markup->name }}
+                                        <option value="{{ $markup->id }}" data-percentage="{{ $markup->markup_percentage }}">{{ $markup->name }}
                                             ({{ $markup->markup_percentage }}%)
                                         </option>
                                     @endforeach
                                 </select>
-                                <p class="mt-1 text-xs text-gray-500">Clear selection to remove markup</p>
+                                <p class="mt-1 text-xs text-gray-500">Select markup or leave as manual price</p>
                             </div>
 
                             <div>
                                 <label for="edit_price"
                                     class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Price<span class="text-red-500">*</span>
+                                    Base Price<span class="text-red-500">*</span>
                                 </label>
                                 <div class="mt-1 relative rounded-md shadow-sm">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <span class="text-gray-500 sm:text-sm">₱</span>
                                     </div>
                                     <input type="number" id="edit_price" name="price" step="0.01"
-                                        min="0" required
+                                        min="0" required oninput="calculateEditSellingPrice()"
                                         class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 </div>
+                                <p class="mt-1 text-xs text-gray-500">Base price (won't change with markup)</p>
+                            </div>
+                        </div>
+
+                        <!-- Selling Price Section -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label for="edit_calculated_selling_price"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Calculated Selling Price
+                                </label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">₱</span>
+                                    </div>
+                                    <input type="text" id="edit_calculated_selling_price" readonly
+                                        class="pl-7 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100 dark:bg-gray-600 dark:border-gray-600 dark:text-white cursor-not-allowed">
+                                </div>
+                                <p class="mt-1 text-xs text-gray-500">Preview with markup applied</p>
+                            </div>
+
+                            <div class="flex items-end">
+                                <button type="button" id="edit_apply_selling_price_btn" onclick="applyEditSellingPrice()"
+                                    class="w-full inline-flex justify-center items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    Apply Selling Price
+                                </button>
                             </div>
 
                             <!-- Cost (Read-only display) -->
@@ -1958,7 +1989,7 @@
                                     <div class="min-w-0">
                                         <label
                                             class="block text-sm font-medium text-gray-500 dark:text-gray-400">Price</label>
-                                        <p class="text-lg font-semibold text-green-600 dark:text-green-400 break-words overflow-hidden"
+                                        <p class="text-lg font-mono text-green-600 dark:text-green-400 break-words overflow-hidden"
                                             id="view_price"></p>
                                     </div>
 
@@ -1974,15 +2005,15 @@
                                     <div id="view_markup_container" style="display:none;" class="min-w-0">
                                         <label
                                             class="block text-sm font-medium text-gray-500 dark:text-gray-400">Markup</label>
-                                        <p class="text-lg font-semibold text-gray-600 dark:text-white break-words overflow-hidden"
+                                        <p class="text-lg font-mono text-gray-600 dark:text-white whitespace-nowrap overflow-hidden"
                                             id="view_markup">
                                         </p>
                                     </div>
-                                    <div class="min-w-0">
+                                    {{-- <div class="min-w-0">
                                         <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
                                             Status</label>
                                         <div id="view_stock_status"></div>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
 
