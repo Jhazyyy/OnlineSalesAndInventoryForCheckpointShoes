@@ -355,9 +355,12 @@ class ReportService
         // Alternative: $orders->sum('total_amount') should equal totalRevenue
         
         // Calculate Cost of Goods Sold (COGS)
+        // Use unit_cost_at_sale from sales_order_items which captures the actual purchase cost at time of sale
         $totalCost = $orders->sum(function ($order) {
             return $order->items->sum(function ($item) {
-                return ($item->product->total_cost ?? 0) * $item->quantity;
+                // Use unit_cost_at_sale if available (for new sales), fallback to product->total_cost for old data
+                $unitCost = $item->unit_cost_at_sale ?? ($item->product->total_cost ?? 0);
+                return $unitCost * $item->quantity;
             });
         });
         

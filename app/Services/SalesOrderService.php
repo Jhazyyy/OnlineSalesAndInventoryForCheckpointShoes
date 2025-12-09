@@ -290,11 +290,16 @@ class SalesOrderService
             $quantity = $itemData['quantity'];
             $discountAmount = $itemData['discount_amount'] ?? 0;
 
+            // Capture the unit cost at the time of sale (COGS from purchase orders)
+            // This ensures we calculate accurate profit even if purchase costs change later
+            $unitCostAtSale = $product->total_cost ?? 0;
+
             $item = SalesOrderItem::create([
                 'order_id' => $order->order_id,
                 'product_id' => $product->product_id,
                 'quantity' => $quantity,
                 'unit_price' => $unitPrice,
+                'unit_cost_at_sale' => $unitCostAtSale,
                 'discount_amount' => $discountAmount,
                 'line_total' => ($quantity * $unitPrice) - $discountAmount,
                 'notes' => $itemData['notes'] ?? null,

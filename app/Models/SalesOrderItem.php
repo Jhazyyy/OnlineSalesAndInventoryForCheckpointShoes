@@ -40,6 +40,7 @@ class SalesOrderItem extends Model
         'product_id',
         'quantity',
         'unit_price',
+        'unit_cost_at_sale',
         'discount_amount',
         'line_total',
         'notes',
@@ -53,6 +54,7 @@ class SalesOrderItem extends Model
     protected $casts = [
         'quantity' => 'integer',
         'unit_price' => 'decimal:2',
+        'unit_cost_at_sale' => 'decimal:2',
         'discount_amount' => 'decimal:2',
         'line_total' => 'decimal:2',
         'created_at' => 'datetime',
@@ -184,5 +186,34 @@ class SalesOrderItem extends Model
     public function hasStockShortage(): bool
     {
         return $this->stock_shortage > 0;
+    }
+
+    /**
+     * Get the total cost of goods sold for this line item.
+     * Uses the unit_cost_at_sale captured at the time of sale.
+     */
+    public function getTotalCostAttribute(): float
+    {
+        return ($this->unit_cost_at_sale ?? 0) * $this->quantity;
+    }
+
+    /**
+     * Get the gross profit for this line item (line_total - COGS).
+     */
+    public function getGrossProfitAttribute(): float
+    {
+        return $this->line_total - $this->total_cost;
+    }
+
+    /**
+     * Get the profit margin percentage for this line item.
+     */
+    public function getProfitMarginAttribute(): float
+    {
+        if ($this->line_total == 0) {
+            return 0;
+        }
+        
+        return ($this->gross_profit / $this->line_total) * 100;
     }
 }
