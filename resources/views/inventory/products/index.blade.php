@@ -1303,14 +1303,11 @@
                     //     document.getElementById('view_image_container').style.display = 'none';
                     // }
 
-                    // Total Cost
-
 
                     // Markup
                     if (data.pricing_method === 'markup' && data.markup_price) {
                         document.getElementById('view_markup_container').style.display = 'block';
-                        document.getElementById('view_markup').textContent = data.markup_price.name + ' (' + data
-                            .markup_price.markup_percentage + '%)';
+                        document.getElementById('view_markup').textContent = data.markup_price.name;
                     } else {
                         document.getElementById('view_markup_container').style.display = 'none';
                     }
@@ -2029,11 +2026,6 @@
                                             id="view_markup">
                                         </p>
                                     </div>
-                                    {{-- <div class="min-w-0">
-                                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400">Stock
-                                            Status</label>
-                                        <div id="view_stock_status"></div>
-                                    </div> --}}
                                 </div>
                             </div>
 

@@ -119,9 +119,23 @@
                                                 <!-- Product Details -->
                                                 <div class="space-y-1 text-xs border-t border-gray-200 dark:border-gray-700 pt-1">
                                                     <div class="flex justify-between">
-                                                        <span class="text-gray-600 dark:text-gray-400">Category:</span>
+                                                        {{-- <span class="text-gray-600 dark:text-gray-400">Category:</span> --}}
                                                         <span class="text-xs text-gray-900 dark:text-white" x-text="product.category"></span>
                                                     </div>
+                                                    <!-- Size and Color -->
+                                                    <template x-if="product.size || product.color">
+                                                        <div class="flex justify-between">
+                                                            {{-- <span class="text-gray-600 dark:text-gray-400">Variant:</span> --}}
+                                                            <span class="text-xs text-gray-900 dark:text-white">
+                                                                <template x-if="product.size">
+                                                                    <span x-text="product.size + (product.color ? ' | ' : '')"></span>
+                                                                </template>
+                                                                <template x-if="product.color">
+                                                                    <span x-text="product.color"></span>
+                                                                </template>
+                                                            </span>
+                                                        </div>
+                                                    </template>
                                                     <div class="flex justify-between items-center">
                                                         <span class="text-gray-600 dark:text-gray-400">Price:</span>
                                                         <template x-if="product.price && product.price > 0">

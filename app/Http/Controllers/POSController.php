@@ -127,6 +127,8 @@ class POSController extends Controller
                     'brand' => $product->product_brand ?? 'N/A',
                     'unit' => 'units',
                     'image_url' => $product->image_url,
+                    'size' => $product->size,
+                    'color' => $product->color,
                 ];
             });
 
