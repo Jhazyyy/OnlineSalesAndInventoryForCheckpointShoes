@@ -1177,6 +1177,13 @@
             document.getElementById('adj_current_stock').textContent = currentStock;
             document.getElementById('stockAdjustmentModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+            
+            // Reset form state
+            document.getElementById('stockAdjustmentForm').reset();
+            document.getElementById('new_stock_preview').style.display = 'none';
+            document.getElementById('custom_reason_div').style.display = 'none';
+            document.getElementById('increase_reasons').style.display = 'none';
+            document.getElementById('decrease_reasons').style.display = 'none';
         }
 
         function closeStockAdjustmentModal() {
@@ -1190,13 +1197,19 @@
         }
 
         function updateAdjustmentUI() {
-            const type = document.getElementById('adj_type').value;
+            // Get type from radio buttons
+            const typeIncrease = document.getElementById('adj_type_increase');
+            const typeDecrease = document.getElementById('adj_type_decrease');
+            let type = '';
+            if (typeIncrease && typeIncrease.checked) type = 'increase';
+            if (typeDecrease && typeDecrease.checked) type = 'decrease';
+            
             const increaseReasons = document.getElementById('increase_reasons');
             const decreaseReasons = document.getElementById('decrease_reasons');
             const reasonSelect = document.getElementById('adj_reason');
 
             // Reset reason
-            reasonSelect.value = '';
+            if (reasonSelect) reasonSelect.value = '';
             document.getElementById('custom_reason_div').style.display = 'none';
 
             // Show appropriate reasons
@@ -1230,7 +1243,13 @@
         }
 
         function calculateNewStock() {
-            const type = document.getElementById('adj_type').value;
+            // Get type from radio buttons
+            const typeIncrease = document.getElementById('adj_type_increase');
+            const typeDecrease = document.getElementById('adj_type_decrease');
+            let type = '';
+            if (typeIncrease && typeIncrease.checked) type = 'increase';
+            if (typeDecrease && typeDecrease.checked) type = 'decrease';
+            
             const quantity = parseInt(document.getElementById('adj_quantity').value) || 0;
             const preview = document.getElementById('new_stock_preview');
             const newStockSpan = document.getElementById('preview_new_stock');
@@ -1246,22 +1265,31 @@
 
             if (type === 'increase') {
                 newStock = currentProductStock + quantity;
-                changeText = `<span class="text-green-600 dark:text-green-400">(+${quantity})</span>`;
+                changeText = `<span class="text-green-600 dark:text-green-400 font-semibold">(+${quantity})</span>`;
             } else if (type === 'decrease') {
                 newStock = currentProductStock - quantity;
-                changeText = `<span class="text-red-600 dark:text-red-400">(-${quantity})</span>`;
+                changeText = `<span class="text-red-600 dark:text-red-400 font-semibold">(-${quantity})</span>`;
             }
 
             newStockSpan.textContent = newStock;
             changeSpan.innerHTML = changeText;
             preview.style.display = 'block';
 
-            // Warn if stock will be negative
+            // Style based on result
+            newStockSpan.classList.remove('text-red-600', 'dark:text-red-400', 'text-green-600', 'dark:text-green-400', 'text-yellow-600', 'dark:text-yellow-400');
+            
             if (newStock < 0) {
                 newStockSpan.classList.add('text-red-600', 'dark:text-red-400');
+                preview.classList.remove('bg-green-50', 'dark:bg-green-900/30', 'bg-yellow-50', 'dark:bg-yellow-900/30');
+                preview.classList.add('bg-red-50', 'dark:bg-red-900/30');
+            } else if (newStock === 0) {
+                newStockSpan.classList.add('text-yellow-600', 'dark:text-yellow-400');
+                preview.classList.remove('bg-green-50', 'dark:bg-green-900/30', 'bg-red-50', 'dark:bg-red-900/30');
+                preview.classList.add('bg-yellow-50', 'dark:bg-yellow-900/30');
             } else {
-                newStockSpan.classList.remove('text-red-600', 'dark:text-red-400');
                 newStockSpan.classList.add('text-green-600', 'dark:text-green-400');
+                preview.classList.remove('bg-red-50', 'dark:bg-red-900/30', 'bg-yellow-50', 'dark:bg-yellow-900/30');
+                preview.classList.add('bg-green-50', 'dark:bg-green-900/30');
             }
         }
 
@@ -1285,7 +1313,7 @@
             `;
 
             // Fetch history data
-            fetch(`/inventory/stock-adjustments/${productId}/history`, {
+            fetch(`/inventory/products/${productId}/stock-history`, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'text/html'
@@ -1785,10 +1813,15 @@
     <div id="stockAdjustmentModal"
         class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
         <div
-            class="relative top-10 mx-auto p-5 border w-11/12 max-w-full shadow-lg rounded-md bg-white dark:bg-gray-800 mb-10">
+            class="relative top-10 mx-auto p-5 border w-11/12 max-w-md shadow-lg rounded-md bg-white dark:bg-gray-800 mb-10">
             <div class="mt-3">
                 <div class="flex items-center justify-between pb-3 border-b dark:border-gray-700">
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Stock Adjustment</h3>
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                        <svg class="w-6 h-6 inline-block mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                        </svg>
+                        Stock Adjustment
+                    </h3>
                     <button onclick="closeStockAdjustmentModal()"
                         class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1799,17 +1832,18 @@
                 </div>
 
                 <form id="stockAdjustmentForm" method="POST"
-                    action="{{ route('inventory.stock-adjustments.store') }}">
+                    action="{{ route('inventory.products.stock-adjustment.store') }}">
                     @csrf
                     <input type="hidden" id="adj_product_id" name="product_id">
 
                     <div class="mt-4 space-y-4">
                         <!-- Product Info -->
-                        <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 p-4 rounded-lg border border-blue-100 dark:border-blue-800">
                             <p class="text-sm text-gray-600 dark:text-gray-300">Product: <span id="adj_product_name"
                                     class="font-semibold text-gray-900 dark:text-white"></span></p>
-                            <p class="text-sm text-gray-600 dark:text-gray-300">Current Stock: <span
-                                    id="adj_current_stock" class="font-semibold text-gray-900 dark:text-white"></span>
+                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">Current Stock: 
+                                <span id="adj_current_stock" class="font-bold text-lg text-blue-600 dark:text-blue-400"></span>
+                                <span class="text-gray-500 dark:text-gray-400">units</span>
                             </p>
                         </div>
 
@@ -1818,13 +1852,28 @@
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Adjustment Type <span class="text-red-500">*</span>
                             </label>
-                            <select id="adj_type" name="adjustment_type" required
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                onchange="updateAdjustmentUI()">
-                                <option value="">Select Type</option>
-                                <option value="increase">Increase Stock</option>
-                                <option value="decrease">Decrease Stock</option>
-                            </select>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="relative cursor-pointer">
+                                    <input type="radio" name="adjustment_type" value="increase" id="adj_type_increase" 
+                                        class="peer sr-only" onchange="updateAdjustmentUI()">
+                                    <div class="flex items-center justify-center p-3 border-2 rounded-lg peer-checked:border-green-500 peer-checked:bg-green-50 dark:peer-checked:bg-green-900/30 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+                                        <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                        </svg>
+                                        <span class="font-medium text-gray-700 dark:text-gray-200">Increase</span>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer">
+                                    <input type="radio" name="adjustment_type" value="decrease" id="adj_type_decrease" 
+                                        class="peer sr-only" onchange="updateAdjustmentUI()">
+                                    <div class="flex items-center justify-center p-3 border-2 rounded-lg peer-checked:border-red-500 peer-checked:bg-red-50 dark:peer-checked:bg-red-900/30 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+                                        <svg class="w-5 h-5 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                                        </svg>
+                                        <span class="font-medium text-gray-700 dark:text-gray-200">Decrease</span>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
 
                         <!-- Reason -->

@@ -784,4 +784,82 @@ class ProductController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Store a stock adjustment for a product.
+     */
+    public function storeStockAdjustment(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'product_id' => 'required|exists:product,product_id',
+            'adjustment_type' => 'required|in:increase,decrease',
+            'quantity' => 'required|integer|min:1',
+            'reason' => 'required|string',
+            'custom_reason' => 'nullable|string|max:255',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        try {
+            $product = Product::findOrFail($request->product_id);
+            $currentStock = $product->quantity;
+            $adjustmentQuantity = (int) $request->quantity;
+            
+            // Calculate new quantity based on adjustment type
+            if ($request->adjustment_type === 'increase') {
+                $newQuantity = $currentStock + $adjustmentQuantity;
+            } else {
+                $newQuantity = $currentStock - $adjustmentQuantity;
+                
+                // Validate we don't go negative
+                if ($newQuantity < 0) {
+                    return back()->withErrors(['quantity' => 'Cannot decrease stock below zero. Current stock: ' . $currentStock])->withInput();
+                }
+            }
+
+            // Determine the reason text
+            $reason = $request->reason === 'Other' ? $request->custom_reason : $request->reason;
+            $notes = $request->notes;
+
+            // Use StockService to handle the adjustment
+            $stockService = new \App\Services\StockService();
+            $result = $stockService->createStockAdjustment([
+                'product_id' => $request->product_id,
+                'new_quantity' => $newQuantity,
+                'reason' => $reason . ($notes ? " - Notes: {$notes}" : ''),
+            ]);
+
+            if ($result['success']) {
+                return redirect()->route('inventory.products.index')
+                    ->with('success', 'Stock adjustment recorded successfully. New stock level: ' . $newQuantity);
+            } else {
+                return back()->withErrors(['error' => $result['message']])->withInput();
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Stock adjustment error: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Failed to record stock adjustment: ' . $e->getMessage()])->withInput();
+        }
+    }
+
+    /**
+     * Get stock movement history for a product.
+     */
+    public function stockHistory(Product $product)
+    {
+        $movements = \App\Models\StockMovement::where('product_id', $product->product_id)
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->limit(50)
+            ->get();
+
+        if (request()->ajax()) {
+            return view('inventory.products.partials.stock-history', compact('movements', 'product'));
+        }
+
+        return view('inventory.products.partials.stock-history', compact('movements', 'product'));
+    }
 }

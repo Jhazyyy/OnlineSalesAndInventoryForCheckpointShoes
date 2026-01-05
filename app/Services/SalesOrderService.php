@@ -8,7 +8,6 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\StockMovement;
 use App\Services\InventoryService;
-use App\Services\InventoryThresholdService;
 use App\Models\Notification;
 use App\Mail\OrderStatusChanged;
 use Illuminate\Database\Eloquent\Builder;
@@ -333,16 +332,7 @@ class SalesOrderService
                         syncProductQuantity: true
                     );
 
-                        // Run threshold checks for this product to generate/rescue alerts if needed
-                        try {
-                            $thresholdService = new InventoryThresholdService();
-                            $productRefreshed = Product::find($product->product_id);
-                            if ($productRefreshed) {
-                                $thresholdService->checkProductThresholds($productRefreshed);
-                            }
-                        } catch (\Exception $e) {
-                            Log::warning('Threshold check failed after inventory adjust', ['error' => $e->getMessage(), 'product_id' => $product->product_id]);
-                        }
+                    // Note: Threshold checks are automatically handled by ProductObserver when product quantity is updated
 
                     Log::info('Inventory adjusted for sale', ['product_id' => $product->product_id, 'quantity' => $quantity, 'order_id' => $order->order_id]);
                 }

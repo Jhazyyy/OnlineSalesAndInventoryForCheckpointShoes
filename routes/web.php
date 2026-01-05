@@ -12,12 +12,10 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseReceiveController;
 use App\Http\Controllers\ReturnsController;
 use App\Http\Controllers\SalesOrderController;
-use App\Http\Controllers\StockController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BankTransferPaymentController;
-use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\MarkupPriceController;
 use Illuminate\Support\Facades\Route;
@@ -888,7 +886,6 @@ Route::get('dashboard/top-purchase-items', function (Illuminate\Http\Request $re
 })->middleware(['auth', 'verified'])->name('dashboard.top-purchase-items');
 
 
-
     //Inventory Product Routes
     Route::prefix('inventory/products')->name('inventory.products.')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->middleware('permission:view products')->name('index');
@@ -903,11 +900,11 @@ Route::get('dashboard/top-purchase-items', function (Illuminate\Http\Request $re
         Route::post('/bulk-update-stock', [ProductController::class, 'bulkUpdateStock'])->middleware('permission:manage stock')->name('bulk-update-stock');
         Route::get('/alerts', [ProductController::class, 'getAlertsData'])->middleware('permission:view products')->name('alerts');
         Route::post('/{product}/apply-markup', [ProductController::class, 'applyMarkup'])->middleware('permission:edit products')->name('apply-markup');
+        
+        // Stock Adjustment Routes
+        Route::post('/stock-adjustment', [ProductController::class, 'storeStockAdjustment'])->middleware('permission:manage stock')->name('stock-adjustment.store');
+        Route::get('/{product}/stock-history', [ProductController::class, 'stockHistory'])->middleware('permission:view products')->name('stock-history');
     });
-
-    // Stock Adjustment Routes
-    Route::post('/inventory/stock-adjustments', [StockAdjustmentController::class, 'store'])->middleware('permission:manage stock')->name('inventory.stock-adjustments.store');
-    Route::get('/inventory/stock-adjustments/{product}/history', [StockAdjustmentController::class, 'history'])->middleware('permission:view inventory')->name('inventory.stock-adjustments.history');
 
     // Audit Log Routes - Admin only
     Route::middleware(['role:super_admin,admin'])->group(function () {
@@ -1071,39 +1068,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{supplier}/toggle-status', [SupplierController::class, 'toggleStatus'])->middleware('permission:edit suppliers')->name('toggle-status');
         Route::get('/analytics', [SupplierController::class, 'analytics'])->middleware('permission:view suppliers')->name('analytics');
         Route::get('/alerts', [SupplierController::class, 'getAlertsData'])->middleware('permission:view suppliers')->name('alerts');
-    });
-
-    // Stock Management Routes
-    Route::prefix('inventory/product_stock_adjustment')->name('inventory.product_stock_adjustment.')->group(function () {
-        Route::get('/', [StockController::class, 'index'])->middleware('permission:view inventory')->name('index');
-        Route::get('/create', [StockController::class, 'create'])->middleware('permission:create inventory')->name('create');
-        Route::post('/', [StockController::class, 'store'])->middleware('permission:create inventory')->name('store');
-        Route::get('/{product_stock_adjustment}', [StockController::class, 'show'])->middleware('permission:view inventory')->name('show');
-        Route::get('/{product_stock_adjustment}/edit', [StockController::class, 'edit'])->middleware('permission:edit inventory')->name('edit');
-        Route::put('/{product_stock_adjustment}', [StockController::class, 'update'])->middleware('permission:edit inventory')->name('update');
-        Route::delete('/{product_stock_adjustment}', [StockController::class, 'destroy'])->middleware('permission:delete inventory')->name('destroy');
-
-        // Stock movement operations
-        Route::post('/{product_stocks}/confirm', [StockController::class, 'confirm'])->middleware('permission:manage stock')->name('confirm');
-        
-        // Transfer operations
-        Route::get('/transfer/form', [StockController::class, 'showTransferForm'])->middleware('permission:manage stock')->name('transfer.form');
-        Route::post('/transfer/process', [StockController::class, 'processTransfer'])->middleware('permission:manage stock')->name('transfer.process');
-        
-        // Waste/damage operations
-        Route::get('/waste/form', [StockController::class, 'showWasteForm'])->middleware('permission:manage stock')->name('waste.form');
-        Route::post('/waste/process', [StockController::class, 'processWaste'])->middleware('permission:manage stock')->name('waste.process');
-        
-        // Import and Export routes
-        Route::get('/import/form', [StockController::class, 'showImportForm'])->middleware('permission:create inventory')->name('import');
-        Route::post('/import/process', [StockController::class, 'import'])->middleware('permission:create inventory')->name('import.process');
-        Route::get('/template/download', [StockController::class, 'downloadTemplate'])->middleware('permission:view inventory')->name('template');
-        Route::get('/export', [StockController::class, 'export'])->middleware('permission:view inventory')->name('export');
-        
-        // Analytics and reporting
-        Route::get('/analytics', [StockController::class, 'analytics'])->middleware('permission:view inventory')->name('analytics');
-        Route::get('/product/{product}/history', [StockController::class, 'productHistory'])->middleware('permission:view inventory')->name('product.history');
-        Route::get('/alerts', [StockController::class, 'getAlertsData'])->middleware('permission:view inventory')->name('alerts');
     });
 
     // Purchase Order Management Routes

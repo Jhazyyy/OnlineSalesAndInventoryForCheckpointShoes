@@ -166,7 +166,7 @@ class StockService
                 'message' => "Stock for {$product->product_name} has been {$adjustmentType} by " . abs($quantityChange) . " units (New quantity: {$newQuantity})",
                 'level' => 'info',
                 'type' => 'inventory.stock_adjustment',
-                'link' => route('inventory.product_stock_adjustment.index'),
+                'link' => route('inventory.products.index'),
             ]);
 
             // Log the stock adjustment to audit trail
