@@ -10,13 +10,13 @@
                             <p class="text-gray-600 dark:text-gray-400">Manage your purchase orders and track deliveries</p>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0">
-                            <a href="{{ route('purchases.purchase-orders.create') }}" 
+                            <button type="button" onclick="openCreateModal()" 
                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                 </svg>
                                 Create Purchase Order
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -251,13 +251,13 @@
                             <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No purchase orders</h3>
                             <p class="mt-1 text-sm text-gray-500">Get started by creating a new purchase order.</p>
                             <div class="mt-6">
-                                <a href="{{ route('purchases.purchase-orders.create') }}" 
+                                <button type="button" onclick="openCreateModal()" 
                                    class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                     </svg>
                                     New Purchase Order
-                                </a>
+                                </button>
                             </div>
                         </div>
                     @endif
@@ -265,4 +265,282 @@
             </div>
         </div>
     </div>
+
+    <!-- Create Purchase Order Modal -->
+    <div id="createModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-10 mx-auto p-5 border w-11/12 max-w-7xl shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="mt-3">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between pb-3 border-b dark:border-gray-700">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Create Purchase Order</h3>
+                    <button onclick="closeCreateModal()" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="mt-4 max-h-[75vh] overflow-y-auto">
+                    <form id="createForm" method="POST" action="{{ route('purchases.purchase-orders.store') }}">
+                        @csrf
+                        
+                        <!-- Order Information -->
+                        <div class="mb-4">
+                            <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Order Information</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                                <!-- Supplier -->
+                                <div>
+                                    <label for="modal_supplier_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Supplier</label>
+                                    <select id="modal_supplier_id" name="supplier_id" required
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                        <option value="">Select Supplier</option>
+                                        @foreach ($suppliers as $supplier)
+                                            <option value="{{ $supplier['id'] }}">{{ $supplier['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- Order Date -->
+                                <div>
+                                    <label for="modal_order_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Order Date</label>
+                                    <input id="modal_order_date" name="order_date" type="date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        value="{{ date('Y-m-d') }}" min="{{ date('Y-m-d') }}" required />
+                                </div>
+
+                                <!-- Expected Date -->
+                                <div>
+                                    <label for="modal_expected_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Expected Delivery</label>
+                                    <input id="modal_expected_date" name="expected_date" type="date"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        min="{{ date('Y-m-d') }}" />
+                                </div>
+
+                                <!-- Priority -->
+                                <div>
+                                    <label for="modal_priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Priority</label>
+                                    <select id="modal_priority" name="priority"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                        <option value="low">Low</option>
+                                        <option value="normal" selected>Normal</option>
+                                        <option value="high">High</option>
+                                        <option value="urgent">Urgent</option>
+                                    </select>
+                                </div>
+
+                                <!-- Payment Method -->
+                                <div>
+                                    <label for="modal_payment_method" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Method</label>
+                                    <select id="modal_payment_method" name="payment_method" required
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                        <option value="">Select Method</option>
+                                        <option value="cash">Cash</option>
+                                        <option value="bank_transfer">Bank Transfer</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Items -->
+                        <div class="mb-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+                            <div class="flex justify-between items-center mb-3">
+                                <h4 class="text-md font-medium text-gray-900 dark:text-white">Order Items</h4>
+                                <button type="button" onclick="addItem()" 
+                                    class="inline-flex items-center px-3 py-1 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 transition">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    Add Item
+                                </button>
+                            </div>
+
+                            <div id="modal_orderItems" class="space-y-3 max-h-96 overflow-y-auto">
+                                <!-- Items will be added here by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Order Summary -->
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                            <h4 class="text-md font-medium text-gray-900 dark:text-white mb-3">Order Summary</h4>
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <div id="modal_summary_items" class="space-y-2 mb-3 text-sm">
+                                    <p class="text-gray-500 dark:text-gray-400">No items selected yet</p>
+                                </div>
+                                <hr class="my-3 border-gray-300 dark:border-gray-600">
+                                <div class="flex justify-between font-bold text-lg">
+                                    <span class="text-gray-900 dark:text-white">Total:</span>
+                                    <span id="modal_total_display" class="text-gray-900 dark:text-white">₱0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Footer -->
+                        <div class="flex justify-end gap-3 mt-6 pt-4 border-t dark:border-gray-700">
+                            <button type="button" onclick="closeCreateModal()"
+                                class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition">
+                                Cancel
+                            </button>
+                            <button type="submit"
+                                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                                Create Purchase Order
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let itemIndex = 0;
+        const products = @json($products);
+
+        function openCreateModal() {
+            document.getElementById('createModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            // Add initial item
+            if (itemIndex === 0) {
+                addItem();
+            }
+        }
+
+        function closeCreateModal() {
+            document.getElementById('createModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            document.getElementById('createForm').reset();
+            document.getElementById('modal_orderItems').innerHTML = '';
+            itemIndex = 0;
+            updateSummary();
+        }
+
+        function addItem() {
+            const container = document.getElementById('modal_orderItems');
+            const itemHtml = `
+                <div class="item-row border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Product</label>
+                            <select name="items[${itemIndex}][product_id]" class="product-select block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" required onchange="updateItemPrice(this)">
+                                <option value="">Select Product</option>
+                                ${products.map(p => `<option value="${p.id}" data-price="${p.price}">${p.product_name} (Stock: ${p.stock})</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantity</label>
+                            <input type="number" name="items[${itemIndex}][quantity_ordered]" class="quantity-input block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" min="1" required oninput="updateSummary()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Unit Price</label>
+                            <input type="number" name="items[${itemIndex}][unit_price]" step="0.01" class="unit-price-input block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-sm" oninput="updateSummary()">
+                        </div>
+                        <div class="flex items-end">
+                            <button type="button" onclick="removeItem(this)" class="w-full px-3 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 transition">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', itemHtml);
+            itemIndex++;
+        }
+
+        function removeItem(button) {
+            const items = document.querySelectorAll('.item-row');
+            if (items.length > 1) {
+                button.closest('.item-row').remove();
+                updateSummary();
+            } else {
+                alert('At least one item is required.');
+            }
+        }
+
+        function updateItemPrice(select) {
+            const row = select.closest('.item-row');
+            const priceInput = row.querySelector('.unit-price-input');
+            const option = select.options[select.selectedIndex];
+            const price = option.dataset.price || '';
+            
+            const supplierId = document.getElementById('modal_supplier_id').value;
+            const productId = select.value;
+            
+            if (productId && supplierId) {
+                fetch('{{ route('purchases.purchase-orders.get-supplier-cost') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        supplier_id: supplierId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    priceInput.value = data.cost || price;
+                    updateSummary();
+                })
+                .catch(() => {
+                    priceInput.value = price;
+                    updateSummary();
+                });
+            } else {
+                priceInput.value = price;
+                updateSummary();
+            }
+        }
+
+        function updateSummary() {
+            let total = 0;
+            let itemsHtml = '';
+            const items = document.querySelectorAll('.item-row');
+            
+            items.forEach((row, index) => {
+                const select = row.querySelector('.product-select');
+                const quantity = parseFloat(row.querySelector('.quantity-input').value) || 0;
+                const price = parseFloat(row.querySelector('.unit-price-input').value) || 0;
+                const lineTotal = quantity * price;
+                const productName = select.options[select.selectedIndex]?.text || 'Not selected';
+                
+                if (quantity > 0 && price > 0 && select.value) {
+                    total += lineTotal;
+                    itemsHtml += `
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-700 dark:text-gray-300">${productName.substring(0, 40)}${productName.length > 40 ? '...' : ''}</span>
+                            <span class="font-medium text-gray-900 dark:text-white">₱${lineTotal.toFixed(2)}</span>
+                        </div>
+                    `;
+                }
+            });
+            
+            document.getElementById('modal_summary_items').innerHTML = itemsHtml || '<p class="text-gray-500 dark:text-gray-400">No items selected yet</p>';
+            document.getElementById('modal_total_display').textContent = '₱' + total.toFixed(2);
+        }
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && !document.getElementById('createModal').classList.contains('hidden')) {
+                closeCreateModal();
+            }
+        });
+
+        // Close on outside click
+        document.getElementById('createModal')?.addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeCreateModal();
+            }
+        });
+
+        // Handle supplier change to update all item prices
+        document.addEventListener('change', function(e) {
+            if (e.target.id === 'modal_supplier_id') {
+                document.querySelectorAll('.product-select').forEach(select => {
+                    if (select.value) {
+                        updateItemPrice(select);
+                    }
+                });
+            }
+        });
+    </script>
 </x-app-layout>

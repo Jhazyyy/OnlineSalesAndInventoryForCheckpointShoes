@@ -46,7 +46,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-2">
                 <div class="p-6">
                     <form method="GET" action="{{ route('inventory.products.index') }}" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
                             <!-- Search -->
                             <div>
                                 <label for="search"
@@ -126,6 +126,21 @@
                                     <option value="out_of_stock"
                                         {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>Out of Stock
                                     </option>
+                                </select>
+                            </div>
+
+                            <!-- Recently Updated Filter -->
+                            <div>
+                                <label for="recently_updated"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Recently
+                                    Updated</label>
+                                <select id="recently_updated" name="recently_updated"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">All Time</option>
+                                    <option value="today" {{ request('recently_updated') == 'today' ? 'selected' : '' }}>Today</option>
+                                    <option value="24_hours" {{ request('recently_updated') == '24_hours' ? 'selected' : '' }}>Last 24 Hours</option>
+                                    <option value="7_days" {{ request('recently_updated') == '7_days' ? 'selected' : '' }}>Last 7 Days</option>
+                                    <option value="30_days" {{ request('recently_updated') == '30_days' ? 'selected' : '' }}>Last 30 Days</option>
                                 </select>
                             </div>
                         </div>
@@ -276,8 +291,39 @@
                                                                 {{ $product->stock_name }}
                                                             </div>
                                                         @endif
+                                                        <div class="flex items-center gap-2 mb-1">
+                                                            <div class="text-xs font-normal text-gray-900 dark:text-white break-words">
+                                                                {{ $product->product_name }}
+                                                            </div>
+                                                            @php
+                                                                $hoursSinceUpdate = $product->updated_at->diffInHours(now());
+                                                                $isRecentlyUpdated = $hoursSinceUpdate <= 24;
+                                                            @endphp
+                                                            {{-- @if($isRecentlyUpdated)
+                                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" title="Updated {{ $product->updated_at->diffForHumans() }}">
+                                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                                                    </svg>
+                                                                    Updated
+                                                                </span>
+                                                            @endif --}}
+                                                        </div>
+                                                        @if($isRecentlyUpdated && $product->stockMovements->count() > 0)
+                                                            <div class="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                                                                @php
+                                                                    $latestMovement = $product->stockMovements->first();
+                                                                @endphp
+                                                                <span class="font-medium">{{ ucfirst(str_replace('_', ' ', $latestMovement->movement_type)) }}:</span>
+                                                                @if($latestMovement->quantity_change > 0)
+                                                                    <span class="text-green-600 dark:text-green-400">+{{ number_format($latestMovement->quantity_change) }}</span>
+                                                                @else
+                                                                    <span class="text-red-600 dark:text-red-400">{{ number_format($latestMovement->quantity_change) }}</span>
+                                                                @endif
+                                                                <span class="text-gray-500 dark:text-gray-400">({{ $latestMovement->created_at->diffForHumans() }})</span>
+                                                            </div>
+                                                        @endif
                                                         <div
-                                                            class="text-xs font-normal text-gray-900 dark:text-white break-words">
+                                                            class="text-xs font-normal text-gray-900 dark:text-white break-words" style="display: none;">
                                                             {{ $product->product_name }}
                                                         </div>
                                                         @if ($product->sku || $product->size || $product->color)

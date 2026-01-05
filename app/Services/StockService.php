@@ -73,7 +73,7 @@ class StockService
         }
 
         // Sorting
-        $sortBy = $request->get('sort', 'movement_date');
+        $sortBy = $request->get('sort', 'updated_at');
         $sortOrder = $request->get('order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
@@ -123,6 +123,14 @@ class StockService
             $newQuantity = (int) $data['new_quantity'];
             $quantityChange = $newQuantity - $currentInventoryTotal;
 
+            // Validate that new quantity is not negative
+            if ($newQuantity < 0) {
+                return [
+                    'success' => false,
+                    'message' => 'New quantity cannot be negative. Current quantity: ' . $currentInventoryTotal,
+                ];
+            }
+
             // Use InventoryService to adjust stock so Inventory and Product.quantity stay in sync.
             // This will also record a StockMovement with the correct before/after.
             $inventory = InventoryService::adjust(
@@ -136,6 +144,10 @@ class StockService
                 location: null,
                 syncProductQuantity: true
             );
+
+            // Explicitly touch the product to update its updated_at timestamp
+            // This ensures it appears at the top of the inventory list
+            $product->touch();
 
             // Optionally, movement_date from input should be respected. If provided, update the just-created movement's date.
             if (!empty($data['movement_date'])) {
@@ -204,10 +216,14 @@ class StockService
 
             $transferQuantity = (int) $data['quantity'];
             
-            if ($productFrom->quantity < $transferQuantity) {
+            // Check actual inventory quantity, not just product.quantity
+            $currentInventory = Inventory::where('product_id', $productFrom->product_id)
+                ->sum('quantity_on_hand');
+            
+            if ($currentInventory < $transferQuantity) {
                 return [
                     'success' => false,
-                    'message' => 'Insufficient stock in source product',
+                    'message' => "Insufficient stock in source product. Available: {$currentInventory}, Requested: {$transferQuantity}",
                 ];
             }
 
@@ -236,6 +252,11 @@ class StockService
                 location: $data['location_to'] ?? null,
                 syncProductQuantity: true
             );
+
+            // Explicitly touch both products to update their updated_at timestamps
+            // This ensures they appear at the top of the inventory list
+            $productFrom->touch();
+            $productTo->touch();
 
             // If a specific movement date was provided, update the two most recent movements accordingly
             if ($movementDate) {
@@ -286,10 +307,14 @@ class StockService
 
             $wasteQuantity = (int) $data['quantity'];
             
-            if ($product->quantity < $wasteQuantity) {
+            // Check actual inventory quantity, not just product.quantity
+            $currentInventory = Inventory::where('product_id', $product->product_id)
+                ->sum('quantity_on_hand');
+            
+            if ($currentInventory < $wasteQuantity) {
                 return [
                     'success' => false,
-                    'message' => 'Insufficient stock available',
+                    'message' => "Insufficient stock available. Current stock: {$currentInventory}, Requested: {$wasteQuantity}",
                 ];
             }
 
@@ -305,6 +330,10 @@ class StockService
                 location: null,
                 syncProductQuantity: true
             );
+
+            // Explicitly touch the product to update its updated_at timestamp
+            // This ensures it appears at the top of the inventory list
+            $product->touch();
 
             // Respect custom movement date if provided
             if (!empty($data['movement_date'])) {

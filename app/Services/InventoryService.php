@@ -79,6 +79,14 @@ class InventoryService
             $before = (int) $inventory->quantity_on_hand;
             $after = $before + (int) $quantityChange;
 
+            // Validate that the adjustment won't result in negative quantity
+            if ($after < 0) {
+                throw new \Exception(
+                    "Insufficient stock. Current quantity: {$before}, Requested change: {$quantityChange}. "
+                    . "Cannot decrease quantity below 0."
+                );
+            }
+
             // Calculate weighted average cost when receiving inventory
             if ($quantityChange > 0 && $unitCost !== null && $unitCost > 0) {
                 // Weighted Average Cost formula: (Old Value + New Value) / Total Quantity
@@ -91,8 +99,8 @@ class InventoryService
                 }
             }
 
-            // Persist inventory change with protection against negative values
-            $inventory->quantity_on_hand = max(0, $after);
+            // Persist inventory change
+            $inventory->quantity_on_hand = $after;
             $inventory->last_movement_at = now();
             $inventory->save();
 

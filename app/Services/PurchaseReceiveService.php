@@ -411,6 +411,10 @@ class PurchaseReceiveService
             syncProductQuantity: true // keep Product.quantity in sync for backward compatibility
         );
 
+        // Explicitly touch the product to update its updated_at timestamp
+        // This ensures it appears at the top of the inventory list
+        $product->touch();
+
         // Update supplier tracking information only when receiving items (positive quantity)
         if ($quantityChange > 0 && $supplierId && $unitPrice) {
             $product->enableSupplierTrackingFields();

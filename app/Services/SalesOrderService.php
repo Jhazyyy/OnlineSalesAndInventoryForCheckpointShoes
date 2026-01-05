@@ -83,10 +83,10 @@ class SalesOrderService
         }
 
         // Apply sorting
-        $sortField = $request->get('sort', 'created_at');
+        $sortField = $request->get('sort', 'updated_at');
         $sortOrder = $request->get('order', 'desc');
-        
-        if (in_array($sortField, ['order_number', 'order_date', 'total_amount', 'status', 'created_at'])) {
+
+        if (in_array($sortField, ['order_number', 'order_date', 'total_amount', 'status', 'created_at', 'updated_at'])) {
             $query->orderBy($sortField, $sortOrder);
         }
 

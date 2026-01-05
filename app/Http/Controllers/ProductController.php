@@ -74,12 +74,34 @@ class ProductController extends Controller
             }
         }
 
+        // Filter by recently updated
+        if ($request->has('recently_updated') && $request->recently_updated) {
+            switch ($request->recently_updated) {
+                case 'today':
+                    $query->where('updated_at', '>=', now()->startOfDay());
+                    break;
+                case '24_hours':
+                    $query->where('updated_at', '>=', now()->subHours(24));
+                    break;
+                case '7_days':
+                    $query->where('updated_at', '>=', now()->subDays(7));
+                    break;
+                case '30_days':
+                    $query->where('updated_at', '>=', now()->subDays(30));
+                    break;
+            }
+        }
+
         // Sorting
         $sortBy = $request->get('sort', 'updated_at');
         $sortOrder = $request->get('order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        $products = $query->with('lastSupplier')->paginate(10)->withQueryString();
+        $products = $query->with(['lastSupplier', 'stockMovements' => function($q) {
+            $q->where('created_at', '>=', now()->subDays(30))
+              ->orderBy('created_at', 'desc')
+              ->limit(3);
+        }])->paginate(10)->withQueryString();
 
         // Get unique stock names for filter dropdown
         $stockNames = StockName::where('is_active', true)->orderBy('name')->pluck('name')->filter()->sort()->values();

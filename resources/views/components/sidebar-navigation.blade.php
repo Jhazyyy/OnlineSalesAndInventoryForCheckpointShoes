@@ -55,11 +55,6 @@
                                 :icon="App\Helpers\NavigationHelper::getIcon('products', 'w-4 h-4 mr-3')" title="Inventory List" size="small" />
                         @endhasanyrole
 
-                        <!-- Stock Adjustment -->
-                        {{-- <x-nav-item route="inventory.product_stock_adjustment.index"
-                                route-pattern="inventory.product_stock_adjustment.*" :icon="App\Helpers\NavigationHelper::getIcon('stock_adjustment', 'w-4 h-4 mr-3')"
-                                title="Stock Adjustment" size="small" /> --}}
-
                         {{-- <!-- Product Movement (Fast/Slow/Non-Moving) --> --}}
                         {{-- <x-nav-item route="inventory.product-movement.index"
                             route-pattern="inventory.product-movement.*"
